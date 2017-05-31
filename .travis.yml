@@ -20,3 +20,8 @@ before_install:
 
 install:
   - composer install
+
+script:
+  - >
+    echo;
+    echo "Nothing to do yet.";
