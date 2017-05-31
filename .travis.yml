@@ -1,0 +1,22 @@
+language: php
+
+matrix:
+  include:
+  - php: 7.0
+  - php: 7.1
+
+services:
+  - mysql
+
+sudo: false
+cache:
+  directories:
+  - vendor
+  - $HOME/.composer/cache
+
+before_install:
+  - phpenv config-rm xdebug.ini
+  - mysql -e 'CREATE DATABASE phplist;'
+
+install:
+  - composer install
