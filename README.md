@@ -1,5 +1,11 @@
 # phpList 4 REST API
 
+[![Build Status](https://travis-ci.org/phpList/rest-api.svg?branch=master)](https://travis-ci.org/phpList/rest-api)
+[![Latest Stable Version](https://poser.pugx.org/phplist/rest-api/v/stable.svg)](https://packagist.org/packages/phpList/rest-api)
+[![Total Downloads](https://poser.pugx.org/phplist/rest-api/downloads.svg)](https://packagist.org/packages/phpList/rest-api)
+[![Latest Unstable Version](https://poser.pugx.org/phplist/rest-api/v/unstable.svg)](https://packagist.org/packages/phpList/rest-api)
+[![License](https://poser.pugx.org/phplist/rest-api/license.svg)](https://packagist.org/packages/phpList/rest-api)
+
 This module will be the REST API for phpList 4. It will use functionality from
 the `phplist/phplist4-core` module (the phpList 4 core). It will not contain any SQL
 queries, but use functionality from the new core for DB access.
