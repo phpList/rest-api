@@ -6,6 +6,14 @@
 [![Latest Unstable Version](https://poser.pugx.org/phplist/rest-api/v/unstable.svg)](https://packagist.org/packages/phpList/rest-api)
 [![License](https://poser.pugx.org/phplist/rest-api/license.svg)](https://packagist.org/packages/phpList/rest-api)
 
+
+## About phpList
+
+phpList is an open source newsletter manager.
+
+
+## About this package
+
 This module will be the REST API for phpList 4. It will use functionality from
 the `phplist/phplist4-core` module (the phpList 4 core). It will not contain any SQL
 queries, but use functionality from the new core for DB access.
@@ -16,3 +24,10 @@ REST API.
 This new REST API can also be used to provide REST access to an existing
 phpList 3 installation. For this, the phpList 3 installation and the phpList 4
 installation with the REST API need to share the same database.
+
+
+## Installation
+
+Please install this package via Composer from within the
+[phpList base distribution](https://github.com/phpList/base-distribution),
+which also has more detailed installation instructions in the README.
