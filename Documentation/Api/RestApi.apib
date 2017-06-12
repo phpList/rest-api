@@ -1,0 +1,49 @@
+FORMAT: 1A
+
+# phpList REST API v2
+
+
+# Group Authentication
+
+Resources related to login and logout.
+
+
+## Session [/api/v2/sessions]
+
+### Create a new session (log in) [POST]
+
+Given valid login data, this will generate a login token that will be
+valid for 1 hour. It takes a JSON object containing the following key-value pairs:
+
++ `userName` (string): the user name to log in
++ `password` (string): the plain text password
+
+The login token then can be passed as a `loginToken` cookie for request that
+require authentication.
+
++ Request (application/json)
+
+    {
+        "message": "Success",
+        "userName": "admin",
+        "password": "eetIc/Gropvoc1"
+    }
+
++ Response 201 (application/json)
+
+    + Body
+
+        {
+            "id": 241,
+            "loginToken": "2cfe100561473c6cdd99c9e2f26fa974"
+        }
+
++ Response 401 (application/json)
+
+    + Body
+
+        {
+            "code": 1,
+            "message": "Not authorized",
+            "description": "The user name and password did not match any existing user."
+        }
