@@ -31,3 +31,15 @@ installation with the REST API need to share the same database.
 Please install this package via Composer from within the
 [phpList base distribution](https://github.com/phpList/base-distribution),
 which also has more detailed installation instructions in the README.
+
+
+## Contributing to this package
+
+Please read the [contribution guide](.github/CONTRIBUTING.md) on how to
+contribute and how to run the unit tests and style checks locally.
+
+### Code of Conduct
+
+This project adheres to a [Contributor Code of Conduct](CODE_OF_CONDUCT.md).
+By participating in this project and its community, you are expected to uphold
+this code.
