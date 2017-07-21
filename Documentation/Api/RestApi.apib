@@ -15,17 +15,16 @@ Resources related to login and logout.
 Given valid login data, this will generate a login token that will be
 valid for 1 hour. It takes a JSON object containing the following key-value pairs:
 
-+ `userName` (string): the user name to log in
++ `loginName` (string): the login name ofe the administrator to log in
 + `password` (string): the plain text password
 
-The login token then can be passed as a `loginToken` cookie for request that
-require authentication.
+The login token then can be passed as a `authenticationToken` cookie for requests
+that require authentication.
 
 + Request (application/json)
 
     {
-        "message": "Success",
-        "userName": "admin",
+        "loginName": "admin",
         "password": "eetIc/Gropvoc1"
     }
 
@@ -35,7 +34,8 @@ require authentication.
 
         {
             "id": 241,
-            "loginToken": "2cfe100561473c6cdd99c9e2f26fa974"
+            "key": "2cfe100561473c6cdd99c9e2f26fa974",
+            "expiry": "2017-07-20T18:22:48+00:00"
         }
 
 + Response 401 (application/json)
@@ -43,7 +43,7 @@ require authentication.
     + Body
 
         {
-            "code": 1,
+            "code": 1500567098798,
             "message": "Not authorized",
             "description": "The user name and password did not match any existing user."
         }

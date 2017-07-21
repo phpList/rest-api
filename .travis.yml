@@ -8,6 +8,12 @@ matrix:
 services:
   - mysql
 
+env:
+  global:
+    - PHPLIST_DATABASE_NAME=phplist
+    - PHPLIST_DATABASE_USER=travis
+    - PHPLIST_DATABASE_PASSWORD=''
+
 sudo: false
 cache:
   directories:
@@ -16,7 +22,11 @@ cache:
 
 before_install:
   - phpenv config-rm xdebug.ini
-  - mysql -e 'CREATE DATABASE phplist;'
+  - >
+    echo;
+    echo "Importing the database schema";
+    mysql -e "CREATE DATABASE ${PHPLIST_DATABASE_NAME};";
+    mysql ${PHPLIST_DATABASE_NAME} < vendor/phplist/phplist4-core/Database/Schema.sql;
 
 install:
   - composer install
@@ -24,4 +34,30 @@ install:
 script:
   - >
     echo;
-    echo "Nothing to do yet.";
+    echo "Linting all PHP files";
+    find Classes/ Tests/ -name '*.php' -print0 | xargs -0 -n 1 -P 4 php -l;
+
+  - >
+    echo;
+    echo "Running the unit tests";
+    vendor/bin/phpunit -c Configuration/PHPUnit/phpunit.xml Tests/Unit/;
+
+  - >
+    echo;
+    echo "Running the integration tests";
+    vendor/bin/phpunit -c Configuration/PHPUnit/phpunit.xml Tests/Integration/;
+
+  - >
+    echo;
+    echo "Running the static analysis";
+    vendor/bin/phpstan analyse -l 5 Classes/ Tests/;
+
+  - >
+    echo;
+    echo "Running PHPMD";
+    vendor/bin/phpmd Classes/ text vendor/phplist/phplist4-core/Configuration/PHPMD/rules.xml;
+
+  - >
+    echo;
+    echo "Running PHP_CodeSniffer";
+    vendor/bin/phpcs --standard=vendor/phplist/phplist4-core/Configuration/PhpCodeSniffer/ Classes/ Tests/;
