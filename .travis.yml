@@ -1,5 +1,7 @@
 language: php
 
+dist: precise
+
 matrix:
   include:
   - php: 7.0
@@ -22,14 +24,16 @@ cache:
 
 before_install:
   - phpenv config-rm xdebug.ini
+
+install:
+  - composer install
+
+before_script:
   - >
     echo;
     echo "Importing the database schema";
     mysql -e "CREATE DATABASE ${PHPLIST_DATABASE_NAME};";
     mysql ${PHPLIST_DATABASE_NAME} < vendor/phplist/phplist4-core/Database/Schema.sql;
-
-install:
-  - composer install
 
 script:
   - >
