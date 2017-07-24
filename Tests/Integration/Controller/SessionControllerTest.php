@@ -60,10 +60,11 @@ class SessionControllerTest extends AbstractControllerTest
     {
         $this->client->request('post', '/api/v2/sessions');
 
-        $responseContent = $this->client->getResponse()->getContent();
-        $parsedResponseContent = json_decode($responseContent, true);
+        $response = $this->client->getResponse();
+        $parsedResponseContent = json_decode($response->getContent(), true);
 
-        self::assertSame(400, $this->client->getResponse()->getStatusCode());
+        self::assertContains('application/json', (string)($response->headers));
+        self::assertSame(400, $response->getStatusCode());
         self::assertSame(
             [
                 'code' => 1500559729794,
@@ -81,10 +82,11 @@ class SessionControllerTest extends AbstractControllerTest
     {
         $this->client->request('post', '/api/v2/sessions', [], [], [], 'Here be dragons, but no JSON.');
 
-        $responseContent = $this->client->getResponse()->getContent();
-        $parsedResponseContent = json_decode($responseContent, true);
+        $response = $this->client->getResponse();
+        $parsedResponseContent = json_decode($response->getContent(), true);
 
-        self::assertSame(400, $this->client->getResponse()->getStatusCode());
+        self::assertContains('application/json', (string)($response->headers));
+        self::assertSame(400, $response->getStatusCode());
         self::assertSame(
             [
                 'code' => 1500562402438,
@@ -116,10 +118,11 @@ class SessionControllerTest extends AbstractControllerTest
     {
         $this->client->request('post', '/api/v2/sessions', [], [], [], $jsonData);
 
-        $responseContent = $this->client->getResponse()->getContent();
-        $parsedResponseContent = json_decode($responseContent, true);
+        $response = $this->client->getResponse();
+        $parsedResponseContent = json_decode($response->getContent(), true);
 
-        self::assertSame(400, $this->client->getResponse()->getStatusCode());
+        self::assertContains('application/json', (string)($response->headers));
+        self::assertSame(400, $response->getStatusCode());
         self::assertSame(
             [
                 'code' => 1500562647846,
@@ -143,11 +146,11 @@ class SessionControllerTest extends AbstractControllerTest
         $jsonData = ['loginName' => $loginName, 'password' => $password];
 
         $this->client->request('post', '/api/v2/sessions', [], [], [], json_encode($jsonData));
-        $responseContent = $this->client->getResponse()->getContent();
+        $response = $this->client->getResponse();
+        $parsedResponseContent = json_decode($response->getContent(), true);
 
-        $parsedResponseContent = json_decode($responseContent, true);
-
-        self::assertSame(401, $this->client->getResponse()->getStatusCode());
+        self::assertContains('application/json', (string)($response->headers));
+        self::assertSame(401, $response->getStatusCode());
         self::assertSame(
             [
                 'code' => 1500567098798,
@@ -171,9 +174,10 @@ class SessionControllerTest extends AbstractControllerTest
         $jsonData = ['loginName' => $loginName, 'password' => $password];
 
         $this->client->request('post', '/api/v2/sessions', [], [], [], json_encode($jsonData));
-        $responseContent = $this->client->getResponse()->getContent();
+        $response = $this->client->getResponse();
 
-        self::assertSame(201, $this->client->getResponse()->getStatusCode());
+        self::assertContains('application/json', (string)($response->headers));
+        self::assertSame(201, $response->getStatusCode());
     }
 
     /**

@@ -85,13 +85,14 @@ class SessionController extends Controller
         }
 
         $response->setStatusCode($statusCode);
+        $response->headers->set('Content-Type', 'application/json');
         $response->setContent(json_encode($responseContent, JSON_NUMERIC_CHECK | JSON_PRETTY_PRINT));
 
         return $response;
     }
 
     /**
-     * Validated the request. If is it not valid, sets a status code and a response content.
+     * Validates the request. If is it not valid, sets a status code and a response.
      *
      * @param string $rawRequestContent
      * @param Response $response
@@ -130,6 +131,7 @@ class SessionController extends Controller
 
         if (!$isValid) {
             $response->setStatusCode(400);
+            $response->headers->set('Content-Type', 'application/json');
             $response->setContent(json_encode($responseContent, JSON_NUMERIC_CHECK | JSON_PRETTY_PRINT));
         }
 
