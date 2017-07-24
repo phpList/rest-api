@@ -56,14 +56,14 @@ class SessionControllerTest extends AbstractControllerTest
     /**
      * @test
      */
-    public function postSessionsWithNoJsonReturnsError500()
+    public function postSessionsWithNoJsonReturnsError400()
     {
         $this->client->request('post', '/api/v2/sessions');
 
         $responseContent = $this->client->getResponse()->getContent();
         $parsedResponseContent = json_decode($responseContent, true);
 
-        self::assertSame(500, $this->client->getResponse()->getStatusCode());
+        self::assertSame(400, $this->client->getResponse()->getStatusCode());
         self::assertSame(
             [
                 'code' => 1500559729794,
@@ -77,14 +77,14 @@ class SessionControllerTest extends AbstractControllerTest
     /**
      * @test
      */
-    public function postSessionsWithInvalidJsonReturnsError500()
+    public function postSessionsWithInvalidJsonReturnsError400()
     {
         $this->client->request('post', '/api/v2/sessions', [], [], [], 'Here be dragons, but no JSON.');
 
         $responseContent = $this->client->getResponse()->getContent();
         $parsedResponseContent = json_decode($responseContent, true);
 
-        self::assertSame(500, $this->client->getResponse()->getStatusCode());
+        self::assertSame(400, $this->client->getResponse()->getStatusCode());
         self::assertSame(
             [
                 'code' => 1500562402438,
@@ -112,14 +112,14 @@ class SessionControllerTest extends AbstractControllerTest
      * @param string $jsonData
      * @dataProvider incompleteCredentialsDataProvider
      */
-    public function postSessionsWithValidIncompleteJsonReturnsError500(string $jsonData)
+    public function postSessionsWithValidIncompleteJsonReturnsError400(string $jsonData)
     {
         $this->client->request('post', '/api/v2/sessions', [], [], [], $jsonData);
 
         $responseContent = $this->client->getResponse()->getContent();
         $parsedResponseContent = json_decode($responseContent, true);
 
-        self::assertSame(500, $this->client->getResponse()->getStatusCode());
+        self::assertSame(400, $this->client->getResponse()->getStatusCode());
         self::assertSame(
             [
                 'code' => 1500562647846,

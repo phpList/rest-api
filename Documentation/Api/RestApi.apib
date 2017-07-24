@@ -38,6 +38,36 @@ that require authentication.
             "expiry": "2017-07-20T18:22:48+00:00"
         }
 
++ Response 400 (application/json)
+
+    + Body
+
+        {
+            "code": 1500559729794,
+            "message": "No data",
+            "description": "The request does not contain any data."
+        }
+
++ Response 400 (application/json)
+
+    + Body
+
+        {
+            "code": 1500562402438,
+            "message": "Invalid JSON data",
+            "description": "The data in the request is invalid JSON."
+        }
+
++ Response 400 (application/json)
+
+    + Body
+
+        {
+            "code": 1500562647846,
+            "message": "Incomplete credentials",
+            "description": "The request does not contain both loginName and password."
+        }
+
 + Response 401 (application/json)
 
     + Body

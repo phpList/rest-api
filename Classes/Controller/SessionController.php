@@ -129,7 +129,7 @@ class SessionController extends Controller
         }
 
         if (!$isValid) {
-            $response->setStatusCode(500);
+            $response->setStatusCode(400);
             $response->setContent(json_encode($responseContent, JSON_NUMERIC_CHECK | JSON_PRETTY_PRINT));
         }
 
