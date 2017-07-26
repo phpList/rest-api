@@ -90,7 +90,7 @@ schema once. Assuming that your database is named `phplist_test`, the user is
 named `phplist`, and the password is `batterystaple`, the command looks like
 this:
 
-    mysql -u phplist_test --password=batterystaple phplist_test < Database/Schema.sql
+    mysql -u phplist_test --password=batterystaple phplist_test < vendor/phplist/phplist4-core/Database/Schema.sql
 
 When running the integration tests, you will need to specify the database name
 and access credentials on the command line (in the same line):
