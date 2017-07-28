@@ -48,6 +48,22 @@
             "PhpList\\RestBundle\\Tests\\": "Tests/"
         }
     },
+    "scripts": {
+        "binaries": [
+            "PhpList\\PhpList4\\Composer\\ScriptHandler::createBinaries"
+        ],
+        "document-root": [
+            "PhpList\\PhpList4\\Composer\\ScriptHandler::createPublicWebDirectory"
+        ],
+        "post-install-cmd": [
+            "@binaries",
+            "@document-root"
+        ],
+        "post-update-cmd": [
+            "@binaries",
+            "@document-root"
+        ]
+    },
     "extra": {
         "branch-alias": {
             "dev-master": "4.0.x-dev"
