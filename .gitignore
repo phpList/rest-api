@@ -6,5 +6,6 @@
 /bin/
 /composer.lock
 /nbproject
+/var/
 /vendor/
 /web/
