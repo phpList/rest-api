@@ -5,6 +5,7 @@ namespace PhpList\RestBundle\Tests\Integration\Controller;
 
 use Doctrine\Common\Persistence\ObjectRepository;
 use PhpList\PhpList4\Core\Bootstrap;
+use PhpList\PhpList4\Core\Environment;
 use PhpList\PhpList4\Domain\Model\Identity\AdministratorToken;
 use PhpList\PhpList4\Domain\Repository\Identity\AdministratorTokenRepository;
 use Symfony\Bundle\FrameworkBundle\Client;
@@ -36,9 +37,9 @@ class SessionControllerTest extends AbstractControllerTest
     {
         parent::setUp();
 
-        Bootstrap::getInstance()->setApplicationContext(Bootstrap::APPLICATION_CONTEXT_TESTING)->configure();
+        $this->bootstrap = Bootstrap::getInstance()->setEnvironment(Environment::TESTING)->configure();
 
-        $this->client = self::createClient(['environment' => Bootstrap::APPLICATION_CONTEXT_TESTING]);
+        $this->client = self::createClient(['environment' => Environment::TESTING]);
 
         $this->administratorTokenRepository = $this->entityManager->getRepository(AdministratorToken::class);
     }
