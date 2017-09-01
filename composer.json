@@ -55,6 +55,9 @@
         "document-root": [
             "PhpList\\PhpList4\\Composer\\ScriptHandler::createPublicWebDirectory"
         ],
+        "list-modules": [
+            "PhpList\\PhpList4\\Composer\\ScriptHandler::listModules"
+        ],
         "post-install-cmd": [
             "@binaries",
             "@document-root"
