@@ -58,18 +58,28 @@
         "list-modules": [
             "PhpList\\PhpList4\\Composer\\ScriptHandler::listModules"
         ],
+        "bundle-configuration": [
+            "PhpList\\PhpList4\\Composer\\ScriptHandler::createBundleConfiguration"
+        ],
         "post-install-cmd": [
             "@binaries",
-            "@document-root"
+            "@document-root",
+            "@bundle-configuration"
         ],
         "post-update-cmd": [
             "@binaries",
-            "@document-root"
+            "@document-root",
+            "@bundle-configuration"
         ]
     },
     "extra": {
         "branch-alias": {
             "dev-master": "4.0.x-dev"
+        },
+        "phplist/phplist4-core": {
+            "bundles": [
+                "PhpList\\RestBundle\\PhpListRestBundle"
+            ]
         }
     }
 }
