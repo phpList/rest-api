@@ -5,6 +5,7 @@
 /.webprj
 /bin/
 /composer.lock
+/Configuration/bundles.yml
 /nbproject
 /var/
 /vendor/
