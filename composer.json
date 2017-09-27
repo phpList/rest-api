@@ -49,32 +49,24 @@
         }
     },
     "scripts": {
-        "binaries": [
-            "PhpList\\PhpList4\\Composer\\ScriptHandler::createBinaries"
-        ],
-        "document-root": [
-            "PhpList\\PhpList4\\Composer\\ScriptHandler::createPublicWebDirectory"
-        ],
         "list-modules": [
             "PhpList\\PhpList4\\Composer\\ScriptHandler::listModules"
         ],
-        "bundle-configuration": [
-            "PhpList\\PhpList4\\Composer\\ScriptHandler::createBundleConfiguration"
+        "create-directories": [
+            "PhpList\\PhpList4\\Composer\\ScriptHandler::createBinaries",
+            "PhpList\\PhpList4\\Composer\\ScriptHandler::createPublicWebDirectory"
         ],
-        "routes-configuration": [
+        "update-configuration": [
+            "PhpList\\PhpList4\\Composer\\ScriptHandler::createBundleConfiguration",
             "PhpList\\PhpList4\\Composer\\ScriptHandler::createRoutesConfiguration"
         ],
         "post-install-cmd": [
-            "@binaries",
-            "@document-root",
-            "@bundle-configuration",
-            "@routes-configuration"
+            "@create-directories",
+            "@update-configuration"
         ],
         "post-update-cmd": [
-            "@binaries",
-            "@document-root",
-            "@bundle-configuration",
-            "@routes-configuration"
+            "@create-directories",
+            "@update-configuration"
         ]
     },
     "extra": {
