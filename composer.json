@@ -61,15 +61,20 @@
         "bundle-configuration": [
             "PhpList\\PhpList4\\Composer\\ScriptHandler::createBundleConfiguration"
         ],
+        "routes-configuration": [
+            "PhpList\\PhpList4\\Composer\\ScriptHandler::createRoutesConfiguration"
+        ],
         "post-install-cmd": [
             "@binaries",
             "@document-root",
-            "@bundle-configuration"
+            "@bundle-configuration",
+            "@routes-configuration"
         ],
         "post-update-cmd": [
             "@binaries",
             "@document-root",
-            "@bundle-configuration"
+            "@bundle-configuration",
+            "@routes-configuration"
         ]
     },
     "extra": {
@@ -79,7 +84,18 @@
         "phplist/phplist4-core": {
             "bundles": [
                 "PhpList\\RestBundle\\PhpListRestBundle"
-            ]
+            ],
+            "routes": {
+                "create_session": {
+                    "path": "/api/v2/sessions",
+                    "defaults": {
+                        "_controller": "PhpListRestBundle:Session:create"
+                    },
+                    "methods": [
+                        "POST"
+                    ]
+                }
+            }
         }
     }
 }
