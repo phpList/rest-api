@@ -9,7 +9,6 @@ use PhpList\PhpList4\Core\Bootstrap;
 use PhpList\PhpList4\Domain\Model\Identity\Administrator;
 use PhpList\PhpList4\Domain\Model\Identity\AdministratorToken;
 use PhpList\PhpList4\Domain\Repository\Identity\AdministratorRepository;
-use PhpList\PhpList4\Domain\Repository\Identity\AdministratorTokenRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -32,11 +31,6 @@ class SessionController extends Controller
     private $administratorRepository = null;
 
     /**
-     * @var AdministratorTokenRepository|ObjectRepository
-     */
-    private $administratorTokenRepository = null;
-
-    /**
      * The constructor.
      */
     public function __construct()
@@ -44,7 +38,6 @@ class SessionController extends Controller
         // This will later be replaced by dependency injection.
         $this->entityManager = Bootstrap::getInstance()->getEntityManager();
         $this->administratorRepository = $this->entityManager->getRepository(Administrator::class);
-        $this->administratorTokenRepository = $this->entityManager->getRepository(AdministratorToken::class);
     }
 
     /**
