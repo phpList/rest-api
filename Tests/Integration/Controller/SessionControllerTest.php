@@ -9,7 +9,7 @@ use PhpList\PhpList4\Domain\Model\Identity\AdministratorToken;
 use PhpList\PhpList4\Domain\Repository\Identity\AdministratorTokenRepository;
 use PhpList\RestBundle\Controller\SessionController;
 use Symfony\Bundle\FrameworkBundle\Client;
-use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Testcase.
@@ -56,9 +56,10 @@ class SessionControllerTest extends AbstractControllerTest
      */
     public function getSessionsIsNotAllowed()
     {
-        $this->expectException(MethodNotAllowedHttpException::class);
-
         $this->client->request('get', '/api/v2/sessions');
+
+        $response = $this->client->getResponse();
+        self::assertSame(Response::HTTP_METHOD_NOT_ALLOWED, $response->getStatusCode());
     }
 
     /**
@@ -72,12 +73,11 @@ class SessionControllerTest extends AbstractControllerTest
         $parsedResponseContent = json_decode($response->getContent(), true);
 
         self::assertContains('application/json', (string)$response->headers);
-        self::assertSame(400, $response->getStatusCode());
+        self::assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
         self::assertSame(
             [
-                'code' => 1500559729794,
-                'message' => 'No data',
-                'description' => 'The request does not contain any data.',
+                'code' => Response::HTTP_BAD_REQUEST,
+                'message' => 'Empty JSON data',
             ],
             $parsedResponseContent
         );
@@ -101,12 +101,11 @@ class SessionControllerTest extends AbstractControllerTest
         $parsedResponseContent = json_decode($response->getContent(), true);
 
         self::assertContains('application/json', (string)$response->headers);
-        self::assertSame(400, $response->getStatusCode());
+        self::assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
         self::assertSame(
             [
-                'code' => 1500562402438,
-                'message' => 'Invalid JSON data',
-                'description' => 'The data in the request is invalid JSON.',
+                'code' => Response::HTTP_BAD_REQUEST,
+                'message' => 'Invalid json message received'
             ],
             $parsedResponseContent
         );
@@ -123,12 +122,11 @@ class SessionControllerTest extends AbstractControllerTest
         $parsedResponseContent = json_decode($response->getContent(), true);
 
         self::assertContains('application/json', (string)$response->headers);
-        self::assertSame(400, $response->getStatusCode());
+        self::assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
         self::assertSame(
             [
-                'code' => 1511826370211,
-                'message' => 'Invalid content type',
-                'description' => 'The request needs to have the application/json content type.',
+                'code' => Response::HTTP_BAD_REQUEST,
+                'message' => 'Invalid xml message received'
             ],
             $parsedResponseContent
         );
@@ -159,12 +157,11 @@ class SessionControllerTest extends AbstractControllerTest
         $parsedResponseContent = json_decode($response->getContent(), true);
 
         self::assertContains('application/json', (string)$response->headers);
-        self::assertSame(400, $response->getStatusCode());
+        self::assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
         self::assertSame(
             [
-                'code' => 1500562647846,
+                'code' => Response::HTTP_BAD_REQUEST,
                 'message' => 'Incomplete credentials',
-                'description' => 'The request does not contain both loginName and password.',
             ],
             $parsedResponseContent
         );
@@ -194,12 +191,11 @@ class SessionControllerTest extends AbstractControllerTest
         $parsedResponseContent = json_decode($response->getContent(), true);
 
         self::assertContains('application/json', (string)$response->headers);
-        self::assertSame(401, $response->getStatusCode());
+        self::assertSame(Response::HTTP_UNAUTHORIZED, $response->getStatusCode());
         self::assertSame(
             [
-                'code' => 1500567098798,
+                'code' => Response::HTTP_UNAUTHORIZED,
                 'message' => 'Not authorized',
-                'description' => 'The user name and password did not match any existing user.',
             ],
             $parsedResponseContent
         );
@@ -228,7 +224,7 @@ class SessionControllerTest extends AbstractControllerTest
         $response = $this->client->getResponse();
 
         self::assertContains('application/json', (string)$response->headers);
-        self::assertSame(201, $response->getStatusCode());
+        self::assertSame(Response::HTTP_CREATED, $response->getStatusCode());
     }
 
     /**
