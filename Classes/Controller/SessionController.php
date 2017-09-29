@@ -9,12 +9,16 @@ use PhpList\PhpList4\Core\Bootstrap;
 use PhpList\PhpList4\Domain\Model\Identity\Administrator;
 use PhpList\PhpList4\Domain\Model\Identity\AdministratorToken;
 use PhpList\PhpList4\Domain\Repository\Identity\AdministratorRepository;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
  * This controller provides methods to create and destroy REST API sessions.
+ *
+ * @Route("/api/v2")
  *
  * @author Oliver Klee <oliver@phplist.com>
  */
@@ -42,6 +46,9 @@ class SessionController extends Controller
 
     /**
      * Creates a new session (if the provided credentials are valid).
+     *
+     * @Route("/sessions")
+     * @Method("POST")
      *
      * @param Request $request
      *

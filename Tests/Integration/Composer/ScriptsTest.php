@@ -148,9 +148,9 @@ class ScriptsTest extends TestCase
     public function moduleRoutingDataProvider(): array
     {
         return [
-            'route name' => ['phplist/rest-api.create_session'],
-            'defaults' => ["defaults: { _controller: 'PhpListRestBundle:Session:create' }"],
-            'methods' => ['methods: [POST]'],
+            'route name' => ['phplist/rest-api.rest-api'],
+            'resource' => ["resource: '@PhpListRestBundle/Controller/'"],
+            'type' => ['type: annotation'],
         ];
     }
 

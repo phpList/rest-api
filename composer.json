@@ -83,14 +83,9 @@
                 "PhpList\\RestBundle\\PhpListRestBundle"
             ],
             "routes": {
-                "create_session": {
-                    "path": "/api/v2/sessions",
-                    "defaults": {
-                        "_controller": "PhpListRestBundle:Session:create"
-                    },
-                    "methods": [
-                        "POST"
-                    ]
+                "rest-api": {
+                    "resource": "@PhpListRestBundle/Controller/",
+                    "type": "annotation"
                 }
             }
         }
