@@ -74,7 +74,7 @@
         "branch-alias": {
             "dev-master": "4.0.x-dev"
         },
-        "symfony-app-dir": "",
+        "symfony-app-dir": "bin",
         "symfony-bin-dir": "bin",
         "symfony-var-dir": "var",
         "symfony-web-dir": "web",
