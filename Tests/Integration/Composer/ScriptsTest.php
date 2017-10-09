@@ -165,4 +165,12 @@ class ScriptsTest extends TestCase
 
         self::assertContains($routeSearchString, $fileContents);
     }
+
+    /**
+     * @test
+     */
+    public function parametersConfigurationFileExists()
+    {
+        self::assertFileExists(dirname(__DIR__, 3) . '/Configuration/parameters.yml');
+    }
 }
