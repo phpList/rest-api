@@ -6,6 +6,7 @@
 /bin/
 /composer.lock
 /Configuration/bundles.yml
+/Configuration/parameters.yml
 /Configuration/routing_modules.yml
 /nbproject
 /var/
