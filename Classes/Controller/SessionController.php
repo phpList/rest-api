@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
-use PhpList\PhpList4\Core\Bootstrap;
 use PhpList\PhpList4\Domain\Model\Identity\Administrator;
 use PhpList\PhpList4\Domain\Model\Identity\AdministratorToken;
 use PhpList\PhpList4\Domain\Repository\Identity\AdministratorRepository;
@@ -29,18 +28,13 @@ class SessionController extends Controller
     private $entityManager = null;
 
     /**
-     * @var AdministratorRepository
-     */
-    private $administratorRepository = null;
-
-    /**
      * The constructor.
+     *
+     * @param EntityManagerInterface $entityManager
      */
-    public function __construct()
+    public function __construct(EntityManagerInterface $entityManager)
     {
-        // This will later be replaced by dependency injection.
-        $this->entityManager = Bootstrap::getInstance()->getEntityManager();
-        $this->administratorRepository = Bootstrap::getInstance()->getContainer()->get(AdministratorRepository::class);
+        $this->entityManager = $entityManager;
     }
 
     /**
@@ -50,10 +44,11 @@ class SessionController extends Controller
      * @Method("POST")
      *
      * @param Request $request
+     * @param AdministratorRepository $administratorRepository
      *
      * @return Response
      */
-    public function createAction(Request $request): Response
+    public function createAction(Request $request, AdministratorRepository $administratorRepository): Response
     {
         $rawRequestContent = $request->getContent();
         $response = new Response();
@@ -65,7 +60,7 @@ class SessionController extends Controller
 
         $loginName = $parsedRequestContent['loginName'];
         $password = $parsedRequestContent['password'];
-        $administrator = $this->administratorRepository->findOneByLoginCredentials($loginName, $password);
+        $administrator = $administratorRepository->findOneByLoginCredentials($loginName, $password);
         if ($administrator !== null) {
             $token = $this->createAndPersistToken($administrator);
             $statusCode = 201;

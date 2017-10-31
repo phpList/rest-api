@@ -46,6 +46,14 @@ class SessionControllerTest extends AbstractControllerTest
     /**
      * @test
      */
+    public function controllerIsAvailableViaContainer()
+    {
+        self::assertInstanceOf(SessionController::class, $this->client->getContainer()->get(SessionController::class));
+    }
+
+    /**
+     * @test
+     */
     public function getSessionsIsNotAllowed()
     {
         $this->expectException(MethodNotAllowedHttpException::class);

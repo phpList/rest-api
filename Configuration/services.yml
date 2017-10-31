@@ -1,0 +1,6 @@
+services:
+    PhpList\RestBundle\Controller\SessionController:
+        public: true
+        arguments:
+            - '@doctrine.orm.entity_manager'
+        tags: ['controller.service_arguments']
