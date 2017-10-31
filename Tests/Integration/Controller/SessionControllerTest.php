@@ -4,10 +4,10 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Tests\Integration\Controller;
 
 use Doctrine\Common\Persistence\ObjectRepository;
-use PhpList\PhpList4\Core\Bootstrap;
 use PhpList\PhpList4\Core\Environment;
 use PhpList\PhpList4\Domain\Model\Identity\AdministratorToken;
 use PhpList\PhpList4\Domain\Repository\Identity\AdministratorTokenRepository;
+use PhpList\RestBundle\Controller\SessionController;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 
@@ -37,11 +37,10 @@ class SessionControllerTest extends AbstractControllerTest
     {
         parent::setUp();
 
-        $this->bootstrap = Bootstrap::getInstance()->setEnvironment(Environment::TESTING)->configure();
+        $this->administratorTokenRepository = $this->bootstrap->getContainer()
+            ->get(AdministratorTokenRepository::class);
 
         $this->client = self::createClient(['environment' => Environment::TESTING]);
-
-        $this->administratorTokenRepository = $this->entityManager->getRepository(AdministratorToken::class);
     }
 
     /**
