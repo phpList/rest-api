@@ -3,10 +3,10 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Controller;
 
-use Doctrine\ORM\EntityManagerInterface;
 use PhpList\PhpList4\Domain\Model\Identity\Administrator;
 use PhpList\PhpList4\Domain\Model\Identity\AdministratorToken;
 use PhpList\PhpList4\Domain\Repository\Identity\AdministratorRepository;
+use PhpList\PhpList4\Domain\Repository\Identity\AdministratorTokenRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -23,21 +23,6 @@ use Symfony\Component\HttpFoundation\Response;
 class SessionController extends Controller
 {
     /**
-     * @var EntityManagerInterface
-     */
-    private $entityManager = null;
-
-    /**
-     * The constructor.
-     *
-     * @param EntityManagerInterface $entityManager
-     */
-    public function __construct(EntityManagerInterface $entityManager)
-    {
-        $this->entityManager = $entityManager;
-    }
-
-    /**
      * Creates a new session (if the provided credentials are valid).
      *
      * @Route("/sessions")
@@ -45,11 +30,15 @@ class SessionController extends Controller
      *
      * @param Request $request
      * @param AdministratorRepository $administratorRepository
+     * @param AdministratorTokenRepository $tokenRepository
      *
      * @return Response
      */
-    public function createAction(Request $request, AdministratorRepository $administratorRepository): Response
-    {
+    public function createAction(
+        Request $request,
+        AdministratorRepository $administratorRepository,
+        AdministratorTokenRepository $tokenRepository
+    ): Response {
         $rawRequestContent = $request->getContent();
         $response = new Response();
         if (!$this->validateCreateRequest($rawRequestContent, $response)) {
@@ -62,7 +51,7 @@ class SessionController extends Controller
         $password = $parsedRequestContent['password'];
         $administrator = $administratorRepository->findOneByLoginCredentials($loginName, $password);
         if ($administrator !== null) {
-            $token = $this->createAndPersistToken($administrator);
+            $token = $this->createAndPersistToken($administrator, $tokenRepository);
             $statusCode = 201;
             $responseContent = [
                 'id' => $token->getId(),
@@ -134,18 +123,19 @@ class SessionController extends Controller
 
     /**
      * @param Administrator $administrator
+     * @param AdministratorTokenRepository $tokenRepository
      *
      * @return AdministratorToken
      */
-    private function createAndPersistToken(Administrator $administrator): AdministratorToken
-    {
+    private function createAndPersistToken(
+        Administrator $administrator,
+        AdministratorTokenRepository $tokenRepository
+    ): AdministratorToken {
         $token = new AdministratorToken();
         $token->setAdministrator($administrator);
         $token->generateExpiry();
         $token->generateKey();
-
-        $this->entityManager->persist($token);
-        $this->entityManager->flush();
+        $tokenRepository->save($token);
 
         return $token;
     }

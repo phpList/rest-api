@@ -1,6 +1,5 @@
 services:
-    PhpList\RestBundle\Controller\SessionController:
+    PhpList\RestBundle\Controller\:
+        resource: '../Classes/Controller'
         public: true
-        arguments:
-            - '@doctrine.orm.entity_manager'
         tags: ['controller.service_arguments']
