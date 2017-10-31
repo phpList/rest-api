@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Controller;
 
-use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpList\PhpList4\Core\Bootstrap;
 use PhpList\PhpList4\Domain\Model\Identity\Administrator;
@@ -30,7 +29,7 @@ class SessionController extends Controller
     private $entityManager = null;
 
     /**
-     * @var AdministratorRepository|ObjectRepository
+     * @var AdministratorRepository
      */
     private $administratorRepository = null;
 
@@ -41,7 +40,7 @@ class SessionController extends Controller
     {
         // This will later be replaced by dependency injection.
         $this->entityManager = Bootstrap::getInstance()->getEntityManager();
-        $this->administratorRepository = $this->entityManager->getRepository(Administrator::class);
+        $this->administratorRepository = Bootstrap::getInstance()->getContainer()->get(AdministratorRepository::class);
     }
 
     /**
