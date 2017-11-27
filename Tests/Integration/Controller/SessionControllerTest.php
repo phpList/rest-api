@@ -66,12 +66,12 @@ class SessionControllerTest extends AbstractControllerTest
      */
     public function postSessionsWithNoJsonReturnsError400()
     {
-        $this->client->request('post', '/api/v2/sessions');
+        $this->client->request('post', '/api/v2/sessions', [], [], ['CONTENT_TYPE' => 'application/json']);
 
         $response = $this->client->getResponse();
         $parsedResponseContent = json_decode($response->getContent(), true);
 
-        self::assertContains('application/json', (string)($response->headers));
+        self::assertContains('application/json', (string)$response->headers);
         self::assertSame(400, $response->getStatusCode());
         self::assertSame(
             [
@@ -86,20 +86,49 @@ class SessionControllerTest extends AbstractControllerTest
     /**
      * @test
      */
-    public function postSessionsWithInvalidJsonReturnsError400()
+    public function postSessionsWithInvalidJsonWithJsonContentTypeReturnsError400()
     {
-        $this->client->request('post', '/api/v2/sessions', [], [], [], 'Here be dragons, but no JSON.');
+        $this->client->request(
+            'post',
+            '/api/v2/sessions',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            'Here be dragons, but no JSON.'
+        );
 
         $response = $this->client->getResponse();
         $parsedResponseContent = json_decode($response->getContent(), true);
 
-        self::assertContains('application/json', (string)($response->headers));
+        self::assertContains('application/json', (string)$response->headers);
         self::assertSame(400, $response->getStatusCode());
         self::assertSame(
             [
                 'code' => 1500562402438,
                 'message' => 'Invalid JSON data',
                 'description' => 'The data in the request is invalid JSON.',
+            ],
+            $parsedResponseContent
+        );
+    }
+
+    /**
+     * @test
+     */
+    public function postSessionsWithValidEmptyJsonWithOtherTypeReturnsError400()
+    {
+        $this->client->request('post', '/api/v2/sessions', [], [], ['CONTENT_TYPE' => 'application/xml'], '[]');
+
+        $response = $this->client->getResponse();
+        $parsedResponseContent = json_decode($response->getContent(), true);
+
+        self::assertContains('application/json', (string)$response->headers);
+        self::assertSame(400, $response->getStatusCode());
+        self::assertSame(
+            [
+                'code' => 1511826370211,
+                'message' => 'Invalid content type',
+                'description' => 'The request needs to have the application/json content type.',
             ],
             $parsedResponseContent
         );
@@ -124,12 +153,12 @@ class SessionControllerTest extends AbstractControllerTest
      */
     public function postSessionsWithValidIncompleteJsonReturnsError400(string $jsonData)
     {
-        $this->client->request('post', '/api/v2/sessions', [], [], [], $jsonData);
+        $this->client->request('post', '/api/v2/sessions', [], [], ['CONTENT_TYPE' => 'application/json'], $jsonData);
 
         $response = $this->client->getResponse();
         $parsedResponseContent = json_decode($response->getContent(), true);
 
-        self::assertContains('application/json', (string)($response->headers));
+        self::assertContains('application/json', (string)$response->headers);
         self::assertSame(400, $response->getStatusCode());
         self::assertSame(
             [
@@ -153,11 +182,18 @@ class SessionControllerTest extends AbstractControllerTest
         $password = 'a sandwich and a cup of coffee';
         $jsonData = ['loginName' => $loginName, 'password' => $password];
 
-        $this->client->request('post', '/api/v2/sessions', [], [], [], json_encode($jsonData));
+        $this->client->request(
+            'post',
+            '/api/v2/sessions',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($jsonData)
+        );
         $response = $this->client->getResponse();
         $parsedResponseContent = json_decode($response->getContent(), true);
 
-        self::assertContains('application/json', (string)($response->headers));
+        self::assertContains('application/json', (string)$response->headers);
         self::assertSame(401, $response->getStatusCode());
         self::assertSame(
             [
@@ -181,10 +217,17 @@ class SessionControllerTest extends AbstractControllerTest
         $password = 'Bazinga!';
         $jsonData = ['loginName' => $loginName, 'password' => $password];
 
-        $this->client->request('post', '/api/v2/sessions', [], [], [], json_encode($jsonData));
+        $this->client->request(
+            'post',
+            '/api/v2/sessions',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($jsonData)
+        );
         $response = $this->client->getResponse();
 
-        self::assertContains('application/json', (string)($response->headers));
+        self::assertContains('application/json', (string)$response->headers);
         self::assertSame(201, $response->getStatusCode());
     }
 
@@ -201,7 +244,14 @@ class SessionControllerTest extends AbstractControllerTest
         $password = 'Bazinga!';
         $jsonData = ['loginName' => $loginName, 'password' => $password];
 
-        $this->client->request('post', '/api/v2/sessions', [], [], [], json_encode($jsonData));
+        $this->client->request(
+            'post',
+            '/api/v2/sessions',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($jsonData)
+        );
         $responseContent = $this->client->getResponse()->getContent();
 
         $parsedResponseContent = json_decode($responseContent, true);
