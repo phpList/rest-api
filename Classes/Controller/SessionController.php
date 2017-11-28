@@ -3,146 +3,103 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Controller;
 
+use FOS\RestBundle\Controller\FOSRestController;
+use FOS\RestBundle\Routing\ClassResourceInterface;
+use FOS\RestBundle\View\View;
 use PhpList\PhpList4\Domain\Model\Identity\Administrator;
 use PhpList\PhpList4\Domain\Model\Identity\AdministratorToken;
 use PhpList\PhpList4\Domain\Repository\Identity\AdministratorRepository;
 use PhpList\PhpList4\Domain\Repository\Identity\AdministratorTokenRepository;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 /**
  * This controller provides methods to create and destroy REST API sessions.
  *
- * @Route("/api/v2")
- *
  * @author Oliver Klee <oliver@phplist.com>
  */
-class SessionController extends Controller
+class SessionController extends FOSRestController implements ClassResourceInterface
 {
     /**
-     * Creates a new session (if the provided credentials are valid).
-     *
-     * @Route("/sessions")
-     * @Method("POST")
-     *
-     * @param Request $request
+     * @var AdministratorRepository
+     */
+    private $administratorRepository = null;
+
+    /**
+     * @var AdministratorTokenRepository
+     */
+    private $administratorTokenRepository = null;
+
+    /**
      * @param AdministratorRepository $administratorRepository
      * @param AdministratorTokenRepository $tokenRepository
-     *
-     * @return Response
      */
-    public function createAction(
-        Request $request,
+    public function __construct(
         AdministratorRepository $administratorRepository,
         AdministratorTokenRepository $tokenRepository
-    ): Response {
-        $rawRequestContent = $request->getContent();
-        $response = new Response();
-        if (!$this->validateCreateRequest($request, $response)) {
-            return $response;
-        }
-
-        $parsedRequestContent = json_decode($rawRequestContent, true);
-
-        $loginName = $parsedRequestContent['loginName'];
-        $password = $parsedRequestContent['password'];
-        $administrator = $administratorRepository->findOneByLoginCredentials($loginName, $password);
-        if ($administrator !== null) {
-            $token = $this->createAndPersistToken($administrator, $tokenRepository);
-            $statusCode = 201;
-            $responseContent = [
-                'id' => $token->getId(),
-                'key' => $token->getKey(),
-                'expiry' => $token->getExpiry()->format(\DateTime::ATOM),
-            ];
-        } else {
-            $statusCode = 401;
-            $responseContent = [
-                'code' => 1500567098798,
-                'message' => 'Not authorized',
-                'description' => 'The user name and password did not match any existing user.',
-            ];
-        }
-
-        $response->setStatusCode($statusCode);
-        $response->headers->set('Content-Type', 'application/json');
-        $response->setContent(json_encode($responseContent, JSON_NUMERIC_CHECK | JSON_PRETTY_PRINT));
-
-        return $response;
+    ) {
+        $this->administratorRepository = $administratorRepository;
+        $this->administratorTokenRepository = $tokenRepository;
     }
 
     /**
-     * Validates the request. If is it not valid, sets a status code and a response.
+     * Creates a new session (if the provided credentials are valid).
      *
      * @param Request $request
-     * @param Response $response
      *
-     * @return bool whether the response is valid
+     * @return View
+     *
+     * @throws UnauthorizedHttpException
+     */
+    public function postAction(Request $request): View
+    {
+        $this->validateCreateRequest($request);
+        $administrator = $this->administratorRepository->findOneByLoginCredentials(
+            $request->get('loginName'),
+            $request->get('password')
+        );
+        if ($administrator === null) {
+            throw new UnauthorizedHttpException('', 'Not authorized', null, 1500567098798);
+        }
+
+        $token = $this->createAndPersistToken($administrator);
+
+        return View::create()->setStatusCode(Response::HTTP_CREATED)->setData($token);
+    }
+
+    /**
+     * Validates the request. If is it not valid, throws an exception.
+     *
+     * @param Request $request
      *
      * @return void
+     *
+     * @throws BadRequestHttpException
      */
-    private function validateCreateRequest(Request $request, Response $response): bool
+    private function validateCreateRequest(Request $request)
     {
-        $rawRequestContent = $request->getContent();
-        $parsedRequestContent = json_decode($rawRequestContent, true);
-        $isValid = false;
-
-        if ($request->getContentType() !== 'json') {
-            $responseContent = [
-                'code' => 1511826370211,
-                'message' => 'Invalid content type',
-                'description' => 'The request needs to have the application/json content type.',
-            ];
-        } elseif ($rawRequestContent === '') {
-            $responseContent = [
-                'code' => 1500559729794,
-                'message' => 'No data',
-                'description' => 'The request does not contain any data.',
-            ];
-        } elseif ($parsedRequestContent === null) {
-            $responseContent = [
-                'code' => 1500562402438,
-                'message' => 'Invalid JSON data',
-                'description' => 'The data in the request is invalid JSON.',
-            ];
-        } elseif (empty($parsedRequestContent['loginName']) || empty($parsedRequestContent['password'])) {
-            $responseContent = [
-                'code' => 1500562647846,
-                'message' => 'Incomplete credentials',
-                'description' => 'The request does not contain both loginName and password.',
-            ];
-        } else {
-            $responseContent = [];
-            $isValid = true;
+        if ($request->getContent() === '') {
+            throw new BadRequestHttpException('Empty JSON data', null, 1500559729794);
         }
-
-        if (!$isValid) {
-            $response->setStatusCode(400);
-            $response->headers->set('Content-Type', 'application/json');
-            $response->setContent(json_encode($responseContent, JSON_NUMERIC_CHECK | JSON_PRETTY_PRINT));
+        if (empty($request->get('loginName')) || empty($request->get('password'))) {
+            throw new BadRequestHttpException('Incomplete credentials', null, 1500562647846);
         }
-
-        return $isValid;
     }
 
     /**
      * @param Administrator $administrator
-     * @param AdministratorTokenRepository $tokenRepository
      *
      * @return AdministratorToken
      */
-    private function createAndPersistToken(
-        Administrator $administrator,
-        AdministratorTokenRepository $tokenRepository
-    ): AdministratorToken {
+    private function createAndPersistToken(Administrator $administrator): AdministratorToken
+    {
         $token = new AdministratorToken();
         $token->setAdministrator($administrator);
         $token->generateExpiry();
         $token->generateKey();
-        $tokenRepository->save($token);
+        $this->administratorTokenRepository->save($token);
 
         return $token;
     }

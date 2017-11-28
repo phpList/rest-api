@@ -34,7 +34,7 @@ that require authentication.
     + Body
 
         {
-            "id": 241,
+            "id": 1234,
             "key": "2cfe100561473c6cdd99c9e2f26fa974",
             "expiry": "2017-07-20T18:22:48+00:00"
         }
@@ -44,9 +44,8 @@ that require authentication.
     + Body
 
         {
-            "code": 1500559729794,
-            "message": "No data",
-            "description": "The request does not contain any data."
+            "code": 400,
+            "message": "Empty JSON data"
         }
 
 + Response 400 (application/json)
@@ -54,9 +53,8 @@ that require authentication.
     + Body
 
         {
-            "code": 1500562402438,
-            "message": "Invalid JSON data",
-            "description": "The data in the request is invalid JSON."
+            "code": 400,
+            "message": 'Invalid json message received'
         }
 
 + Response 400 (application/json)
@@ -64,9 +62,8 @@ that require authentication.
     + Body
 
         {
-            "code": 1500562647846,
-            "message": "Incomplete credentials",
-            "description": "The request does not contain both loginName and password."
+            "code": 400,
+            "message": "Incomplete credentials"
         }
 
 + Response 401 (application/json)
@@ -74,7 +71,6 @@ that require authentication.
     + Body
 
         {
-            "code": 1500567098798,
-            "message": "Not authorized",
-            "description": "The user name and password did not match any existing user."
+            "code": 401,
+            "message": "Not authorized"
         }

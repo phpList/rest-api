@@ -28,6 +28,7 @@
         "php": "~7.0.0 || ~7.1.0 || ~7.2.0",
 
         "phplist/phplist4-core": "4.0.x-dev",
+        "friendsofsymfony/rest-bundle": "^2.2",
 
         "roave/security-advisories": "dev-master"
     },
@@ -83,12 +84,37 @@
         "symfony-tests-dir": "Tests",
         "phplist/phplist4-core": {
             "bundles": [
+                "FOS\\RestBundle\\FOSRestBundle",
                 "PhpList\\RestBundle\\PhpListRestBundle"
             ],
             "routes": {
                 "rest-api": {
                     "resource": "@PhpListRestBundle/Controller/",
-                    "type": "annotation"
+                    "type": "rest",
+                    "prefix": "/api/v2"
+                }
+            },
+            "configuration": {
+                "fos_rest": {
+                    "routing_loader": {
+                        "include_format": false
+                    },
+                    "format_listener": {
+                        "enabled": true,
+                        "rules": [
+                            {
+                                "fallback_format": "json"
+                            }
+                        ]
+                    },
+                    "view": {
+                        "view_response_listener": {
+                            "enabled": true
+                        }
+                    },
+                    "exception": {
+                        "enabled": true
+                    }
                 }
             }
         }
