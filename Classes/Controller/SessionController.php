@@ -41,7 +41,7 @@ class SessionController extends Controller
     ): Response {
         $rawRequestContent = $request->getContent();
         $response = new Response();
-        if (!$this->validateCreateRequest($rawRequestContent, $response)) {
+        if (!$this->validateCreateRequest($request, $response)) {
             return $response;
         }
 
@@ -77,19 +77,26 @@ class SessionController extends Controller
     /**
      * Validates the request. If is it not valid, sets a status code and a response.
      *
-     * @param string $rawRequestContent
+     * @param Request $request
      * @param Response $response
      *
      * @return bool whether the response is valid
      *
      * @return void
      */
-    private function validateCreateRequest(string $rawRequestContent, Response $response): bool
+    private function validateCreateRequest(Request $request, Response $response): bool
     {
+        $rawRequestContent = $request->getContent();
         $parsedRequestContent = json_decode($rawRequestContent, true);
         $isValid = false;
 
-        if ($rawRequestContent === '') {
+        if ($request->getContentType() !== 'json') {
+            $responseContent = [
+                'code' => 1511826370211,
+                'message' => 'Invalid content type',
+                'description' => 'The request needs to have the application/json content type.',
+            ];
+        } elseif ($rawRequestContent === '') {
             $responseContent = [
                 'code' => 1500559729794,
                 'message' => 'No data',
