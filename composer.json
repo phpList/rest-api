@@ -103,7 +103,12 @@
                         "enabled": true,
                         "rules": [
                             {
+                                "path": "^/api/v2/",
                                 "fallback_format": "json"
+                            },
+                            {
+                                "path": "^/",
+                                "fallback_format": "html"
                             }
                         ]
                     },
