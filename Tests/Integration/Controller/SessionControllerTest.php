@@ -54,6 +54,18 @@ class SessionControllerTest extends AbstractControllerTest
     /**
      * @test
      */
+    public function rootUrlHasHtmlContentType()
+    {
+        $this->client->request('get', '/');
+
+        $response = $this->client->getResponse();
+
+        self::assertContains('text/html', (string)$response->headers);
+    }
+
+    /**
+     * @test
+     */
     public function getSessionsIsNotAllowed()
     {
         $this->client->request('get', '/api/v2/sessions');
