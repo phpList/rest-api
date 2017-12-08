@@ -14,13 +14,14 @@ Resources related to login and logout.
 ### Create a new session (log in) [POST]
 
 Given valid login data, this will generate a login token that will be
-valid for 1 hour. It takes a JSON object containing the following key-value pairs:
+valid for 1 hour. It takes a JSON object containing the following key-value
+pairs:
 
-+ `loginName` (string): the login name ofe the administrator to log in
++ `loginName` (string): the login name of the super administrator to log in
 + `password` (string): the plain text password
 
-The login token then can be passed as a `authenticationToken` cookie for requests
-that require authentication.
+The login token then can be passed as basic auth password for requests
+that require authentication. (The basic auth user name can be any string.)
 
 + Request (application/json)
 
@@ -73,4 +74,52 @@ that require authentication.
         {
             "code": 401,
             "message": "Not authorized"
+        }
+
+
+# Group Lists
+
+Resources related to subscriber lists.
+
+All requests in this group need to be authenticated with a valid session key
+provided as basic auth password. (The basic auth user name can be any string.)
+
+## Subscriber lists [/lists]
+
+### Retrieve all subscriber lists [GET]
+
++ Request (application/json)
+
++ Response 200 (application/json)
+
+    + Body
+
+        {
+            "name": "News",
+            "description": "News (and some fun stuff)",
+            "creation_date": "2016-06-22T15:01:17+00:00",
+            "list_position": 12,
+            "subject_prefix": "phpList",
+            "public": true,
+            "category": "news",
+            "id": 1
+        },
+        {
+            "name": "More news",
+            "description": "",
+            "creation_date": "2016-06-22T15:01:17+00:00",
+            "list_position": 12,
+            "subject_prefix": "",
+            "public": true,
+            "category": "",
+            "id": 2
+        }
+
++ Response 403 (application/json)
+
+    + Body
+
+        {
+            "code": 403,
+            "message": "No valid session key was provided as basic auth password."
         }
