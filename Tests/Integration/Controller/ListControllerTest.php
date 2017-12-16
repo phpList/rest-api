@@ -3,10 +3,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Integration\Controller;
 
-use PhpList\PhpList4\Core\Environment;
 use PhpList\RestBundle\Controller\ListController;
-use Symfony\Bundle\FrameworkBundle\Client;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Testcase.
@@ -18,29 +15,7 @@ class ListControllerTest extends AbstractControllerTest
     /**
      * @var string
      */
-    const ADMINISTRATOR_TABLE_NAME = 'phplist_admin';
-
-    /**
-     * @var string
-     */
-    const TOKEN_TABLE_NAME = 'phplist_admintoken';
-
-    /**
-     * @var string
-     */
     const LISTS_TABLE_NAME = 'phplist_list';
-
-    /**
-     * @var Client
-     */
-    private $client = null;
-
-    protected function setUp()
-    {
-        parent::setUp();
-
-        $this->client = self::createClient(['environment' => Environment::TESTING]);
-    }
 
     /**
      * @test
@@ -57,18 +32,7 @@ class ListControllerTest extends AbstractControllerTest
     {
         $this->client->request('get', '/api/v2/lists');
 
-        $response = $this->client->getResponse();
-        $parsedResponseContent = json_decode($response->getContent(), true);
-
-        self::assertSame(Response::HTTP_FORBIDDEN, $response->getStatusCode());
-        self::assertContains('application/json', (string)$response->headers);
-        self::assertSame(
-            [
-                'code' => Response::HTTP_FORBIDDEN,
-                'message' => 'No valid session key was provided as basic auth password.',
-            ],
-            $parsedResponseContent
-        );
+        $this->assertHttpForbidden();
     }
 
     /**
@@ -88,18 +52,7 @@ class ListControllerTest extends AbstractControllerTest
             ['PHP_AUTH_USER' => 'unused', 'PHP_AUTH_PW' => 'cfdf64eecbbf336628b0f3071adba763']
         );
 
-        $response = $this->client->getResponse();
-        $parsedResponseContent = json_decode($response->getContent(), true);
-
-        self::assertSame(Response::HTTP_FORBIDDEN, $response->getStatusCode());
-        self::assertContains('application/json', (string)$response->headers);
-        self::assertSame(
-            [
-                'code' => Response::HTTP_FORBIDDEN,
-                'message' => 'No valid session key was provided as basic auth password.',
-            ],
-            $parsedResponseContent
-        );
+        $this->assertHttpForbidden();
     }
 
     /**
@@ -107,21 +60,9 @@ class ListControllerTest extends AbstractControllerTest
      */
     public function getListsWithCurrentSessionKeyReturnsOkayStatus()
     {
-        $this->getDataSet()->addTable(self::ADMINISTRATOR_TABLE_NAME, __DIR__ . '/Fixtures/Administrator.csv');
-        $this->getDataSet()->addTable(self::TOKEN_TABLE_NAME, __DIR__ . '/Fixtures/AdministratorToken.csv');
-        $this->applyDatabaseChanges();
+        $this->authenticatedJsonRequest('get', '/api/v2/lists');
 
-        $this->client->request(
-            'get',
-            '/api/v2/lists',
-            [],
-            [],
-            ['PHP_AUTH_USER' => 'unused', 'PHP_AUTH_PW' => 'cfdf64eecbbf336628b0f3071adba762']
-        );
-
-        $response = $this->client->getResponse();
-        self::assertSame(Response::HTTP_OK, $response->getStatusCode());
-        self::assertContains('application/json', (string)$response->headers);
+        $this->assertHttpOkay();
     }
 
     /**
@@ -129,23 +70,12 @@ class ListControllerTest extends AbstractControllerTest
      */
     public function getListsWithCurrentSessionKeyReturnsListData()
     {
-        $this->getDataSet()->addTable(self::ADMINISTRATOR_TABLE_NAME, __DIR__ . '/Fixtures/Administrator.csv');
-        $this->getDataSet()->addTable(self::TOKEN_TABLE_NAME, __DIR__ . '/Fixtures/AdministratorToken.csv');
         $this->getDataSet()->addTable(self::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
         $this->applyDatabaseChanges();
 
-        $this->client->request(
-            'get',
-            '/api/v2/lists',
-            [],
-            [],
-            ['PHP_AUTH_USER' => 'unused', 'PHP_AUTH_PW' => 'cfdf64eecbbf336628b0f3071adba762']
-        );
+        $this->authenticatedJsonRequest('get', '/api/v2/lists');
 
-        $response = $this->client->getResponse();
-        $parsedResponseContent = json_decode($response->getContent(), true);
-
-        self::assertSame(
+        $this->assertJsonResponseContentEquals(
             [
                 [
                     'name' => 'News',
@@ -167,8 +97,7 @@ class ListControllerTest extends AbstractControllerTest
                     'category' => '',
                     'id' => 2,
                 ]
-            ],
-            $parsedResponseContent
+            ]
         );
     }
 }
