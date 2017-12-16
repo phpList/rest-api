@@ -150,6 +150,21 @@ abstract class AbstractControllerTest extends WebTestCase
     }
 
     /**
+     * Marks the table with the given name as "touched", i.e., it will be truncated in the tearDown method.
+     *
+     * This is useful if the table gets populated only by the tested code instead of by using the addTable
+     * and applyDatabaseChanges method.
+     *
+     * @param string $tableName
+     *
+     * @return void
+     */
+    protected function touchDatabaseTable(string $tableName)
+    {
+        $this->getDataSet()->addTable($tableName, __DIR__ . '/Fixtures/TouchTable.csv');
+    }
+
+    /**
      * Calls a URI with the application/json content type.
      *
      * @param string $method The request method
@@ -298,7 +313,7 @@ abstract class AbstractControllerTest extends WebTestCase
                 'code' => Response::HTTP_FORBIDDEN,
                 'message' => 'No valid session key was provided as basic auth password.',
             ],
-            json_decode($this->client->getResponse()->getContent(), true)
+            $this->getDecodedJsonResponseContent()
         );
     }
 
@@ -312,5 +327,34 @@ abstract class AbstractControllerTest extends WebTestCase
         $response = $this->client->getResponse();
 
         self::assertSame(Response::HTTP_METHOD_NOT_ALLOWED, $response->getStatusCode());
+    }
+
+    /**
+     * Asserts that the current client response has a HTTP CONFLICT status and the corresponding error message
+     * provided in the JSON response.
+     *
+     * @return void
+     */
+    protected function assertHttpConflict()
+    {
+        $this->assertHttpStatusWithJsonContentType(Response::HTTP_CONFLICT);
+
+        self::assertSame(
+            [
+                'code' => Response::HTTP_CONFLICT,
+                'message' => 'This resource already exists.',
+            ],
+            $this->getDecodedJsonResponseContent()
+        );
+    }
+
+    /**
+     * Asserts that the current client response has a HTTP UNPROCESSABLE ENTITY status.
+     *
+     * @return void
+     */
+    protected function assertHttpUnprocessableEntity()
+    {
+        $this->assertHttpStatusWithJsonContentType(Response::HTTP_UNPROCESSABLE_ENTITY);
     }
 }
