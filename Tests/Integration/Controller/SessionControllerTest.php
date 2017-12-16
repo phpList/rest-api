@@ -4,11 +4,9 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Tests\Integration\Controller;
 
 use Doctrine\Common\Persistence\ObjectRepository;
-use PhpList\PhpList4\Core\Environment;
 use PhpList\PhpList4\Domain\Model\Identity\AdministratorToken;
 use PhpList\PhpList4\Domain\Repository\Identity\AdministratorTokenRepository;
 use PhpList\RestBundle\Controller\SessionController;
-use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -18,16 +16,6 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class SessionControllerTest extends AbstractControllerTest
 {
-    /**
-     * @var string
-     */
-    const ADMINISTRATOR_TABLE_NAME = 'phplist_admin';
-
-    /**
-     * @var Client
-     */
-    private $client = null;
-
     /**
      * @var AdministratorTokenRepository|ObjectRepository
      */
@@ -39,8 +27,6 @@ class SessionControllerTest extends AbstractControllerTest
 
         $this->administratorTokenRepository = $this->bootstrap->getContainer()
             ->get(AdministratorTokenRepository::class);
-
-        $this->client = self::createClient(['environment' => Environment::TESTING]);
     }
 
     /**
@@ -58,8 +44,7 @@ class SessionControllerTest extends AbstractControllerTest
     {
         $this->client->request('get', '/api/v2/sessions');
 
-        $response = $this->client->getResponse();
-        self::assertSame(Response::HTTP_METHOD_NOT_ALLOWED, $response->getStatusCode());
+        $this->assertHttpMethodNotAllowed();
     }
 
     /**
@@ -67,19 +52,14 @@ class SessionControllerTest extends AbstractControllerTest
      */
     public function postSessionsWithNoJsonReturnsError400()
     {
-        $this->client->request('post', '/api/v2/sessions', [], [], ['CONTENT_TYPE' => 'application/json']);
+        $this->jsonRequest('post', '/api/v2/sessions');
 
-        $response = $this->client->getResponse();
-        $parsedResponseContent = json_decode($response->getContent(), true);
-
-        self::assertContains('application/json', (string)$response->headers);
-        self::assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
-        self::assertSame(
+        $this->assertHttpBadRequest();
+        $this->assertJsonResponseContentEquals(
             [
                 'code' => Response::HTTP_BAD_REQUEST,
                 'message' => 'Empty JSON data',
-            ],
-            $parsedResponseContent
+            ]
         );
     }
 
@@ -88,26 +68,14 @@ class SessionControllerTest extends AbstractControllerTest
      */
     public function postSessionsWithInvalidJsonWithJsonContentTypeReturnsError400()
     {
-        $this->client->request(
-            'post',
-            '/api/v2/sessions',
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            'Here be dragons, but no JSON.'
-        );
+        $this->jsonRequest('post', '/api/v2/sessions', [], [], [], 'Here be dragons, but no JSON.');
 
-        $response = $this->client->getResponse();
-        $parsedResponseContent = json_decode($response->getContent(), true);
-
-        self::assertContains('application/json', (string)$response->headers);
-        self::assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
-        self::assertSame(
+        $this->assertHttpBadRequest();
+        $this->assertJsonResponseContentEquals(
             [
                 'code' => Response::HTTP_BAD_REQUEST,
                 'message' => 'Invalid json message received'
-            ],
-            $parsedResponseContent
+            ]
         );
     }
 
@@ -118,17 +86,12 @@ class SessionControllerTest extends AbstractControllerTest
     {
         $this->client->request('post', '/api/v2/sessions', [], [], ['CONTENT_TYPE' => 'application/xml'], '[]');
 
-        $response = $this->client->getResponse();
-        $parsedResponseContent = json_decode($response->getContent(), true);
-
-        self::assertContains('application/json', (string)$response->headers);
-        self::assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
-        self::assertSame(
+        $this->assertHttpBadRequest();
+        $this->assertJsonResponseContentEquals(
             [
                 'code' => Response::HTTP_BAD_REQUEST,
                 'message' => 'Invalid xml message received'
-            ],
-            $parsedResponseContent
+            ]
         );
     }
 
@@ -151,19 +114,14 @@ class SessionControllerTest extends AbstractControllerTest
      */
     public function postSessionsWithValidIncompleteJsonReturnsError400(string $jsonData)
     {
-        $this->client->request('post', '/api/v2/sessions', [], [], ['CONTENT_TYPE' => 'application/json'], $jsonData);
+        $this->jsonRequest('post', '/api/v2/sessions', [], [], [], $jsonData);
 
-        $response = $this->client->getResponse();
-        $parsedResponseContent = json_decode($response->getContent(), true);
-
-        self::assertContains('application/json', (string)$response->headers);
-        self::assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
-        self::assertSame(
+        $this->assertHttpBadRequest();
+        $this->assertJsonResponseContentEquals(
             [
                 'code' => Response::HTTP_BAD_REQUEST,
                 'message' => 'Incomplete credentials',
-            ],
-            $parsedResponseContent
+            ]
         );
     }
 
@@ -179,25 +137,14 @@ class SessionControllerTest extends AbstractControllerTest
         $password = 'a sandwich and a cup of coffee';
         $jsonData = ['loginName' => $loginName, 'password' => $password];
 
-        $this->client->request(
-            'post',
-            '/api/v2/sessions',
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            json_encode($jsonData)
-        );
-        $response = $this->client->getResponse();
-        $parsedResponseContent = json_decode($response->getContent(), true);
+        $this->jsonRequest('post', '/api/v2/sessions', [], [], [], json_encode($jsonData));
 
-        self::assertContains('application/json', (string)$response->headers);
-        self::assertSame(Response::HTTP_UNAUTHORIZED, $response->getStatusCode());
-        self::assertSame(
+        $this->assertHttpUnauthorized();
+        $this->assertJsonResponseContentEquals(
             [
                 'code' => Response::HTTP_UNAUTHORIZED,
                 'message' => 'Not authorized',
-            ],
-            $parsedResponseContent
+            ]
         );
     }
 
@@ -213,18 +160,9 @@ class SessionControllerTest extends AbstractControllerTest
         $password = 'Bazinga!';
         $jsonData = ['loginName' => $loginName, 'password' => $password];
 
-        $this->client->request(
-            'post',
-            '/api/v2/sessions',
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            json_encode($jsonData)
-        );
-        $response = $this->client->getResponse();
+        $this->jsonRequest('post', '/api/v2/sessions', [], [], [], json_encode($jsonData));
 
-        self::assertContains('application/json', (string)$response->headers);
-        self::assertSame(Response::HTTP_CREATED, $response->getStatusCode());
+        $this->assertHttpCreated();
     }
 
     /**
@@ -240,20 +178,12 @@ class SessionControllerTest extends AbstractControllerTest
         $password = 'Bazinga!';
         $jsonData = ['loginName' => $loginName, 'password' => $password];
 
-        $this->client->request(
-            'post',
-            '/api/v2/sessions',
-            [],
-            [],
-            ['CONTENT_TYPE' => 'application/json'],
-            json_encode($jsonData)
-        );
-        $responseContent = $this->client->getResponse()->getContent();
+        $this->jsonRequest('post', '/api/v2/sessions', [], [], [], json_encode($jsonData));
 
-        $parsedResponseContent = json_decode($responseContent, true);
-        $tokenId = $parsedResponseContent['id'];
-        $key = $parsedResponseContent['key'];
-        $expiry = $parsedResponseContent['expiry'];
+        $responseContent = $this->getDecodedJsonResponseContent();
+        $tokenId = $responseContent['id'];
+        $key = $responseContent['key'];
+        $expiry = $responseContent['expiry'];
 
         /** @var AdministratorToken $token */
         $token = $this->administratorTokenRepository->find($tokenId);
