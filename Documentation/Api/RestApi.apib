@@ -17,8 +17,10 @@ Given valid login data, this will generate a login token that will be
 valid for 1 hour. It takes a JSON object containing the following key-value
 pairs:
 
-+ `loginName` (string): the login name of the super administrator to log in
++ `loginName` (string): the login name of the superuser administrator to log in
 + `password` (string): the plain text password
+
+Non-superuser administrators cannot authenticate via the REST API.
 
 The login token then can be passed as basic auth password for requests
 that require authentication. (The basic auth user name can be any string.)

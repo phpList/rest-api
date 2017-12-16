@@ -14,16 +14,20 @@ phpList is an open source newsletter manager.
 
 ## About this package
 
-This module will be the REST API for phpList 4. It will use functionality from
-the `phplist/phplist4-core` module (the phpList 4 core). It will not contain any SQL
-queries, but use functionality from the new core for DB access.
+This module is the REST API for phpList 4, providing functions for superusers
+to manage lists, subscribers and subscriptions via REST calls. It uses
+functionality from the `phplist/phplist4-core` module (the phpList 4 core).
+It does not contain any SQL queries, uses functionality from the new core for
+DB access.
 
-This module is optional, i.e., it will be possible to run phpList 4 without the
+This module is optional, i.e., it is possible to run phpList 4 without the
 REST API.
 
 This new REST API can also be used to provide REST access to an existing
 phpList 3 installation. For this, the phpList 3 installation and the phpList 4
-installation with the REST API need to share the same database.
+installation with the REST API need to share the same database. For security
+reasons, the REST APIs from phpList 3 and phpList 4 should not be used for the
+same database in parallel, though.
 
 
 ## Installation
