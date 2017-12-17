@@ -86,6 +86,7 @@ Resources related to subscriber lists.
 All requests in this group need to be authenticated with a valid session key
 provided as basic auth password. (The basic auth user name can be any string.)
 
+
 ## Subscriber lists [/lists]
 
 ### Retrieve all subscriber lists [GET]
@@ -124,4 +125,69 @@ provided as basic auth password. (The basic auth user name can be any string.)
         {
             "code": 403,
             "message": "No valid session key was provided as basic auth password."
+        }
+
+
+# Group Subscribers
+
+Resources related to subscribers.
+
+All requests in this group need to be authenticated with a valid session key
+provided as basic auth password. (The basic auth user name can be any string.)
+
+## Subscribers [/subscribers]
+
+### Create a new subscriber [POST]
+
+Given a valid authentication, this will generate a subscriber. It takes a JSON
+object containing the following key-value pairs:
+
++ `email` (string): the email address of the subscriber (required)
++ `confirmed` (boolean): whether the subscriber already is confirmed (optional)
++ `blacklisted` (boolean): whether the subscriber is blacklisted (optional)
++ `html_email` (boolean): whether the subscriber would like to receive emails
+  in HTML format (optional)
++ `disabled` (boolean): whether the subscriber is disabled (optional)
+
++ Response 201 (application/json)
+
+    + Body
+
+        {
+            "creation_date": "2017-12-16T18:44:27+00:00",
+            "email": "subscriber@example.com",
+            "confirmed": false,
+            "blacklisted": false,
+            "bounce_count": 0,
+            "unique_id": "69f4e92cf50eafca9627f35704f030f4",
+            "html_email": true,
+            "disabled": false,
+            "id": 1
+        }
+
++ Response 403 (application/json)
+
+    + Body
+
+        {
+            "code": 403,
+            "message": "No valid session key was provided as basic auth password."
+        }
+
++ Response 409 (application/json)
+
+    + Body
+
+        {
+            "code": 409,
+            "message": "This resource already exists."
+        }
+
++ Response 422 (application/json)
+
+    + Body
+
+        {
+            "code": 422,
+            "message": "Some fields invalid: email, confirmed, html_email"
         }
