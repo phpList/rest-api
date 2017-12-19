@@ -67,6 +67,10 @@ abstract class AbstractControllerTest extends WebTestCase
 
     protected function setUp()
     {
+        // This makes sure that all DateTime instances use the same time zone, thus making the dates in the
+        // JSON provided by the REST API easier to test.
+        date_default_timezone_set('UTC');
+
         $this->initializeDatabaseTester();
         $this->bootstrap = Bootstrap::getInstance()->setEnvironment(Environment::TESTING)->configure();
         $this->entityManager = $this->bootstrap->getEntityManager();
