@@ -101,9 +101,9 @@ class SessionControllerTest extends AbstractControllerTest
     public function incompleteCredentialsDataProvider(): array
     {
         return [
-            'neither loginName nor password' => ['{}'],
-            'loginName, but no password' => ['{"loginName": "larry@example.com"}'],
-            'password, but no loginName' => ['{"password": "t67809oibuzfq2qg3"}'],
+            'neither login_name nor password' => ['{}'],
+            'login_name, but no password' => ['{"login_name": "larry@example.com"}'],
+            'password, but no login_name' => ['{"password": "t67809oibuzfq2qg3"}'],
         ];
     }
 
@@ -135,7 +135,7 @@ class SessionControllerTest extends AbstractControllerTest
 
         $loginName = 'john.doe';
         $password = 'a sandwich and a cup of coffee';
-        $jsonData = ['loginName' => $loginName, 'password' => $password];
+        $jsonData = ['login_name' => $loginName, 'password' => $password];
 
         $this->jsonRequest('post', '/api/v2/sessions', [], [], [], json_encode($jsonData));
 
@@ -158,7 +158,7 @@ class SessionControllerTest extends AbstractControllerTest
 
         $loginName = 'john.doe';
         $password = 'Bazinga!';
-        $jsonData = ['loginName' => $loginName, 'password' => $password];
+        $jsonData = ['login_name' => $loginName, 'password' => $password];
 
         $this->jsonRequest('post', '/api/v2/sessions', [], [], [], json_encode($jsonData));
 
@@ -176,7 +176,7 @@ class SessionControllerTest extends AbstractControllerTest
 
         $loginName = 'john.doe';
         $password = 'Bazinga!';
-        $jsonData = ['loginName' => $loginName, 'password' => $password];
+        $jsonData = ['login_name' => $loginName, 'password' => $password];
 
         $this->jsonRequest('post', '/api/v2/sessions', [], [], [], json_encode($jsonData));
 

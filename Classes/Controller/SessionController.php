@@ -57,7 +57,7 @@ class SessionController extends FOSRestController implements ClassResourceInterf
     {
         $this->validateCreateRequest($request);
         $administrator = $this->administratorRepository->findOneByLoginCredentials(
-            $request->get('loginName'),
+            $request->get('login_name'),
             $request->get('password')
         );
         if ($administrator === null) {
@@ -83,7 +83,7 @@ class SessionController extends FOSRestController implements ClassResourceInterf
         if ($request->getContent() === '') {
             throw new BadRequestHttpException('Empty JSON data', null, 1500559729794);
         }
-        if (empty($request->get('loginName')) || empty($request->get('password'))) {
+        if (empty($request->get('login_name')) || empty($request->get('password'))) {
             throw new BadRequestHttpException('Incomplete credentials', null, 1500562647846);
         }
     }

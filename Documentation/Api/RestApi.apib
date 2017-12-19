@@ -17,7 +17,7 @@ Given valid login data, this will generate a login token that will be
 valid for 1 hour. It takes a JSON object containing the following key-value
 pairs:
 
-+ `loginName` (string): the login name of the superuser administrator to log in
++ `login_name` (string): the login name of the superuser administrator to log in
 + `password` (string): the plain text password
 
 Non-superuser administrators cannot authenticate via the REST API.
@@ -28,7 +28,7 @@ that require authentication. (The basic auth user name can be any string.)
 + Request (application/json)
 
     {
-        "loginName": "admin",
+        "login_name": "admin",
         "password": "eetIc/Gropvoc1"
     }
 
