@@ -78,7 +78,9 @@ code coverage of the fixed bugs and the new features.
 
 To run the existing unit tests, run this command:
 
-    vendor/bin/phpunit -c Configuration/PHPUnit/phpunit.xml Tests/Unit/
+```bash
+vendor/bin/phpunit -c Configuration/PHPUnit/phpunit.xml Tests/Unit/
+```
 
 ### Running the integration tests
 
@@ -90,12 +92,16 @@ schema once. Assuming that your database is named `phplist_test`, the user is
 named `phplist`, and the password is `batterystaple`, the command looks like
 this:
 
-    mysql -u phplist_test --password=batterystaple phplist_test < vendor/phplist/phplist4-core/Database/Schema.sql
+```bash
+mysql -u phplist_test --password=batterystaple phplist_test < vendor/phplist/phplist4-core/Database/Schema.sql
+```
 
 When running the integration tests, you will need to specify the database name
 and access credentials on the command line (in the same line):
 
-    PHPLIST_DATABASE_NAME=phplist_test PHPLIST_DATABASE_USER=phplist PHPLIST_DATABASE_PASSWORD=batterystaple vendor/bin/phpunit -c Configuration/PHPUnit/phpunit.xml Tests/Integration/
+```bash
+PHPLIST_DATABASE_NAME=phplist_test PHPLIST_DATABASE_USER=phplist PHPLIST_DATABASE_PASSWORD=batterystaple vendor/bin/phpunit -c Configuration/PHPUnit/phpunit.xml Tests/Integration/
+```
 
 
 ## Coding Style
@@ -109,18 +115,27 @@ We will only merge pull requests that follow the project's coding style.
 
 Please check your code with the provided PHP_CodeSniffer standard:
 
-    vendor/bin/phpcs --standard=vendor/phplist/phplist4-core/Configuration/PhpCodeSniffer/ Classes/ Tests/
+```bash
+vendor/bin/phpcs --standard=vendor/phplist/phplist4-core/Configuration/PhpCodeSniffer/ Classes/ Tests/
+```
 
 Please also check the code structure using PHPMD:
 
-    vendor/bin/phpmd Classes/ text vendor/phplist/phplist4-core/Configuration/PHPMD/rules.xml
+```bash
+vendor/bin/phpmd Classes/ text vendor/phplist/phplist4-core/Configuration/PHPMD/rules.xml
+```
 
 And also please run the static code analysis:
 
-    vendor/bin/phpstan analyse -l 5 Classes/ Tests/
+```bash
+vendor/bin/phpstan analyse -l 5 Classes/ Tests/
+```
 
 You can also run all code style checks using one long line from a bash shell:
-    find Classes/ Tests/ -name '*.php' -print0 | xargs -0 -n 1 -P 4 php -l && vendor/bin/phpstan analyse -l 5 Classes/ Tests/ && vendor/bin/phpmd Classes/ text vendor/phplist/phplist4-core/Configuration/PHPMD/rules.xml && vendor/bin/phpcs --standard=vendor/phplist/phplist4-core/Configuration/PhpCodeSniffer/ Classes/ Tests/
+
+```bash
+find Classes/ Tests/ -name '*.php' -print0 | xargs -0 -n 1 -P 4 php -l && vendor/bin/phpstan analyse -l 5 Classes/ Tests/ && vendor/bin/phpmd Classes/ text vendor/phplist/phplist4-core/Configuration/PHPMD/rules.xml && vendor/bin/phpcs --standard=vendor/phplist/phplist4-core/Configuration/PhpCodeSniffer/ Classes/ Tests/
+```
 
 This will execute all tests except for the unit tests and the integration
 tests.
