@@ -6,6 +6,7 @@ namespace PhpList\RestBundle\Controller;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use FOS\RestBundle\View\View;
+use PhpList\PhpList4\Domain\Model\Messaging\SubscriberList;
 use PhpList\PhpList4\Domain\Repository\Messaging\SubscriberListRepository;
 use PhpList\PhpList4\Security\Authentication;
 use PhpList\RestBundle\Controller\Traits\AuthenticationTrait;
@@ -47,5 +48,20 @@ class ListController extends FOSRestController implements ClassResourceInterface
         $this->requireAuthentication($request);
 
         return View::create()->setData($this->subscriberListRepository->findAll());
+    }
+
+    /**
+     * Gets a list of all subscribers (members) of a subscriber list.
+     *
+     * @param Request $request
+     * @param SubscriberList $list
+     *
+     * @return View
+     */
+    public function getMembersAction(Request $request, SubscriberList $list): View
+    {
+        $this->requireAuthentication($request);
+
+        return View::create()->setData($list->getSubscribers());
     }
 }
