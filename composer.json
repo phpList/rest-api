@@ -27,7 +27,7 @@
     "require": {
         "php": "~7.0.0 || ~7.1.0 || ~7.2.0",
 
-        "phplist/phplist4-core": "4.0.x-dev",
+        "phplist/phplist4-core": "^4.0.0-alpha1",
         "friendsofsymfony/rest-bundle": "^2.2",
 
         "roave/security-advisories": "dev-master"
