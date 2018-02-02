@@ -273,7 +273,7 @@ abstract class AbstractControllerTest extends WebTestCase
     }
 
     /**
-     * Asserts that the current client response has a HTTP CREATED status  (and the application/json content type).
+     * Asserts that the current client response has a HTTP CREATED status (and the application/json content type).
      *
      * @return void
      */
@@ -283,7 +283,7 @@ abstract class AbstractControllerTest extends WebTestCase
     }
 
     /**
-     * Asserts that the current client response has a HTTP BAD REQUEST status  (and the application/json content type).
+     * Asserts that the current client response has a HTTP BAD REQUEST status (and the application/json content type).
      *
      * @return void
      */
@@ -293,7 +293,7 @@ abstract class AbstractControllerTest extends WebTestCase
     }
 
     /**
-     * Asserts that the current client response has a HTTP UNAUTHORIZED status  (and the application/json content type).
+     * Asserts that the current client response has a HTTP UNAUTHORIZED status (and the application/json content type).
      *
      * @return void
      */
