@@ -8,6 +8,8 @@ use PhpList\PhpList4\Core\Bootstrap;
 use PhpList\PhpList4\Core\Environment;
 use PHPUnit\DbUnit\Database\Connection;
 use PHPUnit\DbUnit\DataSet\CsvDataSet;
+use PHPUnit\DbUnit\Operation\Factory;
+use PHPUnit\DbUnit\Operation\Operation;
 use PHPUnit\DbUnit\TestCaseTrait;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -105,6 +107,16 @@ abstract class AbstractControllerTest extends WebTestCase
         $this->databaseTester = null;
 
         Bootstrap::purgeInstance();
+    }
+
+    /**
+     * Returns the database operation executed in test cleanup.
+     *
+     * @return Operation
+     */
+    protected function getTearDownOperation(): Operation
+    {
+        return Factory::TRUNCATE();
     }
 
     /**
