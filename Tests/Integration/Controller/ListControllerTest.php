@@ -114,8 +114,11 @@ class ListControllerTest extends AbstractControllerTest
     /**
      * @test
      */
-    public function getListMembersWithoutSessionKeyReturnsForbiddenStatus()
+    public function getListMembersForExistingListWithoutSessionKeyReturnsForbiddenStatus()
     {
+        $this->getDataSet()->addTable(self::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
+        $this->applyDatabaseChanges();
+
         $this->client->request('get', '/api/v2/lists/1/members');
 
         $this->assertHttpForbidden();
@@ -124,8 +127,9 @@ class ListControllerTest extends AbstractControllerTest
     /**
      * @test
      */
-    public function getListMembersWithExpiredSessionKeyReturnsForbiddenStatus()
+    public function getListMembersForExistingListWithExpiredSessionKeyReturnsForbiddenStatus()
     {
+        $this->getDataSet()->addTable(self::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
         $this->getDataSet()->addTable(self::ADMINISTRATOR_TABLE_NAME, __DIR__ . '/Fixtures/Administrator.csv');
         $this->getDataSet()->addTable(self::TOKEN_TABLE_NAME, __DIR__ . '/Fixtures/AdministratorToken.csv');
         $this->applyDatabaseChanges();
