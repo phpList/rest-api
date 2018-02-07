@@ -24,7 +24,7 @@ class RoutingTest extends WebTestCase
     {
         Bootstrap::getInstance()->setEnvironment(Environment::TESTING)->configure();
 
-        $this->client = self::createClient(['environment' => Environment::TESTING]);
+        $this->client = static::createClient(['environment' => Environment::TESTING]);
     }
 
     protected function tearDown()
@@ -41,6 +41,6 @@ class RoutingTest extends WebTestCase
 
         $response = $this->client->getResponse();
 
-        self::assertContains('text/html', (string)$response->headers);
+        static::assertContains('text/html', (string)$response->headers);
     }
 }

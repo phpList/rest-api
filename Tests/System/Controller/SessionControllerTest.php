@@ -60,8 +60,8 @@ class SessionControllerTest extends TestCase
             '/api/v2/sessions',
             ['base_uri' => $this->getBaseUrl(), 'body' => \json_encode($jsonData)]
         );
-        self::assertSame(Response::HTTP_UNAUTHORIZED, $response->getStatusCode());
-        self::assertSame(
+        static::assertSame(Response::HTTP_UNAUTHORIZED, $response->getStatusCode());
+        static::assertSame(
             [
                 'code' => Response::HTTP_UNAUTHORIZED,
                 'message' => 'Not authorized',
