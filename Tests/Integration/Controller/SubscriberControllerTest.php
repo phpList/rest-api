@@ -37,7 +37,7 @@ class SubscriberControllerTest extends AbstractControllerTest
      */
     public function controllerIsAvailableViaContainer()
     {
-        self::assertInstanceOf(
+        static::assertInstanceOf(
             SubscriberController::class,
             $this->client->getContainer()->get(SubscriberController::class)
         );
@@ -68,7 +68,7 @@ class SubscriberControllerTest extends AbstractControllerTest
      */
     public function postSubscribersWithValidSessionKeyAndMinimalValidSubscriberDataCreatesResource()
     {
-        $this->touchDatabaseTable(self::SUBSCRIBER_TABLE_NAME);
+        $this->touchDatabaseTable(static::SUBSCRIBER_TABLE_NAME);
 
         $email = 'subscriber@example.com';
         $jsonData = ['email' => $email];
@@ -83,7 +83,7 @@ class SubscriberControllerTest extends AbstractControllerTest
      */
     public function postSubscribersWithValidSessionKeyAndMinimalValidDataReturnsIdAndUniqueId()
     {
-        $this->touchDatabaseTable(self::SUBSCRIBER_TABLE_NAME);
+        $this->touchDatabaseTable(static::SUBSCRIBER_TABLE_NAME);
 
         $email = 'subscriber@example.com';
         $jsonData = ['email' => $email];
@@ -92,8 +92,8 @@ class SubscriberControllerTest extends AbstractControllerTest
 
         $responseContent = $this->getDecodedJsonResponseContent();
 
-        self::assertGreaterThan(0, $responseContent['id']);
-        self::assertRegExp('/^[0-9a-f]{32}$/', $responseContent['unique_id']);
+        static::assertGreaterThan(0, $responseContent['id']);
+        static::assertRegExp('/^[0-9a-f]{32}$/', $responseContent['unique_id']);
     }
 
     /**
@@ -101,7 +101,7 @@ class SubscriberControllerTest extends AbstractControllerTest
      */
     public function postSubscribersWithValidSessionKeyAndValidDataCreatesSubscriber()
     {
-        $this->touchDatabaseTable(self::SUBSCRIBER_TABLE_NAME);
+        $this->touchDatabaseTable(static::SUBSCRIBER_TABLE_NAME);
 
         $email = 'subscriber@example.com';
         $jsonData = ['email' => $email];
@@ -111,7 +111,7 @@ class SubscriberControllerTest extends AbstractControllerTest
         $responseContent = $this->getDecodedJsonResponseContent();
 
         $subscriberId = $responseContent['id'];
-        self::assertInstanceOf(Subscriber::class, $this->subscriberRepository->find($subscriberId));
+        static::assertInstanceOf(Subscriber::class, $this->subscriberRepository->find($subscriberId));
     }
 
     /**
@@ -119,7 +119,7 @@ class SubscriberControllerTest extends AbstractControllerTest
      */
     public function postSubscribersWithValidSessionKeyAndExistingEmailAddressCreatesConflictStatus()
     {
-        $this->getDataSet()->addTable(self::SUBSCRIBER_TABLE_NAME, __DIR__ . '/Fixtures/Subscriber.csv');
+        $this->getDataSet()->addTable(static::SUBSCRIBER_TABLE_NAME, __DIR__ . '/Fixtures/Subscriber.csv');
         $this->applyDatabaseChanges();
 
         $email = 'oliver@example.com';
@@ -159,7 +159,7 @@ class SubscriberControllerTest extends AbstractControllerTest
      */
     public function postSubscribersWithInvalidDataCreatesUnprocessableEntityStatus(array $jsonData)
     {
-        $this->touchDatabaseTable(self::SUBSCRIBER_TABLE_NAME);
+        $this->touchDatabaseTable(static::SUBSCRIBER_TABLE_NAME);
 
         $this->authenticatedJsonRequest('post', '/api/v2/subscribers', [], [], [], json_encode($jsonData));
 
@@ -171,7 +171,7 @@ class SubscriberControllerTest extends AbstractControllerTest
      */
     public function postSubscribersWithValidSessionKeyAssignsProvidedSubscriberData()
     {
-        $this->touchDatabaseTable(self::SUBSCRIBER_TABLE_NAME);
+        $this->touchDatabaseTable(static::SUBSCRIBER_TABLE_NAME);
 
         $email = 'subscriber@example.com';
         $jsonData = [
@@ -186,10 +186,10 @@ class SubscriberControllerTest extends AbstractControllerTest
 
         $responseContent = $this->getDecodedJsonResponseContent();
 
-        self::assertSame($email, $responseContent['email']);
-        self::assertTrue($responseContent['confirmed']);
-        self::assertTrue($responseContent['blacklisted']);
-        self::assertTrue($responseContent['html_email']);
-        self::assertTrue($responseContent['disabled']);
+        static::assertSame($email, $responseContent['email']);
+        static::assertTrue($responseContent['confirmed']);
+        static::assertTrue($responseContent['blacklisted']);
+        static::assertTrue($responseContent['html_email']);
+        static::assertTrue($responseContent['disabled']);
     }
 }

@@ -34,7 +34,10 @@ class SessionControllerTest extends AbstractControllerTest
      */
     public function controllerIsAvailableViaContainer()
     {
-        self::assertInstanceOf(SessionController::class, $this->client->getContainer()->get(SessionController::class));
+        static::assertInstanceOf(
+            SessionController::class,
+            $this->client->getContainer()->get(SessionController::class)
+        );
     }
 
     /**
@@ -130,7 +133,7 @@ class SessionControllerTest extends AbstractControllerTest
      */
     public function postSessionsWithInvalidCredentialsReturnsNotAuthorized()
     {
-        $this->getDataSet()->addTable(self::ADMINISTRATOR_TABLE_NAME, __DIR__ . '/Fixtures/Administrator.csv');
+        $this->getDataSet()->addTable(static::ADMINISTRATOR_TABLE_NAME, __DIR__ . '/Fixtures/Administrator.csv');
         $this->applyDatabaseChanges();
 
         $loginName = 'john.doe';
@@ -153,7 +156,7 @@ class SessionControllerTest extends AbstractControllerTest
      */
     public function postSessionsActionWithValidCredentialsReturnsCreatedHttpStatus()
     {
-        $this->getDataSet()->addTable(self::ADMINISTRATOR_TABLE_NAME, __DIR__ . '/Fixtures/Administrator.csv');
+        $this->getDataSet()->addTable(static::ADMINISTRATOR_TABLE_NAME, __DIR__ . '/Fixtures/Administrator.csv');
         $this->applyDatabaseChanges();
 
         $loginName = 'john.doe';
@@ -171,7 +174,7 @@ class SessionControllerTest extends AbstractControllerTest
     public function postSessionsActionWithValidCredentialsCreatesToken()
     {
         $administratorId = 1;
-        $this->getDataSet()->addTable(self::ADMINISTRATOR_TABLE_NAME, __DIR__ . '/Fixtures/Administrator.csv');
+        $this->getDataSet()->addTable(static::ADMINISTRATOR_TABLE_NAME, __DIR__ . '/Fixtures/Administrator.csv');
         $this->applyDatabaseChanges();
 
         $loginName = 'john.doe';
@@ -187,9 +190,9 @@ class SessionControllerTest extends AbstractControllerTest
 
         /** @var AdministratorToken $token */
         $token = $this->administratorTokenRepository->find($tokenId);
-        self::assertNotNull($token);
-        self::assertSame($key, $token->getKey());
-        self::assertSame($expiry, $token->getExpiry()->format(\DateTime::ATOM));
-        self::assertSame($administratorId, $token->getAdministrator()->getId());
+        static::assertNotNull($token);
+        static::assertSame($key, $token->getKey());
+        static::assertSame($expiry, $token->getExpiry()->format(\DateTime::ATOM));
+        static::assertSame($administratorId, $token->getAdministrator()->getId());
     }
 }

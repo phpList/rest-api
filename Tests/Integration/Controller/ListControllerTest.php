@@ -32,7 +32,7 @@ class ListControllerTest extends AbstractControllerTest
      */
     public function controllerIsAvailableViaContainer()
     {
-        self::assertInstanceOf(ListController::class, $this->client->getContainer()->get(ListController::class));
+        static::assertInstanceOf(ListController::class, $this->client->getContainer()->get(ListController::class));
     }
 
     /**
@@ -50,8 +50,8 @@ class ListControllerTest extends AbstractControllerTest
      */
     public function getListsWithExpiredSessionKeyReturnsForbiddenStatus()
     {
-        $this->getDataSet()->addTable(self::ADMINISTRATOR_TABLE_NAME, __DIR__ . '/Fixtures/Administrator.csv');
-        $this->getDataSet()->addTable(self::TOKEN_TABLE_NAME, __DIR__ . '/Fixtures/AdministratorToken.csv');
+        $this->getDataSet()->addTable(static::ADMINISTRATOR_TABLE_NAME, __DIR__ . '/Fixtures/Administrator.csv');
+        $this->getDataSet()->addTable(static::TOKEN_TABLE_NAME, __DIR__ . '/Fixtures/AdministratorToken.csv');
         $this->applyDatabaseChanges();
 
         $this->client->request(
@@ -80,7 +80,7 @@ class ListControllerTest extends AbstractControllerTest
      */
     public function getListsWithCurrentSessionKeyReturnsListData()
     {
-        $this->getDataSet()->addTable(self::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
+        $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
         $this->applyDatabaseChanges();
 
         $this->authenticatedJsonRequest('get', '/api/v2/lists');
@@ -116,7 +116,7 @@ class ListControllerTest extends AbstractControllerTest
      */
     public function getListMembersForExistingListWithoutSessionKeyReturnsForbiddenStatus()
     {
-        $this->getDataSet()->addTable(self::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
+        $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
         $this->applyDatabaseChanges();
 
         $this->client->request('get', '/api/v2/lists/1/members');
@@ -129,9 +129,9 @@ class ListControllerTest extends AbstractControllerTest
      */
     public function getListMembersForExistingListWithExpiredSessionKeyReturnsForbiddenStatus()
     {
-        $this->getDataSet()->addTable(self::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
-        $this->getDataSet()->addTable(self::ADMINISTRATOR_TABLE_NAME, __DIR__ . '/Fixtures/Administrator.csv');
-        $this->getDataSet()->addTable(self::TOKEN_TABLE_NAME, __DIR__ . '/Fixtures/AdministratorToken.csv');
+        $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
+        $this->getDataSet()->addTable(static::ADMINISTRATOR_TABLE_NAME, __DIR__ . '/Fixtures/Administrator.csv');
+        $this->getDataSet()->addTable(static::TOKEN_TABLE_NAME, __DIR__ . '/Fixtures/AdministratorToken.csv');
         $this->applyDatabaseChanges();
 
         $this->client->request(
@@ -160,7 +160,7 @@ class ListControllerTest extends AbstractControllerTest
      */
     public function getListMembersWithCurrentSessionKeyForExistingListReturnsOkayStatus()
     {
-        $this->getDataSet()->addTable(self::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
+        $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
         $this->applyDatabaseChanges();
 
         $this->authenticatedJsonRequest('get', '/api/v2/lists/1/members');
@@ -173,7 +173,7 @@ class ListControllerTest extends AbstractControllerTest
      */
     public function getListMembersWithCurrentSessionKeyForExistingListWithoutSubscribersReturnsEmptyArray()
     {
-        $this->getDataSet()->addTable(self::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
+        $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
         $this->applyDatabaseChanges();
 
         $this->authenticatedJsonRequest('get', '/api/v2/lists/1/members');
@@ -186,9 +186,9 @@ class ListControllerTest extends AbstractControllerTest
      */
     public function getListMembersWithCurrentSessionKeyForExistingListWithSubscribersReturnsSubscribers()
     {
-        $this->getDataSet()->addTable(self::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
-        $this->getDataSet()->addTable(self::SUBSCRIBER_TABLE_NAME, __DIR__ . '/Fixtures/Subscriber.csv');
-        $this->getDataSet()->addTable(self::SUBSCRIPTION_TABLE_NAME, __DIR__ . '/Fixtures/Subscription.csv');
+        $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
+        $this->getDataSet()->addTable(static::SUBSCRIBER_TABLE_NAME, __DIR__ . '/Fixtures/Subscriber.csv');
+        $this->getDataSet()->addTable(static::SUBSCRIPTION_TABLE_NAME, __DIR__ . '/Fixtures/Subscription.csv');
         $this->applyDatabaseChanges();
 
         $this->authenticatedJsonRequest('get', '/api/v2/lists/2/members');

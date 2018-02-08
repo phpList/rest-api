@@ -76,9 +76,9 @@ abstract class AbstractControllerTest extends WebTestCase
         $this->initializeDatabaseTester();
         $this->bootstrap = Bootstrap::getInstance()->setEnvironment(Environment::TESTING)->configure();
         $this->entityManager = $this->bootstrap->getEntityManager();
-        self::assertTrue($this->entityManager->isOpen());
+        static::assertTrue($this->entityManager->isOpen());
 
-        $this->client = self::createClient(['environment' => Environment::TESTING]);
+        $this->client = static::createClient(['environment' => Environment::TESTING]);
     }
 
     /**
@@ -226,8 +226,8 @@ abstract class AbstractControllerTest extends WebTestCase
         array $server = [],
         string $content = null
     ): Crawler {
-        $this->getDataSet()->addTable(self::ADMINISTRATOR_TABLE_NAME, __DIR__ . '/Fixtures/Administrator.csv');
-        $this->getDataSet()->addTable(self::TOKEN_TABLE_NAME, __DIR__ . '/Fixtures/AdministratorToken.csv');
+        $this->getDataSet()->addTable(static::ADMINISTRATOR_TABLE_NAME, __DIR__ . '/Fixtures/Administrator.csv');
+        $this->getDataSet()->addTable(static::TOKEN_TABLE_NAME, __DIR__ . '/Fixtures/AdministratorToken.csv');
         $this->applyDatabaseChanges();
 
         $serverWithAuthentication = $server;
@@ -256,7 +256,7 @@ abstract class AbstractControllerTest extends WebTestCase
      */
     protected function assertJsonResponseContentEquals(array $expected)
     {
-        self::assertSame($expected, $this->getDecodedJsonResponseContent());
+        static::assertSame($expected, $this->getDecodedJsonResponseContent());
     }
 
     /**
@@ -270,8 +270,8 @@ abstract class AbstractControllerTest extends WebTestCase
     {
         $response = $this->client->getResponse();
 
-        self::assertSame($status, $response->getStatusCode());
-        self::assertContains('application/json', (string)$response->headers);
+        static::assertSame($status, $response->getStatusCode());
+        static::assertContains('application/json', (string)$response->headers);
     }
 
     /**
@@ -334,7 +334,7 @@ abstract class AbstractControllerTest extends WebTestCase
     {
         $this->assertHttpStatusWithJsonContentType(Response::HTTP_FORBIDDEN);
 
-        self::assertSame(
+        static::assertSame(
             [
                 'code' => Response::HTTP_FORBIDDEN,
                 'message' => 'No valid session key was provided as basic auth password.',
@@ -352,7 +352,7 @@ abstract class AbstractControllerTest extends WebTestCase
     {
         $response = $this->client->getResponse();
 
-        self::assertSame(Response::HTTP_METHOD_NOT_ALLOWED, $response->getStatusCode());
+        static::assertSame(Response::HTTP_METHOD_NOT_ALLOWED, $response->getStatusCode());
     }
 
     /**
@@ -365,7 +365,7 @@ abstract class AbstractControllerTest extends WebTestCase
     {
         $this->assertHttpStatusWithJsonContentType(Response::HTTP_CONFLICT);
 
-        self::assertSame(
+        static::assertSame(
             [
                 'code' => Response::HTTP_CONFLICT,
                 'message' => 'This resource already exists.',
