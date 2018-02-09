@@ -51,6 +51,21 @@ class ListController extends FOSRestController implements ClassResourceInterface
     }
 
     /**
+     * Gets a subscriber list.
+     *
+     * @param Request $request
+     * @param SubscriberList $list
+     *
+     * @return View
+     */
+    public function getAction(Request $request, SubscriberList $list): View
+    {
+        $this->requireAuthentication($request);
+
+        return View::create()->setData($list);
+    }
+
+    /**
      * Gets a list of all subscribers (members) of a subscriber list.
      *
      * @param Request $request
