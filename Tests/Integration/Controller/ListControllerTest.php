@@ -114,6 +114,66 @@ class ListControllerTest extends AbstractControllerTest
     /**
      * @test
      */
+    public function getListWithoutSessionKeyForExistingListReturnsForbiddenStatus()
+    {
+        $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
+        $this->applyDatabaseChanges();
+
+        $this->client->request('get', '/api/v2/lists/1');
+
+        $this->assertHttpForbidden();
+    }
+
+    /**
+     * @test
+     */
+    public function getListWithCurrentSessionKeyForExistingListReturnsOkayStatus()
+    {
+        $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
+        $this->applyDatabaseChanges();
+
+        $this->authenticatedJsonRequest('get', '/api/v2/lists/1');
+
+        $this->assertHttpOkay();
+    }
+
+    /**
+     * @test
+     */
+    public function getListWithCurrentSessionKeyForInexistentListReturnsNotFoundStatus()
+    {
+        $this->authenticatedJsonRequest('get', '/api/v2/lists/999');
+
+        $this->assertHttpNotFound();
+    }
+
+    /**
+     * @test
+     */
+    public function getListWithCurrentSessionKeyReturnsListData()
+    {
+        $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
+        $this->applyDatabaseChanges();
+
+        $this->authenticatedJsonRequest('get', '/api/v2/lists/1');
+
+        $this->assertJsonResponseContentEquals(
+            [
+                'name' => 'News',
+                'description' => 'News (and some fun stuff)',
+                'creation_date' => '2016-06-22T15:01:17+00:00',
+                'list_position' => 12,
+                'subject_prefix' => 'phpList',
+                'public' => true,
+                'category' => 'news',
+                'id' => 1,
+            ]
+        );
+    }
+
+    /**
+     * @test
+     */
     public function getListMembersForExistingListWithoutSessionKeyReturnsForbiddenStatus()
     {
         $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
