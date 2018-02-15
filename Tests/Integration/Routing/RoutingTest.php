@@ -3,35 +3,15 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Integration\Routing;
 
-use PhpList\PhpList4\Core\Bootstrap;
-use PhpList\PhpList4\Core\Environment;
-use Symfony\Bundle\FrameworkBundle\Client;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use PhpList\PhpList4\TestingSupport\AbstractWebTest;
 
 /**
  * Testcase.
  *
  * @author Oliver Klee <oliver@phplist.com>
  */
-class RoutingTest extends WebTestCase
+class RoutingTest extends AbstractWebTest
 {
-    /**
-     * @var Client
-     */
-    private $client = null;
-
-    protected function setUp()
-    {
-        Bootstrap::getInstance()->setEnvironment(Environment::TESTING)->configure();
-
-        $this->client = static::createClient(['environment' => Environment::TESTING]);
-    }
-
-    protected function tearDown()
-    {
-        Bootstrap::purgeInstance();
-    }
-
     /**
      * @test
      */
