@@ -26,7 +26,8 @@ class SubscriberControllerTest extends AbstractControllerTest
 
     protected function setUp()
     {
-        parent::setUp();
+        $this->setUpDatabaseTest();
+        $this->setUpWebTest();
 
         $this->subscriberRepository = $this->bootstrap->getContainer()
             ->get(SubscriberRepository::class);

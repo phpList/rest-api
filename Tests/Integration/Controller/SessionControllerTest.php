@@ -23,7 +23,8 @@ class SessionControllerTest extends AbstractControllerTest
 
     protected function setUp()
     {
-        parent::setUp();
+        $this->setUpDatabaseTest();
+        $this->setUpWebTest();
 
         $this->administratorTokenRepository = $this->bootstrap->getContainer()
             ->get(AdministratorTokenRepository::class);
