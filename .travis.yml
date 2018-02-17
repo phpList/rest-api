@@ -61,22 +61,22 @@ script:
 - >
   echo;
   echo "Linting all PHP files";
-  find Classes/ Tests/ -name ''*.php'' -print0 | xargs -0 -n 1 -P 4 php -l;
+  find Classes/ tests/ -name ''*.php'' -print0 | xargs -0 -n 1 -P 4 php -l;
 
 - >
   echo;
   echo "Running the unit tests";
-  vendor/bin/phpunit -c Configuration/PHPUnit/phpunit.xml Tests/Unit/;
+  vendor/bin/phpunit -c Configuration/PHPUnit/phpunit.xml tests/Unit/;
 
 - >
   echo;
   echo "Running the integration tests";
-  vendor/bin/phpunit -c Configuration/PHPUnit/phpunit.xml Tests/Integration/;
+  vendor/bin/phpunit -c Configuration/PHPUnit/phpunit.xml tests/Integration/;
 
 - >
   echo;
   echo "Running the static analysis";
-  vendor/bin/phpstan analyse -l 5 Classes/ Tests/;
+  vendor/bin/phpstan analyse -l 5 Classes/ tests/;
 
 - >
   echo;
@@ -86,4 +86,4 @@ script:
 - >
   echo;
   echo "Running PHP_CodeSniffer";
-  vendor/bin/phpcs --standard=vendor/phplist/phplist4-core/Configuration/PhpCodeSniffer/ Classes/ Tests/;
+  vendor/bin/phpcs --standard=vendor/phplist/phplist4-core/Configuration/PhpCodeSniffer/ Classes/ tests/;

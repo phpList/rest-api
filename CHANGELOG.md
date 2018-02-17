@@ -12,6 +12,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - REST action for getting all subscribers for a list (#83)
 
 ### Changed
+- Adopt more of the default Symfony project structure (#92)
 
 ### Deprecated
 
