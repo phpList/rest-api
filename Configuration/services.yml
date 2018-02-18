@@ -1,6 +1,6 @@
 services:
     PhpList\RestBundle\Controller\:
-        resource: '../Classes/Controller'
+        resource: '../src/Controller'
         public: true
         autowire: true
         tags: ['controller.service_arguments']

@@ -116,25 +116,25 @@ We will only merge pull requests that follow the project's coding style.
 Please check your code with the provided PHP_CodeSniffer standard:
 
 ```bash
-vendor/bin/phpcs --standard=vendor/phplist/phplist4-core/Configuration/PhpCodeSniffer/ Classes/ tests/
+vendor/bin/phpcs --standard=vendor/phplist/phplist4-core/Configuration/PhpCodeSniffer/ src/ tests/
 ```
 
 Please also check the code structure using PHPMD:
 
 ```bash
-vendor/bin/phpmd Classes/ text vendor/phplist/phplist4-core/Configuration/PHPMD/rules.xml
+vendor/bin/phpmd src/ text vendor/phplist/phplist4-core/Configuration/PHPMD/rules.xml
 ```
 
 And also please run the static code analysis:
 
 ```bash
-vendor/bin/phpstan analyse -l 5 Classes/ tests/
+vendor/bin/phpstan analyse -l 5 src/ tests/
 ```
 
 You can also run all code style checks using one long line from a bash shell:
 
 ```bash
-find Classes/ tests/ -name '*.php' -print0 | xargs -0 -n 1 -P 4 php -l && vendor/bin/phpstan analyse -l 5 Classes/ tests/ && vendor/bin/phpmd Classes/ text vendor/phplist/phplist4-core/Configuration/PHPMD/rules.xml && vendor/bin/phpcs --standard=vendor/phplist/phplist4-core/Configuration/PhpCodeSniffer/ Classes/ tests/
+find src/ tests/ -name '*.php' -print0 | xargs -0 -n 1 -P 4 php -l && vendor/bin/phpstan analyse -l 5 src/ tests/ && vendor/bin/phpmd src/ text vendor/phplist/phplist4-core/Configuration/PHPMD/rules.xml && vendor/bin/phpcs --standard=vendor/phplist/phplist4-core/Configuration/PhpCodeSniffer/ src/ tests/
 ```
 
 This will execute all tests except for the unit tests and the integration
