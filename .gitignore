@@ -10,6 +10,6 @@
 /Configuration/parameters.yml
 /Configuration/routing_modules.yml
 /nbproject
+/public/
 /var/
 /vendor/
-/web/
