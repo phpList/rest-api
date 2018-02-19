@@ -15,23 +15,23 @@ class ScriptsTest extends TestCase
     /**
      * @test
      */
-    public function webDirectoryHasBeenCreated()
+    public function publicDirectoryHasBeenCreated()
     {
-        static::assertDirectoryExists($this->getAbsoluteWebDirectoryPath());
+        static::assertDirectoryExists($this->getAbsolutePublicDirectoryPath());
     }
 
     /**
      * @return string
      */
-    private function getAbsoluteWebDirectoryPath(): string
+    private function getAbsolutePublicDirectoryPath(): string
     {
-        return dirname(__DIR__, 3) . '/web/';
+        return dirname(__DIR__, 3) . '/public/';
     }
 
     /**
      * @return string[][]
      */
-    public function webDirectoryFilesDataProvider(): array
+    public function publicDirectoryFilesDataProvider(): array
     {
         return [
             'production entry point' => ['app.php'],
@@ -44,11 +44,11 @@ class ScriptsTest extends TestCase
     /**
      * @test
      * @param string $fileName
-     * @dataProvider webDirectoryFilesDataProvider
+     * @dataProvider publicDirectoryFilesDataProvider
      */
-    public function webDirectoryFilesExist(string $fileName)
+    public function publicDirectoryFilesExist(string $fileName)
     {
-        static::assertFileExists($this->getAbsoluteWebDirectoryPath() . $fileName);
+        static::assertFileExists($this->getAbsolutePublicDirectoryPath() . $fileName);
     }
 
     /**
