@@ -16,7 +16,7 @@ phpList is an open source newsletter manager.
 
 This module is the REST API for phpList 4, providing functions for superusers
 to manage lists, subscribers and subscriptions via REST calls. It uses
-functionality from the `phplist/phplist4-core` module (the phpList 4 core).
+functionality from the `phplist/core` module (the phpList 4 core).
 It does not contain any SQL queries, uses functionality from the new core for
 DB access.
 
@@ -40,7 +40,8 @@ which also has more detailed installation instructions in the README.
 
 You can try out the API using pre-prepared requests and the Postman GUI 
 tool. Install Postman as a browser extension or stand-alone app, open the 
-[phpList 4 REST API Demo collection](https://documenter.getpostman.com/view/3293511/phplist-4-rest-api-demo/RVftkC9t#4710e871-973d-46fa-94b7-727fdc292cd5) and click 'Run in Postman'.
+[phpList 4 REST API Demo collection](https://documenter.getpostman.com/view/3293511/phplist-4-rest-api-demo/RVftkC9t#4710e871-973d-46fa-94b7-727fdc292cd5)
+and click "Run in Postman".
 
 
 ## Contributing to this package
