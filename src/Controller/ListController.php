@@ -66,6 +66,23 @@ class ListController extends FOSRestController implements ClassResourceInterface
     }
 
     /**
+     * Deletes a subscriber list.
+     *
+     * @param Request $request
+     * @param SubscriberList $list
+     *
+     * @return View
+     */
+    public function deleteAction(Request $request, SubscriberList $list): View
+    {
+        $this->requireAuthentication($request);
+
+        $this->subscriberListRepository->remove($list);
+
+        return View::create();
+    }
+
+    /**
      * Gets a list of all subscribers (members) of a subscriber list.
      *
      * @param Request $request

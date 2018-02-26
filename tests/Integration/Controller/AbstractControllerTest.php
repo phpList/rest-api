@@ -150,6 +150,18 @@ abstract class AbstractControllerTest extends AbstractWebTest
     }
 
     /**
+     * Asserts that the current client response has a HTTP NO CONTENT status.
+     *
+     * @return void
+     */
+    protected function assertHttpNoContent()
+    {
+        $response = $this->client->getResponse();
+
+        static::assertSame(Response::HTTP_NO_CONTENT, $response->getStatusCode());
+    }
+
+    /**
      * Asserts that the current client response has a HTTP BAD REQUEST status (and the application/json content type).
      *
      * @return void

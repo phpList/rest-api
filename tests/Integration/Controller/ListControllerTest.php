@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Integration\Controller;
 
+use PhpList\PhpList4\Domain\Repository\Messaging\SubscriberListRepository;
 use PhpList\RestBundle\Controller\ListController;
 
 /**
@@ -169,6 +170,56 @@ class ListControllerTest extends AbstractControllerTest
                 'id' => 1,
             ]
         );
+    }
+
+    /**
+     * @test
+     */
+    public function deleteListWithoutSessionKeyForExistingListReturnsForbiddenStatus()
+    {
+        $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
+        $this->applyDatabaseChanges();
+
+        $this->client->request('delete', '/api/v2/lists/1');
+
+        $this->assertHttpForbidden();
+    }
+
+    /**
+     * @test
+     */
+    public function deleteListWithCurrentSessionKeyForExistingListReturnsNoContentStatus()
+    {
+        $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
+        $this->applyDatabaseChanges();
+
+        $this->authenticatedJsonRequest('delete', '/api/v2/lists/1');
+
+        $this->assertHttpNoContent();
+    }
+
+    /**
+     * @test
+     */
+    public function deleteListWithCurrentSessionKeyForInexistentListReturnsNotFoundStatus()
+    {
+        $this->authenticatedJsonRequest('delete', '/api/v2/lists/999');
+
+        $this->assertHttpNotFound();
+    }
+
+    /**
+     * @test
+     */
+    public function deleteListWithCurrentSessionKeyDeletesList()
+    {
+        $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
+        $this->applyDatabaseChanges();
+
+        $this->authenticatedJsonRequest('delete', '/api/v2/lists/1');
+
+        $listRepository = $this->container->get(SubscriberListRepository::class);
+        static::assertNull($listRepository->find(1));
     }
 
     /**

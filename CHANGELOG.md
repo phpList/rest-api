@@ -7,6 +7,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 ## x.y.z
 
 ### Added
+- REST API endpoint for deleting a list (#98)
 - REST API endpoint for getting list details (#89)
 - System tests for the test and dev environment (#81)
 - REST action for getting all subscribers for a list (#83)
