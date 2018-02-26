@@ -12,6 +12,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 - REST action for getting all subscribers for a list (#83)
 
 ### Changed
+- Move the PHPUnit configuration file (#99)
 - Use the renamed phplist/core package (#97)
 - Adopt more of the default Symfony project structure (#92, #93, #94, #95)
 
