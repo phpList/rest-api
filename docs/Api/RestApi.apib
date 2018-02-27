@@ -166,6 +166,30 @@ provided as basic auth password. (The basic auth user name can be any string.)
             "message": "There is no list with that ID."
         }
 
+### Delete a the list [DELETE]
+
++ Request (application/json)
+
++ Response 204 (application/json)
+
++ Response 403 (application/json)
+
+    + Body
+
+        {
+            "code": 403,
+            "message": "No valid session key was provided as basic auth password."
+        }
+
++ Response 404 (application/json)
+
+    + Body
+
+        {
+            "code": 404,
+            "message": "There is no list with that ID."
+        }
+
 ## Members of a subscriber list [/lists/{list}/members]
 
 ### Retrieve all members of a subscriber list [GET]
