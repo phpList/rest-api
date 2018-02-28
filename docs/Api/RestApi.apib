@@ -78,6 +78,41 @@ that require authentication. (The basic auth user name can be any string.)
             "message": "Not authorized"
         }
 
+## Single session [/sessions/{session}]
+
+### Destroy a the session (log out) [DELETE]
+
++ Request (application/json)
+
++ Response 204 (application/json)
+
++ Response 403 (application/json)
+
+    + Body
+
+        {
+            "code": 403,
+            "message": "No valid session key was provided as basic auth password."
+        }
+
++ Response 403 (application/json)
+
+    + Body
+
+        {
+            "code": 403,
+            "message": "You do not have access to this session."
+        }
+
++ Response 404 (application/json)
+
+    + Body
+
+        {
+            "code": 404,
+            "message": "There is no session with that ID."
+        }
+
 
 # Group Lists
 
