@@ -37,7 +37,7 @@ trait AuthenticationTrait
             throw new AccessDeniedHttpException(
                 'No valid session key was provided as basic auth password.',
                 null,
-                1512749701851
+                1512749701
             );
         }
     }

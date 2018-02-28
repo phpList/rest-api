@@ -57,7 +57,7 @@ class SubscriberController extends FOSRestController implements ClassResourceInt
 
         $email = $request->get('email');
         if ($this->subscriberRepository->findOneByEmail($email) !== null) {
-            throw new ConflictHttpException('This resource already exists.', null, 1513439108942);
+            throw new ConflictHttpException('This resource already exists.', null, 1513439108);
         }
 
         $subscriber = new Subscriber();
@@ -97,7 +97,7 @@ class SubscriberController extends FOSRestController implements ClassResourceInt
             throw new UnprocessableEntityHttpException(
                 'Some fields invalid:' . implode(', ', $invalidFields),
                 null,
-                1513446736452
+                1513446736
             );
         }
     }
