@@ -10,8 +10,11 @@ use PhpList\PhpList4\Domain\Model\Identity\Administrator;
 use PhpList\PhpList4\Domain\Model\Identity\AdministratorToken;
 use PhpList\PhpList4\Domain\Repository\Identity\AdministratorRepository;
 use PhpList\PhpList4\Domain\Repository\Identity\AdministratorTokenRepository;
+use PhpList\PhpList4\Security\Authentication;
+use PhpList\RestBundle\Controller\Traits\AuthenticationTrait;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
@@ -22,6 +25,8 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
  */
 class SessionController extends FOSRestController implements ClassResourceInterface
 {
+    use AuthenticationTrait;
+
     /**
      * @var AdministratorRepository
      */
@@ -33,13 +38,16 @@ class SessionController extends FOSRestController implements ClassResourceInterf
     private $administratorTokenRepository = null;
 
     /**
+     * @param Authentication $authentication
      * @param AdministratorRepository $administratorRepository
      * @param AdministratorTokenRepository $tokenRepository
      */
     public function __construct(
+        Authentication $authentication,
         AdministratorRepository $administratorRepository,
         AdministratorTokenRepository $tokenRepository
     ) {
+        $this->authentication = $authentication;
         $this->administratorRepository = $administratorRepository;
         $this->administratorTokenRepository = $tokenRepository;
     }
@@ -67,6 +75,30 @@ class SessionController extends FOSRestController implements ClassResourceInterf
         $token = $this->createAndPersistToken($administrator);
 
         return View::create()->setStatusCode(Response::HTTP_CREATED)->setData($token);
+    }
+
+    /**
+     * Deletes a session.
+     *
+     * This action may only be called for sessions that are owned by the authenticated administrator.
+     *
+     * @param Request $request
+     * @param AdministratorToken $token
+     *
+     * @return View
+     *
+     * @throws AccessDeniedHttpException
+     */
+    public function deleteAction(Request $request, AdministratorToken $token): View
+    {
+        $administrator = $this->requireAuthentication($request);
+        if ($token->getAdministrator() !== $administrator) {
+            throw new AccessDeniedHttpException('You do not have access to this session.', null, 1519831644);
+        }
+
+        $this->administratorTokenRepository->remove($token);
+
+        return View::create();
     }
 
     /**

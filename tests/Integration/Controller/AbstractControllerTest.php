@@ -192,22 +192,13 @@ abstract class AbstractControllerTest extends AbstractWebTest
     }
 
     /**
-     * Asserts that the current client response has a HTTP FORBIDDEN status and the corresponding error message
-     * provided in the JSON response.
+     * Asserts that the current client response has a HTTP FORBIDDEN status.
      *
      * @return void
      */
     protected function assertHttpForbidden()
     {
         $this->assertHttpStatusWithJsonContentType(Response::HTTP_FORBIDDEN);
-
-        static::assertSame(
-            [
-                'code' => Response::HTTP_FORBIDDEN,
-                'message' => 'No valid session key was provided as basic auth password.',
-            ],
-            $this->getDecodedJsonResponseContent()
-        );
     }
 
     /**

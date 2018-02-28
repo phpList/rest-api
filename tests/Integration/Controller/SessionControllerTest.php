@@ -196,4 +196,68 @@ class SessionControllerTest extends AbstractControllerTest
         static::assertSame($expiry, $token->getExpiry()->format(\DateTime::ATOM));
         static::assertSame($administratorId, $token->getAdministrator()->getId());
     }
+
+    /**
+     * @test
+     */
+    public function deleteSessionWithoutSessionKeyForExistingSessionReturnsForbiddenStatus()
+    {
+        $this->getDataSet()->addTable(static::ADMINISTRATOR_TABLE_NAME, __DIR__ . '/Fixtures/Administrator.csv');
+        $this->getDataSet()->addTable(static::TOKEN_TABLE_NAME, __DIR__ . '/Fixtures/AdministratorToken.csv');
+        $this->applyDatabaseChanges();
+
+        $this->client->request('delete', '/api/v2/sessions/1');
+
+        $this->assertHttpForbidden();
+    }
+
+    /**
+     * @test
+     */
+    public function deleteSessionWithCurrentSessionKeyForExistingSessionReturnsNoContentStatus()
+    {
+        $this->authenticatedJsonRequest('delete', '/api/v2/sessions/1');
+
+        $this->assertHttpNoContent();
+    }
+
+    /**
+     * @test
+     */
+    public function deleteSessionWithCurrentSessionKeyForInexistentSessionReturnsNotFoundStatus()
+    {
+        $this->authenticatedJsonRequest('delete', '/api/v2/sessions/999');
+
+        $this->assertHttpNotFound();
+    }
+
+    /**
+     * @test
+     */
+    public function deleteSessionWithCurrentSessionAndOwnSessionKeyDeletesSession()
+    {
+        $this->authenticatedJsonRequest('delete', '/api/v2/sessions/1');
+
+        static::assertNull($this->administratorTokenRepository->find(1));
+    }
+
+    /**
+     * @test
+     */
+    public function deleteSessionWithCurrentSessionAndOwnSessionKeyKeepsReturnsForbiddenStatus()
+    {
+        $this->authenticatedJsonRequest('delete', '/api/v2/sessions/3');
+
+        $this->assertHttpForbidden();
+    }
+
+    /**
+     * @test
+     */
+    public function deleteSessionWithCurrentSessionAndOwnSessionKeyKeepsSession()
+    {
+        $this->authenticatedJsonRequest('delete', '/api/v2/sessions/3');
+
+        static::assertNotNull($this->administratorTokenRepository->find(3));
+    }
 }

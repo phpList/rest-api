@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Controller\Traits;
 
+use PhpList\PhpList4\Domain\Model\Identity\Administrator;
 use PhpList\PhpList4\Security\Authentication;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -26,11 +27,11 @@ trait AuthenticationTrait
      *
      * @param Request $request
      *
-     * @return void
+     * @return Administrator the authenticated administrator
      *
      * @throws AccessDeniedHttpException
      */
-    private function requireAuthentication(Request $request)
+    private function requireAuthentication(Request $request): Administrator
     {
         $administrator = $this->authentication->authenticateByApiKey($request);
         if ($administrator === null) {
@@ -40,5 +41,7 @@ trait AuthenticationTrait
                 1512749701
             );
         }
+
+        return $administrator;
     }
 }
