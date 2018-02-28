@@ -61,7 +61,7 @@ class SessionController extends FOSRestController implements ClassResourceInterf
             $request->get('password')
         );
         if ($administrator === null) {
-            throw new UnauthorizedHttpException('', 'Not authorized', null, 1500567098798);
+            throw new UnauthorizedHttpException('', 'Not authorized', null, 1500567098);
         }
 
         $token = $this->createAndPersistToken($administrator);
@@ -81,10 +81,10 @@ class SessionController extends FOSRestController implements ClassResourceInterf
     private function validateCreateRequest(Request $request)
     {
         if ($request->getContent() === '') {
-            throw new BadRequestHttpException('Empty JSON data', null, 1500559729794);
+            throw new BadRequestHttpException('Empty JSON data', null, 1500559729);
         }
         if (empty($request->get('login_name')) || empty($request->get('password'))) {
-            throw new BadRequestHttpException('Incomplete credentials', null, 1500562647846);
+            throw new BadRequestHttpException('Incomplete credentials', null, 1500562647);
         }
     }
 
