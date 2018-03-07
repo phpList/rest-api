@@ -23,6 +23,7 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 ### Removed
 
 ### Fixed
+- Prevent crashes from sensio/framework-extra-bundle updates (#105)
 - Make the exception codes 32-bit safe (#100)
 - Always truncate the DB tables after an integration test (#86)
 
