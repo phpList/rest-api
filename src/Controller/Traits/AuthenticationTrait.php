@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Controller\Traits;
 
-use PhpList\PhpList4\Domain\Model\Identity\Administrator;
-use PhpList\PhpList4\Security\Authentication;
+use PhpList\Core\Domain\Model\Identity\Administrator;
+use PhpList\Core\Security\Authentication;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 

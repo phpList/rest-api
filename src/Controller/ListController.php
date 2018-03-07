@@ -6,9 +6,9 @@ namespace PhpList\RestBundle\Controller;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Routing\ClassResourceInterface;
 use FOS\RestBundle\View\View;
-use PhpList\PhpList4\Domain\Model\Messaging\SubscriberList;
-use PhpList\PhpList4\Domain\Repository\Messaging\SubscriberListRepository;
-use PhpList\PhpList4\Security\Authentication;
+use PhpList\Core\Domain\Model\Messaging\SubscriberList;
+use PhpList\Core\Domain\Repository\Messaging\SubscriberListRepository;
+use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Controller\Traits\AuthenticationTrait;
 use Symfony\Component\HttpFoundation\Request;
 

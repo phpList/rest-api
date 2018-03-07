@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Integration\Controller;
 
-use PhpList\PhpList4\Domain\Repository\Messaging\SubscriberListRepository;
+use PhpList\Core\Domain\Repository\Messaging\SubscriberListRepository;
 use PhpList\RestBundle\Controller\ListController;
 
 /**

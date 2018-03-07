@@ -4,8 +4,8 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Tests\Integration\Controller;
 
 use Doctrine\Common\Persistence\ObjectRepository;
-use PhpList\PhpList4\Domain\Model\Identity\AdministratorToken;
-use PhpList\PhpList4\Domain\Repository\Identity\AdministratorTokenRepository;
+use PhpList\Core\Domain\Model\Identity\AdministratorToken;
+use PhpList\Core\Domain\Repository\Identity\AdministratorTokenRepository;
 use PhpList\RestBundle\Controller\SessionController;
 use Symfony\Component\HttpFoundation\Response;
 

@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Integration\Controller;
 
-use PhpList\PhpList4\TestingSupport\AbstractWebTest;
-use PhpList\PhpList4\TestingSupport\Traits\DatabaseTestTrait;
+use PhpList\Core\TestingSupport\AbstractWebTest;
+use PhpList\Core\TestingSupport\Traits\DatabaseTestTrait;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\Response;
 
