@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Integration\Controller;
 
-use PhpList\PhpList4\Domain\Model\Subscription\Subscriber;
-use PhpList\PhpList4\Domain\Repository\Subscription\SubscriberRepository;
+use PhpList\Core\Domain\Model\Subscription\Subscriber;
+use PhpList\Core\Domain\Repository\Subscription\SubscriberRepository;
 use PhpList\RestBundle\Controller\SubscriberController;
 
 /**

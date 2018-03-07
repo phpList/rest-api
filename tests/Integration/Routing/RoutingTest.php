@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Integration\Routing;
 
-use PhpList\PhpList4\TestingSupport\AbstractWebTest;
+use PhpList\Core\TestingSupport\AbstractWebTest;
 
 /**
  * Testcase.
