@@ -30,10 +30,7 @@ class PhpListRestExtension extends Extension
         // This parameter is unused, but not optional. This line will avoid a static analysis warning this.
         $configs;
 
-        $loader = new YamlFileLoader(
-            $containerBuilder,
-            new FileLocator(__DIR__ . '/../../Configuration')
-        );
+        $loader = new YamlFileLoader($containerBuilder, new FileLocator(__DIR__ . '/../../config'));
         $loader->load('services.yml');
     }
 }
