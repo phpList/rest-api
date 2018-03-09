@@ -100,7 +100,7 @@ When running the integration tests, you will need to specify the database name
 and access credentials on the command line (in the same line):
 
 ```bash
-PHPLIST_DATABASE_NAME=phplist_test PHPLIST_DATABASE_USER=phplist PHPLIST_DATABASE_PASSWORD=batterystaple vendor/bin/phpunit -c Configuration/PHPUnit/phpunit.xml tests/Integration/
+PHPLIST_DATABASE_NAME=phplist_test PHPLIST_DATABASE_USER=phplist PHPLIST_DATABASE_PASSWORD=batterystaple vendor/bin/phpunit -c config/PHPUnit/phpunit.xml tests/Integration/
 ```
 
 
@@ -116,13 +116,13 @@ We will only merge pull requests that follow the project's coding style.
 Please check your code with the provided PHP_CodeSniffer standard:
 
 ```bash
-vendor/bin/phpcs --standard=vendor/phplist/core/Configuration/PhpCodeSniffer/ src/ tests/
+vendor/bin/phpcs --standard=vendor/phplist/core/config/PhpCodeSniffer/ src/ tests/
 ```
 
 Please also check the code structure using PHPMD:
 
 ```bash
-vendor/bin/phpmd src/ text vendor/phplist/core/Configuration/PHPMD/rules.xml
+vendor/bin/phpmd src/ text vendor/phplist/core/config/PHPMD/rules.xml
 ```
 
 And also please run the static code analysis:
@@ -134,7 +134,7 @@ vendor/bin/phpstan analyse -l 5 src/ tests/
 You can also run all code style checks using one long line from a bash shell:
 
 ```bash
-find src/ tests/ -name '*.php' -print0 | xargs -0 -n 1 -P 4 php -l && vendor/bin/phpstan analyse -l 5 src/ tests/ && vendor/bin/phpmd src/ text vendor/phplist/core/Configuration/PHPMD/rules.xml && vendor/bin/phpcs --standard=vendor/phplist/core/Configuration/PhpCodeSniffer/ src/ tests/
+find src/ tests/ -name '*.php' -print0 | xargs -0 -n 1 -P 4 php -l && vendor/bin/phpstan analyse -l 5 src/ tests/ && vendor/bin/phpmd src/ text vendor/phplist/core/config/PHPMD/rules.xml && vendor/bin/phpcs --standard=vendor/phplist/core/config/PhpCodeSniffer/ src/ tests/
 ```
 
 This will execute all tests except for the unit tests and the integration
