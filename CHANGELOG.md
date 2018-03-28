@@ -4,7 +4,19 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Semantic Versioning](https://semver.org/).
 
 
-## x.y.z
+## x.y.z (next release)
+
+### Added
+
+### Changed
+
+### Deprecated
+
+### Removed
+
+### Fixed
+
+## 4.0.0-alpha2
 
 ### Added
 - REST API endpoint for deleting a session (log out) (#101)
