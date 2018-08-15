@@ -121,9 +121,14 @@
                         "view_response_listener": {
                             "enabled": true
                         }
+
                     },
                     "exception": {
-                        "enabled": true
+                        "enabled": true,
+                        "messages": {
+                            "Symfony\\Component\\HttpKernel\\Exception\\BadRequestHttpException": true
+                        }
+
                     }
                 }
             }
