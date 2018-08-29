@@ -131,7 +131,6 @@
                     },
                     "service": {
                         "view_handler": "my.secure_view_handler"
-
                     }
                 }
             }
