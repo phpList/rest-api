@@ -23,7 +23,7 @@ class SecuredViewHandler
      *
      * @return Response
      */
-    public function createResponse(ViewHandler $handler, View $view, Request $request, $format)
+    public function createResponse(ViewHandler $handler, View $view, Request $request, string $format)
     {
         $view->setHeaders([
             'X-Content-Type-Options' => 'nosniff',
