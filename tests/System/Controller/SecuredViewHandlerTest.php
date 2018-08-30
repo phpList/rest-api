@@ -54,13 +54,17 @@ class SecuredViewHandlerTest extends TestCase
         $this->startSymfonyServer($environment);
 
         $response = $this->httpClient->get(
-            '/api/v2/sessions'
+            '/api/v2/sessions',
+            ['base_uri' => $this->getBaseUrl()]
         );
         $expectedHeaders = [
             'X-Content-Type-Options' => 'nosniff',
             'Content-Security-Policy' => "default-src 'none'",
             'X-Frame-Options' => 'DENY'
         ];
-        static::assertSame($expectedHeaders, $response->getHeaders());
+
+        foreach ($expectedHeaders as $key => $value) {
+            static::assertSame([$value], $response->getHeader($key));
+        }
     }
 }
