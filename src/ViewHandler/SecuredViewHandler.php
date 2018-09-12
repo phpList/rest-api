@@ -15,7 +15,6 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class SecuredViewHandler
 {
-
     /**
      * @param ViewHandler $viewHandler
      * @param View $view
