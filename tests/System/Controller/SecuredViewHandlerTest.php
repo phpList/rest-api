@@ -59,7 +59,7 @@ class SecuredViewHandlerTest extends TestCase
         $expectedHeaders = [
             'X-Content-Type-Options' => 'nosniff',
             'Content-Security-Policy' => "default-src 'none'",
-            'X-Frame-Options' => 'DENY'
+            'X-Frame-Options' => 'DENY',
         ];
 
         foreach ($expectedHeaders as $key => $value) {
