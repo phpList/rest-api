@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+
 namespace PhpList\RestBundle\Tests\System\Controller;
 
 use GuzzleHttp\Client;
@@ -9,13 +10,11 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Test for security headers
+ *
  * @author Xheni Myrtaj <xheni@phplist.com>
- *
- *
  */
 class SecuredViewHandlerTest extends TestCase
 {
-
     use SymfonyServerTrait;
 
     /**
