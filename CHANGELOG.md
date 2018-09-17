@@ -7,6 +7,9 @@ This project adheres to [Semantic Versioning](https://semver.org/).
 ## x.y.z (next release)
 
 ### Added
+- Run the system test on Travis (#113)
+- Add security headers to the default response (#110)
+- Whitelist BadRequestHttpException so that messages are not sanitized (#108)
 
 ### Changed
 
