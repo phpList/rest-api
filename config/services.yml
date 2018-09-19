@@ -11,4 +11,4 @@ services:
     my.secure_view_handler:
       parent: fos_rest.view_handler.default
       calls:
-       - ['registerHandler', [ 'json', ['@my.secure_handler', 'createResponse'] ] ]
+        - ['registerHandler', [ 'json', ['@my.secure_handler', 'createResponse'] ] ]
