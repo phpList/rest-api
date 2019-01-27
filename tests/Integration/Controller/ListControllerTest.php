@@ -10,6 +10,7 @@ use PhpList\RestBundle\Controller\ListController;
  * Testcase.
  *
  * @author Oliver Klee <oliver@phplist.com>
+ * @author Xheni Myrtaj <xheni@phplist.com>
  */
 class ListControllerTest extends AbstractControllerTest
 {
@@ -107,6 +108,16 @@ class ListControllerTest extends AbstractControllerTest
                     'public' => true,
                     'category' => '',
                     'id' => 2,
+                ],
+                [
+                    'name' => 'Tech news',
+                    'description' => '',
+                    'creation_date' => '2019-02-11T15:01:15+00:00',
+                    'list_position' => 12,
+                    'subject_prefix' => '',
+                    'public' => true,
+                    'category' => '',
+                    'id' => 3,
                 ]
             ]
         );
@@ -319,5 +330,84 @@ class ListControllerTest extends AbstractControllerTest
                 ]
             ]
         );
+    }
+
+    /**
+     * @test
+     */
+    public function getListCountForExistingListWithoutSessionKeyReturnsForbiddenStatus()
+    {
+        $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
+        $this->applyDatabaseChanges();
+
+        $this->client->request('get', '/api/v2/lists/1/count');
+
+        $this->assertHttpForbidden();
+    }
+
+    /**
+     * @test
+     */
+    public function getListCountForExistingListWithExpiredSessionKeyReturnsForbiddenStatus()
+    {
+        $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
+        $this->getDataSet()->addTable(static::ADMINISTRATOR_TABLE_NAME, __DIR__ . '/Fixtures/Administrator.csv');
+        $this->getDataSet()->addTable(static::TOKEN_TABLE_NAME, __DIR__ . '/Fixtures/AdministratorToken.csv');
+        $this->applyDatabaseChanges();
+
+        $this->client->request(
+            'get',
+            '/api/v2/lists/1/count',
+            [],
+            [],
+            ['PHP_AUTH_USER' => 'unused', 'PHP_AUTH_PW' => 'cfdf64eecbbf336628b0f3071adba763']
+        );
+
+        $this->assertHttpForbidden();
+    }
+
+    /**
+     * @test
+     */
+    public function getListCountWithCurrentSessionKeyForExistingListReturnsOkayStatus()
+    {
+        $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
+        $this->applyDatabaseChanges();
+
+        $this->authenticatedJsonRequest('get', '/api/v2/lists/1/count');
+
+        $this->assertHttpOkay();
+    }
+
+    /**
+     * @test
+     */
+    public function getListCountWithCurrentSessionKeyForExistingListWithSubscribersReturnsSubscribersCount()
+    {
+        $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
+        $this->getDataSet()->addTable(static::SUBSCRIBER_TABLE_NAME, __DIR__ . '/Fixtures/Subscriber.csv');
+        $this->getDataSet()->addTable(static::SUBSCRIPTION_TABLE_NAME, __DIR__ . '/Fixtures/Subscription.csv');
+        $this->applyDatabaseChanges();
+
+        $this->authenticatedJsonRequest('get', '/api/v2/lists/2/count');
+        $response = $this->getIntResponseContent();
+        
+        static::assertSame(1, $response);
+    }
+
+    /**
+     * @test
+     */
+    public function getListCountWithCurrentSessionKeyForExistingListWithNoSubscribersReturnsZero()
+    {
+        $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
+        $this->getDataSet()->addTable(static::SUBSCRIBER_TABLE_NAME, __DIR__ . '/Fixtures/Subscriber.csv');
+        $this->getDataSet()->addTable(static::SUBSCRIPTION_TABLE_NAME, __DIR__ . '/Fixtures/Subscription.csv');
+        $this->applyDatabaseChanges();
+
+        $this->authenticatedJsonRequest('get', '/api/v2/lists/3/count');
+        $response = $this->getIntResponseContent();
+
+        static::assertSame(0, $response);
     }
 }
