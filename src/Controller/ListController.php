@@ -100,6 +100,7 @@ class ListController extends FOSRestController implements ClassResourceInterface
 
     /**
      * Gets the total number of subscribers of a list.
+     *
      * @param Request $request
      * @param SubscriberList $list
      *
