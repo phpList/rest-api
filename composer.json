@@ -27,7 +27,7 @@
     "require": {
         "php": "~7.0.0 || ~7.1.0 || ~7.2.0",
 
-        "phplist/core": "4.0.x-dev",
+        "phplist/core": "dev-phplist3",
         "friendsofsymfony/rest-bundle": "^2.3",
         "sensio/framework-extra-bundle": "5.1.0",
 
