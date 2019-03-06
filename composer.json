@@ -119,7 +119,7 @@
                     },
                     "view": {
                         "view_response_listener": {
-                            "enabled": true
+                            "enabled": false
                         }
 
                     },
