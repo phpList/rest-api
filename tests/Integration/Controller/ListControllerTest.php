@@ -118,7 +118,7 @@ class ListControllerTest extends AbstractControllerTest
                     'public' => true,
                     'category' => '',
                     'id' => 3,
-                ]
+                ],
             ]
         );
     }
