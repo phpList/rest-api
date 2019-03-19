@@ -390,7 +390,7 @@ class ListControllerTest extends AbstractControllerTest
         $this->applyDatabaseChanges();
 
         $this->authenticatedJsonRequest('get', '/api/v2/lists/2/count');
-        $response = $this->getIntResponseContent();
+        $response = $this->getResponseContentAsInt();
         
         static::assertSame(1, $response);
     }
@@ -406,7 +406,7 @@ class ListControllerTest extends AbstractControllerTest
         $this->applyDatabaseChanges();
 
         $this->authenticatedJsonRequest('get', '/api/v2/lists/3/count');
-        $response = $this->getIntResponseContent();
+        $response = $this->getResponseContentAsInt();
 
         static::assertSame(0, $response);
     }

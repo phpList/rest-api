@@ -103,11 +103,11 @@ abstract class AbstractControllerTest extends AbstractWebTest
     }
 
     /**
-     * Returns Int as response content.
+     * Returns the response content as int.
      *
      * @return int
      */
-    protected function getIntResponseContent(): int
+    protected function getResponseContentAsInt(): int
     {
         return json_decode($this->client->getResponse()->getContent(), true);
     }
