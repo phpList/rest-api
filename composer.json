@@ -108,7 +108,7 @@
                         "enabled": true,
                         "rules": [
                             {
-                                "path": "^/api/v2/",
+                                "path": "^/",
                                 "fallback_format": "json"
                             },
                             {
