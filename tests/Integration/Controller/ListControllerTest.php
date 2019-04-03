@@ -335,12 +335,12 @@ class ListControllerTest extends AbstractControllerTest
     /**
      * @test
      */
-    public function getListCountForExistingListWithoutSessionKeyReturnsForbiddenStatus()
+    public function getListCountsubscribersForExistingListWithoutSessionKeyReturnsForbiddenStatus()
     {
         $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
         $this->applyDatabaseChanges();
 
-        $this->client->request('get', '/api/v2/lists/1/count');
+        $this->client->request('get', '/api/v2/lists/1/countsubscribers');
 
         $this->assertHttpForbidden();
     }
@@ -348,7 +348,7 @@ class ListControllerTest extends AbstractControllerTest
     /**
      * @test
      */
-    public function getListCountForExistingListWithExpiredSessionKeyReturnsForbiddenStatus()
+    public function getListCountsubscribersForExistingListWithExpiredSessionKeyReturnsForbiddenStatus()
     {
         $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
         $this->getDataSet()->addTable(static::ADMINISTRATOR_TABLE_NAME, __DIR__ . '/Fixtures/Administrator.csv');
@@ -357,7 +357,7 @@ class ListControllerTest extends AbstractControllerTest
 
         $this->client->request(
             'get',
-            '/api/v2/lists/1/count',
+            '/api/v2/lists/1/countsubscribers',
             [],
             [],
             ['PHP_AUTH_USER' => 'unused', 'PHP_AUTH_PW' => 'cfdf64eecbbf336628b0f3071adba763']
@@ -369,12 +369,12 @@ class ListControllerTest extends AbstractControllerTest
     /**
      * @test
      */
-    public function getListCountWithCurrentSessionKeyForExistingListReturnsOkayStatus()
+    public function getListCountsubscribersWithCurrentSessionKeyForExistingListReturnsOkayStatus()
     {
         $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
         $this->applyDatabaseChanges();
 
-        $this->authenticatedJsonRequest('get', '/api/v2/lists/1/count');
+        $this->authenticatedJsonRequest('get', '/api/v2/lists/1/countsubscribers');
 
         $this->assertHttpOkay();
     }
@@ -382,32 +382,32 @@ class ListControllerTest extends AbstractControllerTest
     /**
      * @test
      */
-    public function getListCountWithCurrentSessionKeyForExistingListWithSubscribersReturnsSubscribersCount()
+    public function getListCountsubscribersWithCurrentSessionKeyForExistingListWithNoSubscribersReturnsZero()
     {
         $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
         $this->getDataSet()->addTable(static::SUBSCRIBER_TABLE_NAME, __DIR__ . '/Fixtures/Subscriber.csv');
         $this->getDataSet()->addTable(static::SUBSCRIPTION_TABLE_NAME, __DIR__ . '/Fixtures/Subscription.csv');
         $this->applyDatabaseChanges();
 
-        $this->authenticatedJsonRequest('get', '/api/v2/lists/2/count');
+        $this->authenticatedJsonRequest('get', '/api/v2/lists/3/countsubscribers');
         $response = $this->getResponseContentAsInt();
-        
-        static::assertSame(1, $response);
+
+        static::assertSame(0, $response);
     }
 
     /**
      * @test
      */
-    public function getListCountWithCurrentSessionKeyForExistingListWithNoSubscribersReturnsZero()
+    public function getListCountsubscribersWithCurrentSessionKeyForExistingListWithSubscribersReturnsSubscribersCount()
     {
         $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
         $this->getDataSet()->addTable(static::SUBSCRIBER_TABLE_NAME, __DIR__ . '/Fixtures/Subscriber.csv');
         $this->getDataSet()->addTable(static::SUBSCRIPTION_TABLE_NAME, __DIR__ . '/Fixtures/Subscription.csv');
         $this->applyDatabaseChanges();
 
-        $this->authenticatedJsonRequest('get', '/api/v2/lists/3/count');
+        $this->authenticatedJsonRequest('get', '/api/v2/lists/2/countsubscribers');
         $response = $this->getResponseContentAsInt();
 
-        static::assertSame(0, $response);
+        static::assertSame(1, $response);
     }
 }
