@@ -335,12 +335,12 @@ class ListControllerTest extends AbstractControllerTest
     /**
      * @test
      */
-    public function getListCountsubscribersForExistingListWithoutSessionKeyReturnsForbiddenStatus()
+    public function getListCountSubscribersForExistingListWithoutSessionKeyReturnsForbiddenStatus()
     {
         $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
         $this->applyDatabaseChanges();
 
-        $this->client->request('get', '/api/v2/lists/1/countsubscribers');
+        $this->client->request('get', '/api/v2/lists/1/count/subscribers');
 
         $this->assertHttpForbidden();
     }
@@ -348,7 +348,7 @@ class ListControllerTest extends AbstractControllerTest
     /**
      * @test
      */
-    public function getListCountsubscribersForExistingListWithExpiredSessionKeyReturnsForbiddenStatus()
+    public function getListCountSubscribersForExistingListWithExpiredSessionKeyReturnsForbiddenStatus()
     {
         $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
         $this->getDataSet()->addTable(static::ADMINISTRATOR_TABLE_NAME, __DIR__ . '/Fixtures/Administrator.csv');
@@ -357,7 +357,7 @@ class ListControllerTest extends AbstractControllerTest
 
         $this->client->request(
             'get',
-            '/api/v2/lists/1/countsubscribers',
+            '/api/v2/lists/1/count/subscribers',
             [],
             [],
             ['PHP_AUTH_USER' => 'unused', 'PHP_AUTH_PW' => 'cfdf64eecbbf336628b0f3071adba763']
@@ -369,12 +369,12 @@ class ListControllerTest extends AbstractControllerTest
     /**
      * @test
      */
-    public function getListCountsubscribersWithCurrentSessionKeyForExistingListReturnsOkayStatus()
+    public function getListCountSubscribersWithCurrentSessionKeyForExistingListReturnsOkayStatus()
     {
         $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
         $this->applyDatabaseChanges();
 
-        $this->authenticatedJsonRequest('get', '/api/v2/lists/1/countsubscribers');
+        $this->authenticatedJsonRequest('get', '/api/v2/lists/1/count/subscribers');
 
         $this->assertHttpOkay();
     }
@@ -382,32 +382,32 @@ class ListControllerTest extends AbstractControllerTest
     /**
      * @test
      */
-    public function getListCountsubscribersWithCurrentSessionKeyForExistingListWithNoSubscribersReturnsZero()
+    public function getListCountSubscribersWithCurrentSessionKeyForExistingListWithNoSubscribersReturnsZero()
     {
         $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
         $this->getDataSet()->addTable(static::SUBSCRIBER_TABLE_NAME, __DIR__ . '/Fixtures/Subscriber.csv');
         $this->getDataSet()->addTable(static::SUBSCRIPTION_TABLE_NAME, __DIR__ . '/Fixtures/Subscription.csv');
         $this->applyDatabaseChanges();
 
-        $this->authenticatedJsonRequest('get', '/api/v2/lists/3/countsubscribers');
-        $response = $this->getResponseContentAsInt();
+        $this->authenticatedJsonRequest('get', '/api/v2/lists/3/count/subscribers');
+        $responseContent = $this->getResponseContentAsInt();
 
-        static::assertSame(0, $response);
+        static::assertSame(0, $responseContent);
     }
 
     /**
      * @test
      */
-    public function getListCountsubscribersWithCurrentSessionKeyForExistingListWithSubscribersReturnsSubscribersCount()
+    public function getListCountSubscribersWithCurrentSessionKeyForExistingListWithSubscribersReturnsSubscribersCount()
     {
         $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
         $this->getDataSet()->addTable(static::SUBSCRIBER_TABLE_NAME, __DIR__ . '/Fixtures/Subscriber.csv');
         $this->getDataSet()->addTable(static::SUBSCRIPTION_TABLE_NAME, __DIR__ . '/Fixtures/Subscription.csv');
         $this->applyDatabaseChanges();
 
-        $this->authenticatedJsonRequest('get', '/api/v2/lists/2/countsubscribers');
-        $response = $this->getResponseContentAsInt();
+        $this->authenticatedJsonRequest('get', '/api/v2/lists/2/count/subscribers');
+        $responseContent = $this->getResponseContentAsInt();
 
-        static::assertSame(1, $response);
+        static::assertSame(1, $responseContent);
     }
 }
