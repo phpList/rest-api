@@ -106,7 +106,7 @@ class ListController extends FOSRestController implements ClassResourceInterface
      *
      * @return View
      */
-    public function getCountSubscribersAction(Request $request, SubscriberList $list): View
+    public function getSubscribersCountAction(Request $request, SubscriberList $list): View
     {
         $this->requireAuthentication($request);
 
