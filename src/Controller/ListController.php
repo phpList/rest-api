@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
  * This controller provides REST API access to subscriber lists.
  *
  * @author Oliver Klee <oliver@phplist.com>
+ * @author Xheni Myrtaj <xheni@phplist.com>
  */
 class ListController extends FOSRestController implements ClassResourceInterface
 {
@@ -95,5 +96,20 @@ class ListController extends FOSRestController implements ClassResourceInterface
         $this->requireAuthentication($request);
 
         return View::create()->setData($list->getSubscribers());
+    }
+
+    /**
+     * Gets the total number of subscribers of a list.
+     *
+     * @param Request $request
+     * @param SubscriberList $list
+     *
+     * @return View
+     */
+    public function getSubscribersCountAction(Request $request, SubscriberList $list): View
+    {
+        $this->requireAuthentication($request);
+
+        return View::create()->setData(count($list->getSubscribers()));
     }
 }
