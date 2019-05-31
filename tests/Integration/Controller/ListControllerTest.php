@@ -408,6 +408,6 @@ class ListControllerTest extends AbstractControllerTest
         $this->authenticatedJsonRequest('get', '/api/v2/lists/2/subscribers/count');
         $responseContent = $this->getResponseContentAsInt();
 
-        static::assertSame(1, $responseContent);
+        static::assertSame(2, $responseContent);
     }
 }
