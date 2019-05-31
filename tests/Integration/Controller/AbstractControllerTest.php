@@ -103,6 +103,16 @@ abstract class AbstractControllerTest extends AbstractWebTest
     }
 
     /**
+     * Returns the response content as int.
+     *
+     * @return int
+     */
+    protected function getResponseContentAsInt(): int
+    {
+        return json_decode($this->client->getResponse()->getContent(), true);
+    }
+
+    /**
      * Asserts that the (decoded) JSON response content is the same as the expected array.
      *
      * @param array $expected
