@@ -35,7 +35,7 @@ class SessionController extends FOSRestController implements ClassResourceInterf
     /**
      * @var AdministratorTokenRepository
      */
-    private $administratorTokenRepository = null;
+    private $tokenRepository = null;
 
     /**
      * @param Authentication $authentication
@@ -49,7 +49,7 @@ class SessionController extends FOSRestController implements ClassResourceInterf
     ) {
         $this->authentication = $authentication;
         $this->administratorRepository = $administratorRepository;
-        $this->administratorTokenRepository = $tokenRepository;
+        $this->tokenRepository = $tokenRepository;
     }
 
     /**
@@ -96,7 +96,7 @@ class SessionController extends FOSRestController implements ClassResourceInterf
             throw new AccessDeniedHttpException('You do not have access to this session.', null, 1519831644);
         }
 
-        $this->administratorTokenRepository->remove($token);
+        $this->tokenRepository->remove($token);
 
         return View::create();
     }
@@ -131,7 +131,7 @@ class SessionController extends FOSRestController implements ClassResourceInterf
         $token->setAdministrator($administrator);
         $token->generateExpiry();
         $token->generateKey();
-        $this->administratorTokenRepository->save($token);
+        $this->tokenRepository->save($token);
 
         return $token;
     }
