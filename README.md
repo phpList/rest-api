@@ -1,6 +1,6 @@
 # phpList 4 REST API
 
-[![Build Status](https://travis-ci.org/phpList/rest-api.svg?branch=master)](https://travis-ci.org/phpList/rest-api)
+[![Build Status](https://travis-ci.com/phpList/rest-api.svg?branch=master)](https://travis-ci.com/phpList/rest-api)
 [![Latest Stable Version](https://poser.pugx.org/phplist/rest-api/v/stable.svg)](https://packagist.org/packages/phpList/rest-api)
 [![Total Downloads](https://poser.pugx.org/phplist/rest-api/downloads.svg)](https://packagist.org/packages/phpList/rest-api)
 [![Latest Unstable Version](https://poser.pugx.org/phplist/rest-api/v/unstable.svg)](https://packagist.org/packages/phpList/rest-api)
