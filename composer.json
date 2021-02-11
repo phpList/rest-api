@@ -30,8 +30,7 @@
         "source": "https://github.com/phpList/rest-api"
     },
     "require": {
-        "php": "~7.0.0 || ~7.1.0 || ~7.2.0 || ~7.3.0 || ~7.4.0",
-
+        "php": "^7.0|^8.0",
         "phplist/core": "4.0.x-dev",
         "friendsofsymfony/rest-bundle": "^2.3",
         "sensio/framework-extra-bundle": "5.1.0"
@@ -41,7 +40,7 @@
         "phpunit/phpunit-mock-objects": "^5.0.6",
         "phpunit/dbunit": "^3.0.0",
         "guzzlehttp/guzzle": "^6.3.0",
-        "squizlabs/php_codesniffer": "^3.2.0",
+        "squizlabs/php_codesniffer": "^3.5.8",
         "phpstan/phpstan": "^0.7.0",
         "nette/caching": "^2.5.0 || ^3.0.0",
         "nikic/php-parser": "^3.1.0",
