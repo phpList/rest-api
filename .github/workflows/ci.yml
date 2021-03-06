@@ -23,7 +23,7 @@ jobs:
       fail-fast: false
       matrix:
         php-versions: ['7.2', '7.3', '7.4', '8.0']
-        dependencies: ['latest', 'oldest']
+        # dependencies: ['latest', 'oldest'] # Only latest/upwards dependencies supported currently.
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -48,12 +48,11 @@ jobs:
           # key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-
-      - name: Install the lowest dependencies
-        run: composer update --with-dependencies --prefer-stable --prefer-dist --prefer-lowest
-        if: ${{ matrix.dependencies }} == "latest"
+      # - name: Install the lowest dependencies
+      #   run: composer update --with-dependencies --prefer-stable --prefer-dist --prefer-lowest
+      #   if: ${{ matrix.dependencies }} == "latest"
       - name: Install current dependencies from composer.lock
         run: composer install
-        if: ${{ matrix.dependencies }} == "oldest"
       - name: Set up database schema
         run: mysql --host 127.0.0.1 --port ${{ job.services.mysql.ports['3306'] }} -u${{ env.DB_USERNAME }} -p${{ env.DB_PASSWORD }} ${{ env.DB_DATABASE }} < vendor/phplist/core/resources/Database/Schema.sql
       - name: Validating composer.json
