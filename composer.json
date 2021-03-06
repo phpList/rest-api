@@ -30,8 +30,8 @@
         "source": "https://github.com/phpList/rest-api"
     },
     "require": {
-        "php": "^7.0|^8.0",
-        "phplist/core": "4.0.x-dev",
+        "php": "^7.2|^8.0",
+        "phplist/core": "^v4.0.0-alpha5",
         "friendsofsymfony/rest-bundle": "^2.3",
         "sensio/framework-extra-bundle": "5.1.0"
     },
