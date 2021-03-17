@@ -33,7 +33,8 @@
         "php": "^7.2|^8.0",
         "phplist/core": "^v4.0.0-alpha5",
         "friendsofsymfony/rest-bundle": "^2.8.6",
-        "sensio/framework-extra-bundle": "5.1.0"
+        "sensio/framework-extra-bundle": "5.1.0",
+        "zircote/swagger-php": "^3.1"
     },
     "require-dev": {
         "phpunit/phpunit": "^6.5.14",
@@ -78,6 +79,9 @@
         "post-update-cmd": [
             "@create-directories",
             "@update-configuration"
+        ],
+        "generate-openapi": [
+            "vendor/bin/openapi -o docs/openapi.json --format json src"
         ]
     },
     "extra": {

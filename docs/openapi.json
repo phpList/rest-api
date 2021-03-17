@@ -1,0 +1,108 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "phpList4 REST API",
+        "version": "4.0.0"
+    },
+    "paths": {
+        "/session": {
+            "post": {
+                "summary": "Log in or create new session.",
+                "description": "Given valid login data, this will generate a login token that will be valid for 1 hour",
+                "operationId": "PhpList\\RestBundle\\Controller\\SessionController::postAction",
+                "requestBody": {
+                    "description": "Pass session credentials",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "login_name",
+                                    "password"
+                                ],
+                                "properties": {
+                                    "login_name": {
+                                        "description": "Creates a new session (if the provided credentials are valid).",
+                                        "type": "string",
+                                        "format": "string",
+                                        "example": "admin"
+                                    },
+                                    "password": {
+                                        "description": "Creates a new session (if the provided credentials are valid).",
+                                        "type": "string",
+                                        "format": "password",
+                                        "example": "eetIc/Gropvoc1"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "id": {
+                                            "description": "Creates a new session (if the provided credentials are valid).",
+                                            "type": "integer",
+                                            "example": "1234"
+                                        },
+                                        "key": {
+                                            "description": "Creates a new session (if the provided credentials are valid).",
+                                            "type": "string",
+                                            "example": "2cfe100561473c6cdd99c9e2f26fa974"
+                                        },
+                                        "expiry": {
+                                            "description": "Creates a new session (if the provided credentials are valid).",
+                                            "type": "string",
+                                            "example": "2017-07-20T18:22:48+00:00"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Creates a new session (if the provided credentials are valid).",
+                                            "type": "string",
+                                            "example": "Empty json, invalid data and or incomplete data"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "description": "Creates a new session (if the provided credentials are valid).",
+                                            "type": "string",
+                                            "example": "Not authorized."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

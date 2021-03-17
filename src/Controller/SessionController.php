@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace PhpList\RestBundle\Controller;
@@ -54,6 +55,44 @@ class SessionController extends FOSRestController implements ClassResourceInterf
 
     /**
      * Creates a new session (if the provided credentials are valid).
+     * 
+     * @OA\Post(
+     *     path="/session",
+     *     summary="Log in or create new session.",
+     *     description="Given valid login data, this will generate a login token that will be valid for 1 hour", 
+     *     @OA\RequestBody(
+     *        required=true,
+     *        description="Pass session credentials",
+     *        @OA\JsonContent(
+     *           required={"login_name","password"},
+     *           @OA\Property(property="login_name", type="string", format="string", example="admin"),
+     *           @OA\Property(property="password", type="string", format="password", example="eetIc/Gropvoc1"),
+     *        ),
+     *     ),
+     *     @OA\Response(
+     *        response=201,
+     *        description="Success",
+     *        @OA\JsonContent(
+     *           @OA\Property(property="id", type="integer", example="1234"),
+     *           @OA\Property(property="key", type="string", example="2cfe100561473c6cdd99c9e2f26fa974"),
+     *           @OA\Property(property="expiry", type="string", example="2017-07-20T18:22:48+00:00")
+     *        )
+     *     ),
+     *     @OA\Response(
+     *        response=400,
+     *        description="Success",
+     *        @OA\JsonContent(
+     *           @OA\Property(property="message", type="string", example="Empty json, invalid data and or incomplete data")
+     *        )
+     *     ),
+     *     @OA\Response(
+     *        response=401,
+     *        description="Success",
+     *        @OA\JsonContent(
+     *           @OA\Property(property="message", type="string", example="Not authorized.")
+     *        )
+     *     )
+     * )
      *
      * @param Request $request
      *
