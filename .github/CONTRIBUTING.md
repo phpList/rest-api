@@ -67,6 +67,50 @@ have a chance of keeping on top of things:
 11. Together with your reviewer, polish your changes until they are ready to be
     merged.
 
+## API Documentation with Swagger
+
+Controllers are annotated with the [`OpenAPI`](https://swagger.io/docs/specification/about/) specification using the `PHPDoc` implementation from [zircote/swagger-php](https://github.com/zircote/swagger-php). 
+
+If you add or modify existing annotations, you should run `composer generate-openapi` to have the updated version of the API Docs.
+
+
+### Details on `composer generate-openapi` 
+
+`composer generate-openapi` basically runs `vendor/bin/openapi -o docs/swagger/openapi.json --format json src"` defined in the scripts section of `composer.json` which inturn generates the `OpenAPI` specification file `openapi.json` in the `docs/swagger` directory and then copies the documentation and `swagger-ui` files to `public/docs`.
+
+
+### Swagger UI
+
+[Swagger UI](https://github.com/swagger-api/swagger-ui) is used to visualize  generated `OpenAPI` documentation and is served at `{root-url}/docs` for example `localhost:8000/docs`.
+
+#### Updating Swagger UI
+
+We use`swagger-ui-dist` which is the compiled version of swagger UI for server side projects. It's simply a copy of the `dist` directory from the[Swagger UI Repo](https://github.com/swagger-api/swagger-ui)) stored `public/docs`. 
+
+So if there are updates in the UI we would like to have, the fastest way to update our copy of swagger UI would be to clone the entire swagger UI [repository](https://github.com/swagger-api/swagger-ui) and copy the contents of `dist` to `public/docs` and make the required changes to `public/docs/index.html`. That includes making sure the assets (javascript and css) are pointing to the right place (`/docs/`) and that `SwaggerUIBundle` is referencing `public/docs/openapi.json` correctly as shown bellow;
+
+```js
+    window.onload = function() {
+      // Begin Swagger UI call region
+      const ui = SwaggerUIBundle({
+        url: "/docs/openapi.json",
+        dom_id: '#swagger-ui',
+        deepLinking: true,
+        presets: [
+          SwaggerUIBundle.presets.apis,
+          SwaggerUIStandalonePreset
+        ],
+        plugins: [
+          SwaggerUIBundle.plugins.DownloadUrl
+        ],
+        layout: "StandaloneLayout"
+      });
+      // End Swagger UI call region
+
+      window.ui = ui;
+    };
+```
+
 
 ## Unit-test your changes
 
