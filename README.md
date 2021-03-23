@@ -49,6 +49,7 @@ tool. Install Postman as a browser extension or stand-alone app, open the
 [phpList 4 REST API Demo collection](https://documenter.getpostman.com/view/3293511/phplist-4-rest-api-demo/RVftkC9t#4710e871-973d-46fa-94b7-727fdc292cd5)
 and click "Run in Postman".
 
+
 ## Contributing to this package
 
 Please read the [contribution guide](.github/CONTRIBUTING.md) on how to

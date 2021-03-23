@@ -42,6 +42,71 @@ class SubscriberController extends FOSRestController implements ClassResourceInt
     /**
      * Creates a new subscriber (if the provided data is valid and there is no subscriber with the given email
      * address yet).
+     * 
+     * @OA\Post(
+     *     path="/subscriber",
+     *     tags={"subscribers"},
+     *     summary="Create a subscriber list",
+     *     description="Creates a new subscriber (if the provided data is valid and there is no subscriber with the given email
+     *     address yet).",
+     *      @OA\Parameter(
+	 *          name="session", 
+	 *          in="header", 
+	 *			description="Session ID obtained from authentication", 
+	 *			required=true,
+     *          @OA\Schema(
+     *             type="string"
+     *         )
+     *      ), 
+     *     @OA\RequestBody(
+     *        required=true,
+     *        description="Pass session credentials",
+     *        @OA\JsonContent(
+     *           required={"email"},
+     *           @OA\Property(property="email", type="string", format="string", example="admin"),
+     *           @OA\Property(property="confirmed", type="string", format="boolean", example="eetIc/Gropvoc1"),
+     *           @OA\Property(property="blacklisted", type="string", format="boolean", example="eetIc/Gropvoc1"),
+     *           @OA\Property(property="html_entail", type="string", format="boolean", example="eetIc/Gropvoc1"),
+     *           @OA\Property(property="disabled", type="string", format="boolean", example="eetIc/Gropvoc1"),
+     *        ),
+     *     ),
+     *     @OA\Response(
+     *        response=201,
+     *        description="Success",
+     *        @OA\JsonContent(
+     *           @OA\Property(property="creation_date", type="integer", example="2017-12-16T18:44:27+00:00"),
+     *           @OA\Property(property="email", type="string", example="subscriber@example.com"),
+     *           @OA\Property(property="confirmed", type="boolean", example="false"),
+     *           @OA\Property(property="blacklisted", type="boolean", example="false"),
+     *           @OA\Property(property="bounced", type="integer", example="0"),
+     *           @OA\Property(property="unique_id", type="string", example="69f4e92cf50eafca9627f35704f030f4"),
+     *           @OA\Property(property="html_entail", type="boolean", example="false"),
+     *           @OA\Property(property="disabled", type="boolean", example="false"),
+     *           @OA\Property(property="id", type="integer", example="1")
+     *        )
+     *     ),
+     *     @OA\Response(
+     *        response=403,
+     *        description="Failure",
+     *        @OA\JsonContent(
+     *           @OA\Property(property="message", type="No valid session key was provided as basic auth password.")
+     *        )
+     *     ),
+     *     @OA\Response(
+     *        response="409",
+     *        description="Failure",
+     *        @OA\JsonContent(
+     *           @OA\Property(property="message", type="string", example="This resource already exists.")
+     *        )
+     *     ),
+     *     @OA\Response(
+     *        response="422",
+     *        description="Failure",
+     *        @OA\JsonContent(
+     *           @OA\Property(property="message", type="string", example="Some fields invalid: email, confirmed, html_email")
+     *        )
+     *     )
+     * )
      *
      * @param Request $request
      *

@@ -83,7 +83,7 @@
         ],
         "generate-openapi": [
             "vendor/bin/openapi -o docs/swagger/openapi.json --format json src",
-            "cp -r docs/swagger public/docs"
+            "cp -rf docs/swagger/* public/docs"
         ]
     },
     "extra": {

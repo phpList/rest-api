@@ -57,7 +57,8 @@ class SessionController extends FOSRestController implements ClassResourceInterf
      * Creates a new session (if the provided credentials are valid).
      * 
      * @OA\Post(
-     *     path="/session",
+     *     path="/api/v2/sessions",
+     *     tags={"sessions"},
      *     summary="Log in or create new session.",
      *     description="Given valid login data, this will generate a login token that will be valid for 1 hour", 
      *     @OA\RequestBody(
@@ -80,13 +81,13 @@ class SessionController extends FOSRestController implements ClassResourceInterf
      *     ),
      *     @OA\Response(
      *        response=400,
-     *        description="Success",
+     *        description="Failure",
      *        @OA\JsonContent(
      *           @OA\Property(property="message", type="string", example="Empty json, invalid data and or incomplete data")
      *        )
      *     ),
      *     @OA\Response(
-     *        response=401,
+     *        response="401",
      *        description="Success",
      *        @OA\JsonContent(
      *           @OA\Property(property="message", type="string", example="Not authorized.")
@@ -118,6 +119,45 @@ class SessionController extends FOSRestController implements ClassResourceInterf
 
     /**
      * Deletes a session.
+     * 
+     * @OA\Delete(
+     *     path="/api/v2/sessions/{session}",
+     *     tags={"sessions"},
+     *     summary="Delete a session.",
+     *     description="Delete the session passed as paramater",
+     *      @OA\Parameter(
+	 *          name="session", 
+	 *          in="path", 
+	 *			description="Session ID", 
+	 *			required=true,
+     *          @OA\Schema(
+     *             type="string"
+     *         )
+     *      ), 
+     *     @OA\Response(
+     *        response=200,
+     *        description="Success"
+     *     ),
+     *     @OA\Response(
+     *        response=403,
+     *        description="Failure",
+     *        @OA\JsonContent(
+     *           @OA\Property(
+     *               property="message", 
+     *               type="string", 
+     *               example="No valid session key was provided as basic auth password or You do not have access to this session."
+     *           )
+     *        )
+     *     ),
+     *     @OA\Response(
+     *        response=404,
+     *        description="Failure",
+     *        @OA\JsonContent(
+     *           @OA\Property(property="message", type="string", example="There is no session with that ID.")
+     *        )
+     *     )
+     * )
+     *
      *
      * This action may only be called for sessions that are owned by the authenticated administrator.
      *
