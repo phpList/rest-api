@@ -44,22 +44,22 @@ class ListController extends FOSRestController implements ClassResourceInterface
      *     path="/api/v2/lists",
      *     tags={"lists"},
      *     summary="Gets a list of all subscriber lists.",
-     *     description="Returns a json list of all subscriber lists.", 
-     *      @OA\Parameter(
-	 *          name="session", 
-	 *          in="header", 
-	 *			description="Session ID obtained from authentication", 
-	 *			required=true,
-     *          @OA\Schema(
+     *     description="Returns a json list of all subscriber lists.",
+     * @OA\Parameter(
+     *          name="session",
+     *          in="header",
+     *          description="Session ID obtained from authentication",
+     *          required=true,
+     * @OA\Schema(
      *             type="string"
      *         )
-     *      ), 
-     *     @OA\Response(
+     *      ),
+     * @OA\Response(
      *        response=201,
      *        description="Success",
-     *        @OA\JsonContent(
+     * @OA\JsonContent(
      *            type="object",
-     *            example={ 
+     *            example={
      *                {
      *                   "name": "News",
      *                   "description": "News (and some fun stuff)",
@@ -80,20 +80,20 @@ class ListController extends FOSRestController implements ClassResourceInterface
      *                   "category": "",
      *                   "id": 2
      *             }
-     *         }  
+     *         }
      *      )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *        response=403,
      *        description="Failure",
-     *        @OA\JsonContent(
-     *           @OA\Property(property="message", type="string", example="No valid session key was provided as basic auth password.")
+     * @OA\JsonContent(
+     * @OA\Property(property="message", type="string", example="No valid session key was provided as basic auth password.")
      *        )
      *     )
      * )
      *
-     * 
-     * 
+     *
+     *
      * @param Request $request
      *
      * @return View
@@ -107,36 +107,36 @@ class ListController extends FOSRestController implements ClassResourceInterface
 
     /**
      * Gets a subscriber list.
-     * 
+     *
      * @OA\Get(
      *     path="/api/v2/lists/{list}",
      *     tags={"lists"},
      *     summary="Gets a subscriber list.",
-     *     description="Returns a single subscriber lists with specified ID", 
-     *      @OA\Parameter(
-	 *          name="list", 
-	 *          in="path", 
-	 *			description="List ID", 
-	 *			required=true,
-     *          @OA\Schema(
+     *     description="Returns a single subscriber lists with specified ID",
+     * @OA\Parameter(
+     *          name="list",
+     *          in="path",
+     *          description="List ID",
+     *          required=true,
+     * @OA\Schema(
      *             type="string"
      *         )
      *      ),
-     *      @OA\Parameter(
-	 *          name="session", 
-	 *          in="header", 
-	 *			description="Session ID obtained from authentication", 
-	 *			required=true,
-     *          @OA\Schema(
+     * @OA\Parameter(
+     *          name="session",
+     *          in="header",
+     *          description="Session ID obtained from authentication",
+     *          required=true,
+     * @OA\Schema(
      *             type="string"
      *         )
-     *      ), 
-     *     @OA\Response(
+     *      ),
+     * @OA\Response(
      *        response=200,
      *        description="Success",
-     *        @OA\JsonContent(
+     * @OA\JsonContent(
      *            type="object",
-     *            example={ 
+     *            example={
      *                {
      *                   "name": "News",
      *                   "description": "News (and some fun stuff)",
@@ -150,22 +150,22 @@ class ListController extends FOSRestController implements ClassResourceInterface
      *       }
      *      )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *        response=403,
      *        description="Failure",
-     *        @OA\JsonContent(
-     *           @OA\Property(property="message", type="string", example="No valid session key was provided as basic auth password.")
+     * @OA\JsonContent(
+     * @OA\Property(property="message", type="string", example="No valid session key was provided as basic auth password.")
      *        )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *        response=404,
      *        description="Failure",
-     *        @OA\JsonContent(
-     *           @OA\Property(property="message", type="string", example="There is no list with that ID.")
+     * @OA\JsonContent(
+     * @OA\Property(property="message", type="string", example="There is no list with that ID.")
      *        )
      *     )
      * )
-     * 
+     *
      * @param Request $request
      * @param SubscriberList $list
      *
@@ -181,46 +181,46 @@ class ListController extends FOSRestController implements ClassResourceInterface
     /**
      * Deletes a subscriber list.
      *
-     * 
+     *
      * @OA\Delete(
      *     path="/api/v2/lists/{list}",
      *     tags={"lists"},
      *     summary="Deletes a list.",
      *     description="Deletes a single subscriber list passed as",
-     *      @OA\Parameter(
-	 *          name="session", 
-	 *          in="header", 
-	 *			description="Session ID", 
-	 *			required=true,
-     *          @OA\Schema(
+     * @OA\Parameter(
+     *          name="session",
+     *          in="header",
+     *          description="Session ID",
+     *          required=true,
+     * @OA\Schema(
      *             type="string"
      *         )
-     *      ), 
-     *     @OA\Response(
+     *      ),
+     * @OA\Response(
      *        response=200,
      *        description="Success"
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *        response=403,
      *        description="Failure",
-     *        @OA\JsonContent(
-     *           @OA\Property(
-     *               property="message", 
-     *               type="string", 
+     * @OA\JsonContent(
+     * @OA\Property(
+     *               property="message",
+     *               type="string",
      *               example="No valid session key was provided as basic auth password or You do not have access to this session."
      *           )
      *        )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *        response=404,
      *        description="Failure",
-     *        @OA\JsonContent(
-     *           @OA\Property(property="message", type="string", example="There is no session with that ID.")
+     * @OA\JsonContent(
+     * @OA\Property(property="message", type="string", example="There is no session with that ID.")
      *        )
      *     )
      * )
      *
-     * 
+     *
      * @param Request $request
      * @param SubscriberList $list
      *
@@ -238,36 +238,36 @@ class ListController extends FOSRestController implements ClassResourceInterface
     /**
      * Gets a list of all subscribers (members) of a subscriber list.
      *
-     * 
+     *
      * @OA\Get(
      *     path="/api/v2/lists/{list}/members",
      *     tags={"lists"},
      *     summary="Gets a list of all subscribers (members) of a subscriber list.",
-     *     description="Returns a json list of all subscriber lists.", 
-     *      @OA\Parameter(
-	 *          name="session", 
-	 *          in="header", 
-	 *			description="Session ID obtained from authentication", 
-	 *			required=true,
-     *          @OA\Schema(
+     *     description="Returns a json list of all subscriber lists.",
+     * @OA\Parameter(
+     *          name="session",
+     *          in="header",
+     *          description="Session ID obtained from authentication",
+     *          required=true,
+     * @OA\Schema(
      *             type="string"
      *         )
-     *      ), 
-     *      @OA\Parameter(
-	 *          name="list", 
-	 *          in="path", 
-	 *			description="List ID", 
-	 *			required=true,
-     *          @OA\Schema(
+     *      ),
+     * @OA\Parameter(
+     *          name="list",
+     *          in="path",
+     *          description="List ID",
+     *          required=true,
+     * @OA\Schema(
      *             type="string"
      *         )
-     *      ), 
-     *     @OA\Response(
+     *      ),
+     * @OA\Response(
      *        response=200,
      *        description="Success",
-     *        @OA\JsonContent(
+     * @OA\JsonContent(
      *            type="object",
-     *            example={ 
+     *            example={
      *                {
      *                    "creation_date": "2016-07-22T15:01:17+00:00",
      *                    "email": "oliver@example.com",
@@ -290,19 +290,19 @@ class ListController extends FOSRestController implements ClassResourceInterface
      *                    "disabled": false,
      *                    "id": 2,
      *            }
-     *         }  
+     *         }
      *      )
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *        response=403,
      *        description="Failure",
-     *        @OA\JsonContent(
-     *           @OA\Property(property="message", type="string", example="No valid session key was provided as basic auth password.")
+     * @OA\JsonContent(
+     * @OA\Property(property="message", type="string", example="No valid session key was provided as basic auth password.")
      *        )
      *     )
      * )
-     * 
-     * 
+     *
+     *
      * @param Request $request
      * @param SubscriberList $list
      *
@@ -322,38 +322,38 @@ class ListController extends FOSRestController implements ClassResourceInterface
      *     path="/api/v2/lists/{list}/count",
      *     tags={"lists"},
      *     summary="Gets the total number of subscribers of a list",
-     *     description="Returns a count of all subscribers in a given list.", 
-     *      @OA\Parameter(
-	 *          name="session", 
-	 *          in="header", 
-	 *			description="Session ID obtained from authentication", 
-	 *			required=true,
-     *          @OA\Schema(
+     *     description="Returns a count of all subscribers in a given list.",
+     * @OA\Parameter(
+     *          name="session",
+     *          in="header",
+     *          description="Session ID obtained from authentication",
+     *          required=true,
+     * @OA\Schema(
      *             type="string"
      *         )
-     *      ), 
-     *      @OA\Parameter(
-	 *          name="list", 
-	 *          in="path", 
-	 *			description="List ID", 
-	 *			required=true,
-     *          @OA\Schema(
+     *      ),
+     * @OA\Parameter(
+     *          name="list",
+     *          in="path",
+     *          description="List ID",
+     *          required=true,
+     * @OA\Schema(
      *             type="string"
      *         )
-     *      ), 
-     *     @OA\Response(
+     *      ),
+     * @OA\Response(
      *        response=200,
      *        description="Success"
      *     ),
-     *     @OA\Response(
+     * @OA\Response(
      *        response=403,
      *        description="Failure",
-     *        @OA\JsonContent(
-     *           @OA\Property(property="message", type="string", example="No valid session key was provided as basic auth password.")
+     * @OA\JsonContent(
+     * @OA\Property(property="message", type="string", example="No valid session key was provided as basic auth password.")
      *        )
      *     )
      * )
-     * 
+     *
      * @param Request $request
      * @param SubscriberList $list
      *
