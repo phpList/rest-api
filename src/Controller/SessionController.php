@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
+use OpenApi\Annotations as OA;
 
 /**
  * This controller provides methods to create and destroy REST API sessions.
@@ -143,9 +144,10 @@ class SessionController extends FOSRestController implements ClassResourceInterf
      *        description="Failure",
      * @OA\JsonContent(
      * @OA\Property(
-     *               property="message",
-     *               type="string",
-     *               example="No valid session key was provided as basic auth password or You do not have access to this session."
+     *     property="message",
+     *     type="string",
+     *     example="No valid session key was provided as basic auth password or
+     *              You do not have access to this session."
      *           )
      *        )
      *     ),

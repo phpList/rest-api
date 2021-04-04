@@ -63,8 +63,7 @@
         ],
         "create-directories": [
             "PhpList\\Core\\Composer\\ScriptHandler::createBinaries",
-            "PhpList\\Core\\Composer\\ScriptHandler::createPublicWebDirectory",
-            "cp -r docs/swagger public/docs"
+            "PhpList\\Core\\Composer\\ScriptHandler::createPublicWebDirectory"
         ],
         "update-configuration": [
             "PhpList\\Core\\Composer\\ScriptHandler::createGeneralConfiguration",
@@ -80,10 +79,6 @@
         "post-update-cmd": [
             "@create-directories",
             "@update-configuration"
-        ],
-        "generate-openapi": [
-            "vendor/bin/openapi -o docs/swagger/openapi.json --format json src",
-            "cp -rf docs/swagger/* public/docs"
         ]
     },
     "extra": {

@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
+use OpenApi\Annotations as OA;
 
 /**
  * This controller provides REST API access to subscribers.
@@ -44,11 +45,11 @@ class SubscriberController extends FOSRestController implements ClassResourceInt
      * address yet).
      *
      * @OA\Post(
-     *     path="/subscriber",
+     *     path="/api/v2/subscriber",
      *     tags={"subscribers"},
      *     summary="Create a subscriber list",
-     *     description="Creates a new subscriber (if the provided data is valid and there is no subscriber with the given email
-     *     address yet).",
+     *     description="Creates a new subscriber (if the provided data is valid and there is no subscriber with
+     *     the given email address yet).",
      * @OA\Parameter(
      *          name="session",
      *          in="header",

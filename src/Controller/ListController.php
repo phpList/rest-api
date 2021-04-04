@@ -11,6 +11,7 @@ use PhpList\Core\Domain\Repository\Messaging\SubscriberListRepository;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Controller\Traits\AuthenticationTrait;
 use Symfony\Component\HttpFoundation\Request;
+use OpenApi\Annotations as OA;
 
 /**
  * This controller provides REST API access to subscriber lists.
@@ -87,7 +88,10 @@ class ListController extends FOSRestController implements ClassResourceInterface
      *        response=403,
      *        description="Failure",
      * @OA\JsonContent(
-     * @OA\Property(property="message", type="string", example="No valid session key was provided as basic auth password.")
+     * @OA\Property(
+     *     property="message",
+     *     type="string",
+     *     example="No valid session key was provided as basic auth password.")
      *        )
      *     )
      * )
@@ -154,9 +158,13 @@ class ListController extends FOSRestController implements ClassResourceInterface
      *        response=403,
      *        description="Failure",
      * @OA\JsonContent(
-     * @OA\Property(property="message", type="string", example="No valid session key was provided as basic auth password.")
-     *        )
-     *     ),
+     * @OA\Property(
+     *     property="message",
+     *     type="string",
+     *     example="No valid session key was provided as basic auth password."
+     *     )
+     *   )
+     * ),
      * @OA\Response(
      *        response=404,
      *        description="Failure",
@@ -205,11 +213,11 @@ class ListController extends FOSRestController implements ClassResourceInterface
      *        description="Failure",
      * @OA\JsonContent(
      * @OA\Property(
-     *               property="message",
-     *               type="string",
-     *               example="No valid session key was provided as basic auth password or You do not have access to this session."
-     *           )
+     *     property="message",
+     *     type="string",
+     *     example="No valid session key was provided as basic auth password or You do not have access to this session."
      *        )
+     *      )
      *     ),
      * @OA\Response(
      *        response=404,
@@ -297,9 +305,12 @@ class ListController extends FOSRestController implements ClassResourceInterface
      *        response=403,
      *        description="Failure",
      * @OA\JsonContent(
-     * @OA\Property(property="message", type="string", example="No valid session key was provided as basic auth password.")
-     *        )
-     *     )
+     * @OA\Property(
+     *     property="message",
+     *     type="string",
+     *     example="No valid session key was provided as basic auth password.")
+     *       )
+     *    )
      * )
      *
      *
@@ -349,7 +360,10 @@ class ListController extends FOSRestController implements ClassResourceInterface
      *        response=403,
      *        description="Failure",
      * @OA\JsonContent(
-     * @OA\Property(property="message", type="string", example="No valid session key was provided as basic auth password.")
+     * @OA\Property(
+     *     property="message",
+     *     type="string",
+     *     example="No valid session key was provided as basic auth password.")
      *        )
      *     )
      * )
