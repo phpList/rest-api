@@ -36,6 +36,12 @@ Please install this package via Composer from within the
 [phpList base distribution](https://github.com/phpList/base-distribution),
 which also has more detailed installation instructions in the README.
 
+## API Documentation
+
+Visit `/docs` endpoint to access the full interactive documentation for `phpList/rest-api`.
+
+Look at the **"API Documentation with Swagger"** section in the [contribution guide](.github/CONTRIBUTING.md) for more information on API documenation.
+
 ## Local demo with Postman
 
 You can try out the API using pre-prepared requests and the Postman GUI 
