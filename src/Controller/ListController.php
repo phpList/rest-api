@@ -204,6 +204,15 @@ class ListController extends FOSRestController implements ClassResourceInterface
      *             type="string"
      *         )
      *      ),
+     * @OA\Parameter(
+     *          name="list",
+     *          in="path",
+     *          description="List ID",
+     *          required=true,
+     * @OA\Schema(
+     *             type="string"
+     *         )
+     *      ),
      * @OA\Response(
      *        response=200,
      *        description="Success"

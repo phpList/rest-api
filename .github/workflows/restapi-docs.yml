@@ -59,10 +59,11 @@ jobs:
       # `|| true` to supress exit code 1 [git diff exits with 1 when there is a difference between the two files and 0 for the reverse.
       run: git diff --no-index --output=restapi-diff.txt latest-restapi.json restapi.json || true
     - name: Verify difference latest-restapi.json and restapi.json
+      id: allow-deploy
       run: |
         if [ -s restapi-diff.txt ]; then echo "Updates made to restapi.json deployment proceeding."; echo '::set-output name=DEPLOY::true'; else echo "No updates made to restapi.json deployment would be skipped."; echo '::set-output name=DEPLOY::false'; fi
     - name: Commit and changes and deply
-      if: ${{ env.deploy }}
+      if: ${{ steps.allow-deploy.outputs.DEPLOY == 'true' }}
       run: |
         mv latest-restapi.json restapi.json
         git config user.name "github-actions"
