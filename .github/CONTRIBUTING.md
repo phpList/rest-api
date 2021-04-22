@@ -60,8 +60,8 @@ have a chance of keeping on top of things:
 8. Add a changelog entry.
 9. [Commit](#git-commits) and push your changes.
 10. [Create a pull request](https://help.github.com/articles/about-pull-requests/)
-    for your changes. Check that the Travis build is green. (If it is not, fix the
-    problems listed by Travis.)
+    for your changes. Check that the [Github actions](https://github.com/phpList/rest-api/actions/workflows/ci.yml) build is green. (If it is not, fix the
+    problems listed by [Github actions](https://github.com/phpList/rest-api/actions/workflows/ci.yml).)
     We have provided a template for pull requests as well.
 11. [Request a review](https://help.github.com/articles/about-pull-request-reviews/).
 11. Together with your reviewer, polish your changes until they are ready to be
