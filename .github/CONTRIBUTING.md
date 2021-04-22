@@ -93,9 +93,9 @@ In addition you can also use the [openapi-checker](github.com/phplist/openapi-ch
 
 ### Swagger UI
 
-[Swagger UI](https://github.com/swagger-api/swagger-ui) is used to visualize generated api description and is visible at [phplist.github.io/restapi-docs](phplist.github.io/restapi-docs) after a successful CI build.
+[Swagger UI](https://github.com/swagger-api/swagger-ui) is used to visualize generated api description and is visible at [phplist.github.io/restapi-docs](https://phplist.github.io/restapi-docs) after a successful CI build.
 
-You might also achieve local visualization by cloning [phplist/restapi-docs](github.com/phplist-restapi-docs) and temporally changing the `url` property of `SwaggerUIBundle` to point to your generated file.
+You might also achieve local visualization by cloning [phplist/restapi-docs](https://github.com/phpList/restapi-docs) and temporally changing the `url` property of `SwaggerUIBundle` to point to your generated file.
 
 
 ## Unit-test your changes
