@@ -79,6 +79,9 @@
         "post-update-cmd": [
             "@create-directories",
             "@update-configuration"
+        ],
+        "openapi-generate": [
+            "vendor/bin/openapi -o docs/openapi.json --format json src"
         ]
     },
     "extra": {

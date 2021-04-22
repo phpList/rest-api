@@ -1,0 +1,73 @@
+name: Publish REST API Docs 
+on: [push, pull_request]
+jobs:
+  make-restapi-docs:
+    name: Checkout phpList rest-api and generate docs specification (OpenAPI latest-restapi.json)
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup PHP, with composer and extensions
+        uses: shivammathur/setup-php@v2 #https://github.com/shivammathur/setup-php
+        with:
+          php-version: 7.4
+          extensions: mbstring, dom, fileinfo, mysql
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+      - name: Cache composer dependencies
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          # Use composer.json for key, if composer.lock is not committed.
+          # key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+      - name: Install current dependencies from composer.lock
+        run: composer install
+      - name: Generate OpenAPI Specification JSON for REST API
+        run: vendor/bin/openapi -o docs/latest-restapi.json --format json src
+      - name: Upload REST API(latest-restapi.json) Spec
+        uses: actions/upload-artifact@v2
+        with:
+          name: restapi-json
+          path: docs/latest-restapi.json
+  deploy-docs:
+    name: Deploy REST API specification.
+    runs-on: ubuntu-20.04
+    needs: make-restapi-docs
+    steps:
+    - name: Install node
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+    - name: Install openapi-checker
+      run: npm install -g openapi-checker
+    - name: Checkout phplist/restapi-docs
+      uses: actions/checkout@v2
+      with:
+        repository: phpList/restapi-docs
+        fetch-depth: 0
+        token: ${{ secrets.PUSH_REST_API_DOCS }}
+    - name: Restore REST API Spec
+      uses: actions/download-artifact@v2
+      with:
+        name: restapi-json
+    - name: Validate latest-restapi.json
+      run: openapi-checker latest-restapi.json
+    - name: Get difference between latest-restapi.json and restapi.json
+      # `|| true` to supress exit code 1 [git diff exits with 1 when there is a difference between the two files and 0 for the reverse.
+      run: git diff --no-index --output=restapi-diff.txt latest-restapi.json restapi.json || true
+    - name: Verify difference latest-restapi.json and restapi.json
+      id: allow-deploy
+      run: |
+        if [ -s restapi-diff.txt ]; then echo "Updates made to restapi.json deployment proceeding."; echo '::set-output name=DEPLOY::true'; else echo "No updates made to restapi.json deployment would be skipped."; echo '::set-output name=DEPLOY::false'; fi
+    - name: Commit and changes and deply
+      if: ${{ steps.allow-deploy.outputs.DEPLOY == 'true' }}
+      run: |
+        mv latest-restapi.json restapi.json
+        git config user.name "github-actions"
+        git config user.email "github-actions@restapi-docs.workflow"
+        git add restapi.json
+        git commit -s -m "phplist/rest-api docs deployment `date`"
+        git push 

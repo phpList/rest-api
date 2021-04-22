@@ -90,8 +90,11 @@ class SubscriberController extends FOSRestController implements ClassResourceInt
      *        response=403,
      *        description="Failure",
      * @OA\JsonContent(
-     * @OA\Property(property="message", type="No valid session key was provided as basic auth password.")
-     *        )
+     * @OA\Property(
+     *     property="message",
+     *     type="string",
+     *     example="No valid session key was provided as basic auth password.")
+     *      )
      *     ),
      * @OA\Response(
      *        response="409",
