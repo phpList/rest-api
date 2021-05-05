@@ -392,3 +392,73 @@ object containing the following key-value pairs:
             "code": 422,
             "message": "Some fields invalid: email, confirmed, html_email"
         }
+
+# Subscriptions
+
+Resources related to subscriptions.
+
+All requests in this group need to be authenticated with a valid session key
+provided as basic auth password. (The basic auth user name can be any string.)
+
+## Subscriptions [/subscriptions]
+
+### Create a new subscription [POST]
+
+Given a valid authentication, this will generate a subscription, which means add a member to a list.
+It takes a JSON object containing the following key-value pairs:
+
++ `subscriber_id` (integer): ID of the subscriber (required)
++ `subscriber_list_id` (integer): ID of the list (required)
+
++ Response 201 (application/json)
+
+    + Body
+
+        {
+            "creation_date": "2020-01-09T18:44:27+00:00",
+        }
+
++ Response 403 (application/json)
+
+    + Body
+
+        {
+            "code": 403,
+            "message": "No valid session key was provided as basic auth password."
+        }
+
++ Response 409 (application/json)
+
+    + Body
+
+        {
+            "code": 409,
+            "message": "This resource already exists."
+        }
+
++ Response 422 (application/json)
+
+    + Body
+
+        {
+            "code": 422,
+            "message": "Some fields invalid: subscriber_id, subscriber_list_id"
+        }
+
++ Response 422 (application/json)
+
+    + Body
+
+        {
+            "code": 422,
+            "message": "subscriber_id not found: 42"
+        }
+
++ Response 422 (application/json)
+
+    + Body
+
+        {
+            "code": 422,
+            "message": "subscriber_list_id not found: 42"
+        }
