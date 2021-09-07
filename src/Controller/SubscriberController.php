@@ -65,6 +65,7 @@ class SubscriberController extends FOSRestController implements ClassResourceInt
      * @OA\JsonContent(
      *           required={"email"},
      * @OA\Property(property="email", type="string", format="string", example="admin"),
+     * @OA\Property(property="extra_data", type="string", format="string", example="extra"),
      * @OA\Property(property="confirmed", type="string", format="boolean", example="eetIc/Gropvoc1"),
      * @OA\Property(property="blacklisted", type="string", format="boolean", example="eetIc/Gropvoc1"),
      * @OA\Property(property="html_entail", type="string", format="boolean", example="eetIc/Gropvoc1"),
@@ -131,6 +132,7 @@ class SubscriberController extends FOSRestController implements ClassResourceInt
 
         $subscriber = new Subscriber();
         $subscriber->setEmail($email);
+        $subscriber->setExtraData($request->get('extra_data'));
         $subscriber->setConfirmed((bool)$request->get('confirmed'));
         $subscriber->setBlacklisted((bool)$request->get('blacklisted'));
         $subscriber->setHtmlEmail((bool)$request->get('html_email'));

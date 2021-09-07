@@ -175,8 +175,10 @@ class SubscriberControllerTest extends AbstractControllerTest
         $this->touchDatabaseTable(static::SUBSCRIBER_TABLE_NAME);
 
         $email = 'subscriber@example.com';
+        $extra = 'extra';
         $jsonData = [
             'email' => $email,
+            'extra_data' => $extra,
             'confirmed' => true,
             'blacklisted' => true,
             'html_email' => true,
@@ -188,6 +190,7 @@ class SubscriberControllerTest extends AbstractControllerTest
         $responseContent = $this->getDecodedJsonResponseContent();
 
         static::assertSame($email, $responseContent['email']);
+        static::assertSame($extra, $responseContent['extra_data']);
         static::assertTrue($responseContent['confirmed']);
         static::assertTrue($responseContent['blacklisted']);
         static::assertTrue($responseContent['html_email']);
