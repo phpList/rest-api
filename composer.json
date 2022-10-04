@@ -25,7 +25,7 @@
         "source": "https://github.com/phpList/rest-api"
     },
     "require": {
-        "php": "~7.0.0 || ~7.1.0 || ~7.2.0",
+        "php": "~7.1.0 || ~7.2.0 || ~7.3.0 || ~7.4.0",
 
         "phplist/core": "dev-phplist3",
         "friendsofsymfony/rest-bundle": "^2.3",
