@@ -50,6 +50,15 @@
             "PhpList\\RestBundle\\Tests\\": "tests/"
         }
     },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../core",
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
     "scripts": {
         "list-modules": [
             "PhpList\\Core\\Composer\\ScriptHandler::listModules"
@@ -76,7 +85,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "4.0.x-dev"
+            "dev-ISSUE-337": "v5.0.x-dev"
         },
         "symfony-app-dir": "bin",
         "symfony-bin-dir": "bin",
@@ -97,9 +106,6 @@
             },
             "configuration": {
                 "fos_rest": {
-                    "routing_loader": {
-                        "include_format": false
-                    },
                     "format_listener": {
                         "enabled": true,
                         "rules": [
@@ -125,7 +131,8 @@
                         }
                     },
                     "service": {
-                        "view_handler": "my.secure_view_handler"
+                        "view_handler": "my.secure_view_handler",
+                        "serializer": "fos_rest.serializer.symfony"
                     }
                 }
             }
