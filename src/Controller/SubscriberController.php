@@ -1,10 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace PhpList\RestBundle\Controller;
 
-use FOS\RestBundle\Controller\FOSRestController;
-use FOS\RestBundle\Routing\ClassResourceInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use FOS\RestBundle\View\View;
 use PhpList\Core\Domain\Model\Subscription\Subscriber;
 use PhpList\Core\Domain\Repository\Subscription\SubscriberRepository;
@@ -20,14 +20,14 @@ use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
  *
  * @author Oliver Klee <oliver@phplist.com>
  */
-class SubscriberController extends FOSRestController implements ClassResourceInterface
+class SubscriberController extends AbstractController
 {
     use AuthenticationTrait;
 
     /**
      * @var SubscriberRepository
      */
-    private $subscriberRepository = null;
+    private SubscriberRepository $subscriberRepository;
 
     /**
      * @param Authentication $authentication
@@ -78,7 +78,7 @@ class SubscriberController extends FOSRestController implements ClassResourceInt
      *
      * @throws UnprocessableEntityHttpException
      */
-    private function validateSubscriber(Request $request)
+    private function validateSubscriber(Request $request): void
     {
         /** @var string[] $invalidFields */
         $invalidFields = [];

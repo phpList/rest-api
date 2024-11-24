@@ -1,10 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace PhpList\RestBundle\Controller;
 
-use FOS\RestBundle\Controller\FOSRestController;
-use FOS\RestBundle\Routing\ClassResourceInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use FOS\RestBundle\View\View;
 use PhpList\Core\Domain\Model\Messaging\SubscriberList;
 use PhpList\Core\Domain\Repository\Messaging\SubscriberListRepository;
@@ -18,14 +18,14 @@ use Symfony\Component\HttpFoundation\Request;
  * @author Oliver Klee <oliver@phplist.com>
  * @author Xheni Myrtaj <xheni@phplist.com>
  */
-class ListController extends FOSRestController implements ClassResourceInterface
+class ListController extends AbstractController
 {
     use AuthenticationTrait;
 
     /**
      * @var SubscriberListRepository
      */
-    private $subscriberListRepository = null;
+    private SubscriberListRepository $subscriberListRepository;
 
     /**
      * @param Authentication $authentication

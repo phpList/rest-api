@@ -1,10 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace PhpList\RestBundle\Controller;
 
-use FOS\RestBundle\Controller\FOSRestController;
-use FOS\RestBundle\Routing\ClassResourceInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use FOS\RestBundle\View\View;
 use PhpList\Core\Domain\Model\Identity\Administrator;
 use PhpList\Core\Domain\Model\Identity\AdministratorToken;
@@ -23,19 +23,19 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
  *
  * @author Oliver Klee <oliver@phplist.com>
  */
-class SessionController extends FOSRestController implements ClassResourceInterface
+class SessionController extends AbstractController
 {
     use AuthenticationTrait;
 
     /**
      * @var AdministratorRepository
      */
-    private $administratorRepository = null;
+    private AdministratorRepository $administratorRepository;
 
     /**
      * @var AdministratorTokenRepository
      */
-    private $tokenRepository = null;
+    private AdministratorTokenRepository $tokenRepository;
 
     /**
      * @param Authentication $authentication
@@ -110,7 +110,7 @@ class SessionController extends FOSRestController implements ClassResourceInterf
      *
      * @throws BadRequestHttpException
      */
-    private function validateCreateRequest(Request $request)
+    private function validateCreateRequest(Request $request): void
     {
         if ($request->getContent() === '') {
             throw new BadRequestHttpException('Empty JSON data', null, 1500559729);
