@@ -37,7 +37,6 @@
         "nette/caching": "^2.5.0|^3.0.0",
         "nikic/php-parser": "^4.19.1",
         "phpmd/phpmd": "^2.6.0",
-        "composer/composer": "^1.6.0",
         "doctrine/instantiator": "^1.0.5"
     },
     "autoload": {
@@ -100,40 +99,8 @@
             "routes": {
                 "rest-api": {
                     "resource": "@PhpListRestBundle/Controller/",
-                    "type": "rest",
-                    "prefix": "/"
-                }
-            },
-            "configuration": {
-                "fos_rest": {
-                    "format_listener": {
-                        "enabled": true,
-                        "rules": [
-                            {
-                                "path": "^/",
-                                "fallback_format": "json"
-                            },
-                            {
-                                "path": "^/",
-                                "fallback_format": "html"
-                            }
-                        ]
-                    },
-                    "view": {
-                        "view_response_listener": {
-                            "enabled": false
-                        }
-                    },
-                    "exception": {
-                        "enabled": true,
-                        "messages": {
-                            "Symfony\\Component\\HttpKernel\\Exception\\BadRequestHttpException": true
-                        }
-                    },
-                    "service": {
-                        "view_handler": "my.secure_view_handler",
-                        "serializer": "fos_rest.serializer.symfony"
-                    }
+                    "type": "attribute",
+                    "prefix": "/api/v2"
                 }
             }
         }

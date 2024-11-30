@@ -4,13 +4,18 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use FOS\RestBundle\View\View;
 use PhpList\Core\Domain\Model\Messaging\SubscriberList;
+use PhpList\Core\Domain\Repository\Subscription\SubscriberRepository;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use PhpList\Core\Domain\Repository\Messaging\SubscriberListRepository;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Controller\Traits\AuthenticationTrait;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * This controller provides REST API access to subscriber lists.
@@ -22,94 +27,81 @@ class ListController extends AbstractController
 {
     use AuthenticationTrait;
 
-    /**
-     * @var SubscriberListRepository
-     */
     private SubscriberListRepository $subscriberListRepository;
+    private SubscriberRepository $subscriberRepository;
+    private SerializerInterface $serializer;
 
     /**
      * @param Authentication $authentication
      * @param SubscriberListRepository $repository
+     * @param SubscriberRepository $subscriberRepository
+     * @param SerializerInterface $serializer
      */
-    public function __construct(Authentication $authentication, SubscriberListRepository $repository)
-    {
+    public function __construct(
+        Authentication $authentication,
+        SubscriberListRepository $repository,
+        SubscriberRepository $subscriberRepository,
+        SerializerInterface $serializer
+    ) {
         $this->authentication = $authentication;
         $this->subscriberListRepository = $repository;
+        $this->subscriberRepository = $subscriberRepository;
+        $this->serializer = $serializer;
     }
 
-    /**
-     * Gets a list of all subscriber lists.
-     *
-     * @param Request $request
-     *
-     * @return View
-     */
-    public function cgetAction(Request $request): View
+    #[Route('/lists', name: 'get_lists', methods: ['GET'])]
+    public function getLists(Request $request): JsonResponse
     {
         $this->requireAuthentication($request);
+        $data = $this->subscriberListRepository->findAll();
+        $json = $this->serializer->serialize($data, 'json', [
+            AbstractNormalizer::GROUPS => 'SubscriberList',
+        ]);
 
-        return View::create()->setData($this->subscriberListRepository->findAll());
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
-    /**
-     * Gets a subscriber list.
-     *
-     * @param Request $request
-     * @param SubscriberList $list
-     *
-     * @return View
-     */
-    public function getAction(Request $request, SubscriberList $list): View
+    #[Route('/lists/{id}', name: 'get_list', methods: ['GET'])]
+    public function getList(Request $request, SubscriberList $list): JsonResponse
     {
         $this->requireAuthentication($request);
+        $json = $this->serializer->serialize($list, 'json', [
+            AbstractNormalizer::GROUPS => 'SubscriberList',
+        ]);
 
-        return View::create()->setData($list);
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
-    /**
-     * Deletes a subscriber list.
-     *
-     * @param Request $request
-     * @param SubscriberList $list
-     *
-     * @return View
-     */
-    public function deleteAction(Request $request, SubscriberList $list): View
+    #[Route('/lists/{id}', name: 'delete_list', methods: ['DELETE'])]
+    public function deleteList(Request $request, SubscriberList $list): JsonResponse
     {
         $this->requireAuthentication($request);
 
         $this->subscriberListRepository->remove($list);
 
-        return View::create();
+        return new JsonResponse(null, Response::HTTP_OK, [], true);
     }
 
-    /**
-     * Gets a list of all subscribers (members) of a subscriber list.
-     *
-     * @param Request $request
-     * @param SubscriberList $list
-     *
-     * @return View
-     */
-    public function getMembersAction(Request $request, SubscriberList $list): View
+    #[Route('/lists/{id}/members', name: 'get_subscriber_from_list', methods: ['GET'])]
+    public function getListMembers(Request $request, SubscriberList $list): JsonResponse
     {
         $this->requireAuthentication($request);
 
-        return View::create()->setData($list->getSubscribers());
+        $subscribers = $this->subscriberRepository->findSubscribersBySubscribedList($list->getId());
+
+        $json = $this->serializer->serialize($subscribers, 'json', [
+            AbstractNormalizer::GROUPS => 'SubscriberListMembers',
+        ]);
+
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
-    /**
-     * Gets the total number of subscribers of a list.
-     *
-     * @param Request $request
-     * @param SubscriberList $list
-     *
-     * @return View
-     */
-    public function getSubscribersCountAction(Request $request, SubscriberList $list): View
+    #[Route('/lists/{id}/count', name: 'get_subscribers_count_from_list', methods: ['GET'])]
+    public function getSubscribersCount(Request $request, SubscriberList $list): JsonResponse
     {
         $this->requireAuthentication($request);
+        $json = $this->serializer->serialize(count($list->getSubscribers()), 'json');
 
-        return View::create()->setData(count($list->getSubscribers()));
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 }
