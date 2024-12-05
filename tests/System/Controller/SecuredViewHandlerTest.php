@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\System\Controller;
@@ -17,17 +18,14 @@ class SecuredViewHandlerTest extends TestCase
 {
     use SymfonyServerTrait;
 
-    /**
-     * @var Client
-     */
-    private $httpClient = null;
+    private ?Client $httpClient = null;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->httpClient = new Client(['http_errors' => false]);
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $this->stopSymfonyServer();
     }
@@ -35,7 +33,7 @@ class SecuredViewHandlerTest extends TestCase
     /**
      * @return string[][]
      */
-    public function environmentDataProvider(): array
+    public static function environmentDataProvider(): array
     {
         return [
             'test' => ['test'],
@@ -44,7 +42,6 @@ class SecuredViewHandlerTest extends TestCase
     }
 
     /**
-     * @test
      * @param string $environment
      * @dataProvider environmentDataProvider
      */
@@ -63,7 +60,7 @@ class SecuredViewHandlerTest extends TestCase
         ];
 
         foreach ($expectedHeaders as $key => $value) {
-            static::assertSame([$value], $response->getHeader($key));
+            self::assertSame([$value], $response->getHeader($key));
         }
     }
 }

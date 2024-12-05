@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\System\Controller;
@@ -17,17 +18,14 @@ class SessionControllerTest extends TestCase
 {
     use SymfonyServerTrait;
 
-    /**
-     * @var Client
-     */
-    private $httpClient = null;
+    private ?Client $httpClient = null;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->httpClient = new Client(['http_errors' => false]);
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         $this->stopSymfonyServer();
     }
@@ -35,7 +33,7 @@ class SessionControllerTest extends TestCase
     /**
      * @return string[][]
      */
-    public function environmentDataProvider(): array
+    public static function environmentDataProvider(): array
     {
         return [
             'test' => ['test'],
@@ -44,11 +42,9 @@ class SessionControllerTest extends TestCase
     }
 
     /**
-     * @test
-     * @param string $environment
      * @dataProvider environmentDataProvider
      */
-    public function postSessionsWithInvalidCredentialsReturnsNotAuthorized(string $environment)
+    public function testPostSessionsWithInvalidCredentialsReturnsNotAuthorized(string $environment)
     {
         $this->startSymfonyServer($environment);
 
@@ -58,15 +54,15 @@ class SessionControllerTest extends TestCase
 
         $response = $this->httpClient->post(
             '/api/v2/sessions',
-            ['base_uri' => $this->getBaseUrl(), 'body' => \json_encode($jsonData)]
+            ['base_uri' => $this->getBaseUrl(), 'body' => json_encode($jsonData)]
         );
-        static::assertSame(Response::HTTP_UNAUTHORIZED, $response->getStatusCode());
-        static::assertSame(
+        self::assertSame(Response::HTTP_UNAUTHORIZED, $response->getStatusCode());
+        self::assertSame(
             [
                 'code' => Response::HTTP_UNAUTHORIZED,
                 'message' => 'Not authorized',
             ],
-            \json_decode($response->getBody()->getContents(), true)
+            json_decode($response->getBody()->getContents(), true)
         );
     }
 }

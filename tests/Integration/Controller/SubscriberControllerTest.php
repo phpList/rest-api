@@ -24,7 +24,7 @@ class SubscriberControllerTest extends AbstractControllerTest
      */
     private $subscriberRepository = null;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->setUpDatabaseTest();
         $this->setUpWebTest();

@@ -21,7 +21,7 @@ class SessionControllerTest extends AbstractControllerTest
      */
     private $administratorTokenRepository = null;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->setUpDatabaseTest();
         $this->setUpWebTest();
