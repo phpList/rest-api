@@ -72,7 +72,7 @@ class SessionController extends AbstractController
         $token = $this->createAndPersistToken($administrator);
         $json = $this->serializer->serialize($token, 'json');
 
-        return new JsonResponse($json, Response::HTTP_OK, [], true);
+        return new JsonResponse($json, Response::HTTP_CREATED, [], true);
     }
 
     /**
@@ -92,7 +92,7 @@ class SessionController extends AbstractController
 
         $this->tokenRepository->remove($token);
 
-        return new JsonResponse(null, Response::HTTP_OK, [], true);
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT, [], false);
     }
 
     /**

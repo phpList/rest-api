@@ -48,7 +48,7 @@ class SubscriberController extends AbstractController
      * Creates a new subscriber (if the provided data is valid and there is no subscriber with the given email
      * address yet).
      */
-    #[Route('/subscriber', name: 'create_subscriber', methods: ['POST'])]
+    #[Route('/subscribers', name: 'create_subscriber', methods: ['POST'])]
     public function postAction(Request $request): JsonResponse
     {
         $this->requireAuthentication($request);

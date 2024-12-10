@@ -1,100 +1,78 @@
 <?php
+
 declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Integration\Controller;
 
-use Doctrine\Common\Persistence\ObjectRepository;
+use DateTime;
 use PhpList\Core\Domain\Model\Identity\AdministratorToken;
 use PhpList\Core\Domain\Repository\Identity\AdministratorTokenRepository;
 use PhpList\RestBundle\Controller\SessionController;
-use Symfony\Component\HttpFoundation\Response;
+use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\AdministratorFixture;
+use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\AdministratorTokenFixture;
 
 /**
  * Testcase.
  *
  * @author Oliver Klee <oliver@phplist.com>
  */
-class SessionControllerTest extends AbstractControllerTest
+class SessionControllerTest extends AbstractTestController
 {
-    /**
-     * @var AdministratorTokenRepository|ObjectRepository
-     */
-    private $administratorTokenRepository = null;
+    private ?AdministratorTokenRepository $administratorTokenRepository = null;
 
     protected function setUp(): void
     {
-        $this->setUpDatabaseTest();
-        $this->setUpWebTest();
-
-        $this->administratorTokenRepository = $this->bootstrap->getContainer()
-            ->get(AdministratorTokenRepository::class);
+        parent::setUp();
+        $this->administratorTokenRepository = self::getContainer()->get(AdministratorTokenRepository::class);
     }
 
-    /**
-     * @test
-     */
-    public function controllerIsAvailableViaContainer()
+    public function testControllerIsAvailableViaContainer()
     {
-        static::assertInstanceOf(
+        self::assertInstanceOf(
             SessionController::class,
-            $this->client->getContainer()->get(SessionController::class)
+            self::getClient()->getContainer()->get(SessionController::class)
         );
     }
 
-    /**
-     * @test
-     */
-    public function getSessionsIsNotAllowed()
+    public function testGetSessionsIsNotAllowed()
     {
-        $this->client->request('get', '/api/v2/sessions');
+        self::getClient()->request('get', '/api/v2/sessions');
 
         $this->assertHttpMethodNotAllowed();
     }
 
-    /**
-     * @test
-     */
-    public function postSessionsWithNoJsonReturnsError400()
+    public function testPostSessionsWithNoJsonReturnsError400()
     {
         $this->jsonRequest('post', '/api/v2/sessions');
 
         $this->assertHttpBadRequest();
         $this->assertJsonResponseContentEquals(
             [
-                'code' => Response::HTTP_BAD_REQUEST,
                 'message' => 'Empty JSON data',
             ]
         );
     }
 
-    /**
-     * @test
-     */
-    public function postSessionsWithInvalidJsonWithJsonContentTypeReturnsError400()
+    public function testPostSessionsWithInvalidJsonWithJsonContentTypeReturnsError400()
     {
         $this->jsonRequest('post', '/api/v2/sessions', [], [], [], 'Here be dragons, but no JSON.');
 
         $this->assertHttpBadRequest();
         $this->assertJsonResponseContentEquals(
             [
-                'code' => Response::HTTP_BAD_REQUEST,
-                'message' => 'Invalid json message received'
+                'message' => 'Could not decode request body.',
             ]
         );
     }
 
-    /**
-     * @test
-     */
-    public function postSessionsWithValidEmptyJsonWithOtherTypeReturnsError400()
+    public function testPostSessionsWithValidEmptyJsonWithOtherTypeReturnsError400()
     {
-        $this->client->request('post', '/api/v2/sessions', [], [], ['CONTENT_TYPE' => 'application/xml'], '[]');
+        self::getClient()->request('post', '/api/v2/sessions', [], [], ['CONTENT_TYPE' => 'application/xml'], '[]');
 
         $this->assertHttpBadRequest();
         $this->assertJsonResponseContentEquals(
             [
-                'code' => Response::HTTP_BAD_REQUEST,
-                'message' => 'Invalid xml message received'
+                'message' => 'Incomplete credentials',
             ]
         );
     }
@@ -102,7 +80,7 @@ class SessionControllerTest extends AbstractControllerTest
     /**
      * @return string[][]
      */
-    public function incompleteCredentialsDataProvider(): array
+    public static function incompleteCredentialsDataProvider(): array
     {
         return [
             'neither login_name nor password' => ['{}'],
@@ -112,30 +90,23 @@ class SessionControllerTest extends AbstractControllerTest
     }
 
     /**
-     * @test
-     * @param string $jsonData
      * @dataProvider incompleteCredentialsDataProvider
      */
-    public function postSessionsWithValidIncompleteJsonReturnsError400(string $jsonData)
+    public function testPostSessionsWithValidIncompleteJsonReturnsError400(string $jsonData)
     {
         $this->jsonRequest('post', '/api/v2/sessions', [], [], [], $jsonData);
 
         $this->assertHttpBadRequest();
         $this->assertJsonResponseContentEquals(
             [
-                'code' => Response::HTTP_BAD_REQUEST,
                 'message' => 'Incomplete credentials',
             ]
         );
     }
 
-    /**
-     * @test
-     */
-    public function postSessionsWithInvalidCredentialsReturnsNotAuthorized()
+    public function testPostSessionsWithInvalidCredentialsReturnsNotAuthorized()
     {
-        $this->getDataSet()->addTable(static::ADMINISTRATOR_TABLE_NAME, __DIR__ . '/Fixtures/Administrator.csv');
-        $this->applyDatabaseChanges();
+        $this->loadFixtures([AdministratorFixture::class]);
 
         $loginName = 'john.doe';
         $password = 'a sandwich and a cup of coffee';
@@ -146,19 +117,14 @@ class SessionControllerTest extends AbstractControllerTest
         $this->assertHttpUnauthorized();
         $this->assertJsonResponseContentEquals(
             [
-                'code' => Response::HTTP_UNAUTHORIZED,
                 'message' => 'Not authorized',
             ]
         );
     }
 
-    /**
-     * @test
-     */
-    public function postSessionsActionWithValidCredentialsReturnsCreatedHttpStatus()
+    public function testPostSessionsActionWithValidCredentialsReturnsCreatedHttpStatus()
     {
-        $this->getDataSet()->addTable(static::ADMINISTRATOR_TABLE_NAME, __DIR__ . '/Fixtures/Administrator.csv');
-        $this->applyDatabaseChanges();
+        $this->loadFixtures([AdministratorFixture::class]);
 
         $loginName = 'john.doe';
         $password = 'Bazinga!';
@@ -169,95 +135,71 @@ class SessionControllerTest extends AbstractControllerTest
         $this->assertHttpCreated();
     }
 
-    /**
-     * @test
-     */
-    public function postSessionsActionWithValidCredentialsCreatesToken()
+    public function testPostSessionsActionWithValidCredentialsCreatesToken()
     {
         $administratorId = 1;
-        $this->getDataSet()->addTable(static::ADMINISTRATOR_TABLE_NAME, __DIR__ . '/Fixtures/Administrator.csv');
-        $this->applyDatabaseChanges();
-
-        $loginName = 'john.doe';
-        $password = 'Bazinga!';
-        $jsonData = ['login_name' => $loginName, 'password' => $password];
+        $this->loadFixtures([AdministratorFixture::class, AdministratorTokenFixture::class]);
+        $jsonData = ['login_name' => 'john.doe', 'password' => 'Bazinga!'];
 
         $this->jsonRequest('post', '/api/v2/sessions', [], [], [], json_encode($jsonData));
 
         $responseContent = $this->getDecodedJsonResponseContent();
         $tokenId = $responseContent['id'];
         $key = $responseContent['key'];
-        $expiry = $responseContent['expiry'];
+        $expiry = $responseContent['expiry_date'];
 
         /** @var AdministratorToken $token */
         $token = $this->administratorTokenRepository->find($tokenId);
-        static::assertNotNull($token);
-        static::assertSame($key, $token->getKey());
-        static::assertSame($expiry, $token->getExpiry()->format(\DateTime::ATOM));
-        static::assertSame($administratorId, $token->getAdministrator()->getId());
+
+        self::assertNotNull($token);
+        self::assertSame($key, $token->getKey());
+        self::assertSame($expiry, $token->getExpiry()->format(DateTime::ATOM));
+        self::assertSame($administratorId, $token->getAdministrator()->getId());
     }
 
-    /**
-     * @test
-     */
-    public function deleteSessionWithoutSessionKeyForExistingSessionReturnsForbiddenStatus()
+    public function testDeleteSessionWithoutSessionKeyForExistingSessionReturnsForbiddenStatus()
     {
-        $this->getDataSet()->addTable(static::ADMINISTRATOR_TABLE_NAME, __DIR__ . '/Fixtures/Administrator.csv');
-        $this->getDataSet()->addTable(static::TOKEN_TABLE_NAME, __DIR__ . '/Fixtures/AdministratorToken.csv');
-        $this->applyDatabaseChanges();
+        $this->loadFixtures([AdministratorFixture::class, AdministratorTokenFixture::class]);
 
-        $this->client->request('delete', '/api/v2/sessions/1');
+        self::getClient()->request('delete', '/api/v2/sessions/1');
 
         $this->assertHttpForbidden();
     }
 
-    /**
-     * @test
-     */
-    public function deleteSessionWithCurrentSessionKeyForExistingSessionReturnsNoContentStatus()
+    public function testDeleteSessionWithCurrentSessionKeyForExistingSessionReturnsNoContentStatus()
     {
         $this->authenticatedJsonRequest('delete', '/api/v2/sessions/1');
 
         $this->assertHttpNoContent();
     }
 
-    /**
-     * @test
-     */
-    public function deleteSessionWithCurrentSessionKeyForInexistentSessionReturnsNotFoundStatus()
+    public function testDeleteSessionWithCurrentSessionKeyForInexistentSessionReturnsNotFoundStatus()
     {
         $this->authenticatedJsonRequest('delete', '/api/v2/sessions/999');
 
         $this->assertHttpNotFound();
     }
 
-    /**
-     * @test
-     */
-    public function deleteSessionWithCurrentSessionAndOwnSessionKeyDeletesSession()
+    public function testDeleteSessionWithCurrentSessionAndOwnSessionKeyDeletesSession()
     {
+        $this->loadFixtures([AdministratorFixture::class, AdministratorTokenFixture::class]);
         $this->authenticatedJsonRequest('delete', '/api/v2/sessions/1');
 
-        static::assertNull($this->administratorTokenRepository->find(1));
+        self::assertNull($this->administratorTokenRepository->find(1));
     }
 
-    /**
-     * @test
-     */
-    public function deleteSessionWithCurrentSessionAndOwnSessionKeyKeepsReturnsForbiddenStatus()
+    public function testDeleteSessionWithCurrentSessionAndOwnSessionKeyKeepsReturnsForbiddenStatus()
     {
         $this->authenticatedJsonRequest('delete', '/api/v2/sessions/3');
 
         $this->assertHttpForbidden();
     }
 
-    /**
-     * @test
-     */
-    public function deleteSessionWithCurrentSessionAndOwnSessionKeyKeepsSession()
+    public function testDeleteSessionWithCurrentSessionAndOwnSessionKeyKeepsSession()
     {
+        $this->loadFixtures([AdministratorFixture::class, AdministratorTokenFixture::class]);
         $this->authenticatedJsonRequest('delete', '/api/v2/sessions/3');
 
-        static::assertNotNull($this->administratorTokenRepository->find(3));
+        self::assertNotNull($this->administratorTokenRepository->find(3));
     }
 }

@@ -30,25 +30,33 @@ class SubscriberListFixture extends Fixture
 
         $headers = fgetcsv($handle);
 
+        $adminRepository = $manager->getRepository(Administrator::class);
+
         while (($data = fgetcsv($handle)) !== false) {
             $row = array_combine($headers, $data);
-            $admin = new Administrator();
-            $this->setSubjectId($admin,(int)$row['owner']);
+            $admin = $adminRepository->find($row['owner']);
+            if ($admin === null) {
+                $admin = new Administrator();
+                $this->setSubjectId($admin,(int)$row['owner']);
+                $admin->setSuperUser(true);
+                $admin->setDisabled(false);
+                $manager->persist($admin);
+            }
 
             $subscriberList = new SubscriberList();
             $this->setSubjectId($subscriberList,(int)$row['id']);
             $subscriberList->setName($row['name']);
             $subscriberList->setDescription($row['description']);
-            $this->setSubjectProperty($subscriberList,'creationDate', new DateTime($row['entered']));
-            $this->setSubjectProperty($subscriberList,'modificationDate', new DateTime($row['modified']));
             $subscriberList->setListPosition((int)$row['listorder']);
             $subscriberList->setSubjectPrefix($row['prefix']);
             $subscriberList->setPublic((bool) $row['active']);
             $subscriberList->setCategory($row['category']);
             $subscriberList->setOwner($admin);
 
-            $manager->persist($admin);
             $manager->persist($subscriberList);
+
+            $this->setSubjectProperty($subscriberList,'creationDate', new DateTime($row['entered']));
+            $this->setSubjectProperty($subscriberList,'modificationDate', new DateTime($row['modified']));
         }
 
         fclose($handle);

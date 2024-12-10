@@ -18,7 +18,7 @@ use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\SubscriptionFixture
  * @author Oliver Klee <oliver@phplist.com>
  * @author Xheni Myrtaj <xheni@phplist.com>
  */
-class ListControllerTest extends AbstractControllerTest
+class ListControllerTest extends AbstractTestController
 {
     public function testControllerIsAvailableViaContainer()
     {
@@ -152,7 +152,7 @@ class ListControllerTest extends AbstractControllerTest
 
     public function testDeleteListWithCurrentSessionKeyForExistingListReturnsNoContentStatus()
     {
-        $this->loadFixtures([SubscriberListFixture::class]);
+        $this->loadFixtures([SubscriberFixture::class, SubscriberListFixture::class, SubscriptionFixture::class]);
 
         $this->authenticatedJsonRequest('delete', '/api/v2/lists/1');
 
@@ -243,7 +243,17 @@ class ListControllerTest extends AbstractControllerTest
                     'html_email' => true,
                     'disabled' => true,
                     'id' => 1,
-                ]
+                ], [
+                    'creation_date' => '2016-07-22T15:01:17+00:00',
+                    'email' => 'oliver1@example.com',
+                    'confirmed' => true,
+                    'blacklisted' => true,
+                    'bounce_count' => 17,
+                    'unique_id' => '95feb7fe7e06e6c11ca8d0c48cb46e87',
+                    'html_email' => true,
+                    'disabled' => true,
+                    'id' => 2,
+                ],
             ]
         );
     }
@@ -266,7 +276,7 @@ class ListControllerTest extends AbstractControllerTest
             '/api/v2/lists/1/subscribers/count',
             [],
             [],
-            ['PHP_AUTH_USER' => 'unused', 'PHP_AUTH_PW' => 'cfdf64eecbbf336628b0f3071adba763']
+            ['PHP_AUTH_USER' => 'unused', 'PHP_AUTH_PW' => 'cfdf64eecbbf336628b0f3071adba764']
         );
 
         $this->assertHttpForbidden();

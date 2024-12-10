@@ -4,55 +4,23 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\System\Controller;
 
-use GuzzleHttp\Client;
-use PhpList\Core\TestingSupport\Traits\SymfonyServerTrait;
-use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpFoundation\Response;
+use PhpList\RestBundle\Tests\Integration\Controller\AbstractTestController;
 
 /**
  * Test for security headers
  *
  * @author Xheni Myrtaj <xheni@phplist.com>
  */
-class SecuredViewHandlerTest extends TestCase
+class SecuredViewHandlerTest extends AbstractTestController
 {
-    use SymfonyServerTrait;
-
-    private ?Client $httpClient = null;
-
-    protected function setUp(): void
+    public function testSecurityHeaders()
     {
-        $this->httpClient = new Client(['http_errors' => false]);
-    }
-
-    protected function tearDown(): void
-    {
-        $this->stopSymfonyServer();
-    }
-
-    /**
-     * @return string[][]
-     */
-    public static function environmentDataProvider(): array
-    {
-        return [
-            'test' => ['test'],
-            'dev' => ['dev'],
-        ];
-    }
-
-    /**
-     * @param string $environment
-     * @dataProvider environmentDataProvider
-     */
-    public function testSecurityHeaders(string $environment)
-    {
-        $this->startSymfonyServer($environment);
-
-        $response = $this->httpClient->get(
+        self::getClient()->request(
+            'GET',
             '/api/v2/sessions',
-            ['base_uri' => $this->getBaseUrl()]
         );
+
+        $response = self::getClient()->getResponse();
         $expectedHeaders = [
             'X-Content-Type-Options' => 'nosniff',
             'Content-Security-Policy' => "default-src 'none'",
@@ -60,7 +28,7 @@ class SecuredViewHandlerTest extends TestCase
         ];
 
         foreach ($expectedHeaders as $key => $value) {
-            self::assertSame([$value], $response->getHeader($key));
+            self::assertSame($value, $response->headers->get($key));
         }
     }
 }

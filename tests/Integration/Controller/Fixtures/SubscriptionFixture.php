@@ -30,25 +30,25 @@ class SubscriptionFixture extends Fixture
             throw new RuntimeException(sprintf('Could not open fixture file "%s".', $csvFile));
         }
 
+        $subscriberRepository = $manager->getRepository(Subscriber::class);
+        $subscriberListRepository = $manager->getRepository(SubscriberList::class);
+
         $headers = fgetcsv($handle);
 
         while (($data = fgetcsv($handle)) !== false) {
             $row = array_combine($headers, $data);
 
-            $subscriber = new Subscriber();
-            $this->setSubjectId($subscriber,(int)$row['userid']);
-            $manager->persist($subscriber);
-
-            $subscriberList = new SubscriberList();
-            $this->setSubjectId($subscriberList,(int)$row['listid']);
-            $manager->persist($subscriberList);
+            $subscriber = $subscriberRepository->find((int)$row['userid']);
+            $subscriberList = $subscriberListRepository->find((int)$row['listid']);
 
             $subscription = new Subscription();
-            $this->setSubjectProperty($subscription,'subscriber', $subscriber);
-            $this->setSubjectProperty($subscription,'subscriberList', $subscriberList);
+            $subscriberList->addSubscription($subscription);
+            $subscriber->addSubscription($subscription);
+
+            $manager->persist($subscription);
+
             $this->setSubjectProperty($subscription,'creationDate', new DateTime($row['entered']));
             $this->setSubjectProperty($subscription,'modificationDate', new DateTime($row['modified']));
-            $manager->persist($subscription);
         }
 
         fclose($handle);

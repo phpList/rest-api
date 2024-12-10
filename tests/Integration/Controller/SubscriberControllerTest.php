@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Integration\Controller;
@@ -6,71 +7,48 @@ namespace PhpList\RestBundle\Tests\Integration\Controller;
 use PhpList\Core\Domain\Model\Subscription\Subscriber;
 use PhpList\Core\Domain\Repository\Subscription\SubscriberRepository;
 use PhpList\RestBundle\Controller\SubscriberController;
+use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\SubscriberFixture;
 
 /**
  * Testcase.
  *
  * @author Oliver Klee <oliver@phplist.com>
  */
-class SubscriberControllerTest extends AbstractControllerTest
+class SubscriberControllerTest extends AbstractTestController
 {
-    /**
-     * @var string
-     */
-    const SUBSCRIBER_TABLE_NAME = 'phplist_user_user';
-
-    /**
-     * @var SubscriberRepository
-     */
-    private $subscriberRepository = null;
+    private ?SubscriberRepository $subscriberRepository = null;
 
     protected function setUp(): void
     {
-        $this->setUpDatabaseTest();
-        $this->setUpWebTest();
+        parent::setUp();
 
-        $this->subscriberRepository = $this->bootstrap->getContainer()
-            ->get(SubscriberRepository::class);
+        $this->subscriberRepository = self::getContainer()->get(SubscriberRepository::class);
     }
 
-    /**
-     * @test
-     */
-    public function controllerIsAvailableViaContainer()
+    public function testControllerIsAvailableViaContainer()
     {
-        static::assertInstanceOf(
+        self::assertInstanceOf(
             SubscriberController::class,
-            $this->client->getContainer()->get(SubscriberController::class)
+            self::getClient()->getContainer()->get(SubscriberController::class)
         );
     }
 
-    /**
-     * @test
-     */
-    public function getSubscribersIsNotAllowed()
+    public function testGetSubscribersIsNotAllowed()
     {
-        $this->client->request('get', '/api/v2/subscribers');
+        self::getClient()->request('get', '/api/v2/subscribers');
 
         $this->assertHttpMethodNotAllowed();
     }
 
-    /**
-     * @test
-     */
-    public function postSubscribersWithoutSessionKeyReturnsForbiddenStatus()
+    public function testPostSubscribersWithoutSessionKeyReturnsForbiddenStatus()
     {
         $this->jsonRequest('post', '/api/v2/subscribers');
 
         $this->assertHttpForbidden();
     }
 
-    /**
-     * @test
-     */
-    public function postSubscribersWithValidSessionKeyAndMinimalValidSubscriberDataCreatesResource()
+    public function testPostSubscribersWithValidSessionKeyAndMinimalValidSubscriberDataCreatesResource()
     {
-        $this->touchDatabaseTable(static::SUBSCRIBER_TABLE_NAME);
-
         $email = 'subscriber@example.com';
         $jsonData = ['email' => $email];
 
@@ -79,13 +57,8 @@ class SubscriberControllerTest extends AbstractControllerTest
         $this->assertHttpCreated();
     }
 
-    /**
-     * @test
-     */
-    public function postSubscribersWithValidSessionKeyAndMinimalValidDataReturnsIdAndUniqueId()
+    public function testPostSubscribersWithValidSessionKeyAndMinimalValidDataReturnsIdAndUniqueId()
     {
-        $this->touchDatabaseTable(static::SUBSCRIBER_TABLE_NAME);
-
         $email = 'subscriber@example.com';
         $jsonData = ['email' => $email];
 
@@ -93,17 +66,12 @@ class SubscriberControllerTest extends AbstractControllerTest
 
         $responseContent = $this->getDecodedJsonResponseContent();
 
-        static::assertGreaterThan(0, $responseContent['id']);
-        static::assertRegExp('/^[0-9a-f]{32}$/', $responseContent['unique_id']);
+        self::assertGreaterThan(0, $responseContent['id']);
+        self::assertMatchesRegularExpression('/^[0-9a-f]{32}$/', $responseContent['unique_id']);
     }
 
-    /**
-     * @test
-     */
-    public function postSubscribersWithValidSessionKeyAndValidDataCreatesSubscriber()
+    public function testPostSubscribersWithValidSessionKeyAndValidDataCreatesSubscriber()
     {
-        $this->touchDatabaseTable(static::SUBSCRIBER_TABLE_NAME);
-
         $email = 'subscriber@example.com';
         $jsonData = ['email' => $email];
 
@@ -112,16 +80,12 @@ class SubscriberControllerTest extends AbstractControllerTest
         $responseContent = $this->getDecodedJsonResponseContent();
 
         $subscriberId = $responseContent['id'];
-        static::assertInstanceOf(Subscriber::class, $this->subscriberRepository->find($subscriberId));
+        self::assertInstanceOf(Subscriber::class, $this->subscriberRepository->find($subscriberId));
     }
 
-    /**
-     * @test
-     */
-    public function postSubscribersWithValidSessionKeyAndExistingEmailAddressCreatesConflictStatus()
+    public function testPostSubscribersWithValidSessionKeyAndExistingEmailAddressCreatesConflictStatus()
     {
-        $this->getDataSet()->addTable(static::SUBSCRIBER_TABLE_NAME, __DIR__ . '/Fixtures/Subscriber.csv');
-        $this->applyDatabaseChanges();
+        $this->loadFixtures([SubscriberFixture::class]);
 
         $email = 'oliver@example.com';
         $jsonData = ['email' => $email];
@@ -134,7 +98,7 @@ class SubscriberControllerTest extends AbstractControllerTest
     /**
      * @return array[][]
      */
-    public function invalidSubscriberDataProvider(): array
+    public static function invalidSubscriberDataProvider(): array
     {
         return [
             'no data' => [[]],
@@ -154,26 +118,18 @@ class SubscriberControllerTest extends AbstractControllerTest
     }
 
     /**
-     * @test
      * @dataProvider invalidSubscriberDataProvider
      * @param array[] $jsonData
      */
-    public function postSubscribersWithInvalidDataCreatesUnprocessableEntityStatus(array $jsonData)
+    public function testPostSubscribersWithInvalidDataCreatesUnprocessableEntityStatus(array $jsonData)
     {
-        $this->touchDatabaseTable(static::SUBSCRIBER_TABLE_NAME);
-
         $this->authenticatedJsonRequest('post', '/api/v2/subscribers', [], [], [], json_encode($jsonData));
 
         $this->assertHttpUnprocessableEntity();
     }
 
-    /**
-     * @test
-     */
-    public function postSubscribersWithValidSessionKeyAssignsProvidedSubscriberData()
+    public function testPostSubscribersWithValidSessionKeyAssignsProvidedSubscriberData()
     {
-        $this->touchDatabaseTable(static::SUBSCRIBER_TABLE_NAME);
-
         $email = 'subscriber@example.com';
         $jsonData = [
             'email' => $email,

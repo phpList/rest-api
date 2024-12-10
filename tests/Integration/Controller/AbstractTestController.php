@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Integration\Controller;
 
+use Doctrine\ORM\Tools\SchemaTool;
 use PhpList\Core\TestingSupport\Traits\DatabaseTestTrait;
 use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\AdministratorFixture;
 use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\AdministratorTokenFixture;
@@ -18,13 +19,23 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @author Oliver Klee <oliver@phplist.com>
  */
-abstract class AbstractControllerTest extends WebTestCase
+abstract class AbstractTestController extends WebTestCase
 {
     use DatabaseTestTrait;
 
     protected function setUp(): void
     {
+        parent::setUp();
+        self::createClient();
         $this->setUpDatabaseTest();
+        $this->loadSchema();
+    }
+
+    protected function tearDown(): void
+    {
+        $schemaTool = new SchemaTool($this->entityManager);
+        $schemaTool->dropDatabase();
+        parent::tearDown();
     }
 
     /**
@@ -50,7 +61,14 @@ abstract class AbstractControllerTest extends WebTestCase
         $serverWithContentType = $server;
         $serverWithContentType['CONTENT_TYPE'] = 'application/json';
 
-        return self::getClient()->request($method, $uri, $parameters, $files, $serverWithContentType, $content);
+        return self::getClient()->request(
+            $method,
+            $uri,
+            $parameters,
+            $files,
+            $serverWithContentType,
+            $content
+        );
     }
 
     /**
@@ -225,7 +243,6 @@ abstract class AbstractControllerTest extends WebTestCase
 
         self::assertSame(
             [
-                'code' => Response::HTTP_CONFLICT,
                 'message' => 'This resource already exists.',
             ],
             $this->getDecodedJsonResponseContent()

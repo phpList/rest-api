@@ -79,7 +79,7 @@ class ListController extends AbstractController
 
         $this->subscriberListRepository->remove($list);
 
-        return new JsonResponse(null, Response::HTTP_OK, [], true);
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT, [], false);
     }
 
     #[Route('/lists/{id}/members', name: 'get_subscriber_from_list', methods: ['GET'])]
@@ -87,7 +87,7 @@ class ListController extends AbstractController
     {
         $this->requireAuthentication($request);
 
-        $subscribers = $this->subscriberRepository->findSubscribersBySubscribedList($list->getId());
+        $subscribers = $this->subscriberRepository->getSubscribersBySubscribedListId($list->getId());
 
         $json = $this->serializer->serialize($subscribers, 'json', [
             AbstractNormalizer::GROUPS => 'SubscriberListMembers',
@@ -96,7 +96,7 @@ class ListController extends AbstractController
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
-    #[Route('/lists/{id}/count', name: 'get_subscribers_count_from_list', methods: ['GET'])]
+    #[Route('/lists/{id}/subscribers/count', name: 'get_subscribers_count_from_list', methods: ['GET'])]
     public function getSubscribersCount(Request $request, SubscriberList $list): JsonResponse
     {
         $this->requireAuthentication($request);
