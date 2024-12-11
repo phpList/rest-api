@@ -68,9 +68,11 @@ class SubscriberController extends AbstractController
         $subscriber->setDisabled((bool)$data->get('disabled'));
         $this->subscriberRepository->save($subscriber);
 
-        $json = $this->serializer->serialize($subscriber, 'json');
-
-        return new JsonResponse($json, Response::HTTP_CREATED, [], true);
+        return new JsonResponse(
+            $this->serializer->serialize($subscriber, 'json'),
+            Response::HTTP_CREATED, [],
+            true
+        );
     }
 
     /**

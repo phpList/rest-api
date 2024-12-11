@@ -35,7 +35,7 @@
         "phpunit/phpunit": "^10.0",
         "guzzlehttp/guzzle": "^6.3.0",
         "squizlabs/php_codesniffer": "^3.2.0",
-        "phpstan/phpstan": "^0.12.57",
+        "phpstan/phpstan": "^1.10",
         "nette/caching": "^3.0.0",
         "nikic/php-parser": "^4.19.1",
         "phpmd/phpmd": "^2.6.0",
@@ -86,7 +86,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "5.0.x-dev"
+            "dev-ISSUE-337": "5.0.x-dev"
         },
         "symfony-app-dir": "bin",
         "symfony-bin-dir": "bin",

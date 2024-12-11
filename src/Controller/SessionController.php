@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Controller;
 
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use PhpList\Core\Domain\Model\Identity\Administrator;
 use PhpList\Core\Domain\Model\Identity\AdministratorToken;
@@ -24,7 +25,6 @@ use Symfony\Component\Serializer\SerializerInterface;
  * This controller provides methods to create and destroy REST API sessions.
  *
  * @author Oliver Klee <oliver@phplist.com>
- * @author Tatevik Grigoryan <tatevik@phplist.com>
  */
 class SessionController extends AbstractController
 {
@@ -83,8 +83,10 @@ class SessionController extends AbstractController
      * @throws AccessDeniedHttpException
      */
     #[Route('/sessions/{id}', name: 'delete_session', methods: ['DELETE'])]
-    public function deleteAction(Request $request, AdministratorToken $token): JsonResponse
-    {
+    public function deleteAction(
+        Request $request,
+        #[MapEntity(mapping: ['id' => 'id'])] AdministratorToken $token
+    ): JsonResponse {
         $administrator = $this->requireAuthentication($request);
         if ($token->getAdministrator() !== $administrator) {
             throw new AccessDeniedHttpException('You do not have access to this session.', null, 1519831644);

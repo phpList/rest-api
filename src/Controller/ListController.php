@@ -6,6 +6,7 @@ namespace PhpList\RestBundle\Controller;
 
 use PhpList\Core\Domain\Model\Messaging\SubscriberList;
 use PhpList\Core\Domain\Repository\Subscription\SubscriberRepository;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use PhpList\Core\Domain\Repository\Messaging\SubscriberListRepository;
 use PhpList\Core\Security\Authentication;
@@ -62,7 +63,7 @@ class ListController extends AbstractController
     }
 
     #[Route('/lists/{id}', name: 'get_list', methods: ['GET'])]
-    public function getList(Request $request, SubscriberList $list): JsonResponse
+    public function getList(Request $request, #[MapEntity(mapping: ['id' => 'id'])] SubscriberList $list): JsonResponse
     {
         $this->requireAuthentication($request);
         $json = $this->serializer->serialize($list, 'json', [
@@ -73,8 +74,10 @@ class ListController extends AbstractController
     }
 
     #[Route('/lists/{id}', name: 'delete_list', methods: ['DELETE'])]
-    public function deleteList(Request $request, SubscriberList $list): JsonResponse
-    {
+    public function deleteList(
+        Request $request,
+        #[MapEntity(mapping: ['id' => 'id'])] SubscriberList $list
+    ): JsonResponse {
         $this->requireAuthentication($request);
 
         $this->subscriberListRepository->remove($list);
@@ -83,8 +86,10 @@ class ListController extends AbstractController
     }
 
     #[Route('/lists/{id}/members', name: 'get_subscriber_from_list', methods: ['GET'])]
-    public function getListMembers(Request $request, SubscriberList $list): JsonResponse
-    {
+    public function getListMembers(
+        Request $request,
+        #[MapEntity(mapping: ['id' => 'id'])] SubscriberList $list
+    ): JsonResponse {
         $this->requireAuthentication($request);
 
         $subscribers = $this->subscriberRepository->getSubscribersBySubscribedListId($list->getId());
@@ -97,8 +102,10 @@ class ListController extends AbstractController
     }
 
     #[Route('/lists/{id}/subscribers/count', name: 'get_subscribers_count_from_list', methods: ['GET'])]
-    public function getSubscribersCount(Request $request, SubscriberList $list): JsonResponse
-    {
+    public function getSubscribersCount(
+        Request $request,
+        #[MapEntity(mapping: ['id' => 'id'])] SubscriberList $list
+    ): JsonResponse {
         $this->requireAuthentication($request);
         $json = $this->serializer->serialize(count($list->getSubscribers()), 'json');
 
