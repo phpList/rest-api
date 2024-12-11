@@ -27,21 +27,17 @@ class SubscriberController extends AbstractController
     use AuthenticationTrait;
 
     private SubscriberRepository $subscriberRepository;
-    private SerializerInterface $serializer;
 
     /**
      * @param Authentication $authentication
      * @param SubscriberRepository $repository
-     * @param SerializerInterface $serializer
      */
     public function __construct(
         Authentication $authentication,
-        SubscriberRepository $repository,
-        SerializerInterface $serializer
+        SubscriberRepository $repository
     ) {
         $this->authentication = $authentication;
         $this->subscriberRepository = $repository;
-        $this->serializer = $serializer;
     }
 
     /**
@@ -49,7 +45,7 @@ class SubscriberController extends AbstractController
      * address yet).
      */
     #[Route('/subscribers', name: 'create_subscriber', methods: ['POST'])]
-    public function postAction(Request $request): JsonResponse
+    public function postAction(Request $request, SerializerInterface $serializer): JsonResponse
     {
         $this->requireAuthentication($request);
         $data = $request->getPayload();
@@ -59,18 +55,20 @@ class SubscriberController extends AbstractController
         if ($this->subscriberRepository->findOneByEmail($email) !== null) {
             throw new ConflictHttpException('This resource already exists.', null, 1513439108);
         }
-
+        // @phpstan-ignore-next-line
         $subscriber = new Subscriber();
         $subscriber->setEmail($email);
-        $subscriber->setConfirmed((bool)$data->get('confirmed'));
-        $subscriber->setBlacklisted((bool)$data->get('blacklisted'));
-        $subscriber->setHtmlEmail((bool)$data->get('html_email'));
-        $subscriber->setDisabled((bool)$data->get('disabled'));
+        $subscriber->setConfirmed((bool)$data->get('confirmed', false));
+        $subscriber->setBlacklisted((bool)$data->get('blacklisted', false));
+        $subscriber->setHtmlEmail((bool)$data->get('html_email', true));
+        $subscriber->setDisabled((bool)$data->get('disabled', false));
+
         $this->subscriberRepository->save($subscriber);
 
         return new JsonResponse(
-            $this->serializer->serialize($subscriber, 'json'),
-            Response::HTTP_CREATED, [],
+            $serializer->serialize($subscriber, 'json'),
+            Response::HTTP_CREATED,
+            [],
             true
         );
     }

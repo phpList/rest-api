@@ -22,7 +22,7 @@ class ListControllerTest extends AbstractTestController
 {
     public function testControllerIsAvailableViaContainer()
     {
-        self::assertInstanceOf(ListController::class, self::getClient()->getContainer()->get(ListController::class));
+        self::assertInstanceOf(ListController::class, self::getContainer()->get(ListController::class));
     }
 
     public function testGetListsWithoutSessionKeyReturnsForbiddenStatus()

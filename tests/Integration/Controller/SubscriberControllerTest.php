@@ -29,7 +29,7 @@ class SubscriberControllerTest extends AbstractTestController
     {
         self::assertInstanceOf(
             SubscriberController::class,
-            self::getClient()->getContainer()->get(SubscriberController::class)
+            self::getContainer()->get(SubscriberController::class)
         );
     }
 
