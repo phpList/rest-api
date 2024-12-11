@@ -187,7 +187,11 @@ class ListControllerTest extends AbstractTestController
 
     public function testGetListMembersForExistingListWithExpiredSessionKeyReturnsForbiddenStatus()
     {
-        $this->loadFixtures([SubscriberListFixture::class, AdministratorFixture::class, AdministratorTokenFixture::class]);
+        $this->loadFixtures([
+            SubscriberListFixture::class,
+            AdministratorFixture::class,
+            AdministratorTokenFixture::class,
+        ]);
 
         self::getClient()->request(
             'get',
@@ -269,7 +273,11 @@ class ListControllerTest extends AbstractTestController
 
     public function testGetListSubscribersCountForExistingListWithExpiredSessionKeyReturnsForbiddenStatus()
     {
-        $this->loadFixtures([SubscriberListFixture::class, AdministratorFixture::class, AdministratorTokenFixture::class]);
+        $this->loadFixtures([
+            SubscriberListFixture::class,
+            AdministratorFixture::class,
+            AdministratorTokenFixture::class,
+        ]);
 
         self::getClient()->request(
             'get',
@@ -291,7 +299,7 @@ class ListControllerTest extends AbstractTestController
         $this->assertHttpOkay();
     }
 
-    public function testGetListSubscribersCountWithCurrentSessionKeyForExistingListWithNoSubscribersReturnsZero()
+    public function testGetSubscribersCountForEmptyListWithValidSession()
     {
         $this->loadFixtures([SubscriberListFixture::class, SubscriberFixture::class, SubscriptionFixture::class]);
 
@@ -301,7 +309,7 @@ class ListControllerTest extends AbstractTestController
         self::assertSame(0, $responseContent);
     }
 
-    public function testGetListSubscribersCountWithCurrentSessionKeyForExistingListWithSubscribersReturnsSubscribersCount()
+    public function testGetSubscribersCountForListWithValidSession()
     {
         $this->loadFixtures([SubscriberListFixture::class, SubscriberFixture::class, SubscriptionFixture::class]);
 

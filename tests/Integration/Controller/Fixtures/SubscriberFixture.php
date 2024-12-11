@@ -30,11 +30,15 @@ class SubscriberFixture extends Fixture
 
         $headers = fgetcsv($handle);
 
-        while (($data = fgetcsv($handle)) !== false) {
+        do {
+            $data = fgetcsv($handle);
+            if ($data === false) {
+                break;
+            }
             $row = array_combine($headers, $data);
 
             $subscriber = new Subscriber();
-            $this->setSubjectId($subscriber,(int)$row['id']);
+            $this->setSubjectId($subscriber, (int)$row['id']);
 
             $subscriber->setEmail($row['email']);
             $subscriber->setConfirmed((bool) $row['confirmed']);
@@ -46,9 +50,9 @@ class SubscriberFixture extends Fixture
             $manager->persist($subscriber);
             // avoid pre-persist
             $subscriber->setUniqueId($row['uniqid']);
-            $this->setSubjectProperty($subscriber,'creationDate', new DateTime($row['entered']));
-            $this->setSubjectProperty($subscriber,'modificationDate', new DateTime($row['modified']));
-        }
+            $this->setSubjectProperty($subscriber, 'creationDate', new DateTime($row['entered']));
+            $this->setSubjectProperty($subscriber, 'modificationDate', new DateTime($row['modified']));
+        } while (true);
 
         fclose($handle);
     }

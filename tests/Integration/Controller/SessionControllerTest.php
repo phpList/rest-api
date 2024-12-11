@@ -30,7 +30,7 @@ class SessionControllerTest extends AbstractTestController
     {
         self::assertInstanceOf(
             SessionController::class,
-            self:: getContainer()->get(SessionController::class)
+            self::getContainer()->get(SessionController::class)
         );
     }
 

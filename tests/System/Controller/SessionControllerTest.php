@@ -26,7 +26,7 @@ class SessionControllerTest extends AbstractTestController
         self::getClient()->request(
             'POST',
             '/api/v2/sessions',
-             [],
+            [],
             [],
             [],
             json_encode($jsonData)
