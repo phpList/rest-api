@@ -9,6 +9,7 @@
 /config/config_modules.yml
 /config/parameters.yml
 /config/routing_modules.yml
+/docs/openapi.json
 /nbproject
 /public/
 /var/

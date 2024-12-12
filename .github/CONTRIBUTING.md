@@ -60,12 +60,42 @@ have a chance of keeping on top of things:
 8. Add a changelog entry.
 9. [Commit](#git-commits) and push your changes.
 10. [Create a pull request](https://help.github.com/articles/about-pull-requests/)
-    for your changes. Check that the Travis build is green. (If it is not, fix the
-    problems listed by Travis.)
+    for your changes. Check that the [Github actions](https://github.com/phpList/rest-api/actions/workflows/ci.yml) build is green. (If it is not, fix the
+    problems listed by [Github actions](https://github.com/phpList/rest-api/actions/workflows/ci.yml).)
     We have provided a template for pull requests as well.
 11. [Request a review](https://help.github.com/articles/about-pull-request-reviews/).
 11. Together with your reviewer, polish your changes until they are ready to be
     merged.
+
+## API Documenting with `OPENAPI`
+
+Controllers are annotated with the [`OpenAPI`](https://swagger.io/docs/specification/about/) specification using the `PHPDoc` implementation from [zircote/swagger-php](https://github.com/zircote/swagger-php). 
+
+If you add or modify existing annotations, you should run `composer openapi-generate` to have the updated openapi decription of the API.
+
+### Notes
+- `composer openapi-generate` produces `openapi.json` in `docs/`
+-  The generated `docs/openapi.json` is excluded in commits. _See .gitignore_
+-  The only reason you should generate `openapi.json` is for debugging and testing.
+
+### Debugging `openapi.json` description.
+
+To ensure builds pass and new annotations are deployed, do validate `openapi.json` by copy-pasting it's content in `https://validator.swagger.io/`
+
+In addition you can also use the [openapi-checker](github.com/phplist/openapi-checker) to validate you file as follows;
+
+- `npm install -g openapi-checker`
+- `openapi-checker docs/openapi.json`
+
+### More on `composer openapi-generate` 
+
+`composer openapi-generate` basically runs `vendor/bin/openapi -o docs/openapi.json --format json src` defined in the scripts section of `composer.json` which as mentioned above generates `openapi.json` description file in the `docs/` directory.
+
+### Swagger UI
+
+[Swagger UI](https://github.com/swagger-api/swagger-ui) is used to visualize generated api description and is visible at [phplist.github.io/restapi-docs](https://phplist.github.io/restapi-docs) after a successful CI build.
+
+You might also achieve local visualization by cloning [phplist/restapi-docs](https://github.com/phpList/restapi-docs) and temporally changing the `url` property of `SwaggerUIBundle` to point to your generated file.
 
 
 ## Unit-test your changes

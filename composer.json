@@ -14,9 +14,14 @@
     "license": "AGPL-3.0-or-later",
     "authors": [
         {
+            "name": "Xheni Myrtaj",
+            "email": "xheni@phplist.com",
+            "role": "Maintainer"
+        },
+        {
             "name": "Oliver Klee",
             "email": "oliver@phplist.com",
-            "role": "Developer"
+            "role": "Former developer"
         }
     ],
     "support": {
@@ -90,7 +95,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-ISSUE-337": "5.0.x-dev"
+            "dev-master": "5.0.x-dev"
         },
         "symfony-app-dir": "bin",
         "symfony-bin-dir": "bin",
