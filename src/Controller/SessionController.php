@@ -54,48 +54,52 @@ class SessionController extends AbstractController
      */
     #[Route('/sessions', name: 'create_session', methods: ['POST'])]
     #[OA\Post(
-        path: "/sessions",
-        description: "Given valid login data, this will generate a login token that will be valid for 1 hour.",
-        summary: "Log in or create new session.",
+        path: '/sessions',
+        description: 'Given valid login data, this will generate a login token that will be valid for 1 hour.',
+        summary: 'Log in or create new session.',
         requestBody: new OA\RequestBody(
-            description: "Pass session credentials",
+            description: 'Pass session credentials',
             required: true,
             content: new OA\JsonContent(
-                required: ["login_name", "password"],
+                required: ['login_name', 'password'],
                 properties: [
-                    new OA\Property(property: "login_name", type: "string", format: "string", example: "admin"),
-                    new OA\Property(property: "password", type: "string", format: "password", example: "eetIc/Gropvoc1")
+                    new OA\Property(property: 'login_name', type: 'string', format: 'string', example: 'admin'),
+                    new OA\Property(property: 'password', type: 'string', format: 'password', example: 'eetIc/Gropvoc1')
                 ]
             )
         ),
-        tags: ["sessions"],
+        tags: ['sessions'],
         responses: [
             new OA\Response(
                 response: 201,
-                description: "Success",
+                description: 'Success',
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property: "id", type: "integer", example: 1234),
-                        new OA\Property(property: "key", type: "string", example: "2cfe100561473c6cdd99c9e2f26fa974"),
-                        new OA\Property(property: "expiry", type: "string", example: "2017-07-20T18:22:48+00:00")
+                        new OA\Property(property: 'id', type: 'integer', example: 1234),
+                        new OA\Property(property: 'key', type: 'string', example: '2cfe100561473c6cdd99c9e2f26fa974'),
+                        new OA\Property(property: 'expiry', type: 'string', example: '2017-07-20T18:22:48+00:00')
                     ]
                 )
             ),
             new OA\Response(
                 response: 400,
-                description: "Failure",
+                description: 'Failure',
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property: "message", type: "string", example: "Empty json, invalid data and or incomplete data")
+                        new OA\Property(
+                            property: 'message',
+                            type: 'string',
+                            example: 'Empty json, invalid data and or incomplete data'
+                        )
                     ]
                 )
             ),
             new OA\Response(
                 response: 401,
-                description: "Failure",
+                description: 'Failure',
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property: "message", type: "string", example: "Not authorized.")
+                        new OA\Property(property: 'message', type: 'string', example: 'Not authorized.')
                     ]
                 )
             )
@@ -127,46 +131,46 @@ class SessionController extends AbstractController
      */
     #[Route('/sessions/{id}', name: 'delete_session', methods: ['DELETE'])]
     #[OA\Delete(
-        path: "/sessions/{session}",
-        description: "Delete the session passed as a parameter.",
-        summary: "Delete a session.",
-        tags: ["sessions"],
+        path: '/sessions/{session}',
+        description: 'Delete the session passed as a parameter.',
+        summary: 'Delete a session.',
+        tags: ['sessions'],
         parameters: [
             new OA\Parameter(
-                name: "session",
-                description: "Session ID",
-                in: "path",
+                name: 'session',
+                description: 'Session ID',
+                in: 'path',
                 required: true,
-                schema: new OA\Schema(type: "string")
+                schema: new OA\Schema(type: 'string')
             )
         ],
         responses: [
             new OA\Response(
                 response: 200,
-                description: "Success"
+                description: 'Success'
             ),
             new OA\Response(
                 response: 403,
-                description: "Failure",
+                description: 'Failure',
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(
-                            property: "message",
-                            type: "string",
-                            example: "No valid session key was provided as basic auth password or You do not have access to this session."
+                            property: 'message',
+                            type: 'string',
+                            example: 'No valid session key was provided as basic auth password.'
                         )
                     ]
                 )
             ),
             new OA\Response(
                 response: 404,
-                description: "Failure",
+                description: 'Failure',
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(
-                            property: "message",
-                            type: "string",
-                            example: "There is no session with that ID."
+                            property: 'message',
+                            type: 'string',
+                            example: 'There is no session with that ID.'
                         )
                     ]
                 )

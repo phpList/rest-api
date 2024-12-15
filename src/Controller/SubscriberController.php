@@ -39,75 +39,92 @@ class SubscriberController extends AbstractController
 
     #[Route('/subscribers', name: 'create_subscriber', methods: ['POST'])]
     #[OA\Post(
-        path: "/subscriber",
-        description: "Creates a new subscriber (if the provided data is valid and there is no subscriber with the given email address yet).",
-        summary: "Create a subscriber",
+        path: '/subscriber',
+        description: 'Creates a new subscriber (if there is no subscriber with the given email address yet).',
+        summary: 'Create a subscriber',
         requestBody: new OA\RequestBody(
-            description: "Pass session credentials",
+            description: 'Pass session credentials',
             required: true,
             content: new OA\JsonContent(
-                required: ["email"],
+                required: ['email'],
                 properties: [
-                    new OA\Property(property: "email", type: "string", format: "string", example: "admin@example.com"),
-                    new OA\Property(property: "confirmed", type: "boolean", example: false),
-                    new OA\Property(property: "blacklisted", type: "boolean", example: false),
-                    new OA\Property(property: "html_email", type: "boolean", example: false),
-                    new OA\Property(property: "disabled", type: "boolean", example: false)
+                    new OA\Property(property: 'email', type: 'string', format: 'string', example: 'admin@example.com'),
+                    new OA\Property(property: 'confirmed', type: 'boolean', example: false),
+                    new OA\Property(property: 'blacklisted', type: 'boolean', example: false),
+                    new OA\Property(property: 'html_email', type: 'boolean', example: false),
+                    new OA\Property(property: 'disabled', type: 'boolean', example: false)
                 ]
             )
         ),
-        tags: ["subscribers"],
+        tags: ['subscribers'],
         parameters: [
             new OA\Parameter(
-                name: "session",
-                description: "Session ID obtained from authentication",
-                in: "header",
+                name: 'session',
+                description: 'Session ID obtained from authentication',
+                in: 'header',
                 required: true,
-                schema: new OA\Schema(type: "string")
+                schema: new OA\Schema(type: 'string')
             )
         ],
         responses: [
             new OA\Response(
                 response: 201,
-                description: "Success",
+                description: 'Success',
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property: "creation_date", type: "string", format: "date-time", example: "2017-12-16T18:44:27+00:00"),
-                        new OA\Property(property: "email", type: "string", example: "subscriber@example.com"),
-                        new OA\Property(property: "confirmed", type: "boolean", example: false),
-                        new OA\Property(property: "blacklisted", type: "boolean", example: false),
-                        new OA\Property(property: "bounced", type: "integer", example: 0),
-                        new OA\Property(property: "unique_id", type: "string", example: "69f4e92cf50eafca9627f35704f030f4"),
-                        new OA\Property(property: "html_email", type: "boolean", example: false),
-                        new OA\Property(property: "disabled", type: "boolean", example: false),
-                        new OA\Property(property: "id", type: "integer", example: 1)
+                        new OA\Property(
+                            property: 'creation_date',
+                            type: 'string',
+                            format: 'date-time',
+                            example: '2017-12-16T18:44:27+00:00'
+                        ),
+                        new OA\Property(property: 'email', type: 'string', example: 'subscriber@example.com'),
+                        new OA\Property(property: 'confirmed', type: 'boolean', example: false),
+                        new OA\Property(property: 'blacklisted', type: 'boolean', example: false),
+                        new OA\Property(property: 'bounced', type: 'integer', example: 0),
+                        new OA\Property(
+                            property: 'unique_id',
+                            type: 'string',
+                            example: '69f4e92cf50eafca9627f35704f030f4'
+                        ),
+                        new OA\Property(property: 'html_email', type: 'boolean', example: false),
+                        new OA\Property(property: 'disabled', type: 'boolean', example: false),
+                        new OA\Property(property: 'id', type: 'integer', example: 1)
                     ]
                 )
             ),
             new OA\Response(
                 response: 403,
-                description: "Failure",
+                description: 'Failure',
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property: "message", type: "string", example: "No valid session key was provided as basic auth password.")
+                        new OA\Property(
+                            property: 'message',
+                            type: 'string',
+                            example: 'No valid session key was provided as basic auth password.'
+                        )
                     ]
                 )
             ),
             new OA\Response(
                 response: 409,
-                description: "Failure",
+                description: 'Failure',
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property: "message", type: "string", example: "This resource already exists.")
+                        new OA\Property(property: 'message', type: 'string', example: 'This resource already exists.')
                     ]
                 )
             ),
             new OA\Response(
                 response: 422,
-                description: "Failure",
+                description: 'Failure',
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property: "message", type: "string", example: "Some fields invalid: email, confirmed, html_email")
+                        new OA\Property(
+                            property: 'message',
+                            type: 'string',
+                            example: 'Some fields invalid: email, confirmed, html_email'
+                        )
                     ]
                 )
             )
@@ -158,7 +175,9 @@ class SubscriberController extends AbstractController
 
         $booleanFields = ['confirmed', 'blacklisted', 'html_email', 'disabled'];
         foreach ($booleanFields as $fieldKey) {
-            if ($request->getPayload()->get($fieldKey) !== null && !is_bool($request->getPayload()->get($fieldKey))) {
+            if ($request->getPayload()->get($fieldKey) !== null
+                && !is_bool($request->getPayload()->get($fieldKey))
+            ) {
                 $invalidFields[] = $fieldKey;
             }
         }

@@ -47,50 +47,63 @@ class ListController extends AbstractController
 
     #[Route('/lists', name: 'get_lists', methods: ['GET'])]
     #[OA\Get(
-        path: "/lists",
-        description: "Returns a JSON list of all subscriber lists.",
-        summary: "Gets a list of all subscriber lists.",
-        tags: ["lists"],
+        path: '/lists',
+        description: 'Returns a JSON list of all subscriber lists.',
+        summary: 'Gets a list of all subscriber lists.',
+        tags: ['lists'],
         parameters: [
             new OA\Parameter(
-                name: "session",
-                description: "Session ID obtained from authentication",
-                in: "header",
+                name: 'session',
+                description: 'Session ID obtained from authentication',
+                in: 'header',
                 required: true,
                 schema: new OA\Schema(
-                    type: "string"
+                    type: 'string'
                 )
             )
         ],
         responses: [
             new OA\Response(
                 response: 200,
-                description: "Success",
+                description: 'Success',
                 content: new OA\JsonContent(
-                    type: "array",
+                    type: 'array',
                     items: new OA\Items(
                         properties: [
-                            new OA\Property(property: "name", type: "string", example: "News"),
-                            new OA\Property(property: "description", type: "string", example: "News (and some fun stuff)"),
-                            new OA\Property(property: "creation_date", type: "string", format: "date-time", example: "2016-06-22T15:01:17+00:00"),
-                            new OA\Property(property: "list_position", type: "integer", example: 12),
-                            new OA\Property(property: "subject_prefix", type: "string", example: "phpList"),
-                            new OA\Property(property: "public", type: "boolean", example: true),
-                            new OA\Property(property: "category", type: "string", example: "news"),
-                            new OA\Property(property: "id", type: "integer", example: 1)
+                            new OA\Property(property: 'name', type: 'string', example: 'News'),
+                            new OA\Property(
+                                property: 'description',
+                                type: 'string',
+                                example: 'News (and some fun stuff)'
+                            ),
+                            new OA\Property(
+                                property: 'creation_date',
+                                type: 'string',
+                                format: 'date-time',
+                                example: '2016-06-22T15:01:17+00:00'
+                            ),
+                            new OA\Property(property: 'list_position', type: 'integer', example: 12),
+                            new OA\Property(property: 'subject_prefix', type: 'string', example: 'phpList'),
+                            new OA\Property(property: 'public', type: 'boolean', example: true),
+                            new OA\Property(property: 'category', type: 'string', example: 'news'),
+                            new OA\Property(property: 'id', type: 'integer', example: 1)
                         ],
-                        type: "object"
+                        type: 'object'
                     )
                 )
             ),
             new OA\Response(
                 response: 403,
-                description: "Failure",
+                description: 'Failure',
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property: "message", type: "string", example: "No valid session key was provided as basic auth password.")
+                        new OA\Property(
+                            property: 'message',
+                            type: 'string',
+                            example: 'No valid session key was provided as basic auth password.'
+                        )
                     ],
-                    type: "object"
+                    type: 'object'
                 )
             )
         ]
@@ -108,70 +121,70 @@ class ListController extends AbstractController
 
     #[Route('/lists/{id}', name: 'get_list', methods: ['GET'])]
     #[OA\Get(
-        path: "/lists/{list}",
-        description: "Returns a single subscriber list with specified ID.",
-        summary: "Gets a subscriber list.",
-        tags: ["lists"],
+        path: '/lists/{list}',
+        description: 'Returns a single subscriber list with specified ID.',
+        summary: 'Gets a subscriber list.',
+        tags: ['lists'],
         parameters: [
             new OA\Parameter(
-                name: "list",
-                description: "List ID",
-                in: "path",
+                name: 'list',
+                description: 'List ID',
+                in: 'path',
                 required: true,
-                schema: new OA\Schema(type: "string")
+                schema: new OA\Schema(type: 'string')
             ),
             new OA\Parameter(
-                name: "session",
-                description: "Session ID obtained from authentication",
-                in: "header",
+                name: 'session',
+                description: 'Session ID obtained from authentication',
+                in: 'header',
                 required: true,
-                schema: new OA\Schema(type: "string")
+                schema: new OA\Schema(type: 'string')
             )
         ],
         responses: [
             new OA\Response(
                 response: 200,
-                description: "Success",
+                description: 'Success',
                 content: new OA\JsonContent(
-                    type: "object",
+                    type: 'object',
                     example: [
-                        "name" => "News",
-                        "description" => "News (and some fun stuff)",
-                        "creation_date" => "2016-06-22T15:01:17+00:00",
-                        "list_position" => 12,
-                        "subject_prefix" => "phpList",
-                        "public" => true,
-                        "category" => "news",
-                        "id" => 1
+                        'name' => 'News',
+                        'description' => 'News (and some fun stuff)',
+                        'creation_date' => '2016-06-22T15:01:17+00:00',
+                        'list_position' => 12,
+                        'subject_prefix' => 'phpList',
+                        'public' => true,
+                        'category' => 'news',
+                        'id' => 1
                     ]
                 )
             ),
             new OA\Response(
                 response: 403,
-                description: "Failure",
+                description: 'Failure',
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(
-                            property: "message",
-                            type: "string",
-                            example: "No valid session key was provided as basic auth password."
+                            property: 'message',
+                            type: 'string',
+                            example: 'No valid session key was provided as basic auth password.'
                         )
                     ],
-                    type: "object"
+                    type: 'object'
                 )
             ),
             new OA\Response(
                 response: 404,
-                description: "Failure",
+                description: 'Failure',
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(
-                            property: "message",
-                            type: "string",
-                            example: "There is no list with that ID."
+                            property: 'message',
+                            type: 'string',
+                            example: 'There is no list with that ID.'
                         )
                     ],
-                    type: "object"
+                    type: 'object'
                 )
             )
         ]
@@ -188,57 +201,57 @@ class ListController extends AbstractController
 
     #[Route('/lists/{id}', name: 'delete_list', methods: ['DELETE'])]
     #[OA\Delete(
-        path: "/lists/{list}",
-        description: "Deletes a single subscriber list.",
-        summary: "Deletes a list.",
-        tags: ["lists"],
+        path: '/lists/{list}',
+        description: 'Deletes a single subscriber list.',
+        summary: 'Deletes a list.',
+        tags: ['lists'],
         parameters: [
             new OA\Parameter(
-                name: "session",
-                description: "Session ID",
-                in: "header",
+                name: 'session',
+                description: 'Session ID',
+                in: 'header',
                 required: true,
-                schema: new OA\Schema(type: "string")
+                schema: new OA\Schema(type: 'string')
             ),
             new OA\Parameter(
-                name: "list",
-                description: "List ID",
-                in: "path",
+                name: 'list',
+                description: 'List ID',
+                in: 'path',
                 required: true,
-                schema: new OA\Schema(type: "string")
+                schema: new OA\Schema(type: 'string')
             )
         ],
         responses: [
             new OA\Response(
                 response: 200,
-                description: "Success"
+                description: 'Success'
             ),
             new OA\Response(
                 response: 403,
-                description: "Failure",
+                description: 'Failure',
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(
-                            property: "message",
-                            type: "string",
-                            example: "No valid session key was provided as basic auth password or You do not have access to this session."
+                            property: 'message',
+                            type: 'string',
+                            example: 'No valid session key was provided.'
                         )
                     ],
-                    type: "object"
+                    type: 'object'
                 )
             ),
             new OA\Response(
                 response: 404,
-                description: "Failure",
+                description: 'Failure',
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(
-                            property: "message",
-                            type: "string",
-                            example: "There is no session with that ID."
+                            property: 'message',
+                            type: 'string',
+                            example: 'There is no session with that ID.'
                         )
                     ],
-                    type: "object"
+                    type: 'object'
                 )
             )
         ]
@@ -256,56 +269,69 @@ class ListController extends AbstractController
 
     #[Route('/lists/{id}/members', name: 'get_subscriber_from_list', methods: ['GET'])]
     #[OA\Get(
-        path: "/lists/{list}/members",
-        description: "Returns a JSON list of all subscribers for a subscriber list.",
-        summary: "Gets a list of all subscribers (members) of a subscriber list.",
-        tags: ["lists"],
+        path: '/lists/{list}/members',
+        description: 'Returns a JSON list of all subscribers for a subscriber list.',
+        summary: 'Gets a list of all subscribers (members) of a subscriber list.',
+        tags: ['lists'],
         parameters: [
             new OA\Parameter(
-                name: "session",
-                description: "Session ID obtained from authentication",
-                in: "header",
+                name: 'session',
+                description: 'Session ID obtained from authentication',
+                in: 'header',
                 required: true,
-                schema: new OA\Schema(type: "string")
+                schema: new OA\Schema(type: 'string')
             ),
             new OA\Parameter(
-                name: "list",
-                description: "List ID",
-                in: "path",
+                name: 'list',
+                description: 'List ID',
+                in: 'path',
                 required: true,
-                schema: new OA\Schema(type: "string")
+                schema: new OA\Schema(type: 'string')
             )
         ],
         responses: [
             new OA\Response(
                 response: 200,
-                description: "Success",
+                description: 'Success',
                 content: new OA\JsonContent(
-                    type: "array",
+                    type: 'array',
                     items: new OA\Items(
                         properties: [
-                            new OA\Property(property: "creation_date", type: "string", format: "date-time", example: "2016-07-22T15:01:17+00:00"),
-                            new OA\Property(property: "email", type: "string", example: "oliver@example.com"),
-                            new OA\Property(property: "confirmed", type: "boolean", example: true),
-                            new OA\Property(property: "blacklisted", type: "boolean", example: true),
-                            new OA\Property(property: "bounce_count", type: "integer", example: 17),
-                            new OA\Property(property: "unique_id", type: "string", example: "95feb7fe7e06e6c11ca8d0c48cb46e89"),
-                            new OA\Property(property: "html_email", type: "boolean", example: true),
-                            new OA\Property(property: "disabled", type: "boolean", example: true),
-                            new OA\Property(property: "id", type: "integer", example: 1)
+                            new OA\Property(
+                                property: 'creation_date',
+                                type: 'string',
+                                format: 'date-time',
+                                example: '2016-07-22T15:01:17+00:00'
+                            ),
+                            new OA\Property(property: 'email', type: 'string', example: 'oliver@example.com'),
+                            new OA\Property(property: 'confirmed', type: 'boolean', example: true),
+                            new OA\Property(property: 'blacklisted', type: 'boolean', example: true),
+                            new OA\Property(property: 'bounce_count', type: 'integer', example: 17),
+                            new OA\Property(
+                                property: 'unique_id',
+                                type: 'string',
+                                example: '95feb7fe7e06e6c11ca8d0c48cb46e89'
+                            ),
+                            new OA\Property(property: 'html_email', type: 'boolean', example: true),
+                            new OA\Property(property: 'disabled', type: 'boolean', example: true),
+                            new OA\Property(property: 'id', type: 'integer', example: 1)
                         ],
-                        type: "object"
+                        type: 'object'
                     )
                 )
             ),
             new OA\Response(
                 response: 403,
-                description: "Failure",
+                description: 'Failure',
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property: "message", type: "string", example: "No valid session key was provided as basic auth password.")
+                        new OA\Property(
+                            property: 'message',
+                            type: 'string',
+                            example: 'No valid session key was provided as basic auth password.'
+                        )
                     ],
-                    type: "object"
+                    type: 'object'
                 )
             )
         ]
@@ -327,43 +353,43 @@ class ListController extends AbstractController
 
     #[Route('/lists/{id}/subscribers/count', name: 'get_subscribers_count_from_list', methods: ['GET'])]
     #[OA\Get(
-        path: "/lists/{list}/count",
-        description: "Returns a count of all subscribers in a given list.",
-        summary: "Gets the total number of subscribers of a list",
-        tags: ["lists"],
+        path: '/lists/{list}/count',
+        description: 'Returns a count of all subscribers in a given list.',
+        summary: 'Gets the total number of subscribers of a list',
+        tags: ['lists'],
         parameters: [
             new OA\Parameter(
-                name: "session",
-                description: "Session ID obtained from authentication",
-                in: "header",
+                name: 'session',
+                description: 'Session ID obtained from authentication',
+                in: 'header',
                 required: true,
-                schema: new OA\Schema(type: "string")
+                schema: new OA\Schema(type: 'string')
             ),
             new OA\Parameter(
-                name: "list",
-                description: "List ID",
-                in: "path",
+                name: 'list',
+                description: 'List ID',
+                in: 'path',
                 required: true,
-                schema: new OA\Schema(type: "string")
+                schema: new OA\Schema(type: 'string')
             )
         ],
         responses: [
             new OA\Response(
                 response: 200,
-                description: "Success"
+                description: 'Success'
             ),
             new OA\Response(
                 response: 403,
-                description: "Failure",
+                description: 'Failure',
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(
-                            property: "message",
-                            type: "string",
-                            example: "No valid session key was provided as basic auth password."
+                            property: 'message',
+                            type: 'string',
+                            example: 'No valid session key was provided as basic auth password.'
                         )
                     ],
-                    type: "object"
+                    type: 'object'
                 )
             )
         ]
