@@ -30,7 +30,7 @@ class PhpListRestExtension extends Extension
      */
     public function load(array $configs, ContainerBuilder $container): void
     {
-        // This parameter is unused, but not optional. This line will avoid a static analysis warning this.
+        // @phpstan-ignore-next-line
         $configs;
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../../config'));
         $loader->load('services.yml');
