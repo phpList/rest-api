@@ -1,8 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace PhpList\RestBundle\DependencyInjection;
 
+use Exception;
+use InvalidArgumentException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
@@ -19,18 +22,17 @@ class PhpListRestExtension extends Extension
      * Loads a specific configuration.
      *
      * @param array $configs configuration values
-     * @param ContainerBuilder $containerBuilder
+     * @param ContainerBuilder $container
      *
      * @return void
      *
-     * @throws \InvalidArgumentException if the provided tag is not defined in this extension
+     * @throws InvalidArgumentException|Exception if the provided tag is not defined in this extension
      */
-    public function load(array $configs, ContainerBuilder $containerBuilder)
+    public function load(array $configs, ContainerBuilder $container): void
     {
-        // This parameter is unused, but not optional. This line will avoid a static analysis warning this.
+        // @phpstan-ignore-next-line
         $configs;
-
-        $loader = new YamlFileLoader($containerBuilder, new FileLocator(__DIR__ . '/../../config'));
+        $loader = new YamlFileLoader($container, new FileLocator(__DIR__ . '/../../config'));
         $loader->load('services.yml');
     }
 }

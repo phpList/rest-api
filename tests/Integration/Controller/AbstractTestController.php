@@ -1,10 +1,14 @@
 <?php
+
 declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Integration\Controller;
 
-use PhpList\Core\TestingSupport\AbstractWebTest;
+use Doctrine\ORM\Tools\SchemaTool;
 use PhpList\Core\TestingSupport\Traits\DatabaseTestTrait;
+use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\AdministratorFixture;
+use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\AdministratorTokenFixture;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -15,24 +19,23 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @author Oliver Klee <oliver@phplist.com>
  */
-abstract class AbstractControllerTest extends AbstractWebTest
+abstract class AbstractTestController extends WebTestCase
 {
     use DatabaseTestTrait;
 
-    /**
-     * @var string
-     */
-    const ADMINISTRATOR_TABLE_NAME = 'phplist_admin';
-
-    /**
-     * @var string
-     */
-    const TOKEN_TABLE_NAME = 'phplist_admintoken';
-
-    protected function setUp()
+    protected function setUp(): void
     {
+        parent::setUp();
+        self::createClient();
         $this->setUpDatabaseTest();
-        $this->setUpWebTest();
+        $this->loadSchema();
+    }
+
+    protected function tearDown(): void
+    {
+        $schemaTool = new SchemaTool($this->entityManager);
+        $schemaTool->dropDatabase();
+        parent::tearDown();
     }
 
     /**
@@ -58,7 +61,14 @@ abstract class AbstractControllerTest extends AbstractWebTest
         $serverWithContentType = $server;
         $serverWithContentType['CONTENT_TYPE'] = 'application/json';
 
-        return $this->client->request($method, $uri, $parameters, $files, $serverWithContentType, $content);
+        return self::getClient()->request(
+            $method,
+            $uri,
+            $parameters,
+            $files,
+            $serverWithContentType,
+            $content
+        );
     }
 
     /**
@@ -81,9 +91,7 @@ abstract class AbstractControllerTest extends AbstractWebTest
         array $server = [],
         string $content = null
     ): Crawler {
-        $this->getDataSet()->addTable(static::ADMINISTRATOR_TABLE_NAME, __DIR__ . '/Fixtures/Administrator.csv');
-        $this->getDataSet()->addTable(static::TOKEN_TABLE_NAME, __DIR__ . '/Fixtures/AdministratorToken.csv');
-        $this->applyDatabaseChanges();
+        $this->loadFixtures([AdministratorFixture::class, AdministratorTokenFixture::class]);
 
         $serverWithAuthentication = $server;
         $serverWithAuthentication['PHP_AUTH_USER'] = 'unused';
@@ -99,7 +107,7 @@ abstract class AbstractControllerTest extends AbstractWebTest
      */
     protected function getDecodedJsonResponseContent(): array
     {
-        return json_decode($this->client->getResponse()->getContent(), true);
+        return json_decode(self::getClient()->getResponse()->getContent(), true);
     }
 
     /**
@@ -109,7 +117,7 @@ abstract class AbstractControllerTest extends AbstractWebTest
      */
     protected function getResponseContentAsInt(): int
     {
-        return json_decode($this->client->getResponse()->getContent(), true);
+        return json_decode(self::getClient()->getResponse()->getContent(), true);
     }
 
     /**
@@ -119,9 +127,9 @@ abstract class AbstractControllerTest extends AbstractWebTest
      *
      * @return void
      */
-    protected function assertJsonResponseContentEquals(array $expected)
+    protected function assertJsonResponseContentEquals(array $expected): void
     {
-        static::assertSame($expected, $this->getDecodedJsonResponseContent());
+        self::assertSame($expected, $this->getDecodedJsonResponseContent());
     }
 
     /**
@@ -131,12 +139,12 @@ abstract class AbstractControllerTest extends AbstractWebTest
      *
      * @return void
      */
-    protected function assertHttpStatusWithJsonContentType(int $status)
+    protected function assertHttpStatusWithJsonContentType(int $status): void
     {
-        $response = $this->client->getResponse();
+        $response = self::getClient()->getResponse();
 
-        static::assertSame($status, $response->getStatusCode());
-        static::assertContains('application/json', (string)$response->headers);
+        self::assertSame($status, $response->getStatusCode());
+        self::assertStringContainsString('application/json', (string)$response->headers);
     }
 
     /**
@@ -144,7 +152,7 @@ abstract class AbstractControllerTest extends AbstractWebTest
      *
      * @return void
      */
-    protected function assertHttpOkay()
+    protected function assertHttpOkay(): void
     {
         $this->assertHttpStatusWithJsonContentType(Response::HTTP_OK);
     }
@@ -154,7 +162,7 @@ abstract class AbstractControllerTest extends AbstractWebTest
      *
      * @return void
      */
-    protected function assertHttpCreated()
+    protected function assertHttpCreated(): void
     {
         $this->assertHttpStatusWithJsonContentType(Response::HTTP_CREATED);
     }
@@ -164,11 +172,11 @@ abstract class AbstractControllerTest extends AbstractWebTest
      *
      * @return void
      */
-    protected function assertHttpNoContent()
+    protected function assertHttpNoContent(): void
     {
-        $response = $this->client->getResponse();
+        $response = self::getClient()->getResponse();
 
-        static::assertSame(Response::HTTP_NO_CONTENT, $response->getStatusCode());
+        self::assertSame(Response::HTTP_NO_CONTENT, $response->getStatusCode());
     }
 
     /**
@@ -176,7 +184,7 @@ abstract class AbstractControllerTest extends AbstractWebTest
      *
      * @return void
      */
-    protected function assertHttpBadRequest()
+    protected function assertHttpBadRequest(): void
     {
         $this->assertHttpStatusWithJsonContentType(Response::HTTP_BAD_REQUEST);
     }
@@ -186,7 +194,7 @@ abstract class AbstractControllerTest extends AbstractWebTest
      *
      * @return void
      */
-    protected function assertHttpUnauthorized()
+    protected function assertHttpUnauthorized(): void
     {
         $this->assertHttpStatusWithJsonContentType(Response::HTTP_UNAUTHORIZED);
     }
@@ -196,7 +204,7 @@ abstract class AbstractControllerTest extends AbstractWebTest
      *
      * @return void
      */
-    protected function assertHttpNotFound()
+    protected function assertHttpNotFound(): void
     {
         $this->assertHttpStatusWithJsonContentType(Response::HTTP_NOT_FOUND);
     }
@@ -206,7 +214,7 @@ abstract class AbstractControllerTest extends AbstractWebTest
      *
      * @return void
      */
-    protected function assertHttpForbidden()
+    protected function assertHttpForbidden(): void
     {
         $this->assertHttpStatusWithJsonContentType(Response::HTTP_FORBIDDEN);
     }
@@ -216,11 +224,11 @@ abstract class AbstractControllerTest extends AbstractWebTest
      *
      * @return void
      */
-    protected function assertHttpMethodNotAllowed()
+    protected function assertHttpMethodNotAllowed(): void
     {
-        $response = $this->client->getResponse();
+        $response = self::getClient()->getResponse();
 
-        static::assertSame(Response::HTTP_METHOD_NOT_ALLOWED, $response->getStatusCode());
+        self::assertSame(Response::HTTP_METHOD_NOT_ALLOWED, $response->getStatusCode());
     }
 
     /**
@@ -229,13 +237,12 @@ abstract class AbstractControllerTest extends AbstractWebTest
      *
      * @return void
      */
-    protected function assertHttpConflict()
+    protected function assertHttpConflict(): void
     {
         $this->assertHttpStatusWithJsonContentType(Response::HTTP_CONFLICT);
 
-        static::assertSame(
+        self::assertSame(
             [
-                'code' => Response::HTTP_CONFLICT,
                 'message' => 'This resource already exists.',
             ],
             $this->getDecodedJsonResponseContent()
@@ -247,7 +254,7 @@ abstract class AbstractControllerTest extends AbstractWebTest
      *
      * @return void
      */
-    protected function assertHttpUnprocessableEntity()
+    protected function assertHttpUnprocessableEntity(): void
     {
         $this->assertHttpStatusWithJsonContentType(Response::HTTP_UNPROCESSABLE_ENTITY);
     }

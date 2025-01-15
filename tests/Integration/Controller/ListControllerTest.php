@@ -1,10 +1,16 @@
 <?php
+
 declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Integration\Controller;
 
 use PhpList\Core\Domain\Repository\Messaging\SubscriberListRepository;
 use PhpList\RestBundle\Controller\ListController;
+use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\AdministratorFixture;
+use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\AdministratorTokenFixture;
+use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\SubscriberFixture;
+use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\SubscriberListFixture;
+use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\SubscriptionFixture;
 
 /**
  * Testcase.
@@ -12,51 +18,25 @@ use PhpList\RestBundle\Controller\ListController;
  * @author Oliver Klee <oliver@phplist.com>
  * @author Xheni Myrtaj <xheni@phplist.com>
  */
-class ListControllerTest extends AbstractControllerTest
+class ListControllerTest extends AbstractTestController
 {
-    /**
-     * @var string
-     */
-    const LISTS_TABLE_NAME = 'phplist_list';
-
-    /**
-     * @var string
-     */
-    const SUBSCRIBER_TABLE_NAME = 'phplist_user_user';
-
-    /**
-     * @var string
-     */
-    const SUBSCRIPTION_TABLE_NAME = 'phplist_listuser';
-
-    /**
-     * @test
-     */
-    public function controllerIsAvailableViaContainer()
+    public function testControllerIsAvailableViaContainer()
     {
-        static::assertInstanceOf(ListController::class, $this->client->getContainer()->get(ListController::class));
+        self::assertInstanceOf(ListController::class, self::getContainer()->get(ListController::class));
     }
 
-    /**
-     * @test
-     */
-    public function getListsWithoutSessionKeyReturnsForbiddenStatus()
+    public function testGetListsWithoutSessionKeyReturnsForbiddenStatus()
     {
-        $this->client->request('get', '/api/v2/lists');
+        self::getClient()->request('get', '/api/v2/lists');
 
         $this->assertHttpForbidden();
     }
 
-    /**
-     * @test
-     */
-    public function getListsWithExpiredSessionKeyReturnsForbiddenStatus()
+    public function testGetListsWithExpiredSessionKeyReturnsForbiddenStatus()
     {
-        $this->getDataSet()->addTable(static::ADMINISTRATOR_TABLE_NAME, __DIR__ . '/Fixtures/Administrator.csv');
-        $this->getDataSet()->addTable(static::TOKEN_TABLE_NAME, __DIR__ . '/Fixtures/AdministratorToken.csv');
-        $this->applyDatabaseChanges();
+        $this->loadFixtures([AdministratorFixture::class, AdministratorTokenFixture::class]);
 
-        $this->client->request(
+        self::getClient()->request(
             'get',
             '/api/v2/lists',
             [],
@@ -67,23 +47,16 @@ class ListControllerTest extends AbstractControllerTest
         $this->assertHttpForbidden();
     }
 
-    /**
-     * @test
-     */
-    public function getListsWithCurrentSessionKeyReturnsOkayStatus()
+    public function testGetListsWithCurrentSessionKeyReturnsOkayStatus()
     {
         $this->authenticatedJsonRequest('get', '/api/v2/lists');
 
         $this->assertHttpOkay();
     }
 
-    /**
-     * @test
-     */
-    public function getListsWithCurrentSessionKeyReturnsListData()
+    public function testGetListsWithCurrentSessionKeyReturnsListData()
     {
-        $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
-        $this->applyDatabaseChanges();
+        $this->loadFixtures([SubscriberListFixture::class]);
 
         $this->authenticatedJsonRequest('get', '/api/v2/lists');
 
@@ -123,49 +96,34 @@ class ListControllerTest extends AbstractControllerTest
         );
     }
 
-    /**
-     * @test
-     */
-    public function getListWithoutSessionKeyForExistingListReturnsForbiddenStatus()
+    public function testGetListWithoutSessionKeyForExistingListReturnsForbiddenStatus()
     {
-        $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
-        $this->applyDatabaseChanges();
+        $this->loadFixtures([SubscriberListFixture::class]);
 
-        $this->client->request('get', '/api/v2/lists/1');
+        self::getClient()->request('get', '/api/v2/lists/1');
 
         $this->assertHttpForbidden();
     }
 
-    /**
-     * @test
-     */
-    public function getListWithCurrentSessionKeyForExistingListReturnsOkayStatus()
+    public function testGetListWithCurrentSessionKeyForExistingListReturnsOkayStatus()
     {
-        $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
-        $this->applyDatabaseChanges();
+        $this->loadFixtures([SubscriberListFixture::class]);
 
         $this->authenticatedJsonRequest('get', '/api/v2/lists/1');
 
         $this->assertHttpOkay();
     }
 
-    /**
-     * @test
-     */
-    public function getListWithCurrentSessionKeyForInexistentListReturnsNotFoundStatus()
+    public function testGetListWithCurrentSessionKeyForInexistentListReturnsNotFoundStatus()
     {
         $this->authenticatedJsonRequest('get', '/api/v2/lists/999');
 
         $this->assertHttpNotFound();
     }
 
-    /**
-     * @test
-     */
-    public function getListWithCurrentSessionKeyReturnsListData()
+    public function testGetListWithCurrentSessionKeyReturnsListData()
     {
-        $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
-        $this->applyDatabaseChanges();
+        $this->loadFixtures([SubscriberListFixture::class]);
 
         $this->authenticatedJsonRequest('get', '/api/v2/lists/1');
 
@@ -183,80 +141,59 @@ class ListControllerTest extends AbstractControllerTest
         );
     }
 
-    /**
-     * @test
-     */
-    public function deleteListWithoutSessionKeyForExistingListReturnsForbiddenStatus()
+    public function testDeleteListWithoutSessionKeyForExistingListReturnsForbiddenStatus()
     {
-        $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
-        $this->applyDatabaseChanges();
+        $this->loadFixtures([SubscriberListFixture::class]);
 
-        $this->client->request('delete', '/api/v2/lists/1');
+        self::getClient()->request('delete', '/api/v2/lists/1');
 
         $this->assertHttpForbidden();
     }
 
-    /**
-     * @test
-     */
-    public function deleteListWithCurrentSessionKeyForExistingListReturnsNoContentStatus()
+    public function testDeleteListWithCurrentSessionKeyForExistingListReturnsNoContentStatus()
     {
-        $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
-        $this->applyDatabaseChanges();
+        $this->loadFixtures([SubscriberFixture::class, SubscriberListFixture::class, SubscriptionFixture::class]);
 
         $this->authenticatedJsonRequest('delete', '/api/v2/lists/1');
 
         $this->assertHttpNoContent();
     }
 
-    /**
-     * @test
-     */
-    public function deleteListWithCurrentSessionKeyForInexistentListReturnsNotFoundStatus()
+    public function testDeleteListWithCurrentSessionKeyForInexistentListReturnsNotFoundStatus()
     {
         $this->authenticatedJsonRequest('delete', '/api/v2/lists/999');
 
         $this->assertHttpNotFound();
     }
 
-    /**
-     * @test
-     */
-    public function deleteListWithCurrentSessionKeyDeletesList()
+    public function testDeleteListWithCurrentSessionKeyDeletesList()
     {
-        $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
-        $this->applyDatabaseChanges();
+        $this->loadFixtures([SubscriberListFixture::class]);
 
         $this->authenticatedJsonRequest('delete', '/api/v2/lists/1');
 
-        $listRepository = $this->container->get(SubscriberListRepository::class);
-        static::assertNull($listRepository->find(1));
+        $listRepository = self::getContainer()->get(SubscriberListRepository::class);
+        self::assertNull($listRepository->find(1));
     }
 
-    /**
-     * @test
-     */
-    public function getListMembersForExistingListWithoutSessionKeyReturnsForbiddenStatus()
+    public function testGetListMembersForExistingListWithoutSessionKeyReturnsForbiddenStatus()
     {
-        $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
-        $this->applyDatabaseChanges();
+        $this->loadFixtures([SubscriberListFixture::class]);
 
-        $this->client->request('get', '/api/v2/lists/1/members');
+        self::getClient()->request('get', '/api/v2/lists/1/members');
 
         $this->assertHttpForbidden();
     }
 
-    /**
-     * @test
-     */
-    public function getListMembersForExistingListWithExpiredSessionKeyReturnsForbiddenStatus()
+    public function testGetListMembersForExistingListWithExpiredSessionKeyReturnsForbiddenStatus()
     {
-        $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
-        $this->getDataSet()->addTable(static::ADMINISTRATOR_TABLE_NAME, __DIR__ . '/Fixtures/Administrator.csv');
-        $this->getDataSet()->addTable(static::TOKEN_TABLE_NAME, __DIR__ . '/Fixtures/AdministratorToken.csv');
-        $this->applyDatabaseChanges();
+        $this->loadFixtures([
+            SubscriberListFixture::class,
+            AdministratorFixture::class,
+            AdministratorTokenFixture::class,
+        ]);
 
-        $this->client->request(
+        self::getClient()->request(
             'get',
             '/api/v2/lists/1/members',
             [],
@@ -267,51 +204,34 @@ class ListControllerTest extends AbstractControllerTest
         $this->assertHttpForbidden();
     }
 
-    /**
-     * @test
-     */
-    public function getListMembersWithCurrentSessionKeyForInexistentListReturnsNotFoundStatus()
+    public function testGetListMembersWithCurrentSessionKeyForInexistentListReturnsNotFoundStatus()
     {
         $this->authenticatedJsonRequest('get', '/api/v2/lists/999/members');
 
         $this->assertHttpNotFound();
     }
 
-    /**
-     * @test
-     */
-    public function getListMembersWithCurrentSessionKeyForExistingListReturnsOkayStatus()
+    public function testGetListMembersWithCurrentSessionKeyForExistingListReturnsOkayStatus()
     {
-        $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
-        $this->applyDatabaseChanges();
+        $this->loadFixtures([SubscriberListFixture::class]);
 
         $this->authenticatedJsonRequest('get', '/api/v2/lists/1/members');
 
         $this->assertHttpOkay();
     }
 
-    /**
-     * @test
-     */
-    public function getListMembersWithCurrentSessionKeyForExistingListWithoutSubscribersReturnsEmptyArray()
+    public function testGetListMembersWithCurrentSessionKeyForExistingListWithoutSubscribersReturnsEmptyArray()
     {
-        $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
-        $this->applyDatabaseChanges();
+        $this->loadFixtures([SubscriberListFixture::class]);
 
         $this->authenticatedJsonRequest('get', '/api/v2/lists/1/members');
 
         $this->assertJsonResponseContentEquals([]);
     }
 
-    /**
-     * @test
-     */
-    public function getListMembersWithCurrentSessionKeyForExistingListWithSubscribersReturnsSubscribers()
+    public function testGetListMembersWithCurrentSessionKeyForExistingListWithSubscribersReturnsSubscribers()
     {
-        $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
-        $this->getDataSet()->addTable(static::SUBSCRIBER_TABLE_NAME, __DIR__ . '/Fixtures/Subscriber.csv');
-        $this->getDataSet()->addTable(static::SUBSCRIPTION_TABLE_NAME, __DIR__ . '/Fixtures/Subscription.csv');
-        $this->applyDatabaseChanges();
+        $this->loadFixtures([SubscriberListFixture::class, SubscriberFixture::class, SubscriptionFixture::class]);
 
         $this->authenticatedJsonRequest('get', '/api/v2/lists/2/members');
 
@@ -327,87 +247,75 @@ class ListControllerTest extends AbstractControllerTest
                     'html_email' => true,
                     'disabled' => true,
                     'id' => 1,
-                ]
+                ], [
+                    'creation_date' => '2016-07-22T15:01:17+00:00',
+                    'email' => 'oliver1@example.com',
+                    'confirmed' => true,
+                    'blacklisted' => true,
+                    'bounce_count' => 17,
+                    'unique_id' => '95feb7fe7e06e6c11ca8d0c48cb46e87',
+                    'html_email' => true,
+                    'disabled' => true,
+                    'id' => 2,
+                ],
             ]
         );
     }
 
-    /**
-     * @test
-     */
-    public function getListSubscribersCountForExistingListWithoutSessionKeyReturnsForbiddenStatus()
+    public function testGetListSubscribersCountForExistingListWithoutSessionKeyReturnsForbiddenStatus()
     {
-        $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
-        $this->applyDatabaseChanges();
+        $this->loadFixtures([SubscriberListFixture::class]);
 
-        $this->client->request('get', '/api/v2/lists/1/subscribers/count');
+        self::getClient()->request('get', '/api/v2/lists/1/subscribers/count');
 
         $this->assertHttpForbidden();
     }
 
-    /**
-     * @test
-     */
-    public function getListSubscribersCountForExistingListWithExpiredSessionKeyReturnsForbiddenStatus()
+    public function testGetListSubscribersCountForExistingListWithExpiredSessionKeyReturnsForbiddenStatus()
     {
-        $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
-        $this->getDataSet()->addTable(static::ADMINISTRATOR_TABLE_NAME, __DIR__ . '/Fixtures/Administrator.csv');
-        $this->getDataSet()->addTable(static::TOKEN_TABLE_NAME, __DIR__ . '/Fixtures/AdministratorToken.csv');
-        $this->applyDatabaseChanges();
+        $this->loadFixtures([
+            SubscriberListFixture::class,
+            AdministratorFixture::class,
+            AdministratorTokenFixture::class,
+        ]);
 
-        $this->client->request(
+        self::getClient()->request(
             'get',
             '/api/v2/lists/1/subscribers/count',
             [],
             [],
-            ['PHP_AUTH_USER' => 'unused', 'PHP_AUTH_PW' => 'cfdf64eecbbf336628b0f3071adba763']
+            ['PHP_AUTH_USER' => 'unused', 'PHP_AUTH_PW' => 'cfdf64eecbbf336628b0f3071adba764']
         );
 
         $this->assertHttpForbidden();
     }
 
-    /**
-     * @test
-     */
-    public function getListSubscribersCountWithCurrentSessionKeyForExistingListReturnsOkayStatus()
+    public function testGetListSubscribersCountWithCurrentSessionKeyForExistingListReturnsOkayStatus()
     {
-        $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
-        $this->applyDatabaseChanges();
+        $this->loadFixtures([SubscriberListFixture::class]);
 
         $this->authenticatedJsonRequest('get', '/api/v2/lists/1/subscribers/count');
 
         $this->assertHttpOkay();
     }
 
-    /**
-     * @test
-     */
-    public function getListSubscribersCountWithCurrentSessionKeyForExistingListWithNoSubscribersReturnsZero()
+    public function testGetSubscribersCountForEmptyListWithValidSession()
     {
-        $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
-        $this->getDataSet()->addTable(static::SUBSCRIBER_TABLE_NAME, __DIR__ . '/Fixtures/Subscriber.csv');
-        $this->getDataSet()->addTable(static::SUBSCRIPTION_TABLE_NAME, __DIR__ . '/Fixtures/Subscription.csv');
-        $this->applyDatabaseChanges();
+        $this->loadFixtures([SubscriberListFixture::class, SubscriberFixture::class, SubscriptionFixture::class]);
 
         $this->authenticatedJsonRequest('get', '/api/v2/lists/3/subscribers/count');
         $responseContent = $this->getResponseContentAsInt();
 
-        static::assertSame(0, $responseContent);
+        self::assertSame(0, $responseContent);
     }
 
-    /**
-     * @test
-     */
-    public function getListSubscribersCountWithCurrentSessionKeyForExistingListWithSubscribersReturnsSubscribersCount()
+    public function testGetSubscribersCountForListWithValidSession()
     {
-        $this->getDataSet()->addTable(static::LISTS_TABLE_NAME, __DIR__ . '/Fixtures/SubscriberList.csv');
-        $this->getDataSet()->addTable(static::SUBSCRIBER_TABLE_NAME, __DIR__ . '/Fixtures/Subscriber.csv');
-        $this->getDataSet()->addTable(static::SUBSCRIPTION_TABLE_NAME, __DIR__ . '/Fixtures/Subscription.csv');
-        $this->applyDatabaseChanges();
+        $this->loadFixtures([SubscriberListFixture::class, SubscriberFixture::class, SubscriptionFixture::class]);
 
         $this->authenticatedJsonRequest('get', '/api/v2/lists/2/subscribers/count');
         $responseContent = $this->getResponseContentAsInt();
 
-        static::assertSame(2, $responseContent);
+        self::assertSame(2, $responseContent);
     }
 }

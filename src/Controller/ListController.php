@@ -1,17 +1,23 @@
 <?php
+
 declare(strict_types=1);
 
 namespace PhpList\RestBundle\Controller;
 
-use FOS\RestBundle\Controller\FOSRestController;
-use FOS\RestBundle\Routing\ClassResourceInterface;
-use FOS\RestBundle\View\View;
 use PhpList\Core\Domain\Model\Messaging\SubscriberList;
+use PhpList\Core\Domain\Repository\Subscription\SubscriberRepository;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use PhpList\Core\Domain\Repository\Messaging\SubscriberListRepository;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Controller\Traits\AuthenticationTrait;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use OpenApi\Annotations as OA;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\SerializerInterface;
+use OpenApi\Attributes as OA;
 
 /**
  * This controller provides REST API access to subscriber lists.
@@ -19,373 +25,382 @@ use OpenApi\Annotations as OA;
  * @author Oliver Klee <oliver@phplist.com>
  * @author Xheni Myrtaj <xheni@phplist.com>
  */
-class ListController extends FOSRestController implements ClassResourceInterface
+class ListController extends AbstractController
 {
     use AuthenticationTrait;
 
-    /**
-     * @var SubscriberListRepository
-     */
-    private $subscriberListRepository = null;
+    private SubscriberListRepository $subscriberListRepository;
+    private SubscriberRepository $subscriberRepository;
+    private SerializerInterface $serializer;
 
-    /**
-     * @param Authentication $authentication
-     * @param SubscriberListRepository $repository
-     */
-    public function __construct(Authentication $authentication, SubscriberListRepository $repository)
-    {
+    public function __construct(
+        Authentication $authentication,
+        SubscriberListRepository $repository,
+        SubscriberRepository $subscriberRepository,
+        SerializerInterface $serializer
+    ) {
         $this->authentication = $authentication;
         $this->subscriberListRepository = $repository;
+        $this->subscriberRepository = $subscriberRepository;
+        $this->serializer = $serializer;
     }
 
-    /**
-     * Gets a list of all subscriber lists.
-     *
-     * @OA\Get(
-     *     path="/api/v2/lists",
-     *     tags={"lists"},
-     *     summary="Gets a list of all subscriber lists.",
-     *     description="Returns a json list of all subscriber lists.",
-     * @OA\Parameter(
-     *          name="session",
-     *          in="header",
-     *          description="Session ID obtained from authentication",
-     *          required=true,
-     * @OA\Schema(
-     *             type="string"
-     *         )
-     *      ),
-     * @OA\Response(
-     *        response=201,
-     *        description="Success",
-     * @OA\JsonContent(
-     *            type="object",
-     *            example={
-     *                {
-     *                   "name": "News",
-     *                   "description": "News (and some fun stuff)",
-     *                   "creation_date": "2016-06-22T15:01:17+00:00",
-     *                   "list_position": 12,
-     *                   "subject_prefix": "phpList",
-     *                   "public": true,
-     *                   "category": "news",
-     *                   "id": 1
-     *               },
-     *               {
-     *                   "name": "More news",
-     *                   "description": "",
-     *                   "creation_date": "2016-06-22T15:01:17+00:00",
-     *                   "list_position": 12,
-     *                   "subject_prefix": "",
-     *                   "public": true,
-     *                   "category": "",
-     *                   "id": 2
-     *             }
-     *         }
-     *      )
-     *     ),
-     * @OA\Response(
-     *        response=403,
-     *        description="Failure",
-     * @OA\JsonContent(
-     * @OA\Property(
-     *     property="message",
-     *     type="string",
-     *     example="No valid session key was provided as basic auth password.")
-     *        )
-     *     )
-     * )
-     *
-     *
-     *
-     * @param Request $request
-     *
-     * @return View
-     */
-    public function cgetAction(Request $request): View
+    #[Route('/lists', name: 'get_lists', methods: ['GET'])]
+    #[OA\Get(
+        path: '/lists',
+        description: 'Returns a JSON list of all subscriber lists.',
+        summary: 'Gets a list of all subscriber lists.',
+        tags: ['lists'],
+        parameters: [
+            new OA\Parameter(
+                name: 'session',
+                description: 'Session ID obtained from authentication',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(
+                    type: 'string'
+                )
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Success',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(
+                        properties: [
+                            new OA\Property(property: 'name', type: 'string', example: 'News'),
+                            new OA\Property(
+                                property: 'description',
+                                type: 'string',
+                                example: 'News (and some fun stuff)'
+                            ),
+                            new OA\Property(
+                                property: 'creation_date',
+                                type: 'string',
+                                format: 'date-time',
+                                example: '2016-06-22T15:01:17+00:00'
+                            ),
+                            new OA\Property(property: 'list_position', type: 'integer', example: 12),
+                            new OA\Property(property: 'subject_prefix', type: 'string', example: 'phpList'),
+                            new OA\Property(property: 'public', type: 'boolean', example: true),
+                            new OA\Property(property: 'category', type: 'string', example: 'news'),
+                            new OA\Property(property: 'id', type: 'integer', example: 1)
+                        ],
+                        type: 'object'
+                    )
+                )
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Failure',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: 'message',
+                            type: 'string',
+                            example: 'No valid session key was provided as basic auth password.'
+                        )
+                    ],
+                    type: 'object'
+                )
+            )
+        ]
+    )]
+    public function getLists(Request $request): JsonResponse
     {
         $this->requireAuthentication($request);
+        $data = $this->subscriberListRepository->findAll();
+        $json = $this->serializer->serialize($data, 'json', [
+            AbstractNormalizer::GROUPS => 'SubscriberList',
+        ]);
 
-        return View::create()->setData($this->subscriberListRepository->findAll());
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
-    /**
-     * Gets a subscriber list.
-     *
-     * @OA\Get(
-     *     path="/api/v2/lists/{list}",
-     *     tags={"lists"},
-     *     summary="Gets a subscriber list.",
-     *     description="Returns a single subscriber lists with specified ID",
-     * @OA\Parameter(
-     *          name="list",
-     *          in="path",
-     *          description="List ID",
-     *          required=true,
-     * @OA\Schema(
-     *             type="string"
-     *         )
-     *      ),
-     * @OA\Parameter(
-     *          name="session",
-     *          in="header",
-     *          description="Session ID obtained from authentication",
-     *          required=true,
-     * @OA\Schema(
-     *             type="string"
-     *         )
-     *      ),
-     * @OA\Response(
-     *        response=200,
-     *        description="Success",
-     * @OA\JsonContent(
-     *            type="object",
-     *            example={
-     *                {
-     *                   "name": "News",
-     *                   "description": "News (and some fun stuff)",
-     *                   "creation_date": "2016-06-22T15:01:17+00:00",
-     *                   "list_position": 12,
-     *                   "subject_prefix": "phpList",
-     *                   "public": true,
-     *                   "category": "news",
-     *                   "id": 1
-     *               }
-     *       }
-     *      )
-     *     ),
-     * @OA\Response(
-     *        response=403,
-     *        description="Failure",
-     * @OA\JsonContent(
-     * @OA\Property(
-     *     property="message",
-     *     type="string",
-     *     example="No valid session key was provided as basic auth password."
-     *     )
-     *   )
-     * ),
-     * @OA\Response(
-     *        response=404,
-     *        description="Failure",
-     * @OA\JsonContent(
-     * @OA\Property(property="message", type="string", example="There is no list with that ID.")
-     *        )
-     *     )
-     * )
-     *
-     * @param Request $request
-     * @param SubscriberList $list
-     *
-     * @return View
-     */
-    public function getAction(Request $request, SubscriberList $list): View
+    #[Route('/lists/{id}', name: 'get_list', methods: ['GET'])]
+    #[OA\Get(
+        path: '/lists/{list}',
+        description: 'Returns a single subscriber list with specified ID.',
+        summary: 'Gets a subscriber list.',
+        tags: ['lists'],
+        parameters: [
+            new OA\Parameter(
+                name: 'list',
+                description: 'List ID',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                name: 'session',
+                description: 'Session ID obtained from authentication',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Success',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    example: [
+                        'name' => 'News',
+                        'description' => 'News (and some fun stuff)',
+                        'creation_date' => '2016-06-22T15:01:17+00:00',
+                        'list_position' => 12,
+                        'subject_prefix' => 'phpList',
+                        'public' => true,
+                        'category' => 'news',
+                        'id' => 1
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Failure',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: 'message',
+                            type: 'string',
+                            example: 'No valid session key was provided as basic auth password.'
+                        )
+                    ],
+                    type: 'object'
+                )
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Failure',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: 'message',
+                            type: 'string',
+                            example: 'There is no list with that ID.'
+                        )
+                    ],
+                    type: 'object'
+                )
+            )
+        ]
+    )]
+    public function getList(Request $request, #[MapEntity(mapping: ['id' => 'id'])] SubscriberList $list): JsonResponse
     {
         $this->requireAuthentication($request);
+        $json = $this->serializer->serialize($list, 'json', [
+            AbstractNormalizer::GROUPS => 'SubscriberList',
+        ]);
 
-        return View::create()->setData($list);
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
-    /**
-     * Deletes a subscriber list.
-     *
-     *
-     * @OA\Delete(
-     *     path="/api/v2/lists/{list}",
-     *     tags={"lists"},
-     *     summary="Deletes a list.",
-     *     description="Deletes a single subscriber list passed as",
-     * @OA\Parameter(
-     *          name="session",
-     *          in="header",
-     *          description="Session ID",
-     *          required=true,
-     * @OA\Schema(
-     *             type="string"
-     *         )
-     *      ),
-     * @OA\Parameter(
-     *          name="list",
-     *          in="path",
-     *          description="List ID",
-     *          required=true,
-     * @OA\Schema(
-     *             type="string"
-     *         )
-     *      ),
-     * @OA\Response(
-     *        response=200,
-     *        description="Success"
-     *     ),
-     * @OA\Response(
-     *        response=403,
-     *        description="Failure",
-     * @OA\JsonContent(
-     * @OA\Property(
-     *     property="message",
-     *     type="string",
-     *     example="No valid session key was provided as basic auth password or You do not have access to this session."
-     *        )
-     *      )
-     *     ),
-     * @OA\Response(
-     *        response=404,
-     *        description="Failure",
-     * @OA\JsonContent(
-     * @OA\Property(property="message", type="string", example="There is no session with that ID.")
-     *        )
-     *     )
-     * )
-     *
-     *
-     * @param Request $request
-     * @param SubscriberList $list
-     *
-     * @return View
-     */
-    public function deleteAction(Request $request, SubscriberList $list): View
-    {
+    #[Route('/lists/{id}', name: 'delete_list', methods: ['DELETE'])]
+    #[OA\Delete(
+        path: '/lists/{list}',
+        description: 'Deletes a single subscriber list.',
+        summary: 'Deletes a list.',
+        tags: ['lists'],
+        parameters: [
+            new OA\Parameter(
+                name: 'session',
+                description: 'Session ID',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                name: 'list',
+                description: 'List ID',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Success'
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Failure',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: 'message',
+                            type: 'string',
+                            example: 'No valid session key was provided.'
+                        )
+                    ],
+                    type: 'object'
+                )
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Failure',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: 'message',
+                            type: 'string',
+                            example: 'There is no session with that ID.'
+                        )
+                    ],
+                    type: 'object'
+                )
+            )
+        ]
+    )]
+    public function deleteList(
+        Request $request,
+        #[MapEntity(mapping: ['id' => 'id'])] SubscriberList $list
+    ): JsonResponse {
         $this->requireAuthentication($request);
 
         $this->subscriberListRepository->remove($list);
 
-        return View::create();
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT, [], false);
     }
 
-    /**
-     * Gets a list of all subscribers (members) of a subscriber list.
-     *
-     *
-     * @OA\Get(
-     *     path="/api/v2/lists/{list}/members",
-     *     tags={"lists"},
-     *     summary="Gets a list of all subscribers (members) of a subscriber list.",
-     *     description="Returns a json list of all subscriber lists.",
-     * @OA\Parameter(
-     *          name="session",
-     *          in="header",
-     *          description="Session ID obtained from authentication",
-     *          required=true,
-     * @OA\Schema(
-     *             type="string"
-     *         )
-     *      ),
-     * @OA\Parameter(
-     *          name="list",
-     *          in="path",
-     *          description="List ID",
-     *          required=true,
-     * @OA\Schema(
-     *             type="string"
-     *         )
-     *      ),
-     * @OA\Response(
-     *        response=200,
-     *        description="Success",
-     * @OA\JsonContent(
-     *            type="object",
-     *            example={
-     *                {
-     *                    "creation_date": "2016-07-22T15:01:17+00:00",
-     *                    "email": "oliver@example.com",
-     *                    "confirmed": true,
-     *                    "blacklisted": true,
-     *                    "bounce_count": 17,
-     *                    "unique_id": "95feb7fe7e06e6c11ca8d0c48cb46e89",
-     *                    "html_email": true,
-     *                    "disabled": true,
-     *                    "id": 1,
-     *              },
-     *              {
-     *                    "creation_date": "2017-07-22T15:12:17+00:00",
-     *                    "email": "sam@example.com",
-     *                    "confirmed": true,
-     *                    "blacklisted": false,
-     *                    "bounce_count": 1,
-     *                    "unique_id": "95feb7fe7e06e6c11ca8d0c48cb4616d",
-     *                    "html_email": false,
-     *                    "disabled": false,
-     *                    "id": 2,
-     *            }
-     *         }
-     *      )
-     *     ),
-     * @OA\Response(
-     *        response=403,
-     *        description="Failure",
-     * @OA\JsonContent(
-     * @OA\Property(
-     *     property="message",
-     *     type="string",
-     *     example="No valid session key was provided as basic auth password.")
-     *       )
-     *    )
-     * )
-     *
-     *
-     * @param Request $request
-     * @param SubscriberList $list
-     *
-     * @return View
-     */
-    public function getMembersAction(Request $request, SubscriberList $list): View
-    {
+    #[Route('/lists/{id}/members', name: 'get_subscriber_from_list', methods: ['GET'])]
+    #[OA\Get(
+        path: '/lists/{list}/members',
+        description: 'Returns a JSON list of all subscribers for a subscriber list.',
+        summary: 'Gets a list of all subscribers (members) of a subscriber list.',
+        tags: ['lists'],
+        parameters: [
+            new OA\Parameter(
+                name: 'session',
+                description: 'Session ID obtained from authentication',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                name: 'list',
+                description: 'List ID',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Success',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(
+                        properties: [
+                            new OA\Property(
+                                property: 'creation_date',
+                                type: 'string',
+                                format: 'date-time',
+                                example: '2016-07-22T15:01:17+00:00'
+                            ),
+                            new OA\Property(property: 'email', type: 'string', example: 'oliver@example.com'),
+                            new OA\Property(property: 'confirmed', type: 'boolean', example: true),
+                            new OA\Property(property: 'blacklisted', type: 'boolean', example: true),
+                            new OA\Property(property: 'bounce_count', type: 'integer', example: 17),
+                            new OA\Property(
+                                property: 'unique_id',
+                                type: 'string',
+                                example: '95feb7fe7e06e6c11ca8d0c48cb46e89'
+                            ),
+                            new OA\Property(property: 'html_email', type: 'boolean', example: true),
+                            new OA\Property(property: 'disabled', type: 'boolean', example: true),
+                            new OA\Property(property: 'id', type: 'integer', example: 1)
+                        ],
+                        type: 'object'
+                    )
+                )
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Failure',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: 'message',
+                            type: 'string',
+                            example: 'No valid session key was provided as basic auth password.'
+                        )
+                    ],
+                    type: 'object'
+                )
+            )
+        ]
+    )]
+    public function getListMembers(
+        Request $request,
+        #[MapEntity(mapping: ['id' => 'id'])] SubscriberList $list
+    ): JsonResponse {
         $this->requireAuthentication($request);
 
-        return View::create()->setData($list->getSubscribers());
+        $subscribers = $this->subscriberRepository->getSubscribersBySubscribedListId($list->getId());
+
+        $json = $this->serializer->serialize($subscribers, 'json', [
+            AbstractNormalizer::GROUPS => 'SubscriberListMembers',
+        ]);
+
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
-    /**
-     * Gets the total number of subscribers of a list.
-     *
-     * @OA\Get(
-     *     path="/api/v2/lists/{list}/count",
-     *     tags={"lists"},
-     *     summary="Gets the total number of subscribers of a list",
-     *     description="Returns a count of all subscribers in a given list.",
-     * @OA\Parameter(
-     *          name="session",
-     *          in="header",
-     *          description="Session ID obtained from authentication",
-     *          required=true,
-     * @OA\Schema(
-     *             type="string"
-     *         )
-     *      ),
-     * @OA\Parameter(
-     *          name="list",
-     *          in="path",
-     *          description="List ID",
-     *          required=true,
-     * @OA\Schema(
-     *             type="string"
-     *         )
-     *      ),
-     * @OA\Response(
-     *        response=200,
-     *        description="Success"
-     *     ),
-     * @OA\Response(
-     *        response=403,
-     *        description="Failure",
-     * @OA\JsonContent(
-     * @OA\Property(
-     *     property="message",
-     *     type="string",
-     *     example="No valid session key was provided as basic auth password.")
-     *        )
-     *     )
-     * )
-     *
-     * @param Request $request
-     * @param SubscriberList $list
-     *
-     * @return View
-     */
-    public function getSubscribersCountAction(Request $request, SubscriberList $list): View
-    {
+    #[Route('/lists/{id}/subscribers/count', name: 'get_subscribers_count_from_list', methods: ['GET'])]
+    #[OA\Get(
+        path: '/lists/{list}/count',
+        description: 'Returns a count of all subscribers in a given list.',
+        summary: 'Gets the total number of subscribers of a list',
+        tags: ['lists'],
+        parameters: [
+            new OA\Parameter(
+                name: 'session',
+                description: 'Session ID obtained from authentication',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                name: 'list',
+                description: 'List ID',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Success'
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Failure',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: 'message',
+                            type: 'string',
+                            example: 'No valid session key was provided as basic auth password.'
+                        )
+                    ],
+                    type: 'object'
+                )
+            )
+        ]
+    )]
+    public function getSubscribersCount(
+        Request $request,
+        #[MapEntity(mapping: ['id' => 'id'])] SubscriberList $list
+    ): JsonResponse {
         $this->requireAuthentication($request);
+        $json = $this->serializer->serialize(count($list->getSubscribers()), 'json');
 
-        return View::create()->setData(count($list->getSubscribers()));
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 }

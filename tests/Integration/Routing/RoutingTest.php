@@ -1,26 +1,25 @@
 <?php
+
 declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Integration\Routing;
 
-use PhpList\Core\TestingSupport\AbstractWebTest;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 /**
  * Testcase.
  *
  * @author Oliver Klee <oliver@phplist.com>
  */
-class RoutingTest extends AbstractWebTest
+class RoutingTest extends WebTestCase
 {
-    /**
-     * @test
-     */
-    public function rootUrlHasHtmlContentType()
+    public function testRootUrlHasHtmlContentType()
     {
-        $this->client->request('get', '/');
+        $client = self::createClient();
+        $client->request('get', '/api/v2');
 
-        $response = $this->client->getResponse();
+        $response = $client->getResponse();
 
-        static::assertContains('text/html', (string)$response->headers);
+        self::assertStringContainsString('text/html', (string)$response->headers);
     }
 }

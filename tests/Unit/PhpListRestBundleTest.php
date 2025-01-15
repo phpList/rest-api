@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Unit;
@@ -14,20 +15,14 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  */
 class PhpListRestBundleTest extends TestCase
 {
-    /**
-     * @var PhpListRestBundle
-     */
-    private $subject = null;
+    private ?PhpListRestBundle $subject = null;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->subject = new PhpListRestBundle();
     }
 
-    /**
-     * @test
-     */
-    public function classIsBundle()
+    public function testClassIsBundle()
     {
         static::assertInstanceOf(Bundle::class, $this->subject);
     }
