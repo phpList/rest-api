@@ -180,7 +180,7 @@ class ListControllerTest extends AbstractTestController
     {
         $this->loadFixtures([SubscriberListFixture::class]);
 
-        self::getClient()->request('get', '/api/v2/lists/1/members');
+        self::getClient()->request('get', '/api/v2/lists/1/subscribers');
 
         $this->assertHttpForbidden();
     }
@@ -195,7 +195,7 @@ class ListControllerTest extends AbstractTestController
 
         self::getClient()->request(
             'get',
-            '/api/v2/lists/1/members',
+            '/api/v2/lists/1/subscribers',
             [],
             [],
             ['PHP_AUTH_USER' => 'unused', 'PHP_AUTH_PW' => 'cfdf64eecbbf336628b0f3071adba763']
@@ -206,7 +206,7 @@ class ListControllerTest extends AbstractTestController
 
     public function testGetListMembersWithCurrentSessionKeyForInexistentListReturnsNotFoundStatus()
     {
-        $this->authenticatedJsonRequest('get', '/api/v2/lists/999/members');
+        $this->authenticatedJsonRequest('get', '/api/v2/lists/999/subscribers');
 
         $this->assertHttpNotFound();
     }
@@ -215,7 +215,7 @@ class ListControllerTest extends AbstractTestController
     {
         $this->loadFixtures([SubscriberListFixture::class]);
 
-        $this->authenticatedJsonRequest('get', '/api/v2/lists/1/members');
+        $this->authenticatedJsonRequest('get', '/api/v2/lists/1/subscribers');
 
         $this->assertHttpOkay();
     }
@@ -224,7 +224,7 @@ class ListControllerTest extends AbstractTestController
     {
         $this->loadFixtures([SubscriberListFixture::class]);
 
-        $this->authenticatedJsonRequest('get', '/api/v2/lists/1/members');
+        $this->authenticatedJsonRequest('get', '/api/v2/lists/1/subscribers');
 
         $this->assertJsonResponseContentEquals([]);
     }
@@ -233,7 +233,7 @@ class ListControllerTest extends AbstractTestController
     {
         $this->loadFixtures([SubscriberListFixture::class, SubscriberFixture::class, SubscriptionFixture::class]);
 
-        $this->authenticatedJsonRequest('get', '/api/v2/lists/2/members');
+        $this->authenticatedJsonRequest('get', '/api/v2/lists/2/subscribers');
 
         $this->assertJsonResponseContentEquals(
             [

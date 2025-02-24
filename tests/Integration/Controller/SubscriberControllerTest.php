@@ -106,14 +106,10 @@ class SubscriberControllerTest extends AbstractTestController
             'email is an empty string' => [['email' => '']],
             'email is invalid string' => [['email' => 'coffee and cigarettes']],
             'email as boolean' => [['email' => true]],
-            'confirmed as integer' => [['email' => 'kate@example.com', 'confirmed' => 1]],
-            'confirmed as string' => [['email' => 'kate@example.com', 'confirmed' => 'yes']],
-            'blacklisted as integer' => [['email' => 'kate@example.com', 'blacklisted' => 1]],
-            'blacklisted as string' => [['email' => 'kate@example.com', 'blacklisted' => 'yes']],
             'html_email as integer' => [['email' => 'kate@example.com', 'html_email' => 1]],
             'html_email as string' => [['email' => 'kate@example.com', 'html_email' => 'yes']],
-            'disabled as integer' => [['email' => 'kate@example.com', 'disabled' => 1]],
-            'disabled as string' => [['email' => 'kate@example.com', 'disabled' => 'yes']],
+            'request_confirmation as string' => [['email' => 'kate@example.com', 'request_confirmation' => 'needed']],
+            'disabled as string' => [['email' => 'kate@example.com', 'request_confirmation' => 1]],
         ];
     }
 
@@ -144,9 +140,9 @@ class SubscriberControllerTest extends AbstractTestController
         $responseContent = $this->getDecodedJsonResponseContent();
 
         static::assertSame($email, $responseContent['email']);
-        static::assertTrue($responseContent['confirmed']);
-        static::assertTrue($responseContent['blacklisted']);
+        static::assertFalse($responseContent['confirmed']);
+        static::assertFalse($responseContent['blacklisted']);
         static::assertTrue($responseContent['html_email']);
-        static::assertTrue($responseContent['disabled']);
+        static::assertFalse($responseContent['disabled']);
     }
 }

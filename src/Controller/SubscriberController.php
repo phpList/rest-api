@@ -39,7 +39,7 @@ class SubscriberController extends AbstractController
 
     #[Route('/subscribers', name: 'create_subscriber', methods: ['POST'])]
     #[OA\Post(
-        path: '/subscriber',
+        path: '/subscribers',
         description: 'Creates a new subscriber (if there is no subscriber with the given email address yet).',
         summary: 'Create a subscriber',
         requestBody: new OA\RequestBody(
@@ -49,10 +49,8 @@ class SubscriberController extends AbstractController
                 required: ['email'],
                 properties: [
                     new OA\Property(property: 'email', type: 'string', format: 'string', example: 'admin@example.com'),
-                    new OA\Property(property: 'confirmed', type: 'boolean', example: false),
-                    new OA\Property(property: 'blacklisted', type: 'boolean', example: false),
+                    new OA\Property(property: 'request_confirmation', type: 'boolean', example: false),
                     new OA\Property(property: 'html_email', type: 'boolean', example: false),
-                    new OA\Property(property: 'disabled', type: 'boolean', example: false)
                 ]
             )
         ),
@@ -140,13 +138,13 @@ class SubscriberController extends AbstractController
         if ($this->subscriberRepository->findOneByEmail($email) !== null) {
             throw new ConflictHttpException('This resource already exists.', null, 1513439108);
         }
-        // @phpstan-ignore-next-line
+        $confirmed = (bool)$data->get('request_confirmation', true);
         $subscriber = new Subscriber();
         $subscriber->setEmail($email);
-        $subscriber->setConfirmed((bool)$data->get('confirmed', false));
-        $subscriber->setBlacklisted((bool)$data->get('blacklisted', false));
+        $subscriber->setConfirmed(!$confirmed);
+        $subscriber->setBlacklisted(false);
         $subscriber->setHtmlEmail((bool)$data->get('html_email', true));
-        $subscriber->setDisabled((bool)$data->get('disabled', false));
+        $subscriber->setDisabled(false);
 
         $this->subscriberRepository->save($subscriber);
 
@@ -173,7 +171,7 @@ class SubscriberController extends AbstractController
             $invalidFields[] = 'email';
         }
 
-        $booleanFields = ['confirmed', 'blacklisted', 'html_email', 'disabled'];
+        $booleanFields = ['request_confirmation', 'html_email'];
         foreach ($booleanFields as $fieldKey) {
             if ($request->getPayload()->get($fieldKey) !== null
                 && !is_bool($request->getPayload()->get($fieldKey))

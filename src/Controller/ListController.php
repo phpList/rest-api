@@ -267,11 +267,11 @@ class ListController extends AbstractController
         return new JsonResponse(null, Response::HTTP_NO_CONTENT, [], false);
     }
 
-    #[Route('/lists/{id}/members', name: 'get_subscriber_from_list', methods: ['GET'])]
+    #[Route('/lists/{id}/subscribers', name: 'get_subscriber_from_list', methods: ['GET'])]
     #[OA\Get(
-        path: '/lists/{list}/members',
+        path: '/lists/{list}/subscribers',
         description: 'Returns a JSON list of all subscribers for a subscriber list.',
-        summary: 'Gets a list of all subscribers (members) of a subscriber list.',
+        summary: 'Gets a list of all subscribers of a subscriber list.',
         tags: ['lists'],
         parameters: [
             new OA\Parameter(
