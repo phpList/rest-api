@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Controller;
 
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use PhpList\Core\Domain\Model\Subscription\Subscriber;
 use PhpList\Core\Domain\Repository\Subscription\SubscriberRepository;
@@ -15,6 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use OpenApi\Attributes as OA;
 
@@ -154,6 +156,88 @@ class SubscriberController extends AbstractController
             [],
             true
         );
+    }
+
+    #[Route('/subscribers/{subscriber}', name: 'get_subscriber_by_id', methods: ['GET'])]
+    #[OA\Get(
+        path: '/subscribers/{subscriber}',
+        description: 'Get subscriber date by id.',
+        summary: 'Get a subscriber',
+        tags: ['subscribers'],
+        parameters: [
+            new OA\Parameter(
+                name: 'session',
+                description: 'Session ID obtained from authentication',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                name: 'id',
+                description: 'Subscriber ID',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Success',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: 'creation_date',
+                            type: 'string',
+                            format: 'date-time',
+                            example: '2017-12-16T18:44:27+00:00'
+                        ),
+                        new OA\Property(property: 'email', type: 'string', example: 'subscriber@example.com'),
+                        new OA\Property(property: 'confirmed', type: 'boolean', example: false),
+                        new OA\Property(property: 'blacklisted', type: 'boolean', example: false),
+                        new OA\Property(property: 'bounced', type: 'integer', example: 0),
+                        new OA\Property(
+                            property: 'unique_id',
+                            type: 'string',
+                            example: '69f4e92cf50eafca9627f35704f030f4'
+                        ),
+                        new OA\Property(property: 'html_email', type: 'boolean', example: false),
+                        new OA\Property(property: 'disabled', type: 'boolean', example: false),
+                        new OA\Property(property: 'id', type: 'integer', example: 1)
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Failure',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: 'message',
+                            type: 'string',
+                            example: 'No valid session key was provided as basic auth password.'
+                        )
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Not Found',
+            )
+        ]
+    )]
+    public function getAction(
+        Request $request,
+        #[MapEntity(mapping: ['id' => 'id'])] Subscriber $subscriber,
+        SerializerInterface $serializer
+    ): JsonResponse {
+        $this->requireAuthentication($request);
+
+        $json = $serializer->serialize($subscriber, 'json', [
+            AbstractNormalizer::GROUPS => 'SubscriberListMembers',
+        ]);
+
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
     /**

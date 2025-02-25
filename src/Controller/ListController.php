@@ -269,7 +269,7 @@ class ListController extends AbstractController
 
     #[Route('/lists/{id}/subscribers', name: 'get_subscriber_from_list', methods: ['GET'])]
     #[OA\Get(
-        path: '/lists/{list}/subscribers',
+        path: '/lists/{id}/subscribers',
         description: 'Returns a JSON list of all subscribers for a subscriber list.',
         summary: 'Gets a list of all subscribers of a subscriber list.',
         tags: ['lists'],
@@ -282,7 +282,7 @@ class ListController extends AbstractController
                 schema: new OA\Schema(type: 'string')
             ),
             new OA\Parameter(
-                name: 'list',
+                name: 'id',
                 description: 'List ID',
                 in: 'path',
                 required: true,
@@ -353,7 +353,7 @@ class ListController extends AbstractController
 
     #[Route('/lists/{id}/subscribers/count', name: 'get_subscribers_count_from_list', methods: ['GET'])]
     #[OA\Get(
-        path: '/lists/{list}/count',
+        path: '/lists/{id}/count',
         description: 'Returns a count of all subscribers in a given list.',
         summary: 'Gets the total number of subscribers of a list',
         tags: ['lists'],
@@ -366,7 +366,7 @@ class ListController extends AbstractController
                 schema: new OA\Schema(type: 'string')
             ),
             new OA\Parameter(
-                name: 'list',
+                name: 'id',
                 description: 'List ID',
                 in: 'path',
                 required: true,
