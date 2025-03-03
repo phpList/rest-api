@@ -24,6 +24,7 @@ use OpenApi\Attributes as OA;
  *
  * @author Oliver Klee <oliver@phplist.com>
  * @author Xheni Myrtaj <xheni@phplist.com>
+ * @author Tatevik Grigoryan <tatevik@phplist.com>
  */
 class ListController extends AbstractController
 {
@@ -119,15 +120,15 @@ class ListController extends AbstractController
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
-    #[Route('/lists/{id}', name: 'get_list', methods: ['GET'])]
+    #[Route('/lists/{listId}', name: 'get_list', methods: ['GET'])]
     #[OA\Get(
-        path: '/lists/{list}',
+        path: '/lists/{listId}',
         description: 'Returns a single subscriber list with specified ID.',
         summary: 'Gets a subscriber list.',
         tags: ['lists'],
         parameters: [
             new OA\Parameter(
-                name: 'list',
+                name: 'listId',
                 description: 'List ID',
                 in: 'path',
                 required: true,
@@ -189,8 +190,10 @@ class ListController extends AbstractController
             )
         ]
     )]
-    public function getList(Request $request, #[MapEntity(mapping: ['id' => 'id'])] SubscriberList $list): JsonResponse
-    {
+    public function getList(
+        Request $request,
+        #[MapEntity(mapping: ['listId' => 'id'])] SubscriberList $list
+    ): JsonResponse {
         $this->requireAuthentication($request);
         $json = $this->serializer->serialize($list, 'json', [
             AbstractNormalizer::GROUPS => 'SubscriberList',
@@ -199,9 +202,9 @@ class ListController extends AbstractController
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
-    #[Route('/lists/{id}', name: 'delete_list', methods: ['DELETE'])]
+    #[Route('/lists/{listId}', name: 'delete_list', methods: ['DELETE'])]
     #[OA\Delete(
-        path: '/lists/{list}',
+        path: '/lists/{listId}',
         description: 'Deletes a single subscriber list.',
         summary: 'Deletes a list.',
         tags: ['lists'],
@@ -214,7 +217,7 @@ class ListController extends AbstractController
                 schema: new OA\Schema(type: 'string')
             ),
             new OA\Parameter(
-                name: 'list',
+                name: 'listId',
                 description: 'List ID',
                 in: 'path',
                 required: true,
@@ -258,7 +261,7 @@ class ListController extends AbstractController
     )]
     public function deleteList(
         Request $request,
-        #[MapEntity(mapping: ['id' => 'id'])] SubscriberList $list
+        #[MapEntity(mapping: ['listId' => 'id'])] SubscriberList $list
     ): JsonResponse {
         $this->requireAuthentication($request);
 
@@ -267,9 +270,9 @@ class ListController extends AbstractController
         return new JsonResponse(null, Response::HTTP_NO_CONTENT, [], false);
     }
 
-    #[Route('/lists/{id}/subscribers', name: 'get_subscriber_from_list', methods: ['GET'])]
+    #[Route('/lists/{listId}/subscribers', name: 'get_subscriber_from_list', methods: ['GET'])]
     #[OA\Get(
-        path: '/lists/{id}/subscribers',
+        path: '/lists/{listId}/subscribers',
         description: 'Returns a JSON list of all subscribers for a subscriber list.',
         summary: 'Gets a list of all subscribers of a subscriber list.',
         tags: ['lists'],
@@ -282,7 +285,7 @@ class ListController extends AbstractController
                 schema: new OA\Schema(type: 'string')
             ),
             new OA\Parameter(
-                name: 'id',
+                name: 'listId',
                 description: 'List ID',
                 in: 'path',
                 required: true,
@@ -338,7 +341,7 @@ class ListController extends AbstractController
     )]
     public function getListMembers(
         Request $request,
-        #[MapEntity(mapping: ['id' => 'id'])] SubscriberList $list
+        #[MapEntity(mapping: ['listId' => 'id'])] SubscriberList $list
     ): JsonResponse {
         $this->requireAuthentication($request);
 
@@ -351,9 +354,9 @@ class ListController extends AbstractController
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
-    #[Route('/lists/{id}/subscribers/count', name: 'get_subscribers_count_from_list', methods: ['GET'])]
+    #[Route('/lists/{listId}/subscribers/count', name: 'get_subscribers_count_from_list', methods: ['GET'])]
     #[OA\Get(
-        path: '/lists/{id}/count',
+        path: '/lists/{listId}/count',
         description: 'Returns a count of all subscribers in a given list.',
         summary: 'Gets the total number of subscribers of a list',
         tags: ['lists'],
@@ -366,7 +369,7 @@ class ListController extends AbstractController
                 schema: new OA\Schema(type: 'string')
             ),
             new OA\Parameter(
-                name: 'id',
+                name: 'listId',
                 description: 'List ID',
                 in: 'path',
                 required: true,
@@ -396,7 +399,7 @@ class ListController extends AbstractController
     )]
     public function getSubscribersCount(
         Request $request,
-        #[MapEntity(mapping: ['id' => 'id'])] SubscriberList $list
+        #[MapEntity(mapping: ['listId' => 'id'])] SubscriberList $list
     ): JsonResponse {
         $this->requireAuthentication($request);
         $json = $this->serializer->serialize(count($list->getSubscribers()), 'json');

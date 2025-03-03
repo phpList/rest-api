@@ -158,9 +158,9 @@ class SubscriberController extends AbstractController
         );
     }
 
-    #[Route('/subscribers/{subscriber}', name: 'get_subscriber_by_id', methods: ['GET'])]
+    #[Route('/subscribers/{subscriberId}', name: 'get_subscriber_by_id', methods: ['GET'])]
     #[OA\Get(
-        path: '/subscribers/{subscriber}',
+        path: '/subscribers/{subscriberId}',
         description: 'Get subscriber date by id.',
         summary: 'Get a subscriber',
         tags: ['subscribers'],
@@ -173,7 +173,7 @@ class SubscriberController extends AbstractController
                 schema: new OA\Schema(type: 'string')
             ),
             new OA\Parameter(
-                name: 'id',
+                name: 'subscriberId',
                 description: 'Subscriber ID',
                 in: 'path',
                 required: true,
@@ -228,7 +228,7 @@ class SubscriberController extends AbstractController
     )]
     public function getAction(
         Request $request,
-        #[MapEntity(mapping: ['id' => 'id'])] Subscriber $subscriber,
+        #[MapEntity(mapping: ['subscriberId' => 'id'])] Subscriber $subscriber,
         SerializerInterface $serializer
     ): JsonResponse {
         $this->requireAuthentication($request);

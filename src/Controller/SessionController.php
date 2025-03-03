@@ -129,15 +129,15 @@ class SessionController extends AbstractController
      *
      * @throws AccessDeniedHttpException
      */
-    #[Route('/sessions/{id}', name: 'delete_session', methods: ['DELETE'])]
+    #[Route('/sessions/{sessionId}', name: 'delete_session', methods: ['DELETE'])]
     #[OA\Delete(
-        path: '/sessions/{session}',
+        path: '/sessions/{sessionId}',
         description: 'Delete the session passed as a parameter.',
         summary: 'Delete a session.',
         tags: ['sessions'],
         parameters: [
             new OA\Parameter(
-                name: 'session',
+                name: 'sessionId',
                 description: 'Session ID',
                 in: 'path',
                 required: true,
@@ -179,7 +179,7 @@ class SessionController extends AbstractController
     )]
     public function deleteAction(
         Request $request,
-        #[MapEntity(mapping: ['id' => 'id'])] AdministratorToken $token
+        #[MapEntity(mapping: ['sessionId' => 'id'])] AdministratorToken $token
     ): JsonResponse {
         $administrator = $this->requireAuthentication($request);
         if ($token->getAdministrator() !== $administrator) {
