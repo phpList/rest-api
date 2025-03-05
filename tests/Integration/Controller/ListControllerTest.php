@@ -247,7 +247,7 @@ class ListControllerTest extends AbstractTestController
                     'unique_id' => '95feb7fe7e06e6c11ca8d0c48cb46e89',
                     'html_email' => true,
                     'disabled' => true,
-                    'subscribedLists' =>  [
+                    'subscribedLists' => [
                         [
                             'id' => 2,
                             'name' => 'More news',

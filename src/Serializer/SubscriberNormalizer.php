@@ -49,4 +49,3 @@ class SubscriberNormalizer implements NormalizerInterface
         return $data instanceof Subscriber;
     }
 }
-

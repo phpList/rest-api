@@ -203,7 +203,11 @@ class SubscriberController extends AbstractController
                                 properties: [
                                     new OA\Property(property: 'id', type: 'integer', example: 2),
                                     new OA\Property(property: 'name', type: 'string', example: 'Newsletter'),
-                                    new OA\Property(property: 'description', type: 'string', example: 'Monthly updates'),
+                                    new OA\Property(
+                                        property: 'description',
+                                        type: 'string',
+                                        example: 'Monthly updates'
+                                    ),
                                     new OA\Property(
                                         property: 'creation_date',
                                         type: 'string',
