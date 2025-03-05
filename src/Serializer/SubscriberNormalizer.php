@@ -10,6 +10,9 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class SubscriberNormalizer implements NormalizerInterface
 {
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
     public function normalize($object, string $format = null, array $context = []): array
     {
         if (!$object instanceof Subscriber) {
@@ -38,6 +41,9 @@ class SubscriberNormalizer implements NormalizerInterface
         ];
     }
 
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
     public function supportsNormalization($data, string $format = null): bool
     {
         return $data instanceof Subscriber;
