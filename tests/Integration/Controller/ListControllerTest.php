@@ -180,7 +180,7 @@ class ListControllerTest extends AbstractTestController
     {
         $this->loadFixtures([SubscriberListFixture::class]);
 
-        self::getClient()->request('get', '/api/v2/lists/1/members');
+        self::getClient()->request('get', '/api/v2/lists/1/subscribers');
 
         $this->assertHttpForbidden();
     }
@@ -195,7 +195,7 @@ class ListControllerTest extends AbstractTestController
 
         self::getClient()->request(
             'get',
-            '/api/v2/lists/1/members',
+            '/api/v2/lists/1/subscribers',
             [],
             [],
             ['PHP_AUTH_USER' => 'unused', 'PHP_AUTH_PW' => 'cfdf64eecbbf336628b0f3071adba763']
@@ -206,7 +206,7 @@ class ListControllerTest extends AbstractTestController
 
     public function testGetListMembersWithCurrentSessionKeyForInexistentListReturnsNotFoundStatus()
     {
-        $this->authenticatedJsonRequest('get', '/api/v2/lists/999/members');
+        $this->authenticatedJsonRequest('get', '/api/v2/lists/999/subscribers');
 
         $this->assertHttpNotFound();
     }
@@ -215,7 +215,7 @@ class ListControllerTest extends AbstractTestController
     {
         $this->loadFixtures([SubscriberListFixture::class]);
 
-        $this->authenticatedJsonRequest('get', '/api/v2/lists/1/members');
+        $this->authenticatedJsonRequest('get', '/api/v2/lists/1/subscribers');
 
         $this->assertHttpOkay();
     }
@@ -224,7 +224,7 @@ class ListControllerTest extends AbstractTestController
     {
         $this->loadFixtures([SubscriberListFixture::class]);
 
-        $this->authenticatedJsonRequest('get', '/api/v2/lists/1/members');
+        $this->authenticatedJsonRequest('get', '/api/v2/lists/1/subscribers');
 
         $this->assertJsonResponseContentEquals([]);
     }
@@ -233,30 +233,55 @@ class ListControllerTest extends AbstractTestController
     {
         $this->loadFixtures([SubscriberListFixture::class, SubscriberFixture::class, SubscriptionFixture::class]);
 
-        $this->authenticatedJsonRequest('get', '/api/v2/lists/2/members');
+        $this->authenticatedJsonRequest('get', '/api/v2/lists/2/subscribers');
 
         $this->assertJsonResponseContentEquals(
             [
                 [
-                    'creation_date' => '2016-07-22T15:01:17+00:00',
+                    'id' => 1,
                     'email' => 'oliver@example.com',
+                    'creation_date' => '2016-07-22T15:01:17+00:00',
                     'confirmed' => true,
                     'blacklisted' => true,
                     'bounce_count' => 17,
                     'unique_id' => '95feb7fe7e06e6c11ca8d0c48cb46e89',
                     'html_email' => true,
                     'disabled' => true,
-                    'id' => 1,
+                    'subscribedLists' => [
+                        [
+                            'id' => 2,
+                            'name' => 'More news',
+                            'description' => '',
+                            'creation_date' => '2016-06-22T15:01:17+00:00',
+                            'public' => true,
+                        ],
+                    ],
                 ], [
-                    'creation_date' => '2016-07-22T15:01:17+00:00',
+                    'id' => 2,
                     'email' => 'oliver1@example.com',
+                    'creation_date' => '2016-07-22T15:01:17+00:00',
                     'confirmed' => true,
                     'blacklisted' => true,
                     'bounce_count' => 17,
                     'unique_id' => '95feb7fe7e06e6c11ca8d0c48cb46e87',
                     'html_email' => true,
                     'disabled' => true,
-                    'id' => 2,
+                    'subscribedLists' => [
+                        [
+                            'id' => 2,
+                            'name' => 'More news',
+                            'description' => '',
+                            'creation_date' => '2016-06-22T15:01:17+00:00',
+                            'public' => true,
+                        ],
+                        [
+                            'id' => 1,
+                            'name' => 'News',
+                            'description' => 'News (and some fun stuff)',
+                            'creation_date' => '2016-06-22T15:01:17+00:00',
+                            'public' => true,
+                        ],
+                    ],
                 ],
             ]
         );

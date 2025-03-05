@@ -29,17 +29,15 @@ class SubscriberController extends AbstractController
 
     private SubscriberRepository $subscriberRepository;
 
-    public function __construct(
-        Authentication $authentication,
-        SubscriberRepository $repository
-    ) {
+    public function __construct(Authentication $authentication, SubscriberRepository $repository)
+    {
         $this->authentication = $authentication;
         $this->subscriberRepository = $repository;
     }
 
     #[Route('/subscribers', name: 'create_subscriber', methods: ['POST'])]
     #[OA\Post(
-        path: '/subscriber',
+        path: '/subscribers',
         description: 'Creates a new subscriber (if there is no subscriber with the given email address yet).',
         summary: 'Create a subscriber',
         requestBody: new OA\RequestBody(
@@ -49,10 +47,8 @@ class SubscriberController extends AbstractController
                 required: ['email'],
                 properties: [
                     new OA\Property(property: 'email', type: 'string', format: 'string', example: 'admin@example.com'),
-                    new OA\Property(property: 'confirmed', type: 'boolean', example: false),
-                    new OA\Property(property: 'blacklisted', type: 'boolean', example: false),
+                    new OA\Property(property: 'request_confirmation', type: 'boolean', example: false),
                     new OA\Property(property: 'html_email', type: 'boolean', example: false),
-                    new OA\Property(property: 'disabled', type: 'boolean', example: false)
                 ]
             )
         ),
@@ -140,13 +136,13 @@ class SubscriberController extends AbstractController
         if ($this->subscriberRepository->findOneByEmail($email) !== null) {
             throw new ConflictHttpException('This resource already exists.', null, 1513439108);
         }
-        // @phpstan-ignore-next-line
+        $confirmed = (bool)$data->get('request_confirmation', true);
         $subscriber = new Subscriber();
         $subscriber->setEmail($email);
-        $subscriber->setConfirmed((bool)$data->get('confirmed', false));
-        $subscriber->setBlacklisted((bool)$data->get('blacklisted', false));
+        $subscriber->setConfirmed(!$confirmed);
+        $subscriber->setBlacklisted(false);
         $subscriber->setHtmlEmail((bool)$data->get('html_email', true));
-        $subscriber->setDisabled((bool)$data->get('disabled', false));
+        $subscriber->setDisabled(false);
 
         $this->subscriberRepository->save($subscriber);
 
@@ -156,6 +152,109 @@ class SubscriberController extends AbstractController
             [],
             true
         );
+    }
+
+    #[Route('/subscribers/{subscriberId}', name: 'get_subscriber_by_id', methods: ['GET'])]
+    #[OA\Get(
+        path: '/subscribers/{subscriberId}',
+        description: 'Get subscriber date by id.',
+        summary: 'Get a subscriber',
+        tags: ['subscribers'],
+        parameters: [
+            new OA\Parameter(
+                name: 'session',
+                description: 'Session ID obtained from authentication',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                name: 'subscriberId',
+                description: 'Subscriber ID',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Success',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'id', type: 'integer', example: 1),
+                        new OA\Property(property: 'email', type: 'string', example: 'subscriber@example.com'),
+                        new OA\Property(
+                            property: 'creation_date',
+                            type: 'string',
+                            format: 'date-time',
+                            example: '2023-01-01T12:00:00Z'
+                        ),
+                        new OA\Property(property: 'confirmed', type: 'boolean', example: true),
+                        new OA\Property(property: 'blacklisted', type: 'boolean', example: false),
+                        new OA\Property(property: 'bounce_count', type: 'integer', example: 0),
+                        new OA\Property(property: 'unique_id', type: 'string', example: 'abc123'),
+                        new OA\Property(property: 'html_email', type: 'boolean', example: true),
+                        new OA\Property(property: 'disabled', type: 'boolean', example: false),
+                        new OA\Property(
+                            property: 'subscribedLists',
+                            type: 'array',
+                            items: new OA\Items(
+                                properties: [
+                                    new OA\Property(property: 'id', type: 'integer', example: 2),
+                                    new OA\Property(property: 'name', type: 'string', example: 'Newsletter'),
+                                    new OA\Property(
+                                        property: 'description',
+                                        type: 'string',
+                                        example: 'Monthly updates'
+                                    ),
+                                    new OA\Property(
+                                        property: 'creation_date',
+                                        type: 'string',
+                                        format: 'date-time',
+                                        example: '2022-12-01T10:00:00Z'
+                                    ),
+                                    new OA\Property(property: 'public', type: 'boolean', example: true),
+                                ],
+                                type: 'object'
+                            )
+                        ),
+                    ],
+                    type: 'object'
+                )
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Failure',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: 'message',
+                            type: 'string',
+                            example: 'No valid session key was provided as basic auth password.'
+                        )
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Not Found',
+            )
+        ]
+    )]
+    public function getAction(Request $request, int $subscriberId, SerializerInterface $serializer): JsonResponse
+    {
+        $this->requireAuthentication($request);
+
+        $subscriber = $this->subscriberRepository->findSubscriberWithSubscriptions($subscriberId);
+
+        if (!$subscriber) {
+            return new JsonResponse(['error' => 'Subscriber not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        $data = $serializer->serialize($subscriber, 'json');
+
+        return new JsonResponse($data, Response::HTTP_OK, [], true);
     }
 
     /**
@@ -173,7 +272,7 @@ class SubscriberController extends AbstractController
             $invalidFields[] = 'email';
         }
 
-        $booleanFields = ['confirmed', 'blacklisted', 'html_email', 'disabled'];
+        $booleanFields = ['request_confirmation', 'html_email'];
         foreach ($booleanFields as $fieldKey) {
             if ($request->getPayload()->get($fieldKey) !== null
                 && !is_bool($request->getPayload()->get($fieldKey))

@@ -1,6 +1,6 @@
 services:
     Psr\Container\ContainerInterface:
-      alias: 'service_container'
+        alias: 'service_container'
 
     PhpList\RestBundle\Controller\:
         resource: '../src/Controller'
@@ -8,12 +8,12 @@ services:
         autowire: true
         tags: ['controller.service_arguments']
 
-#    Symfony\Component\Serializer\SerializerInterface:
-#      autowire: true
-#      autoconfigure: true
+    #    Symfony\Component\Serializer\SerializerInterface:
+    #      autowire: true
+    #      autoconfigure: true
 
     my.secure_handler:
-        class: \PhpList\RestBundle\ViewHandler\SecuredViewHandler
+        class: PhpList\RestBundle\ViewHandler\SecuredViewHandler
 
     my.secure_view_handler:
         parent: fos_rest.view_handler.default
@@ -35,3 +35,6 @@ services:
     PhpList\RestBundle\EventListener\ResponseListener:
         tags:
             - { name: kernel.event_listener, event: kernel.response }
+    PhpList\RestBundle\Serializer\SubscriberNormalizer:
+        tags: [ 'serializer.normalizer' ]
+        autowire: true
