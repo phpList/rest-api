@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Controller;
 
+use PhpList\RestBundle\Serializer\SubscriberNormalizer;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use PhpList\Core\Domain\Model\Subscription\Subscriber;
@@ -16,7 +17,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use OpenApi\Attributes as OA;
 
@@ -30,13 +30,16 @@ class SubscriberController extends AbstractController
     use AuthenticationTrait;
 
     private SubscriberRepository $subscriberRepository;
+    private SubscriberNormalizer $subscriberNormalizer;
 
     public function __construct(
         Authentication $authentication,
-        SubscriberRepository $repository
+        SubscriberRepository $repository,
+        SubscriberNormalizer $subscriberNormalizer
     ) {
         $this->authentication = $authentication;
         $this->subscriberRepository = $repository;
+        $this->subscriberNormalizer = $subscriberNormalizer;
     }
 
     #[Route('/subscribers', name: 'create_subscriber', methods: ['POST'])]
@@ -229,15 +232,18 @@ class SubscriberController extends AbstractController
     public function getAction(
         Request $request,
         #[MapEntity(mapping: ['subscriberId' => 'id'])] Subscriber $subscriber,
-        SerializerInterface $serializer
     ): JsonResponse {
         $this->requireAuthentication($request);
 
-        $json = $serializer->serialize($subscriber, 'json', [
-            AbstractNormalizer::GROUPS => 'SubscriberListMembers',
-        ]);
+        $subscriber = $this->subscriberRepository->findSubscriberWithSubscriptions($subscriber->getId());
 
-        return new JsonResponse($json, Response::HTTP_OK, [], true);
+        if (!$subscriber) {
+            return new JsonResponse(['error' => 'Subscriber not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        $data = $this->subscriberNormalizer->normalize($subscriber);
+
+        return new JsonResponse($data, Response::HTTP_OK, []);
     }
 
     /**

@@ -1,0 +1,7 @@
+services:
+  PhpList\RestBundle\Controller\SubscriberController:
+    autowire: true
+    arguments:
+      $authentication: '@PhpList\Core\Security\Authentication'
+      $repository: '@PhpList\Core\Domain\Repository\Subscription\SubscriberRepository'
+      $subscriberNormalizer: '@PhpList\RestBundle\Serializer\SubscriberNormalizer'
