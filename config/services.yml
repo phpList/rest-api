@@ -1,24 +1,16 @@
-imports:
-    - { resource: services/*.xml }
-
 services:
     Psr\Container\ContainerInterface:
-      alias: 'service_container'
+        alias: 'service_container'
 
     PhpList\RestBundle\Controller\:
         resource: '../src/Controller'
         public: true
         autowire: true
-        autoconfigure: true
+        tags: ['controller.service_arguments']
 
-    PhpList\RestBundle\:
-        resource: '../src/'
-        exclude:
-            - '../src/Controller/'
-            - '../src/DependencyInjection/'
-            - '../src/Kernel.php'
-        autowire: true
-        autoconfigure: true
+    #    Symfony\Component\Serializer\SerializerInterface:
+    #      autowire: true
+    #      autoconfigure: true
 
     my.secure_handler:
         class: PhpList\RestBundle\ViewHandler\SecuredViewHandler
@@ -32,3 +24,17 @@ services:
         autowire: true
         autoconfigure: true
 
+    PhpList\Core\Domain\Repository\Messaging\SubscriberListRepository:
+        autowire: true
+        autoconfigure: true
+
+    PhpList\RestBundle\EventListener\ExceptionListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception }
+
+    PhpList\RestBundle\EventListener\ResponseListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.response }
+    PhpList\RestBundle\Serializer\SubscriberNormalizer:
+        tags: [ 'serializer.normalizer' ]
+        autowire: true

@@ -1,5 +1,0 @@
-services:
-  PhpList\RestBundle\Serializer\SubscriberNormalizer:
-    tags: ['serializer.normalizer']
-    autowire: true
-
