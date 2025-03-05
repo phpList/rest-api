@@ -300,24 +300,39 @@ class ListController extends AbstractController
                     type: 'array',
                     items: new OA\Items(
                         properties: [
+                            new OA\Property(property: 'id', type: 'integer', example: 1),
+                            new OA\Property(property: 'email', type: 'string', example: 'subscriber@example.com'),
                             new OA\Property(
                                 property: 'creation_date',
                                 type: 'string',
                                 format: 'date-time',
-                                example: '2016-07-22T15:01:17+00:00'
+                                example: '2023-01-01T12:00:00Z'
                             ),
-                            new OA\Property(property: 'email', type: 'string', example: 'oliver@example.com'),
                             new OA\Property(property: 'confirmed', type: 'boolean', example: true),
-                            new OA\Property(property: 'blacklisted', type: 'boolean', example: true),
-                            new OA\Property(property: 'bounce_count', type: 'integer', example: 17),
-                            new OA\Property(
-                                property: 'unique_id',
-                                type: 'string',
-                                example: '95feb7fe7e06e6c11ca8d0c48cb46e89'
-                            ),
+                            new OA\Property(property: 'blacklisted', type: 'boolean', example: false),
+                            new OA\Property(property: 'bounce_count', type: 'integer', example: 0),
+                            new OA\Property(property: 'unique_id', type: 'string', example: 'abc123'),
                             new OA\Property(property: 'html_email', type: 'boolean', example: true),
-                            new OA\Property(property: 'disabled', type: 'boolean', example: true),
-                            new OA\Property(property: 'id', type: 'integer', example: 1)
+                            new OA\Property(property: 'disabled', type: 'boolean', example: false),
+                            new OA\Property(
+                                property: 'subscribedLists',
+                                type: 'array',
+                                items: new OA\Items(
+                                    properties: [
+                                        new OA\Property(property: 'id', type: 'integer', example: 2),
+                                        new OA\Property(property: 'name', type: 'string', example: 'Newsletter'),
+                                        new OA\Property(property: 'description', type: 'string', example: 'Monthly updates'),
+                                        new OA\Property(
+                                            property: 'creation_date',
+                                            type: 'string',
+                                            format: 'date-time',
+                                            example: '2022-12-01T10:00:00Z'
+                                        ),
+                                        new OA\Property(property: 'public', type: 'boolean', example: true),
+                                    ],
+                                    type: 'object'
+                                )
+                            ),
                         ],
                         type: 'object'
                     )
