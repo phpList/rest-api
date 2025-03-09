@@ -31,13 +31,13 @@ jobs:
         run: composer install --no-interaction --prefer-dist
 
       - name: Generate OpenAPI Specification JSON
-        run: vendor/bin/openapi -o latest-restapi.json --format json src
+        run: vendor/bin/openapi -o docs/latest-restapi.json --format json src
 
       - name: Upload REST API Specification
         uses: actions/upload-artifact@v4
         with:
           name: restapi-json
-          path: latest-restapi.json
+          path: docs/latest-restapi.json
 
   deploy-docs:
     name: Deploy REST API Specification
@@ -66,10 +66,10 @@ jobs:
           path: docs
 
       - name: Validate OpenAPI Specification
-        run: swagger-cli validate latest-restapi.json
+        run: swagger-cli validate docs/latest-restapi.json
 
       - name: Compare Specifications
-        run: git diff --no-index --output=restapi-diff.txt latest-restapi.json restapi.json || true
+        run: git diff --no-index --output=restapi-diff.txt docs/latest-restapi.json restapi.json || true
 
       - name: Check Differences and Decide Deployment
         id: allow-deploy
@@ -85,7 +85,7 @@ jobs:
       - name: Commit and Deploy Updates
         if: env.DEPLOY == 'true'
         run: |
-          mv latest-restapi.json restapi.json
+          mv docs/latest-restapi.json restapi.json
           git config user.name "github-actions"
           git config user.email "github-actions@restapi-docs.workflow"
           git add restapi.json
