@@ -14,8 +14,8 @@ use OpenApi\Attributes as OA;
  */
 #[OA\Info(
     version: '1.0.0',
-    description: 'This is the OpenAPI documentation for My API.',
-    title: 'My API Documentation',
+    description: 'This is the OpenAPI documentation for PhpList API.',
+    title: 'PhpList API Documentation',
     contact: new OA\Contact(
         email: 'support@phplist.com'
     ),
