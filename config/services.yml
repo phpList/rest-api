@@ -1,3 +1,5 @@
+imports:
+    - { resource: 'services/*.yml' }
 services:
     Psr\Container\ContainerInterface:
         alias: 'service_container'
@@ -28,13 +30,6 @@ services:
         autowire: true
         autoconfigure: true
 
-    PhpList\RestBundle\EventListener\ExceptionListener:
-        tags:
-            - { name: kernel.event_listener, event: kernel.exception }
-
-    PhpList\RestBundle\EventListener\ResponseListener:
-        tags:
-            - { name: kernel.event_listener, event: kernel.response }
-    PhpList\RestBundle\Serializer\SubscriberNormalizer:
-        tags: [ 'serializer.normalizer' ]
+    PhpList\RestBundle\Validator\RequestValidator:
         autowire: true
+        autoconfigure: true
