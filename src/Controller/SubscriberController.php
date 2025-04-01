@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Controller;
 
+use PhpList\RestBundle\Entity\SubscriberRequest;
+use PhpList\RestBundle\Service\Manager\SubscriberManager;
+use PhpList\RestBundle\Validator\RequestValidator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use PhpList\Core\Domain\Model\Subscription\Subscriber;
 use PhpList\Core\Domain\Repository\Subscription\SubscriberRepository;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Controller\Traits\AuthenticationTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
-use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use OpenApi\Attributes as OA;
@@ -28,11 +28,16 @@ class SubscriberController extends AbstractController
     use AuthenticationTrait;
 
     private SubscriberRepository $subscriberRepository;
+    private SubscriberManager $subscriberManager;
 
-    public function __construct(Authentication $authentication, SubscriberRepository $repository)
-    {
+    public function __construct(
+        Authentication $authentication,
+        SubscriberRepository $repository,
+        SubscriberManager $subscriberManager,
+    ) {
         $this->authentication = $authentication;
         $this->subscriberRepository = $repository;
+        $this->subscriberManager = $subscriberManager;
     }
 
     #[Route('/subscribers', name: 'create_subscriber', methods: ['POST'])]
@@ -126,25 +131,16 @@ class SubscriberController extends AbstractController
             )
         ]
     )]
-    public function postAction(Request $request, SerializerInterface $serializer): JsonResponse
-    {
+    public function postAction(
+        Request $request,
+        SerializerInterface $serializer,
+        RequestValidator $validator
+    ): JsonResponse {
         $this->requireAuthentication($request);
-        $data = $request->getPayload();
-        $this->validateSubscriber($request);
 
-        $email = $data->get('email');
-        if ($this->subscriberRepository->findOneByEmail($email) !== null) {
-            throw new ConflictHttpException('This resource already exists.', null, 1513439108);
-        }
-        $confirmed = (bool)$data->get('request_confirmation', true);
-        $subscriber = new Subscriber();
-        $subscriber->setEmail($email);
-        $subscriber->setConfirmed(!$confirmed);
-        $subscriber->setBlacklisted(false);
-        $subscriber->setHtmlEmail((bool)$data->get('html_email', true));
-        $subscriber->setDisabled(false);
-
-        $this->subscriberRepository->save($subscriber);
+        /** @var SubscriberRequest $subscriberRequest */
+        $subscriberRequest = $validator->validate($request, SubscriberRequest::class);
+        $subscriber = $this->subscriberManager->createSubscriber($subscriberRequest);
 
         return new JsonResponse(
             $serializer->serialize($subscriber, 'json'),
@@ -255,38 +251,5 @@ class SubscriberController extends AbstractController
         $data = $serializer->serialize($subscriber, 'json');
 
         return new JsonResponse($data, Response::HTTP_OK, [], true);
-    }
-
-    /**
-     * @param Request $request
-     *
-     * @return void
-     *
-     * @throws UnprocessableEntityHttpException
-     */
-    private function validateSubscriber(Request $request): void
-    {
-        /** @var string[] $invalidFields */
-        $invalidFields = [];
-        if (filter_var($request->getPayload()->get('email'), FILTER_VALIDATE_EMAIL) === false) {
-            $invalidFields[] = 'email';
-        }
-
-        $booleanFields = ['request_confirmation', 'html_email'];
-        foreach ($booleanFields as $fieldKey) {
-            if ($request->getPayload()->get($fieldKey) !== null
-                && !is_bool($request->getPayload()->get($fieldKey))
-            ) {
-                $invalidFields[] = $fieldKey;
-            }
-        }
-
-        if (!empty($invalidFields)) {
-            throw new UnprocessableEntityHttpException(
-                'Some fields invalid:' . implode(', ', $invalidFields),
-                null,
-                1513446736
-            );
-        }
     }
 }
