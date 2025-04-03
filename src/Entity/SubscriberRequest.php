@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Entity;
 
+use PhpList\RestBundle\Validator as CustomAssert;
 use Symfony\Component\Validator\Constraints as Assert;
-use PhpList\RestBundle\Validator\UniqueEmail;
 
-class SubscriberRequest
+class SubscriberRequest implements RequestInterface
 {
     #[Assert\NotBlank]
     #[Assert\Email]
-    #[UniqueEmail]
+    #[CustomAssert\UniqueEmail]
     public string $email;
 
     #[Assert\Type(type: 'bool')]

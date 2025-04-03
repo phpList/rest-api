@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Validator;
 
+use PhpList\RestBundle\Entity\RequestInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -16,7 +17,7 @@ class RequestValidator
         private readonly ValidatorInterface $validator
     ) {}
 
-    public function validate(Request $request, string $dtoClass): object
+    public function validate(Request $request, string $dtoClass): RequestInterface
     {
         $dto = $this->serializer->deserialize($request->getContent(), $dtoClass, 'json');
 

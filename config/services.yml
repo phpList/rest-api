@@ -10,10 +10,6 @@ services:
         autowire: true
         tags: ['controller.service_arguments']
 
-    #    Symfony\Component\Serializer\SerializerInterface:
-    #      autowire: true
-    #      autoconfigure: true
-
     my.secure_handler:
         class: PhpList\RestBundle\ViewHandler\SecuredViewHandler
 
@@ -27,9 +23,5 @@ services:
         autoconfigure: true
 
     PhpList\Core\Domain\Repository\Messaging\SubscriberListRepository:
-        autowire: true
-        autoconfigure: true
-
-    PhpList\RestBundle\Validator\RequestValidator:
         autowire: true
         autoconfigure: true

@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Controller;
 
+use OpenApi\Attributes as OA;
+use PhpList\Core\Domain\Repository\Subscription\SubscriberRepository;
+use PhpList\Core\Security\Authentication;
+use PhpList\RestBundle\Controller\Traits\AuthenticationTrait;
 use PhpList\RestBundle\Entity\SubscriberRequest;
 use PhpList\RestBundle\Service\Manager\SubscriberManager;
 use PhpList\RestBundle\Validator\RequestValidator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use PhpList\Core\Domain\Repository\Subscription\SubscriberRepository;
-use PhpList\Core\Security\Authentication;
-use PhpList\RestBundle\Controller\Traits\AuthenticationTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
-use OpenApi\Attributes as OA;
 
 /**
  * This controller provides REST API access to subscribers.

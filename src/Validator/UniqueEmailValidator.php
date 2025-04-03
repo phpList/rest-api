@@ -7,6 +7,8 @@ namespace PhpList\RestBundle\Validator;
 use PhpList\Core\Domain\Repository\Subscription\SubscriberRepository;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
+use Symfony\Component\Validator\Exception\UnexpectedTypeException;
+use Symfony\Component\Validator\Exception\UnexpectedValueException;
 
 class UniqueEmailValidator extends ConstraintValidator
 {
@@ -17,19 +19,26 @@ class UniqueEmailValidator extends ConstraintValidator
         $this->subscriberRepository = $subscriberRepository;
     }
 
-    public function validate($value, Constraint $constraint)
+    public function validate($value, Constraint $constraint): void
     {
-        /* @var $constraint UniqueEmail */
+        if (!$constraint instanceof UniqueEmail) {
+            throw new UnexpectedTypeException($constraint, UniqueEmail::class);
+        }
 
         if (null === $value || '' === $value) {
             return;
         }
 
-        if ($this->subscriberRepository->findOneByEmail($value)) {
+        if (!is_string($value)) {
+            throw new UnexpectedValueException($value, 'string');
+        }
+
+        $existingUser = $this->subscriberRepository->findOneBy(['email' => $value]);
+
+        if ($existingUser) {
             $this->context->buildViolation($constraint->message)
                 ->setParameter('{{ value }}', $value)
                 ->addViolation();
         }
     }
 }
-
