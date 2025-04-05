@@ -9,7 +9,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Throwable;
 
 class RequestValidator
@@ -17,7 +16,8 @@ class RequestValidator
     public function __construct(
         private readonly SerializerInterface $serializer,
         private readonly ValidatorInterface $validator
-    ) {}
+    ) {
+    }
 
     public function validate(Request $request, string $dtoClass): RequestInterface
     {
@@ -33,7 +33,18 @@ class RequestValidator
         $errors = $this->validator->validate($dto);
 
         if (count($errors) > 0) {
-            throw new UnprocessableEntityHttpException((string) $errors);
+            $lines = [];
+            foreach ($errors as $violation) {
+                $lines[] = sprintf(
+                    '%s: %s',
+                    $violation->getPropertyPath(),
+                    $violation->getMessage()
+                );
+            }
+
+            $message = implode("\n", $lines);
+
+            throw new UnprocessableEntityHttpException($message);
         }
 
         return $dto;

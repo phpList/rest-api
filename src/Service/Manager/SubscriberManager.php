@@ -21,10 +21,10 @@ class SubscriberManager
     {
         $subscriber = new Subscriber();
         $subscriber->setEmail($subscriberRequest->email);
-        $confirmed = (bool)$subscriberRequest->request_confirmation;
+        $confirmed = (bool)$subscriberRequest->requestConfirmation;
         $subscriber->setConfirmed(!$confirmed);
         $subscriber->setBlacklisted(false);
-        $subscriber->setHtmlEmail((bool)$subscriberRequest->html_email);
+        $subscriber->setHtmlEmail((bool)$subscriberRequest->htmlEmail);
         $subscriber->setDisabled(false);
 
         $this->subscriberRepository->save($subscriber);

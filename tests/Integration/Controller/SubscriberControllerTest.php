@@ -106,10 +106,10 @@ class SubscriberControllerTest extends AbstractTestController
             'email is an empty string' => [['email' => '']],
             'email is invalid string' => [['email' => 'coffee and cigarettes']],
             'email as boolean' => [['email' => true]],
-            'html_email as integer' => [['email' => 'kate@example.com', 'html_email' => 1]],
-            'html_email as string' => [['email' => 'kate@example.com', 'html_email' => 'yes']],
-            'request_confirmation as string' => [['email' => 'kate@example.com', 'request_confirmation' => 'needed']],
-            'disabled as string' => [['email' => 'kate@example.com', 'request_confirmation' => 1]],
+            'html_email as integer' => [['email' => 'kate@example.com', 'htmlEmail' => 1]],
+            'html_email as string' => [['email' => 'kate@example.com', 'htmlEmail' => 'yes']],
+            'request_confirmation as string' => [['email' => 'kate@example.com', 'requestConfirmation' => 'needed']],
+            'disabled as string' => [['email' => 'kate@example.com', 'requestConfirmation' => 1]],
         ];
     }
 
@@ -129,9 +129,9 @@ class SubscriberControllerTest extends AbstractTestController
         $email = 'subscriber@example.com';
         $jsonData = [
             'email' => $email,
-            'request_confirmation' => true,
+            'requestConfirmation' => true,
             'blacklisted' => true,
-            'html_email' => true,
+            'htmlEmail' => true,
             'disabled' => true,
         ];
 

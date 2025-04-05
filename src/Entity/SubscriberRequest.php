@@ -15,8 +15,8 @@ class SubscriberRequest implements RequestInterface
     public string $email;
 
     #[Assert\Type(type: 'bool')]
-    public ?bool $request_confirmation = null;
+    public ?bool $requestConfirmation = null;
 
     #[Assert\Type(type: 'bool')]
-    public ?bool $html_email = null;
+    public ?bool $htmlEmail = null;
 }
