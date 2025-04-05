@@ -1,0 +1,9 @@
+services:
+  PhpList\RestBundle\Validator\RequestValidator:
+    autowire: true
+    autoconfigure: true
+
+  PhpList\RestBundle\Validator\UniqueEmailValidator:
+    autowire: true
+    autoconfigure: true
+    tags: [ 'validator.constraint_validator' ]

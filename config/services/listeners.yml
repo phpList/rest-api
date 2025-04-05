@@ -1,0 +1,13 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  PhpList\RestBundle\EventListener\ExceptionListener:
+    tags:
+      - { name: kernel.event_listener, event: kernel.exception }
+
+  PhpList\RestBundle\EventListener\ResponseListener:
+    tags:
+      - { name: kernel.event_listener, event: kernel.response }

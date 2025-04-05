@@ -1,0 +1,9 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  PhpList\RestBundle\Service\Manager\SubscriberManager:
+    autowire: true
+    autoconfigure: true
