@@ -36,7 +36,10 @@ class UniqueEmailValidator extends ConstraintValidator
 
         $existingUser = $this->subscriberRepository->findOneBy(['email' => $value]);
 
-        if ($existingUser) {
+        $dto = $this->context->getObject();
+        $updatingId = $dto->subscriberId ?? null;
+
+        if ($existingUser && $existingUser->getId() !== $updatingId) {
             throw new ConflictHttpException('Email already exists.');
         }
     }

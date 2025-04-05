@@ -10,9 +10,11 @@ use PhpList\Core\Domain\Repository\Subscription\SubscriberRepository;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Controller\Traits\AuthenticationTrait;
 use PhpList\RestBundle\Entity\CreateSubscriberRequest;
+use PhpList\RestBundle\Entity\UpdateSubscriberRequest;
 use PhpList\RestBundle\Serializer\SubscriberNormalizer;
 use PhpList\RestBundle\Service\Manager\SubscriberManager;
 use PhpList\RestBundle\Validator\RequestValidator;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,7 +26,9 @@ use Symfony\Component\Serializer\SerializerInterface;
  * This controller provides REST API access to subscribers.
  *
  * @author Oliver Klee <oliver@phplist.com>
+ * @author Tatevik Grigoryan <tatevik@phplist.com>
  */
+#[Route('/subscribers')]
 class SubscriberController extends AbstractController
 {
     use AuthenticationTrait;
@@ -42,7 +46,7 @@ class SubscriberController extends AbstractController
         $this->subscriberManager = $subscriberManager;
     }
 
-    #[Route('/subscribers', name: 'create_subscriber', methods: ['POST'])]
+    #[Route('', name: 'create_subscriber', methods: ['POST'])]
     #[OA\Post(
         path: '/subscribers',
         description: 'Creates a new subscriber (if there is no subscriber with the given email address yet).',
@@ -112,7 +116,7 @@ class SubscriberController extends AbstractController
             )
         ]
     )]
-    public function postAction(
+    public function createSubscriber(
         Request $request,
         SerializerInterface $serializer,
         RequestValidator $validator
@@ -131,10 +135,96 @@ class SubscriberController extends AbstractController
         );
     }
 
-    #[Route('/subscribers/{subscriberId}', name: 'get_subscriber_by_id', methods: ['GET'])]
+    #[Route('/{subscriberId}', name: 'update_subscriber', requirements: ['subscriberId' => '\d+'], methods: ['PUT'])]
     #[OA\Get(
         path: '/subscribers/{subscriberId}',
-        description: 'Get subscriber date by id.',
+        description: 'Update subscriber data by id.',
+        summary: 'Update subscriber',
+        requestBody: new OA\RequestBody(
+            description: 'Pass session credentials',
+            required: true,
+            content: new OA\JsonContent(
+                required: ['email'],
+                properties: [
+                    new OA\Property(property: 'email', type: 'string', format: 'string', example: 'admin@example.com'),
+                    new OA\Property(property: 'html_email', type: 'boolean', example: false),
+                    new OA\Property(property: 'confirmed', type: 'boolean', example: false),
+                    new OA\Property(property: 'blacklisted', type: 'boolean', example: false),
+                    new OA\Property(property: 'html_email', type: 'boolean', example: false),
+                    new OA\Property(property: 'disabled', type: 'boolean', example: false),
+                    new OA\Property(property: 'additional_data', type: 'string', example: 'asdf'),
+                ]
+            )
+        ),
+        tags: ['subscribers'],
+        parameters: [
+            new OA\Parameter(
+                name: 'session',
+                description: 'Session ID obtained from authentication',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                name: 'subscriberId',
+                description: 'Subscriber ID',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Success',
+                content: new OA\JsonContent(ref: '#/components/schemas/Subscriber'),
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Failure',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: 'message',
+                            type: 'string',
+                            example: 'No valid session key was provided as basic auth password.'
+                        )
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Not Found',
+            )
+        ]
+    )]
+    public function update(
+        Request $request,
+        #[MapEntity(mapping: ['subscriberId' => 'id'])] Subscriber $subscriber,
+        SerializerInterface $serializer,
+        RequestValidator $validator,
+        SubscriberNormalizer $subscriberNormalizer,
+    ): JsonResponse {
+        $this->requireAuthentication($request);
+
+        /** @var UpdateSubscriberRequest $dto */
+        $dto = $serializer->deserialize($request->getContent(), UpdateSubscriberRequest::class, 'json');
+        $dto->subscriberId = $subscriber->getId();
+        $validator->validateDto($dto);
+        $subscriber = $this->subscriberManager->updateSubscriber($dto);
+
+        return new JsonResponse(
+            $subscriberNormalizer->normalize($subscriber, 'json'),
+            Response::HTTP_OK,
+            [],
+            false
+        );
+    }
+
+    #[Route('/{subscriberId}', name: 'get_subscriber_by_id', methods: ['GET'])]
+    #[OA\Get(
+        path: '/subscribers/{subscriberId}',
+        description: 'Get subscriber data by id.',
         summary: 'Get a subscriber',
         tags: ['subscribers'],
         parameters: [
@@ -182,10 +272,7 @@ class SubscriberController extends AbstractController
     {
         $this->requireAuthentication($request);
 
-        $subscriber = $this->subscriberRepository->findSubscriberWithSubscriptions($subscriberId);
-        if (!$subscriber) {
-            return new JsonResponse(['error' => 'Subscriber not found'], Response::HTTP_NOT_FOUND);
-        }
+        $subscriber = $this->subscriberManager->getSubscriber($subscriberId);
 
         return new JsonResponse(
             $serializer->normalize($subscriber, 'json'),

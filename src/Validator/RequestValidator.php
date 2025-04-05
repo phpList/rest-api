@@ -30,7 +30,13 @@ class RequestValidator
         } catch (Throwable $e) {
             throw new UnprocessableEntityHttpException('Invalid JSON: ' . $e->getMessage());
         }
-        $errors = $this->validator->validate($dto);
+
+        return $this->validateDto($dto);
+    }
+
+    public function validateDto(RequestInterface $request): RequestInterface
+    {
+        $errors = $this->validator->validate($request);
 
         if (count($errors) > 0) {
             $lines = [];
@@ -47,6 +53,6 @@ class RequestValidator
             throw new UnprocessableEntityHttpException($message);
         }
 
-        return $dto;
+        return $request;
     }
 }
