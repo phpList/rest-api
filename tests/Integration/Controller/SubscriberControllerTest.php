@@ -129,7 +129,7 @@ class SubscriberControllerTest extends AbstractTestController
         $email = 'subscriber@example.com';
         $jsonData = [
             'email' => $email,
-            'confirmed' => true,
+            'request_confirmation' => true,
             'blacklisted' => true,
             'html_email' => true,
             'disabled' => true,
