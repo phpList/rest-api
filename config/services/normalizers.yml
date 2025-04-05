@@ -10,7 +10,6 @@ services:
     arguments:
       $classMetadataFactory: '@?serializer.mapping.class_metadata_factory'
       $nameConverter: '@Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter'
-#      $propertyTypeExtractor: '@?serializer.property_type_extractor'
 
   PhpList\RestBundle\Serializer\SubscriberNormalizer:
     tags: [ 'serializer.normalizer' ]

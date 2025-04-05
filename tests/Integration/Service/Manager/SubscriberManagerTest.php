@@ -7,7 +7,7 @@ namespace PhpList\RestBundle\Tests\Integration\Service\Manager;
 use PHPUnit\Framework\TestCase;
 use PhpList\RestBundle\Service\Manager\SubscriberManager;
 use PhpList\Core\Domain\Repository\Subscription\SubscriberRepository;
-use PhpList\RestBundle\Entity\SubscriberRequest;
+use PhpList\RestBundle\Entity\CreateSubscriberRequest;
 use PhpList\Core\Domain\Model\Subscription\Subscriber;
 
 class SubscriberManagerTest extends TestCase
@@ -28,7 +28,7 @@ class SubscriberManagerTest extends TestCase
 
         $manager = new SubscriberManager($repoMock);
 
-        $dto = new SubscriberRequest();
+        $dto = new CreateSubscriberRequest();
         $dto->email = 'foo@bar.com';
         $dto->requestConfirmation = true;
         $dto->htmlEmail = true;

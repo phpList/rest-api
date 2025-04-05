@@ -6,7 +6,7 @@ namespace PhpList\RestBundle\Service\Manager;
 
 use PhpList\Core\Domain\Model\Subscription\Subscriber;
 use PhpList\Core\Domain\Repository\Subscription\SubscriberRepository;
-use PhpList\RestBundle\Entity\SubscriberRequest;
+use PhpList\RestBundle\Entity\CreateSubscriberRequest;
 
 class SubscriberManager
 {
@@ -17,7 +17,7 @@ class SubscriberManager
         $this->subscriberRepository = $subscriberRepository;
     }
 
-    public function createSubscriber(SubscriberRequest $subscriberRequest): Subscriber
+    public function createSubscriber(CreateSubscriberRequest $subscriberRequest): Subscriber
     {
         $subscriber = new Subscriber();
         $subscriber->setEmail($subscriberRequest->email);
