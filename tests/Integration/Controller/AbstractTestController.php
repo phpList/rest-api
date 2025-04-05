@@ -240,13 +240,11 @@ abstract class AbstractTestController extends WebTestCase
     protected function assertHttpConflict(): void
     {
         $this->assertHttpStatusWithJsonContentType(Response::HTTP_CONFLICT);
-
-        self::assertSame(
-            [
-                'message' => 'This resource already exists.',
-            ],
-            $this->getDecodedJsonResponseContent()
-        );
+        $data = $this->getDecodedJsonResponseContent();
+        $this->assertArrayHasKey('message', $data);
+        $this->assertIsString($data['message']);
+        $this->assertNotEmpty($data['message']);
+        $this->assertStringContainsString('already exists', $data['message']);
     }
 
     /**
