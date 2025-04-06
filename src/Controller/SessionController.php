@@ -11,7 +11,6 @@ use PhpList\RestBundle\Validator\RequestValidator;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use PhpList\Core\Domain\Model\Identity\AdministratorToken;
-use PhpList\Core\Domain\Repository\Identity\AdministratorRepository;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Controller\Traits\AuthenticationTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -19,7 +18,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Serializer\SerializerInterface;
 use OpenApi\Attributes as OA;
 
 /**
@@ -33,19 +31,11 @@ class SessionController extends AbstractController
 {
     use AuthenticationTrait;
 
-    private AdministratorRepository $administratorRepository;
-    private SerializerInterface $serializer;
     private SessionManager $sessionManager;
 
-    public function __construct(
-        Authentication $authentication,
-        AdministratorRepository $administratorRepository,
-        SerializerInterface $serializer,
-        SessionManager $sessionManager,
-    ) {
+    public function __construct(Authentication $authentication, SessionManager $sessionManager)
+    {
         $this->authentication = $authentication;
-        $this->administratorRepository = $administratorRepository;
-        $this->serializer = $serializer;
         $this->sessionManager = $sessionManager;
     }
 

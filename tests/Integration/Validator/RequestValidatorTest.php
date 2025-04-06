@@ -11,6 +11,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\ConstraintViolation;
@@ -66,7 +67,7 @@ class RequestValidatorTest extends TestCase
             ->method('deserialize')
             ->willThrowException(new RuntimeException('Syntax error'));
 
-        $this->expectException(UnprocessableEntityHttpException::class);
+        $this->expectException(BadRequestHttpException::class);
         $this->expectExceptionMessage('Invalid JSON: Syntax error');
 
         $this->requestValidator->validate($request, DummyRequestDto::class);

@@ -6,6 +6,7 @@ namespace PhpList\RestBundle\Validator;
 
 use PhpList\RestBundle\Entity\RequestInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -28,7 +29,7 @@ class RequestValidator
                 'json'
             );
         } catch (Throwable $e) {
-            throw new UnprocessableEntityHttpException('Invalid JSON: ' . $e->getMessage());
+            throw new BadRequestHttpException('Invalid JSON: ' . $e->getMessage());
         }
 
         return $this->validateDto($dto);

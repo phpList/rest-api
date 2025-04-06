@@ -6,7 +6,6 @@ namespace PhpList\RestBundle\Controller;
 
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Model\Subscription\Subscriber;
-use PhpList\Core\Domain\Repository\Subscription\SubscriberRepository;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Controller\Traits\AuthenticationTrait;
 use PhpList\RestBundle\Entity\CreateSubscriberRequest;
@@ -33,16 +32,11 @@ class SubscriberController extends AbstractController
 {
     use AuthenticationTrait;
 
-    private SubscriberRepository $subscriberRepository;
     private SubscriberManager $subscriberManager;
 
-    public function __construct(
-        Authentication $authentication,
-        SubscriberRepository $repository,
-        SubscriberManager $subscriberManager,
-    ) {
+    public function __construct(Authentication $authentication, SubscriberManager $subscriberManager)
+    {
         $this->authentication = $authentication;
-        $this->subscriberRepository = $repository;
         $this->subscriberManager = $subscriberManager;
     }
 

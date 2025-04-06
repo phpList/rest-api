@@ -21,7 +21,7 @@ class SessionControllerTest extends AbstractTestController
     {
         $loginName = 'john.doe';
         $password = 'a sandwich and a cup of coffee';
-        $jsonData = ['login_name' => $loginName, 'password' => $password];
+        $jsonData = ['loginName' => $loginName, 'password' => $password];
 
         self::getClient()->request(
             'POST',

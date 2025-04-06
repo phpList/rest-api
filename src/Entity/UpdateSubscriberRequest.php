@@ -25,21 +25,9 @@ class UpdateSubscriberRequest implements RequestInterface
     #[Assert\Type(type: 'bool')]
     public bool $htmlEmail;
 
-    #[Assert\Type(type: 'number')]
-    public ?int $rssFrequency = null; // todo check what is this
-
     #[Assert\Type(type: 'bool')]
     public bool $disabled;
 
     #[Assert\Type(type: 'string')]
     public string $additionalData;
-
-    #[Assert\Type(type: 'string')]
-    public ?string $woonplaats = null;  // todo check what is this
-
-    #[Assert\Type(type: 'string')]
-    public ?string $foreignKey = null;  // todo check what is this
-
-    #[Assert\Type(type: 'string')]
-    public ?string $country = null;  // todo check what is this
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Integration\Service\Manager;
 
+use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use PhpList\RestBundle\Service\Manager\SubscriberManager;
 use PhpList\Core\Domain\Repository\Subscription\SubscriberRepository;
@@ -15,6 +16,7 @@ class SubscriberManagerTest extends TestCase
     public function testCreateSubscriberPersistsAndReturnsProperlyInitializedEntity(): void
     {
         $repoMock = $this->createMock(SubscriberRepository::class);
+        $emMock = $this->createMock(EntityManagerInterface::class);
         $repoMock
             ->expects($this->once())
             ->method('save')
@@ -26,7 +28,7 @@ class SubscriberManagerTest extends TestCase
                     && $sub->isDisabled() === false;
             }));
 
-        $manager = new SubscriberManager($repoMock);
+        $manager = new SubscriberManager($repoMock, $emMock);
 
         $dto = new CreateSubscriberRequest();
         $dto->email = 'foo@bar.com';

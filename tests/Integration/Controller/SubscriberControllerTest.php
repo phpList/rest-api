@@ -96,24 +96,6 @@ class SubscriberControllerTest extends AbstractTestController
     }
 
     /**
-     * @return array[][]
-     */
-    public static function invalidSubscriberDataProvider(): array
-    {
-        return [
-            'no data' => [[]],
-            'email is null' => [['email' => null]],
-            'email is an empty string' => [['email' => '']],
-            'email is invalid string' => [['email' => 'coffee and cigarettes']],
-            'email as boolean' => [['email' => true]],
-            'html_email as integer' => [['email' => 'kate@example.com', 'htmlEmail' => 1]],
-            'html_email as string' => [['email' => 'kate@example.com', 'htmlEmail' => 'yes']],
-            'request_confirmation as string' => [['email' => 'kate@example.com', 'requestConfirmation' => 'needed']],
-            'disabled as string' => [['email' => 'kate@example.com', 'requestConfirmation' => 1]],
-        ];
-    }
-
-    /**
      * @dataProvider invalidSubscriberDataProvider
      * @param array[] $jsonData
      */
@@ -122,6 +104,43 @@ class SubscriberControllerTest extends AbstractTestController
         $this->authenticatedJsonRequest('post', '/api/v2/subscribers', [], [], [], json_encode($jsonData));
 
         $this->assertHttpUnprocessableEntity();
+    }
+
+    /**
+     * @return array[][]
+     */
+    public static function invalidSubscriberDataProvider(): array
+    {
+        return [
+            'no data' => [[]],
+            'email is an empty string' => [['email' => '']],
+            'email is invalid string' => [['email' => 'coffee and cigarettes']],
+        ];
+    }
+
+    /**
+     * @dataProvider invalidDataProvider
+     * @param array[] $jsonData
+     */
+    public function testPostSubscribersWithInvalidJsonCreatesHttpBadRequestStatus(array $jsonData)
+    {
+        $this->authenticatedJsonRequest('post', '/api/v2/subscribers', [], [], [], json_encode($jsonData));
+
+        $this->assertHttpBadRequest();
+    }
+
+    /**
+     * @return array[][]
+     */
+    public static function invalidDataProvider(): array
+    {
+        return [
+            'email is null' => [['email' => null]],
+            'email as boolean' => [['email' => true]],
+            'html_email as integer' => [['email' => 'kate@example.com', 'htmlEmail' => 1]],
+            'html_email as string' => [['email' => 'kate@example.com', 'htmlEmail' => 'yes']],
+            'request_confirmation as string' => [['email' => 'kate@example.com', 'requestConfirmation' => 'needed']],
+        ];
     }
 
     public function testPostSubscribersWithValidSessionKeyAssignsProvidedSubscriberData()

@@ -9,6 +9,9 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class AdministratorTokenNormalizer implements NormalizerInterface
 {
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
     public function normalize($object, string $format = null, array $context = []): array
     {
         if (!$object instanceof AdministratorToken) {
@@ -18,7 +21,7 @@ class AdministratorTokenNormalizer implements NormalizerInterface
         return [
             'id' => $object->getId(),
             'key' => $object->getKey(),
-            'expiry' => $object->getExpiry()->format('Y-m-d\TH:i:sP'),
+            'expiry_date' => $object->getExpiry()->format('Y-m-d\TH:i:sP'),
         ];
     }
 
