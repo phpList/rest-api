@@ -14,3 +14,7 @@ services:
   PhpList\RestBundle\Serializer\SubscriberNormalizer:
     tags: [ 'serializer.normalizer' ]
     autowire: true
+
+  PhpList\RestBundle\Serializer\AdministratorTokenNormalizer:
+    tags: [ 'serializer.normalizer' ]
+    autowire: true

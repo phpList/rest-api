@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Controller;
 
+use PhpList\RestBundle\Entity\CreateSessionRequest;
+use PhpList\RestBundle\Serializer\AdministratorTokenNormalizer;
+use PhpList\RestBundle\Service\Manager\SessionManager;
+use PhpList\RestBundle\Validator\RequestValidator;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use PhpList\Core\Domain\Model\Identity\Administrator;
 use PhpList\Core\Domain\Model\Identity\AdministratorToken;
 use PhpList\Core\Domain\Repository\Identity\AdministratorRepository;
-use PhpList\Core\Domain\Repository\Identity\AdministratorTokenRepository;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Controller\Traits\AuthenticationTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 use OpenApi\Attributes as OA;
@@ -26,33 +26,30 @@ use OpenApi\Attributes as OA;
  * This controller provides methods to create and destroy REST API sessions.
  *
  * @author Oliver Klee <oliver@phplist.com>
+ * @author Tatevik Grigoryan <tatevik@phplist.com>
  */
+#[Route('/sessions')]
 class SessionController extends AbstractController
 {
     use AuthenticationTrait;
 
     private AdministratorRepository $administratorRepository;
-    private AdministratorTokenRepository $tokenRepository;
     private SerializerInterface $serializer;
+    private SessionManager $sessionManager;
 
     public function __construct(
         Authentication $authentication,
         AdministratorRepository $administratorRepository,
-        AdministratorTokenRepository $tokenRepository,
-        SerializerInterface $serializer
+        SerializerInterface $serializer,
+        SessionManager $sessionManager,
     ) {
         $this->authentication = $authentication;
         $this->administratorRepository = $administratorRepository;
-        $this->tokenRepository = $tokenRepository;
         $this->serializer = $serializer;
+        $this->sessionManager = $sessionManager;
     }
 
-    /**
-     * Creates a new session (if the provided credentials are valid).
-     *
-     * @throws UnauthorizedHttpException
-     */
-    #[Route('/sessions', name: 'create_session', methods: ['POST'])]
+    #[Route('', name: 'create_session', methods: ['POST'])]
     #[OA\Post(
         path: '/sessions',
         description: 'Given valid login data, this will generate a login token that will be valid for 1 hour.',
@@ -105,21 +102,18 @@ class SessionController extends AbstractController
             )
         ]
     )]
-    public function createSession(Request $request): JsonResponse
-    {
-        $this->validateCreateRequest($request);
-        $administrator = $this->administratorRepository->findOneByLoginCredentials(
-            $request->getPayload()->get('login_name'),
-            $request->getPayload()->get('password')
-        );
-        if ($administrator === null) {
-            throw new UnauthorizedHttpException('', 'Not authorized', null, 1500567098);
-        }
+    public function createSession(
+        Request $request,
+        RequestValidator $validator,
+        AdministratorTokenNormalizer $normalizer
+    ): JsonResponse {
+        /** @var CreateSessionRequest $createSessionRequest */
+        $createSessionRequest = $validator->validate($request, CreateSessionRequest::class);
+        $token = $this->sessionManager->createSession($createSessionRequest);
 
-        $token = $this->createAndPersistToken($administrator);
-        $json = $this->serializer->serialize($token, 'json');
+        $json = $normalizer->normalize($token, 'json');
 
-        return new JsonResponse($json, Response::HTTP_CREATED, [], true);
+        return new JsonResponse($json, Response::HTTP_CREATED, [], false);
     }
 
     /**
@@ -129,7 +123,7 @@ class SessionController extends AbstractController
      *
      * @throws AccessDeniedHttpException
      */
-    #[Route('/sessions/{sessionId}', name: 'delete_session', methods: ['DELETE'])]
+    #[Route('/{sessionId}', name: 'delete_session', methods: ['DELETE'])]
     #[OA\Delete(
         path: '/sessions/{sessionId}',
         description: 'Delete the session passed as a parameter.',
@@ -177,7 +171,7 @@ class SessionController extends AbstractController
             )
         ]
     )]
-    public function deleteAction(
+    public function deleteSession(
         Request $request,
         #[MapEntity(mapping: ['sessionId' => 'id'])] AdministratorToken $token
     ): JsonResponse {
@@ -186,43 +180,8 @@ class SessionController extends AbstractController
             throw new AccessDeniedHttpException('You do not have access to this session.', null, 1519831644);
         }
 
-        $this->tokenRepository->remove($token);
+        $this->sessionManager->deleteSession($token);
 
         return new JsonResponse(null, Response::HTTP_NO_CONTENT, [], false);
-    }
-
-    /**
-     * Validates the request. If is it not valid, throws an exception.
-     *
-     * @param Request $request
-     *
-     * @return void
-     *
-     * @throws BadRequestHttpException
-     */
-    private function validateCreateRequest(Request $request): void
-    {
-        if ($request->getContent() === '') {
-            throw new BadRequestHttpException('Empty JSON data', null, 1500559729);
-        }
-        if (empty($request->getPayload()->get('login_name')) || empty($request->getPayload()->get('password'))) {
-            throw new BadRequestHttpException('Incomplete credentials', null, 1500562647);
-        }
-    }
-
-    /**
-     * @param Administrator $administrator
-     *
-     * @return AdministratorToken
-     */
-    private function createAndPersistToken(Administrator $administrator): AdministratorToken
-    {
-        $token = new AdministratorToken();
-        $token->setAdministrator($administrator);
-        $token->generateExpiry();
-        $token->generateKey();
-        $this->tokenRepository->save($token);
-
-        return $token;
     }
 }
