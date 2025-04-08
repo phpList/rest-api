@@ -136,15 +136,7 @@ class SessionController extends AbstractController
             new OA\Response(
                 response: 403,
                 description: 'Failure',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(
-                            property: 'message',
-                            type: 'string',
-                            example: 'No valid session key was provided as basic auth password.'
-                        )
-                    ]
-                )
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
             ),
             new OA\Response(
                 response: 404,

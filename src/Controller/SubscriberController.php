@@ -76,15 +76,7 @@ class SubscriberController extends AbstractController
             new OA\Response(
                 response: 403,
                 description: 'Failure',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(
-                            property: 'message',
-                            type: 'string',
-                            example: 'No valid session key was provided as basic auth password.'
-                        )
-                    ]
-                )
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
             ),
             new OA\Response(
                 response: 409,
@@ -176,15 +168,7 @@ class SubscriberController extends AbstractController
             new OA\Response(
                 response: 403,
                 description: 'Failure',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(
-                            property: 'message',
-                            type: 'string',
-                            example: 'No valid session key was provided as basic auth password.'
-                        )
-                    ]
-                )
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
             ),
             new OA\Response(
                 response: 404,
@@ -192,7 +176,7 @@ class SubscriberController extends AbstractController
             )
         ]
     )]
-    public function update(
+    public function updateSubscriber(
         Request $request,
         #[MapEntity(mapping: ['subscriberId' => 'id'])] Subscriber $subscriber,
         SerializerInterface $serializer,
@@ -246,15 +230,7 @@ class SubscriberController extends AbstractController
             new OA\Response(
                 response: 403,
                 description: 'Failure',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(
-                            property: 'message',
-                            type: 'string',
-                            example: 'No valid session key was provided as basic auth password.'
-                        )
-                    ]
-                )
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
             ),
             new OA\Response(
                 response: 404,

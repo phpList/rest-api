@@ -26,6 +26,7 @@ use OpenApi\Attributes as OA;
  * @author Xheni Myrtaj <xheni@phplist.com>
  * @author Tatevik Grigoryan <tatevik@phplist.com>
  */
+#[Route('/lists')]
 class ListController extends AbstractController
 {
     use AuthenticationTrait;
@@ -46,7 +47,7 @@ class ListController extends AbstractController
         $this->serializer = $serializer;
     }
 
-    #[Route('/lists', name: 'get_lists', methods: ['GET'])]
+    #[Route('/', name: 'get_lists', methods: ['GET'])]
     #[OA\Get(
         path: '/lists',
         description: 'Returns a JSON list of all subscriber lists.',
@@ -96,16 +97,7 @@ class ListController extends AbstractController
             new OA\Response(
                 response: 403,
                 description: 'Failure',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(
-                            property: 'message',
-                            type: 'string',
-                            example: 'No valid session key was provided as basic auth password.'
-                        )
-                    ],
-                    type: 'object'
-                )
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
             )
         ]
     )]
@@ -120,7 +112,7 @@ class ListController extends AbstractController
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
-    #[Route('/lists/{listId}', name: 'get_list', methods: ['GET'])]
+    #[Route('/{listId}', name: 'get_list', methods: ['GET'])]
     #[OA\Get(
         path: '/lists/{listId}',
         description: 'Returns a single subscriber list with specified ID.',
@@ -163,16 +155,7 @@ class ListController extends AbstractController
             new OA\Response(
                 response: 403,
                 description: 'Failure',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(
-                            property: 'message',
-                            type: 'string',
-                            example: 'No valid session key was provided as basic auth password.'
-                        )
-                    ],
-                    type: 'object'
-                )
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
             ),
             new OA\Response(
                 response: 404,
@@ -202,7 +185,7 @@ class ListController extends AbstractController
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
-    #[Route('/lists/{listId}', name: 'delete_list', methods: ['DELETE'])]
+    #[Route('/{listId}', name: 'delete_list', methods: ['DELETE'])]
     #[OA\Delete(
         path: '/lists/{listId}',
         description: 'Deletes a single subscriber list.',
@@ -232,16 +215,7 @@ class ListController extends AbstractController
             new OA\Response(
                 response: 403,
                 description: 'Failure',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(
-                            property: 'message',
-                            type: 'string',
-                            example: 'No valid session key was provided.'
-                        )
-                    ],
-                    type: 'object'
-                )
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
             ),
             new OA\Response(
                 response: 404,
@@ -270,7 +244,7 @@ class ListController extends AbstractController
         return new JsonResponse(null, Response::HTTP_NO_CONTENT, [], false);
     }
 
-    #[Route('/lists/{listId}/subscribers', name: 'get_subscriber_from_list', methods: ['GET'])]
+    #[Route('/{listId}/subscribers', name: 'get_subscriber_from_list', methods: ['GET'])]
     #[OA\Get(
         path: '/lists/{listId}/subscribers',
         description: 'Returns a JSON list of all subscribers for a subscriber list.',
@@ -304,16 +278,7 @@ class ListController extends AbstractController
             new OA\Response(
                 response: 403,
                 description: 'Failure',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(
-                            property: 'message',
-                            type: 'string',
-                            example: 'No valid session key was provided as basic auth password.'
-                        )
-                    ],
-                    type: 'object'
-                )
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
             )
         ]
     )]
@@ -332,7 +297,7 @@ class ListController extends AbstractController
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
-    #[Route('/lists/{listId}/subscribers/count', name: 'get_subscribers_count_from_list', methods: ['GET'])]
+    #[Route('/{listId}/subscribers/count', name: 'get_subscribers_count_from_list', methods: ['GET'])]
     #[OA\Get(
         path: '/lists/{listId}/count',
         description: 'Returns a count of all subscribers in a given list.',
@@ -362,16 +327,7 @@ class ListController extends AbstractController
             new OA\Response(
                 response: 403,
                 description: 'Failure',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(
-                            property: 'message',
-                            type: 'string',
-                            example: 'No valid session key was provided as basic auth password.'
-                        )
-                    ],
-                    type: 'object'
-                )
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
             )
         ]
     )]
