@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace PhpList\RestBundle\Controller\Traits;
@@ -9,25 +10,19 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
- * This traits provides functionality for authenticating the REST API client.
+ * This trait provides functionality for authenticating the REST API client.
  *
  * Please note that this trait requires the class to set the authentication instance via DI.
  *
  * @author Oliver Klee <oliver@phplist.com>
+ * @author Tatevik Grigoryan <tatevik@phplist.com>
  */
 trait AuthenticationTrait
 {
-    /**
-     * @var Authentication
-     */
-    private $authentication = null;
+    private ?Authentication $authentication = null;
 
     /**
      * Checks for valid authentication in the given request and throws an exception if there is none.
-     *
-     * @param Request $request
-     *
-     * @return Administrator the authenticated administrator
      *
      * @throws AccessDeniedHttpException
      */

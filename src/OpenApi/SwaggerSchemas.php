@@ -58,6 +58,17 @@ use OpenApi\Attributes as OA;
     ],
     type: 'object'
 )]
+#[OA\Schema(
+    schema: 'ValidationErrorResponse',
+    properties: [
+        new OA\Property(
+            property: 'message',
+            type: 'string',
+            example: 'Some fields invalid: email, confirmed, html_email'
+        )
+    ],
+    type: 'object'
+)]
 class SwaggerSchemas
 {
 }

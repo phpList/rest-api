@@ -47,7 +47,7 @@ class ListController extends AbstractController
         $this->serializer = $serializer;
     }
 
-    #[Route('/', name: 'get_lists', methods: ['GET'])]
+    #[Route('', name: 'get_lists', methods: ['GET'])]
     #[OA\Get(
         path: '/lists',
         description: 'Returns a JSON list of all subscriber lists.',

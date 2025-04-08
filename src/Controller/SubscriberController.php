@@ -90,16 +90,8 @@ class SubscriberController extends AbstractController
             new OA\Response(
                 response: 422,
                 description: 'Failure',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(
-                            property: 'message',
-                            type: 'string',
-                            example: 'Some fields invalid: email, confirmed, html_email'
-                        )
-                    ]
-                )
-            )
+                content: new OA\JsonContent(ref: '#/components/schemas/ValidationErrorResponse')
+            ),
         ]
     )]
     public function createSubscriber(
@@ -169,6 +161,11 @@ class SubscriberController extends AbstractController
                 response: 403,
                 description: 'Failure',
                 content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
+            ),
+            new OA\Response(
+                response: 422,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/ValidationErrorResponse')
             ),
             new OA\Response(
                 response: 404,
