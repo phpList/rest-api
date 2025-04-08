@@ -251,4 +251,63 @@ class SubscriberController extends AbstractController
             false
         );
     }
+
+
+    #[Route('/{subscriberId}', name: 'delete_subscriber', requirements: ['subscriberId' => '\d+'], methods: ['DELETE'])]
+    #[OA\Delete(
+        path: '/subscribers/{subscriberId}',
+        description: 'Delete subscriber by id.',
+        summary: 'Delete subscriber',
+        requestBody: new OA\RequestBody(
+            description: 'Pass session credentials',
+            required: true,
+        ),
+        tags: ['subscribers'],
+        parameters: [
+            new OA\Parameter(
+                name: 'session',
+                description: 'Session ID obtained from authentication',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                name: 'subscriberId',
+                description: 'Subscriber ID',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 204,
+                description: 'Success',
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Not Found',
+            )
+        ]
+    )]
+    public function deleteSubscriber(
+        Request $request,
+        #[MapEntity(mapping: ['subscriberId' => 'id'])] Subscriber $subscriber,
+    ): JsonResponse {
+        $this->requireAuthentication($request);
+
+        $this->subscriberManager->deleteSubscriber($subscriber);
+
+        return new JsonResponse(
+            null,
+            Response::HTTP_NO_CONTENT,
+            [],
+            false
+        );
+    }
 }

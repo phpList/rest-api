@@ -64,4 +64,9 @@ class SubscriberManager
 
         return $subscriber;
     }
+
+    public function deleteSubscriber(Subscriber $subscriber): void
+    {
+        $this->subscriberRepository->remove($subscriber);
+    }
 }
