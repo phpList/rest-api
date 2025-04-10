@@ -7,7 +7,7 @@ namespace PhpList\RestBundle\Tests\Integration\Controller\Fixtures;
 use DateTime;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
-use PhpList\Core\Domain\Model\Messaging\SubscriberList;
+use PhpList\Core\Domain\Model\Subscription\SubscriberList;
 use PhpList\Core\Domain\Model\Subscription\Subscriber;
 use PhpList\Core\Domain\Model\Subscription\Subscription;
 use PhpList\Core\TestingSupport\Traits\ModelTestTrait;

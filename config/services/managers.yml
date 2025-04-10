@@ -11,3 +11,7 @@ services:
   PhpList\RestBundle\Service\Manager\SessionManager:
     autowire: true
     autoconfigure: true
+
+  PhpList\RestBundle\Service\Manager\SubscriberListManager:
+    autowire: true
+    autoconfigure: true

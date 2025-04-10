@@ -18,3 +18,7 @@ services:
   PhpList\RestBundle\Serializer\AdministratorTokenNormalizer:
     tags: [ 'serializer.normalizer' ]
     autowire: true
+
+  PhpList\RestBundle\Serializer\SubscriberListNormalizer:
+    tags: [ 'serializer.normalizer' ]
+    autowire: true

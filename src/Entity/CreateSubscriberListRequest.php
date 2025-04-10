@@ -1,0 +1,27 @@
+<?php
+
+declare(strict_types=1);
+
+namespace PhpList\RestBundle\Entity;
+
+use Symfony\Component\Validator\Constraints as Assert;
+
+class CreateSubscriberListRequest implements RequestInterface
+{
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
+    public string $name;
+
+    #[Assert\NotBlank]
+    public bool $public;
+
+    #[Assert\NotBlank]
+    public int $listPosition;
+
+    #[Assert\NotBlank]
+    public int $owner;
+
+    #[Assert\NotBlank]
+    #[Assert\NotNull]
+    public string $description;
+}

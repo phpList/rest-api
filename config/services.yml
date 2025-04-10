@@ -21,7 +21,3 @@ services:
     PhpList\Core\Security\Authentication:
         autowire: true
         autoconfigure: true
-
-    PhpList\Core\Domain\Repository\Messaging\SubscriberListRepository:
-        autowire: true
-        autoconfigure: true

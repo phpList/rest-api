@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Controller;
 
-use PhpList\Core\Domain\Model\Messaging\SubscriberList;
+use PhpList\Core\Domain\Model\Subscription\SubscriberList;
 use PhpList\Core\Domain\Repository\Subscription\SubscriberRepository;
+use PhpList\RestBundle\Entity\CreateSubscriberListRequest;
+use PhpList\RestBundle\Serializer\SubscriberListNormalizer;
+use PhpList\RestBundle\Service\Manager\SubscriberListManager;
+use PhpList\RestBundle\Validator\RequestValidator;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use PhpList\Core\Domain\Repository\Messaging\SubscriberListRepository;
+use PhpList\Core\Domain\Repository\Subscription\SubscriberListRepository;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Controller\Traits\AuthenticationTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -34,17 +38,21 @@ class ListController extends AbstractController
     private SubscriberListRepository $subscriberListRepository;
     private SubscriberRepository $subscriberRepository;
     private SerializerInterface $serializer;
+    private SubscriberListManager $subscriberListManager;
+    private RequestValidator $validator;
 
     public function __construct(
         Authentication $authentication,
         SubscriberListRepository $repository,
         SubscriberRepository $subscriberRepository,
-        SerializerInterface $serializer
+        SerializerInterface $serializer,
+        RequestValidator $validator
     ) {
         $this->authentication = $authentication;
         $this->subscriberListRepository = $repository;
         $this->subscriberRepository = $subscriberRepository;
         $this->serializer = $serializer;
+        $this->validator = $validator;
     }
 
     #[Route('', name: 'get_lists', methods: ['GET'])]
@@ -339,5 +347,72 @@ class ListController extends AbstractController
         $json = $this->serializer->serialize(count($list->getSubscribers()), 'json');
 
         return new JsonResponse($json, Response::HTTP_OK, [], true);
+    }
+
+    #[Route('', name: 'create_list', methods: ['POST'])]
+    #[OA\Post(
+        path: '/lists',
+        description: 'Returns created list.',
+        summary: 'Create a subscriber list.',
+        requestBody: new OA\RequestBody(
+            description: 'Pass parameters to create a new subscriber list.',
+            required: true,
+            content: new OA\JsonContent(
+                required: ['name'],
+                properties: [
+                    new OA\Property(property: 'name', type: 'string', format: 'string', example: 'News'),
+                    new OA\Property(property: 'description', type: 'string', example: 'News (and some fun stuff)'),
+                    new OA\Property(property: 'list_position', type: 'number', example: 12),
+                    new OA\Property(property: 'public', type: 'boolean', example: true),
+                    new OA\Property(property: 'owner', type: 'number', example: 12),
+                ]
+            )
+        ),
+        tags: ['lists'],
+        parameters: [
+            new OA\Parameter(
+                name: 'session',
+                description: 'Session ID obtained from authentication',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(
+                    type: 'string'
+                )
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: 'Success',
+                content: new OA\JsonContent(
+                    type: 'object',
+                    example: [
+                        'name' => 'News',
+                        'description' => 'News (and some fun stuff)',
+                        'creation_date' => '2016-06-22T15:01:17+00:00',
+                        'list_position' => 12,
+                        'subject_prefix' => 'phpList',
+                        'public' => true,
+                        'category' => 'news',
+                        'id' => 1
+                    ]
+                )
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
+            )
+        ]
+    )]
+    public function createList(Request $request, SubscriberListNormalizer $normalizer): JsonResponse
+    {
+        $this->requireAuthentication($request);
+
+        /** @var CreateSubscriberListRequest $subscriberListRequest */
+        $subscriberListRequest = $this->validator->validate($request, CreateSubscriberListRequest::class);
+        $data = $this->subscriberListManager->createSubscriberList($subscriberListRequest);
+
+        return new JsonResponse($normalizer->normalize($data), Response::HTTP_CREATED, [], true);
     }
 }
