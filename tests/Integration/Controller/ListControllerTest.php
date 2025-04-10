@@ -63,34 +63,34 @@ class ListControllerTest extends AbstractTestController
         $this->assertJsonResponseContentEquals(
             [
                 [
+                    'id' => 1,
                     'name' => 'News',
-                    'description' => 'News (and some fun stuff)',
                     'creation_date' => '2016-06-22T15:01:17+00:00',
+                    'description' => 'News (and some fun stuff)',
                     'list_position' => 12,
                     'subject_prefix' => 'phpList',
                     'public' => true,
                     'category' => 'news',
-                    'id' => 1,
                 ],
                 [
-                    'name' => 'More news',
-                    'description' => '',
-                    'creation_date' => '2016-06-22T15:01:17+00:00',
-                    'list_position' => 12,
-                    'subject_prefix' => '',
-                    'public' => true,
-                    'category' => '',
                     'id' => 2,
-                ],
-                [
-                    'name' => 'Tech news',
+                    'name' => 'More news',
+                    'creation_date' => '2016-06-22T15:01:17+00:00',
                     'description' => '',
-                    'creation_date' => '2019-02-11T15:01:15+00:00',
                     'list_position' => 12,
                     'subject_prefix' => '',
                     'public' => true,
                     'category' => '',
+                ],
+                [
                     'id' => 3,
+                    'name' => 'Tech news',
+                    'creation_date' => '2019-02-11T15:01:15+00:00',
+                    'description' => '',
+                    'list_position' => 12,
+                    'subject_prefix' => '',
+                    'public' => true,
+                    'category' => '',
                 ],
             ]
         );
@@ -129,14 +129,14 @@ class ListControllerTest extends AbstractTestController
 
         $this->assertJsonResponseContentEquals(
             [
+                'id' => 1,
                 'name' => 'News',
-                'description' => 'News (and some fun stuff)',
                 'creation_date' => '2016-06-22T15:01:17+00:00',
+                'description' => 'News (and some fun stuff)',
                 'list_position' => 12,
                 'subject_prefix' => 'phpList',
                 'public' => true,
                 'category' => 'news',
-                'id' => 1,
             ]
         );
     }
