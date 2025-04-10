@@ -46,13 +46,15 @@ class ListController extends AbstractController
         SubscriberListRepository $repository,
         SubscriberRepository $subscriberRepository,
         SerializerInterface $serializer,
-        RequestValidator $validator
+        RequestValidator $validator,
+        SubscriberListManager $subscriberListManager
     ) {
         $this->authentication = $authentication;
         $this->subscriberListRepository = $repository;
         $this->subscriberRepository = $subscriberRepository;
         $this->serializer = $serializer;
         $this->validator = $validator;
+        $this->subscriberListManager = $subscriberListManager;
     }
 
     #[Route('', name: 'get_lists', methods: ['GET'])]
