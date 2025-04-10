@@ -114,7 +114,7 @@ class SubscriberController extends AbstractController
     }
 
     #[Route('/{subscriberId}', name: 'update_subscriber', requirements: ['subscriberId' => '\d+'], methods: ['PUT'])]
-    #[OA\Get(
+    #[OA\Put(
         path: '/subscribers/{subscriberId}',
         description: 'Update subscriber data by id.',
         summary: 'Update subscriber',
@@ -125,7 +125,6 @@ class SubscriberController extends AbstractController
                 required: ['email'],
                 properties: [
                     new OA\Property(property: 'email', type: 'string', format: 'string', example: 'admin@example.com'),
-                    new OA\Property(property: 'html_email', type: 'boolean', example: false),
                     new OA\Property(property: 'confirmed', type: 'boolean', example: false),
                     new OA\Property(property: 'blacklisted', type: 'boolean', example: false),
                     new OA\Property(property: 'html_email', type: 'boolean', example: false),
@@ -249,16 +248,11 @@ class SubscriberController extends AbstractController
         );
     }
 
-
     #[Route('/{subscriberId}', name: 'delete_subscriber', requirements: ['subscriberId' => '\d+'], methods: ['DELETE'])]
     #[OA\Delete(
         path: '/subscribers/{subscriberId}',
         description: 'Delete subscriber by id.',
         summary: 'Delete subscriber',
-        requestBody: new OA\RequestBody(
-            description: 'Pass session credentials',
-            required: true,
-        ),
         tags: ['subscribers'],
         parameters: [
             new OA\Parameter(

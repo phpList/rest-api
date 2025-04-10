@@ -29,12 +29,6 @@
         "forum": "https://discuss.phplist.org/",
         "source": "https://github.com/phpList/rest-api"
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/phpList/core"
-        }
-    ],
     "require": {
         "php": "^8.1",
         "phplist/core": "dev-ISSUE-345",
