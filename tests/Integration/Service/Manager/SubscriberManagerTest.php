@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Tests\Integration\Service\Manager;
 
 use Doctrine\ORM\EntityManagerInterface;
-use PHPUnit\Framework\TestCase;
-use PhpList\RestBundle\Service\Manager\SubscriberManager;
-use PhpList\Core\Domain\Repository\Subscription\SubscriberRepository;
-use PhpList\RestBundle\Entity\CreateSubscriberRequest;
 use PhpList\Core\Domain\Model\Subscription\Subscriber;
+use PhpList\Core\Domain\Repository\Subscription\SubscriberRepository;
+use PhpList\RestBundle\Entity\Request\CreateSubscriberRequest;
+use PhpList\RestBundle\Service\Manager\SubscriberManager;
+use PHPUnit\Framework\TestCase;
 
 class SubscriberManagerTest extends TestCase
 {

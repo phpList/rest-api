@@ -7,7 +7,7 @@ namespace PhpList\RestBundle\Service\Manager;
 use PhpList\Core\Domain\Model\Identity\AdministratorToken;
 use PhpList\Core\Domain\Repository\Identity\AdministratorRepository;
 use PhpList\Core\Domain\Repository\Identity\AdministratorTokenRepository;
-use PhpList\RestBundle\Entity\CreateSessionRequest;
+use PhpList\RestBundle\Entity\Request\CreateSessionRequest;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
 class SessionManager

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace PhpList\RestBundle\Entity;
+namespace PhpList\RestBundle\Entity\Request;
 
 use Symfony\Component\Validator\Constraints as Assert;
 

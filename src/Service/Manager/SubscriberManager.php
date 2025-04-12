@@ -7,8 +7,8 @@ namespace PhpList\RestBundle\Service\Manager;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpList\Core\Domain\Model\Subscription\Subscriber;
 use PhpList\Core\Domain\Repository\Subscription\SubscriberRepository;
-use PhpList\RestBundle\Entity\CreateSubscriberRequest;
-use PhpList\RestBundle\Entity\UpdateSubscriberRequest;
+use PhpList\RestBundle\Entity\Request\CreateSubscriberRequest;
+use PhpList\RestBundle\Entity\Request\UpdateSubscriberRequest;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class SubscriberManager

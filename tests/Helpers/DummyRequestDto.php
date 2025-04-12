@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Helpers;
 
-use PhpList\RestBundle\Entity\RequestInterface;
+use PhpList\RestBundle\Entity\Request\RequestInterface;
 
 class DummyRequestDto implements RequestInterface
 {

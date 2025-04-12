@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Integration\Validator;
 
-use PhpList\RestBundle\Entity\RequestInterface;
+use PhpList\RestBundle\Entity\Request\RequestInterface;
 use PhpList\RestBundle\Tests\Helpers\DummyRequestDto;
 use PhpList\RestBundle\Validator\RequestValidator;
 use PHPUnit\Framework\MockObject\MockObject;

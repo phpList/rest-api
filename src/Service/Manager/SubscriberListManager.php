@@ -8,7 +8,7 @@ use PhpList\Core\Domain\Model\Subscription\Subscriber;
 use PhpList\Core\Domain\Model\Subscription\SubscriberList;
 use PhpList\Core\Domain\Repository\Subscription\SubscriberListRepository;
 use PhpList\Core\Domain\Repository\Subscription\SubscriberRepository;
-use PhpList\RestBundle\Entity\CreateSubscriberListRequest;
+use PhpList\RestBundle\Entity\Request\CreateSubscriberListRequest;
 
 class SubscriberListManager
 {

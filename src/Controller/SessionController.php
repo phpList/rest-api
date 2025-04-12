@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Controller;
 
-use PhpList\RestBundle\Entity\CreateSessionRequest;
+use OpenApi\Attributes as OA;
+use PhpList\Core\Domain\Model\Identity\AdministratorToken;
+use PhpList\Core\Security\Authentication;
+use PhpList\RestBundle\Controller\Traits\AuthenticationTrait;
+use PhpList\RestBundle\Entity\Request\CreateSessionRequest;
 use PhpList\RestBundle\Serializer\AdministratorTokenNormalizer;
 use PhpList\RestBundle\Service\Manager\SessionManager;
 use PhpList\RestBundle\Validator\RequestValidator;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use PhpList\Core\Domain\Model\Identity\AdministratorToken;
-use PhpList\Core\Security\Authentication;
-use PhpList\RestBundle\Controller\Traits\AuthenticationTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Routing\Attribute\Route;
-use OpenApi\Attributes as OA;
 
 /**
  * This controller provides methods to create and destroy REST API sessions.
