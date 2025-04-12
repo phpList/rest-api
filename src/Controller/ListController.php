@@ -5,22 +5,19 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Controller;
 
 use PhpList\Core\Domain\Model\Subscription\SubscriberList;
-use PhpList\Core\Domain\Repository\Subscription\SubscriberRepository;
 use PhpList\RestBundle\Entity\CreateSubscriberListRequest;
 use PhpList\RestBundle\Serializer\SubscriberListNormalizer;
+use PhpList\RestBundle\Serializer\SubscriberNormalizer;
 use PhpList\RestBundle\Service\Manager\SubscriberListManager;
 use PhpList\RestBundle\Validator\RequestValidator;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use PhpList\Core\Domain\Repository\Subscription\SubscriberListRepository;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Controller\Traits\AuthenticationTrait;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
-use Symfony\Component\Serializer\SerializerInterface;
 use OpenApi\Attributes as OA;
 
 /**
@@ -35,24 +32,18 @@ class ListController extends AbstractController
 {
     use AuthenticationTrait;
 
-    private SubscriberListRepository $subscriberListRepository;
-    private SubscriberRepository $subscriberRepository;
-    private SerializerInterface $serializer;
+    private SubscriberListNormalizer $normalizer;
     private SubscriberListManager $subscriberListManager;
     private RequestValidator $validator;
 
     public function __construct(
         Authentication $authentication,
-        SubscriberListRepository $repository,
-        SubscriberRepository $subscriberRepository,
-        SerializerInterface $serializer,
+        SubscriberListNormalizer $normalizer,
         RequestValidator $validator,
         SubscriberListManager $subscriberListManager
     ) {
         $this->authentication = $authentication;
-        $this->subscriberListRepository = $repository;
-        $this->subscriberRepository = $subscriberRepository;
-        $this->serializer = $serializer;
+        $this->normalizer = $normalizer;
         $this->validator = $validator;
         $this->subscriberListManager = $subscriberListManager;
     }
@@ -114,12 +105,13 @@ class ListController extends AbstractController
     public function getLists(Request $request): JsonResponse
     {
         $this->requireAuthentication($request);
-        $data = $this->subscriberListRepository->findAll();
-        $json = $this->serializer->serialize($data, 'json', [
-            AbstractNormalizer::GROUPS => 'SubscriberList',
-        ]);
+        $data = $this->subscriberListManager->getAll();
 
-        return new JsonResponse($json, Response::HTTP_OK, [], true);
+        $normalized = array_map(function ($item) {
+            return $this->normalizer->normalize($item);
+        }, $data);
+
+        return new JsonResponse($normalized, Response::HTTP_OK);
     }
 
     #[Route('/{listId}', name: 'get_list', methods: ['GET'])]
@@ -188,11 +180,8 @@ class ListController extends AbstractController
         #[MapEntity(mapping: ['listId' => 'id'])] SubscriberList $list
     ): JsonResponse {
         $this->requireAuthentication($request);
-        $json = $this->serializer->serialize($list, 'json', [
-            AbstractNormalizer::GROUPS => 'SubscriberList',
-        ]);
 
-        return new JsonResponse($json, Response::HTTP_OK, [], true);
+        return new JsonResponse($this->normalizer->normalize($list), Response::HTTP_OK);
     }
 
     #[Route('/{listId}', name: 'delete_list', methods: ['DELETE'])]
@@ -249,9 +238,9 @@ class ListController extends AbstractController
     ): JsonResponse {
         $this->requireAuthentication($request);
 
-        $this->subscriberListRepository->remove($list);
+        $this->subscriberListManager->delete($list);
 
-        return new JsonResponse(null, Response::HTTP_NO_CONTENT, [], false);
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 
     #[Route('/{listId}/subscribers', name: 'get_subscriber_from_list', methods: ['GET'])]
@@ -294,17 +283,17 @@ class ListController extends AbstractController
     )]
     public function getListMembers(
         Request $request,
-        #[MapEntity(mapping: ['listId' => 'id'])] SubscriberList $list
+        #[MapEntity(mapping: ['listId' => 'id'])] SubscriberList $list,
+        SubscriberNormalizer $normalizer
     ): JsonResponse {
         $this->requireAuthentication($request);
 
-        $subscribers = $this->subscriberRepository->getSubscribersBySubscribedListId($list->getId());
+        $subscribers = $this->subscriberListManager->getSubscriberListMembers($list);
+        $normalized = array_map(function ($item) use ($normalizer) {
+            return $normalizer->normalize($item);
+        }, $subscribers);
 
-        $json = $this->serializer->serialize($subscribers, 'json', [
-            AbstractNormalizer::GROUPS => 'SubscriberListMembers',
-        ]);
-
-        return new JsonResponse($json, Response::HTTP_OK, [], true);
+        return new JsonResponse($normalized, Response::HTTP_OK);
     }
 
     #[Route('/{listId}/subscribers/count', name: 'get_subscribers_count_from_list', methods: ['GET'])]
@@ -332,7 +321,17 @@ class ListController extends AbstractController
         responses: [
             new OA\Response(
                 response: 200,
-                description: 'Success'
+                description: 'Success',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: 'subscribers_count',
+                            type: 'integer',
+                            example: 42
+                        )
+                    ],
+                    type: 'object'
+                )
             ),
             new OA\Response(
                 response: 403,
@@ -346,9 +345,11 @@ class ListController extends AbstractController
         #[MapEntity(mapping: ['listId' => 'id'])] SubscriberList $list
     ): JsonResponse {
         $this->requireAuthentication($request);
-        $json = $this->serializer->serialize(count($list->getSubscribers()), 'json');
 
-        return new JsonResponse($json, Response::HTTP_OK, [], true);
+        return new JsonResponse(
+            ['subscribers_count' => count($list->getSubscribers())],
+            Response::HTTP_OK,
+        );
     }
 
     #[Route('', name: 'create_list', methods: ['POST'])]

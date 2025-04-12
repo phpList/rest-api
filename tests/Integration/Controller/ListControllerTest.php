@@ -329,9 +329,9 @@ class ListControllerTest extends AbstractTestController
         $this->loadFixtures([SubscriberListFixture::class, SubscriberFixture::class, SubscriptionFixture::class]);
 
         $this->authenticatedJsonRequest('get', '/api/v2/lists/3/subscribers/count');
-        $responseContent = $this->getResponseContentAsInt();
+        $responseData = $this->getDecodedJsonResponseContent();
 
-        self::assertSame(0, $responseContent);
+        self::assertSame(0, $responseData['subscribers_count']);
     }
 
     public function testGetSubscribersCountForListWithValidSession()
@@ -339,8 +339,8 @@ class ListControllerTest extends AbstractTestController
         $this->loadFixtures([SubscriberListFixture::class, SubscriberFixture::class, SubscriptionFixture::class]);
 
         $this->authenticatedJsonRequest('get', '/api/v2/lists/2/subscribers/count');
-        $responseContent = $this->getResponseContentAsInt();
+        $responseData = $this->getDecodedJsonResponseContent();
 
-        self::assertSame(2, $responseContent);
+        self::assertSame(2, $responseData['subscribers_count']);
     }
 }
