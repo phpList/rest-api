@@ -7,3 +7,13 @@ services:
     autowire: true
     autoconfigure: true
     tags: [ 'validator.constraint_validator' ]
+
+  PhpList\RestBundle\Validator\EmailExistsValidator:
+    autowire: true
+    autoconfigure: true
+    tags: [ 'validator.constraint_validator' ]
+
+  PhpList\RestBundle\Validator\ListExistsValidator:
+    autowire: true
+    autoconfigure: true
+    tags: [ 'validator.constraint_validator' ]

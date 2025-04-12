@@ -47,28 +47,6 @@ use OpenApi\Attributes as OA;
     ],
     type: 'object'
 )]
-#[OA\Schema(
-    schema: 'UnauthorizedResponse',
-    properties: [
-        new OA\Property(
-            property: 'message',
-            type: 'string',
-            example: 'No valid session key was provided as basic auth password.'
-        )
-    ],
-    type: 'object'
-)]
-#[OA\Schema(
-    schema: 'ValidationErrorResponse',
-    properties: [
-        new OA\Property(
-            property: 'message',
-            type: 'string',
-            example: 'Some fields invalid: email, confirmed, html_email'
-        )
-    ],
-    type: 'object'
-)]
-class SwaggerSchemas
+class SwaggerSchemasEntity
 {
 }

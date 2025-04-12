@@ -71,15 +71,7 @@ class SessionController extends AbstractController
             new OA\Response(
                 response: 400,
                 description: 'Failure',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(
-                            property: 'message',
-                            type: 'string',
-                            example: 'Empty json, invalid data and or incomplete data'
-                        )
-                    ]
-                )
+                content: new OA\JsonContent(ref: '#/components/schemas/BadRequestResponse')
             ),
             new OA\Response(
                 response: 401,
@@ -103,7 +95,7 @@ class SessionController extends AbstractController
 
         $json = $normalizer->normalize($token, 'json');
 
-        return new JsonResponse($json, Response::HTTP_CREATED, [], false);
+        return new JsonResponse($json, Response::HTTP_CREATED);
     }
 
     /**
@@ -164,6 +156,6 @@ class SessionController extends AbstractController
 
         $this->sessionManager->deleteSession($token);
 
-        return new JsonResponse(null, Response::HTTP_NO_CONTENT, [], false);
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 }

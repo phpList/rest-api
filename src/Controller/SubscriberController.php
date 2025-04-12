@@ -81,11 +81,7 @@ class SubscriberController extends AbstractController
             new OA\Response(
                 response: 409,
                 description: 'Failure',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: 'message', type: 'string', example: 'This resource already exists.')
-                    ]
-                )
+                content: new OA\JsonContent(ref: '#/components/schemas/AlreadyExistsResponse')
             ),
             new OA\Response(
                 response: 422,
@@ -187,12 +183,7 @@ class SubscriberController extends AbstractController
         $validator->validateDto($dto);
         $subscriber = $this->subscriberManager->updateSubscriber($dto);
 
-        return new JsonResponse(
-            $subscriberNormalizer->normalize($subscriber, 'json'),
-            Response::HTTP_OK,
-            [],
-            false
-        );
+        return new JsonResponse($subscriberNormalizer->normalize($subscriber, 'json'), Response::HTTP_OK);
     }
 
     #[Route('/{subscriberId}', name: 'get_subscriber_by_id', methods: ['GET'])]
@@ -240,12 +231,7 @@ class SubscriberController extends AbstractController
 
         $subscriber = $this->subscriberManager->getSubscriber($subscriberId);
 
-        return new JsonResponse(
-            $serializer->normalize($subscriber, 'json'),
-            Response::HTTP_OK,
-            [],
-            false
-        );
+        return new JsonResponse($serializer->normalize($subscriber), Response::HTTP_OK);
     }
 
     #[Route('/{subscriberId}', name: 'delete_subscriber', requirements: ['subscriberId' => '\d+'], methods: ['DELETE'])]
@@ -294,11 +280,6 @@ class SubscriberController extends AbstractController
 
         $this->subscriberManager->deleteSubscriber($subscriber);
 
-        return new JsonResponse(
-            null,
-            Response::HTTP_NO_CONTENT,
-            [],
-            false
-        );
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 }

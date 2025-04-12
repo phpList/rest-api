@@ -2,7 +2,6 @@ services:
   _defaults:
     autowire: true
     autoconfigure: true
-    public: false
 
   Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter: ~
 
@@ -20,5 +19,9 @@ services:
     autowire: true
 
   PhpList\RestBundle\Serializer\SubscriberListNormalizer:
+    tags: [ 'serializer.normalizer' ]
+    autowire: true
+
+  PhpList\RestBundle\Serializer\SubscriptionNormalizer:
     tags: [ 'serializer.normalizer' ]
     autowire: true
