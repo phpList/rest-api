@@ -7,7 +7,8 @@ namespace PhpList\RestBundle\Controller;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Controller\Traits\AuthenticationTrait;
-use PhpList\RestBundle\Entity\Request\CreateSubscriptionRequest;
+use PhpList\RestBundle\Entity\Request\SubscriptionRequest;
+use PhpList\RestBundle\Entity\Request\DeleteSubscriptionRequest;
 use PhpList\RestBundle\Serializer\SubscriptionNormalizer;
 use PhpList\RestBundle\Service\Manager\SubscriptionManager;
 use PhpList\RestBundle\Validator\RequestValidator;
@@ -98,13 +99,68 @@ class SubscriptionController extends AbstractController
     {
         $this->requireAuthentication($request);
 
-        /** @var CreateSubscriptionRequest $subscriptionRequest */
-        $subscriptionRequest = $this->validator->validate($request, CreateSubscriptionRequest::class);
+        /** @var SubscriptionRequest $subscriptionRequest */
+        $subscriptionRequest = $this->validator->validate($request, SubscriptionRequest::class);
         $subscription = $this->subscriptionManager->createSubscription(
             $subscriptionRequest->email,
             $subscriptionRequest->listId
         );
 
         return new JsonResponse($serializer->normalize($subscription, 'json'), Response::HTTP_CREATED);
+    }
+
+    #[Route('', name: 'delete_subscription', methods: ['DELETE'])]
+    #[OA\Delete(
+        path: '/subscriptions',
+        description: 'Delete subscription.',
+        summary: 'Delete subscription',
+        requestBody: new OA\RequestBody(
+            description: 'Pass session credentials',
+            required: true,
+            content: new OA\JsonContent(
+                required: ['email', 'list_id'],
+                properties: [
+                    new OA\Property(property: 'email', type: 'string', example: 'test@example.com'),
+                    new OA\Property(property: 'list_id', type: 'integer', example: 2),
+                ]
+            )
+        ),
+        tags: ['subscriptions'],
+        parameters: [
+            new OA\Parameter(
+                name: 'session',
+                description: 'Session ID obtained from authentication',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: 204,
+                description: 'Success',
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Not Found',
+            )
+        ]
+    )]
+    public function deleteSubscriber(
+        Request $request,
+    ): JsonResponse {
+        $this->requireAuthentication($request);
+
+        /** @var SubscriptionRequest $subscriptionRequest */
+        $subscriptionRequest = $this->validator->validate($request, SubscriptionRequest::class);
+
+        $this->subscriptionManager->deleteSubscription($subscriptionRequest->email, $subscriptionRequest->listId);
+
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 }

@@ -7,7 +7,7 @@ namespace PhpList\RestBundle\Entity\Request;
 use PhpList\RestBundle\Validator as CustomAssert;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class CreateSubscriptionRequest implements RequestInterface
+class SubscriptionRequest implements RequestInterface
 {
     #[Assert\NotBlank]
     #[Assert\Email]

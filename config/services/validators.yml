@@ -2,6 +2,7 @@ services:
   PhpList\RestBundle\Validator\RequestValidator:
     autowire: true
     autoconfigure: true
+    public: false
 
   PhpList\RestBundle\Validator\UniqueEmailValidator:
     autowire: true
