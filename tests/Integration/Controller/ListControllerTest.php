@@ -254,6 +254,7 @@ class ListControllerTest extends AbstractTestController
                             'description' => '',
                             'creation_date' => '2016-06-22T15:01:17+00:00',
                             'public' => true,
+                            'subscription_date' => '2016-07-22T15:01:17+00:00',
                         ],
                     ],
                 ], [
@@ -273,6 +274,7 @@ class ListControllerTest extends AbstractTestController
                             'description' => '',
                             'creation_date' => '2016-06-22T15:01:17+00:00',
                             'public' => true,
+                            'subscription_date' => '2016-08-22T15:01:17+00:00',
                         ],
                         [
                             'id' => 1,
@@ -280,6 +282,7 @@ class ListControllerTest extends AbstractTestController
                             'description' => 'News (and some fun stuff)',
                             'creation_date' => '2016-06-22T15:01:17+00:00',
                             'public' => true,
+                            'subscription_date' => '2016-09-22T15:01:17+00:00',
                         ],
                     ],
                 ],
