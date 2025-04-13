@@ -18,6 +18,12 @@ use OpenApi\Attributes as OA;
             format: 'date-time',
             example: '2022-12-01T10:00:00Z'
         ),
+        new OA\Property(
+            property: 'subscription_date',
+            type: 'string',
+            format: 'date-time',
+            example: '2022-12-01T10:00:00Z'
+        ),
         new OA\Property(property: 'public', type: 'boolean', example: true),
     ],
     type: 'object'

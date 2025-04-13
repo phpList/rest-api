@@ -36,6 +36,7 @@ class SubscriberNormalizer implements NormalizerInterface
                     'description' => $subscription->getSubscriberList()->getDescription(),
                     'creation_date' => $subscription->getSubscriberList()->getCreationDate()->format('Y-m-d\TH:i:sP'),
                     'public' => $subscription->getSubscriberList()->isPublic(),
+                    'subscription_date' => $subscription->getCreationDate()->format('Y-m-d\TH:i:sP'),
                 ];
             }, $object->getSubscriptions()->toArray()),
         ];
