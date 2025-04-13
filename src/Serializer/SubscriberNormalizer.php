@@ -29,7 +29,7 @@ class SubscriberNormalizer implements NormalizerInterface
             'unique_id' => $object->getUniqueId(),
             'html_email' => $object->hasHtmlEmail(),
             'disabled' => $object->isDisabled(),
-            'subscribedLists' => array_map(function (Subscription $subscription) {
+            'subscribed_lists' => array_map(function (Subscription $subscription) {
                 return [
                     'id' => $subscription->getSubscriberList()->getId(),
                     'name' => $subscription->getSubscriberList()->getName(),

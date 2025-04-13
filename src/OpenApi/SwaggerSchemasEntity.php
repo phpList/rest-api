@@ -46,9 +46,23 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'html_email', type: 'boolean', example: true),
         new OA\Property(property: 'disabled', type: 'boolean', example: false),
         new OA\Property(
-            property: 'subscribedLists',
+            property: 'subscribed_lists',
             type: 'array',
             items: new OA\Items(ref: '#/components/schemas/SubscriberList')
+        ),
+    ],
+    type: 'object'
+)]
+#[OA\Schema(
+    schema: 'Subscription',
+    properties: [
+        new OA\Property(property: 'subscriber', ref: '#/components/schemas/Subscriber'),
+        new OA\Property(property: 'subscriber_list', ref: '#/components/schemas/SubscriberList'),
+        new OA\Property(
+            property: 'subscription_date',
+            type: 'string',
+            format: 'date-time',
+            example: '2023-01-01T12:00:00Z',
         ),
     ],
     type: 'object'

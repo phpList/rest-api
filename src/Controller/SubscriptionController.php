@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Controller;
 
 use OpenApi\Attributes as OA;
+use PhpList\Core\Domain\Model\Subscription\SubscriberList;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Controller\Traits\AuthenticationTrait;
 use PhpList\RestBundle\Entity\Request\SubscriptionRequest;
-use PhpList\RestBundle\Entity\Request\DeleteSubscriptionRequest;
+use PhpList\RestBundle\Serializer\SubscriberNormalizer;
 use PhpList\RestBundle\Serializer\SubscriptionNormalizer;
 use PhpList\RestBundle\Service\Manager\SubscriptionManager;
 use PhpList\RestBundle\Validator\RequestValidator;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,7 +25,7 @@ use Symfony\Component\Routing\Attribute\Route;
  *
  * @author Tatevik Grigoryan <tatevik@phplist.com>
  */
-#[Route('/subscriptions')]
+#[Route('/lists')]
 class SubscriptionController extends AbstractController
 {
     use AuthenticationTrait;
@@ -41,19 +43,129 @@ class SubscriptionController extends AbstractController
         $this->validator = $validator;
     }
 
-    #[Route('', name: 'create_subscription', methods: ['POST'])]
+    #[Route('/{listId}/subscribers', name: 'get_subscriber_from_list', methods: ['GET'])]
+    #[OA\Get(
+        path: '/lists/{listId}/subscribers',
+        description: 'Returns a JSON list of all subscribers for a subscriber list.',
+        summary: 'Gets a list of all subscribers of a subscriber list.',
+        tags: ['subscriptions'],
+        parameters: [
+            new OA\Parameter(
+                name: 'session',
+                description: 'Session ID obtained from authentication',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                name: 'listId',
+                description: 'List ID',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Success',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Subscriber')
+                )
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
+            )
+        ]
+    )]
+    public function getListMembers(
+        Request $request,
+        #[MapEntity(mapping: ['listId' => 'id'])] SubscriberList $list,
+        SubscriberNormalizer $normalizer
+    ): JsonResponse {
+        $this->requireAuthentication($request);
+
+        $subscribers = $this->subscriptionManager->getSubscriberListMembers($list);
+        $normalized = array_map(function ($item) use ($normalizer) {
+            return $normalizer->normalize($item);
+        }, $subscribers);
+
+        return new JsonResponse($normalized, Response::HTTP_OK);
+    }
+
+    #[Route('/{listId}/subscribers/count', name: 'get_subscribers_count_from_list', methods: ['GET'])]
+    #[OA\Get(
+        path: '/lists/{listId}/count',
+        description: 'Returns a count of all subscribers in a given list.',
+        summary: 'Gets the total number of subscribers of a list',
+        tags: ['subscriptions'],
+        parameters: [
+            new OA\Parameter(
+                name: 'session',
+                description: 'Session ID obtained from authentication',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                name: 'listId',
+                description: 'List ID',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Success',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: 'subscribers_count',
+                            type: 'integer',
+                            example: 42
+                        )
+                    ],
+                    type: 'object'
+                )
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
+            )
+        ]
+    )]
+    public function getSubscribersCount(
+        Request $request,
+        #[MapEntity(mapping: ['listId' => 'id'])] SubscriberList $list
+    ): JsonResponse {
+        $this->requireAuthentication($request);
+
+        return new JsonResponse(['subscribers_count' => count($list->getSubscribers())], Response::HTTP_OK);
+    }
+
+    #[Route('/{listId}/subscribers', name: 'create_subscription', methods: ['POST'])]
     #[OA\Post(
-        path: '/subscriptions',
+        path: '/lists/{listId}/subscribers',
         description: 'Subscribe subscriber to a list.',
         summary: 'Create subscription',
         requestBody: new OA\RequestBody(
             description: 'Pass session credentials',
             required: true,
             content: new OA\JsonContent(
-                required: ['email', 'list_id'],
+                required: ['emails'],
                 properties: [
-                    new OA\Property(property: 'email', type: 'string', example: 'test@example.com'),
-                    new OA\Property(property: 'list_id', type: 'integer', example: 2),
+                    new OA\Property(
+                        property: 'emails',
+                        type: 'array',
+                        items: new OA\Items(type: 'string', format: 'email'),
+                        example: ['test1@example.com', 'test2@example.com']
+                    ),
                 ]
             )
         ),
@@ -65,13 +177,23 @@ class SubscriptionController extends AbstractController
                 in: 'header',
                 required: true,
                 schema: new OA\Schema(type: 'string')
-            )
+            ),
+            new OA\Parameter(
+                name: 'listId',
+                description: 'List ID',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            ),
         ],
         responses: [
             new OA\Response(
                 response: 201,
                 description: 'Success',
-                content: new OA\JsonContent(ref: '#/components/schemas/Subscription'),
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Subscription')
+                )
             ),
             new OA\Response(
                 response: 403,
@@ -95,42 +217,49 @@ class SubscriptionController extends AbstractController
             ),
         ]
     )]
-    public function createSubscription(Request $request, SubscriptionNormalizer $serializer): JsonResponse
-    {
+    public function createSubscription(
+        Request $request,
+        #[MapEntity(mapping: ['listId' => 'id'])] SubscriberList $list,
+        SubscriptionNormalizer $serializer
+    ): JsonResponse {
         $this->requireAuthentication($request);
 
         /** @var SubscriptionRequest $subscriptionRequest */
         $subscriptionRequest = $this->validator->validate($request, SubscriptionRequest::class);
-        $subscription = $this->subscriptionManager->createSubscription(
-            $subscriptionRequest->email,
-            $subscriptionRequest->listId
-        );
+        $subscriptions = $this->subscriptionManager->createSubscriptions($list, $subscriptionRequest->emails);
 
-        return new JsonResponse($serializer->normalize($subscription, 'json'), Response::HTTP_CREATED);
+        $normalized = array_map(function ($item) use ($serializer) {
+            return $serializer->normalize($item);
+        }, $subscriptions);
+
+        return new JsonResponse($normalized, Response::HTTP_CREATED);
     }
 
-    #[Route('', name: 'delete_subscription', methods: ['DELETE'])]
+    #[Route('/{listId}/subscribers', name: 'delete_subscription', methods: ['DELETE'])]
     #[OA\Delete(
-        path: '/subscriptions',
+        path: '/lists/{listId}/subscribers',
         description: 'Delete subscription.',
         summary: 'Delete subscription',
-        requestBody: new OA\RequestBody(
-            description: 'Pass session credentials',
-            required: true,
-            content: new OA\JsonContent(
-                required: ['email', 'list_id'],
-                properties: [
-                    new OA\Property(property: 'email', type: 'string', example: 'test@example.com'),
-                    new OA\Property(property: 'list_id', type: 'integer', example: 2),
-                ]
-            )
-        ),
         tags: ['subscriptions'],
         parameters: [
             new OA\Parameter(
                 name: 'session',
                 description: 'Session ID obtained from authentication',
                 in: 'header',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                name: 'listId',
+                description: 'List ID',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                name: 'emails',
+                description: 'emails of subscribers to delete from list.',
+                in: 'query',
                 required: true,
                 schema: new OA\Schema(type: 'string')
             ),
@@ -147,19 +276,21 @@ class SubscriptionController extends AbstractController
             ),
             new OA\Response(
                 response: 404,
-                description: 'Not Found',
+                description: 'Subscriber or subscription not found.'
             )
         ]
     )]
     public function deleteSubscriber(
         Request $request,
+        #[MapEntity(mapping: ['listId' => 'id'])] SubscriberList $list,
     ): JsonResponse {
         $this->requireAuthentication($request);
+        $subscriptionRequest = new SubscriptionRequest();
+        $subscriptionRequest->emails = $request->query->all('emails');
 
         /** @var SubscriptionRequest $subscriptionRequest */
-        $subscriptionRequest = $this->validator->validate($request, SubscriptionRequest::class);
-
-        $this->subscriptionManager->deleteSubscription($subscriptionRequest->email, $subscriptionRequest->listId);
+        $subscriptionRequest = $this->validator->validateDto($subscriptionRequest);
+        $this->subscriptionManager->deleteSubscriptions($list, $subscriptionRequest->emails);
 
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }

@@ -10,7 +10,6 @@ use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Controller\Traits\AuthenticationTrait;
 use PhpList\RestBundle\Entity\Request\CreateSubscriberListRequest;
 use PhpList\RestBundle\Serializer\SubscriberListNormalizer;
-use PhpList\RestBundle\Serializer\SubscriberNormalizer;
 use PhpList\RestBundle\Service\Manager\SubscriberListManager;
 use PhpList\RestBundle\Validator\RequestValidator;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -241,115 +240,6 @@ class ListController extends AbstractController
         $this->subscriberListManager->delete($list);
 
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
-    }
-
-    #[Route('/{listId}/subscribers', name: 'get_subscriber_from_list', methods: ['GET'])]
-    #[OA\Get(
-        path: '/lists/{listId}/subscribers',
-        description: 'Returns a JSON list of all subscribers for a subscriber list.',
-        summary: 'Gets a list of all subscribers of a subscriber list.',
-        tags: ['lists'],
-        parameters: [
-            new OA\Parameter(
-                name: 'session',
-                description: 'Session ID obtained from authentication',
-                in: 'header',
-                required: true,
-                schema: new OA\Schema(type: 'string')
-            ),
-            new OA\Parameter(
-                name: 'listId',
-                description: 'List ID',
-                in: 'path',
-                required: true,
-                schema: new OA\Schema(type: 'string')
-            )
-        ],
-        responses: [
-            new OA\Response(
-                response: 200,
-                description: 'Success',
-                content: new OA\JsonContent(
-                    type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Subscriber')
-                )
-            ),
-            new OA\Response(
-                response: 403,
-                description: 'Failure',
-                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
-            )
-        ]
-    )]
-    public function getListMembers(
-        Request $request,
-        #[MapEntity(mapping: ['listId' => 'id'])] SubscriberList $list,
-        SubscriberNormalizer $normalizer
-    ): JsonResponse {
-        $this->requireAuthentication($request);
-
-        $subscribers = $this->subscriberListManager->getSubscriberListMembers($list);
-        $normalized = array_map(function ($item) use ($normalizer) {
-            return $normalizer->normalize($item);
-        }, $subscribers);
-
-        return new JsonResponse($normalized, Response::HTTP_OK);
-    }
-
-    #[Route('/{listId}/subscribers/count', name: 'get_subscribers_count_from_list', methods: ['GET'])]
-    #[OA\Get(
-        path: '/lists/{listId}/count',
-        description: 'Returns a count of all subscribers in a given list.',
-        summary: 'Gets the total number of subscribers of a list',
-        tags: ['lists'],
-        parameters: [
-            new OA\Parameter(
-                name: 'session',
-                description: 'Session ID obtained from authentication',
-                in: 'header',
-                required: true,
-                schema: new OA\Schema(type: 'string')
-            ),
-            new OA\Parameter(
-                name: 'listId',
-                description: 'List ID',
-                in: 'path',
-                required: true,
-                schema: new OA\Schema(type: 'string')
-            )
-        ],
-        responses: [
-            new OA\Response(
-                response: 200,
-                description: 'Success',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(
-                            property: 'subscribers_count',
-                            type: 'integer',
-                            example: 42
-                        )
-                    ],
-                    type: 'object'
-                )
-            ),
-            new OA\Response(
-                response: 403,
-                description: 'Failure',
-                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
-            )
-        ]
-    )]
-    public function getSubscribersCount(
-        Request $request,
-        #[MapEntity(mapping: ['listId' => 'id'])] SubscriberList $list
-    ): JsonResponse {
-        $this->requireAuthentication($request);
-
-        return new JsonResponse(
-            ['subscribers_count' => count($list->getSubscribers())],
-            Response::HTTP_OK,
-        );
     }
 
     #[Route('', name: 'create_list', methods: ['POST'])]
