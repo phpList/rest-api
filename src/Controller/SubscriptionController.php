@@ -280,7 +280,7 @@ class SubscriptionController extends AbstractController
             )
         ]
     )]
-    public function deleteSubscriber(
+    public function deleteSubscriptions(
         Request $request,
         #[MapEntity(mapping: ['listId' => 'id'])] SubscriberList $list,
     ): JsonResponse {
