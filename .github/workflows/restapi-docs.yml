@@ -8,7 +8,7 @@ on:
 jobs:
   make-restapi-docs:
     name: Checkout phpList rest-api and generate docs specification (OpenAPI latest-restapi.json)
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -41,7 +41,7 @@ jobs:
 
   deploy-docs:
     name: Deploy REST API Specification
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     needs: make-restapi-docs
     steps:
       - name: Setup Node.js
