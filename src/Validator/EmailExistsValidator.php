@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Validator;
 
 use PhpList\Core\Domain\Repository\Subscription\SubscriberRepository;
-use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
@@ -37,7 +37,7 @@ class EmailExistsValidator extends ConstraintValidator
         $existingUser = $this->subscriberRepository->findOneBy(['email' => $value]);
 
         if (!$existingUser) {
-            throw new ConflictHttpException('Subscriber with email does not exists.');
+            throw new NotFoundHttpException('Subscriber with email does not exists.');
         }
     }
 }

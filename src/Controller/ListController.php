@@ -257,7 +257,6 @@ class ListController extends AbstractController
                     new OA\Property(property: 'description', type: 'string', example: 'News (and some fun stuff)'),
                     new OA\Property(property: 'list_position', type: 'number', example: 12),
                     new OA\Property(property: 'public', type: 'boolean', example: true),
-                    new OA\Property(property: 'owner', type: 'number', example: 12),
                 ]
             )
         ),
@@ -305,12 +304,12 @@ class ListController extends AbstractController
     )]
     public function createList(Request $request, SubscriberListNormalizer $normalizer): JsonResponse
     {
-        $this->requireAuthentication($request);
+        $authUser = $this->requireAuthentication($request);
 
         /** @var CreateSubscriberListRequest $subscriberListRequest */
         $subscriberListRequest = $this->validator->validate($request, CreateSubscriberListRequest::class);
-        $data = $this->subscriberListManager->createSubscriberList($subscriberListRequest);
+        $data = $this->subscriberListManager->createSubscriberList($subscriberListRequest, $authUser);
 
-        return new JsonResponse($normalizer->normalize($data), Response::HTTP_CREATED, [], true);
+        return new JsonResponse($normalizer->normalize($data), Response::HTTP_CREATED);
     }
 }

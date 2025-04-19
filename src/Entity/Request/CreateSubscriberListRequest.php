@@ -19,9 +19,6 @@ class CreateSubscriberListRequest implements RequestInterface
     public int $listPosition;
 
     #[Assert\NotBlank]
-    public int $owner;
-
-    #[Assert\NotBlank]
     #[Assert\NotNull]
     public string $description;
 }
