@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace PhpList\RestBundle\Tests\Integration\Controller\Fixtures;
+namespace PhpList\RestBundle\Tests\Integration\Controller\Fixtures\Subscription;
 
 use DateTime;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
-use PhpList\Core\Domain\Model\Subscription\SubscriberList;
 use PhpList\Core\Domain\Model\Subscription\Subscriber;
+use PhpList\Core\Domain\Model\Subscription\SubscriberList;
 use PhpList\Core\Domain\Model\Subscription\Subscription;
 use PhpList\Core\TestingSupport\Traits\ModelTestTrait;
 use RuntimeException;

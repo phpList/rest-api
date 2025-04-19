@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace PhpList\RestBundle\Tests\Integration\Controller\Fixtures;
+namespace PhpList\RestBundle\Tests\Integration\Controller\Fixtures\Identity;
 
 use DateTime;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use PhpList\Core\Domain\Model\Identity\Administrator;
-use PhpList\Core\Domain\Model\Subscription\SubscriberList;
+use PhpList\Core\Domain\Model\Identity\AdministratorToken;
 use PhpList\Core\TestingSupport\Traits\ModelTestTrait;
 use RuntimeException;
 
-class SubscriberListFixture extends Fixture
+class AdministratorTokenFixture extends Fixture
 {
     use ModelTestTrait;
     public function load(ObjectManager $manager): void
     {
-        $csvFile = __DIR__ . '/SubscriberList.csv';
+        $csvFile = __DIR__ . '/AdministratorToken.csv';
 
         if (!file_exists($csvFile)) {
             throw new RuntimeException(sprintf('Fixture file "%s" not found.', $csvFile));
@@ -29,7 +29,6 @@ class SubscriberListFixture extends Fixture
         }
 
         $headers = fgetcsv($handle);
-
         $adminRepository = $manager->getRepository(Administrator::class);
 
         do {
@@ -39,29 +38,22 @@ class SubscriberListFixture extends Fixture
             }
             $row = array_combine($headers, $data);
 
-            $admin = $adminRepository->find($row['owner']);
+            $admin = $adminRepository->find($row['adminid']);
             if ($admin === null) {
                 $admin = new Administrator();
-                $this->setSubjectId($admin, (int)$row['owner']);
+                $this->setSubjectId($admin, (int)$row['adminid']);
                 $admin->setSuperUser(true);
-                $admin->setDisabled(false);
                 $manager->persist($admin);
             }
 
-            $subscriberList = new SubscriberList();
-            $this->setSubjectId($subscriberList, (int)$row['id']);
-            $subscriberList->setName($row['name']);
-            $subscriberList->setDescription($row['description']);
-            $subscriberList->setListPosition((int)$row['listorder']);
-            $subscriberList->setSubjectPrefix($row['prefix']);
-            $subscriberList->setPublic((bool) $row['active']);
-            $subscriberList->setCategory($row['category']);
-            $subscriberList->setOwner($admin);
+            $adminToken = new AdministratorToken();
+            $this->setSubjectId($adminToken, (int)$row['id']);
+            $adminToken->setKey($row['value']);
+            $adminToken->setAdministrator($admin);
+            $manager->persist($adminToken);
 
-            $manager->persist($subscriberList);
-
-            $this->setSubjectProperty($subscriberList, 'creationDate', new DateTime($row['entered']));
-            $this->setSubjectProperty($subscriberList, 'modificationDate', new DateTime($row['modified']));
+            $this->setSubjectProperty($adminToken, 'expiry', new DateTime($row['expires']));
+            $this->setSubjectProperty($adminToken, 'creationDate', (bool) $row['entered']);
         } while (true);
 
         fclose($handle);

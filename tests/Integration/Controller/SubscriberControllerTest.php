@@ -7,7 +7,7 @@ namespace PhpList\RestBundle\Tests\Integration\Controller;
 use PhpList\Core\Domain\Model\Subscription\Subscriber;
 use PhpList\Core\Domain\Repository\Subscription\SubscriberRepository;
 use PhpList\RestBundle\Controller\SubscriberController;
-use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\SubscriberFixture;
+use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\Subscription\SubscriberFixture;
 
 /**
  * Testcase.

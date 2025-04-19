@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace PhpList\RestBundle\Tests\Integration\Controller\Fixtures;
+namespace PhpList\RestBundle\Tests\Integration\Controller\Fixtures\Identity;
 
 use DateTime;
 use Doctrine\Bundle\FixturesBundle\Fixture;

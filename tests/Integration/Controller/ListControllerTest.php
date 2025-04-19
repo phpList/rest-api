@@ -6,11 +6,11 @@ namespace PhpList\RestBundle\Tests\Integration\Controller;
 
 use PhpList\Core\Domain\Repository\Subscription\SubscriberListRepository;
 use PhpList\RestBundle\Controller\ListController;
-use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\AdministratorFixture;
-use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\AdministratorTokenFixture;
-use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\SubscriberFixture;
-use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\SubscriberListFixture;
-use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\SubscriptionFixture;
+use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\Identity\AdministratorFixture;
+use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\Identity\AdministratorTokenFixture;
+use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\Messaging\SubscriberListFixture;
+use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\Subscription\SubscriberFixture;
+use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\Subscription\SubscriptionFixture;
 
 /**
  * Testcase.
