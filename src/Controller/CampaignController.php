@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Controller;
 
 use OpenApi\Attributes as OA;
+use PhpList\Core\Domain\Model\Messaging\Message;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Controller\Traits\AuthenticationTrait;
 use PhpList\RestBundle\Entity\Request\CreateMessageRequest;
@@ -12,6 +13,7 @@ use PhpList\RestBundle\Serializer\MessageNormalizer;
 use PhpList\RestBundle\Service\Manager\MessageManager;
 use PhpList\RestBundle\Service\Provider\MessageProvider;
 use PhpList\RestBundle\Validator\RequestValidator;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -90,6 +92,45 @@ class CampaignController extends AbstractController
         }, $data);
 
         return new JsonResponse($normalized, Response::HTTP_OK);
+    }
+
+    #[Route('/{messageId}', name: 'get_campaign', methods: ['GET'])]
+    #[OA\Get(
+        path: '/campaigns/{messageId}',
+        description: 'Returns campaign/message by id.',
+        summary: 'Gets a campaign by id.',
+        tags: ['campaigns'],
+        parameters: [
+            new OA\Parameter(
+                name: 'session',
+                description: 'Session ID obtained from authentication',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(
+                    type: 'string'
+                )
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Success',
+                content: new OA\JsonContent(ref: '#/components/schemas/Message')
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
+            )
+        ]
+    )]
+    public function getMessage(
+        Request $request,
+        #[MapEntity(mapping: ['messageId' => 'id'])] Message $message
+    ): JsonResponse {
+        $this->requireAuthentication($request);
+
+        return new JsonResponse($this->normalizer->normalize($message), Response::HTTP_OK);
     }
 
     #[Route('', name: 'create_message', methods: ['POST'])]
