@@ -131,13 +131,19 @@ use OpenApi\Attributes as OA;
         new OA\Property(
             property: 'message_options',
             properties: [
-                new OA\Property(property: 'from_field', type: 'string', example: ' My Name <my@email.com>', nullable: true),
+                new OA\Property(
+                    property: 'from_field',
+                    type: 'string',
+                    example: ' My Name <my@email.com>',
+                    nullable: true
+                ),
                 new OA\Property(property: 'to_field', type: 'string', example: '', nullable: true),
                 new OA\Property(property: 'reply_to', type: 'string', nullable: true),
                 new OA\Property(property: 'embargo', type: 'string', example: '2023-01-01T12:00:00Z', nullable: true),
                 new OA\Property(property: 'user_selection', type: 'string', nullable: true),
             ],
-            type: 'object'),
+            type: 'object'
+        ),
     ],
     type: 'object'
 )]

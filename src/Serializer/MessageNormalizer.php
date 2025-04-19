@@ -18,6 +18,12 @@ class MessageNormalizer implements NormalizerInterface
             return [];
         }
 
+        $formatOptions = array_keys(array_filter([
+            'text' => $object->getFormat()->isAsText(),
+            'html' => $object->getFormat()->isAsHtml(),
+            'pdf'  => $object->getFormat()->isAsPdf(),
+        ]));
+
         return [
             'id' => $object->getId(),
             'unique_id' => $object->getUuid(),
@@ -37,11 +43,7 @@ class MessageNormalizer implements NormalizerInterface
             'message_format' => [
                 'html_formated' => $object->getFormat()->isHtmlFormatted(),
                 'send_format' => $object->getFormat()->getSendFormat(),
-                'as_text' => $object->getFormat()->isAsText(),
-                'as_html' => $object->getFormat()->isAsHtml(),
-                'as_pdf' => $object->getFormat()->isAsPdf(),
-                'as_text_and_html' => $object->getFormat()->isAsTextAndHtml(),
-                'as_text_and_pdf' => $object->getFormat()->isAsTextAndPdf(),
+                'format_options' => $formatOptions,
             ],
             'message_metadata' => [
                 'status' => $object->getMetadata()->getStatus(),
@@ -61,7 +63,7 @@ class MessageNormalizer implements NormalizerInterface
                 'from_field' => $object->getOptions()->getFromField(),
                 'to_field' => $object->getOptions()->getToField(),
                 'reply_to' => $object->getOptions()->getReplyTo(),
-                'embargo' => $object->getOptions()->getEmbargo(),
+                'embargo' => $object->getOptions()->getEmbargo()?->format('Y-m-d\TH:i:sP'),
                 'user_selection' => $object->getOptions()->getUserSelection(),
             ],
         ];

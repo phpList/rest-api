@@ -19,3 +19,7 @@ services:
   PhpList\RestBundle\Service\Manager\SubscriptionManager:
     autowire: true
     autoconfigure: true
+
+  PhpList\RestBundle\Service\Manager\MessageManager:
+    autowire: true
+    autoconfigure: true
