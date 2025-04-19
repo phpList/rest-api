@@ -13,3 +13,8 @@ services:
     autowire: true
     autoconfigure: true
     tags: [ 'validator.constraint_validator' ]
+
+  PhpList\RestBundle\Validator\TemplateExistsValidator:
+    autowire: true
+    autoconfigure: true
+    tags: [ 'validator.constraint_validator' ]

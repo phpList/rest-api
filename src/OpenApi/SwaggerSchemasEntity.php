@@ -125,6 +125,7 @@ use OpenApi\Attributes as OA;
                 new OA\Property(property: 'repeat_until', type: 'string', format: 'date-time', nullable: true),
                 new OA\Property(property: 'requeue_interval', type: 'string', nullable: true),
                 new OA\Property(property: 'requeue_until', type: 'string', format: 'date-time', nullable: true),
+                new OA\Property(property: 'embargo', type: 'string', example: '2023-01-01T12:00:00Z', nullable: true),
             ],
             type: 'object'
         ),
@@ -139,7 +140,6 @@ use OpenApi\Attributes as OA;
                 ),
                 new OA\Property(property: 'to_field', type: 'string', example: '', nullable: true),
                 new OA\Property(property: 'reply_to', type: 'string', nullable: true),
-                new OA\Property(property: 'embargo', type: 'string', example: '2023-01-01T12:00:00Z', nullable: true),
                 new OA\Property(property: 'user_selection', type: 'string', nullable: true),
             ],
             type: 'object'

@@ -19,4 +19,7 @@ class MessageScheduleRequest
 
     #[Assert\DateTime]
     public string $requeueUntil;
+
+    #[Assert\NotBlank]
+    public string $embargo;
 }

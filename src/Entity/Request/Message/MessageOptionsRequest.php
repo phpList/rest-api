@@ -17,8 +17,5 @@ class MessageOptionsRequest
     #[Assert\Email]
     public ?string $replyTo = null;
 
-    #[Assert\NotBlank]
-    public string $embargo;
-
     public ?string $userSelection = null;
 }

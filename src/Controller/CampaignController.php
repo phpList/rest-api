@@ -109,6 +109,13 @@ class CampaignController extends AbstractController
                 schema: new OA\Schema(
                     type: 'string'
                 )
+            ),
+            new OA\Parameter(
+                name: 'messageId',
+                description: 'message ID',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string')
             )
         ],
         responses: [
@@ -143,6 +150,7 @@ class CampaignController extends AbstractController
             required: true,
             content: new OA\JsonContent(
                 properties: [
+                    new OA\Property(property: 'template_id', type: 'integer', example: 1),
                     new OA\Property(
                         property: 'message_content',
                         properties: [
@@ -182,6 +190,12 @@ class CampaignController extends AbstractController
                     new OA\Property(
                         property: 'message_schedule',
                         properties: [
+                            new OA\Property(
+                                property: 'embargo',
+                                type: 'string',
+                                format: 'date-time',
+                                example: '2025-04-17 09:00:00'
+                            ),
                             new OA\Property(property: 'repeat_interval', type: 'string', example: '24 hours'),
                             new OA\Property(
                                 property: 'repeat_until',
@@ -205,7 +219,6 @@ class CampaignController extends AbstractController
                             new OA\Property(property: 'from_field', type: 'string', example: 'info@example.com'),
                             new OA\Property(property: 'to_field', type: 'string', example: 'subscriber@example.com'),
                             new OA\Property(property: 'reply_to', type: 'string', example: 'reply@example.com'),
-                            new OA\Property(property: 'embargo', type: 'string', example: '2025-04-17 09:00:00'),
                             new OA\Property(property: 'user_selection', type: 'string', example: 'all-active-users'),
                         ],
                         type: 'object'

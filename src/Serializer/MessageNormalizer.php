@@ -18,12 +18,6 @@ class MessageNormalizer implements NormalizerInterface
             return [];
         }
 
-        $formatOptions = array_keys(array_filter([
-            'text' => $object->getFormat()->isAsText(),
-            'html' => $object->getFormat()->isAsHtml(),
-            'pdf'  => $object->getFormat()->isAsPdf(),
-        ]));
-
         return [
             'id' => $object->getId(),
             'unique_id' => $object->getUuid(),
@@ -43,7 +37,7 @@ class MessageNormalizer implements NormalizerInterface
             'message_format' => [
                 'html_formated' => $object->getFormat()->isHtmlFormatted(),
                 'send_format' => $object->getFormat()->getSendFormat(),
-                'format_options' => $formatOptions,
+                'format_options' => $object->getFormat()->getFormatOptions()
             ],
             'message_metadata' => [
                 'status' => $object->getMetadata()->getStatus(),
@@ -58,12 +52,12 @@ class MessageNormalizer implements NormalizerInterface
                 'repeat_until' => $object->getSchedule()->getRepeatUntil()?->format('Y-m-d\TH:i:sP'),
                 'requeue_interval' => $object->getSchedule()->getRequeueInterval(),
                 'requeue_until' => $object->getSchedule()->getRequeueUntil()?->format('Y-m-d\TH:i:sP'),
+                'embargo' => $object->getSchedule()->getEmbargo()?->format('Y-m-d\TH:i:sP'),
             ],
             'message_options' => [
                 'from_field' => $object->getOptions()->getFromField(),
                 'to_field' => $object->getOptions()->getToField(),
                 'reply_to' => $object->getOptions()->getReplyTo(),
-                'embargo' => $object->getOptions()->getEmbargo()?->format('Y-m-d\TH:i:sP'),
                 'user_selection' => $object->getOptions()->getUserSelection(),
             ],
         ];

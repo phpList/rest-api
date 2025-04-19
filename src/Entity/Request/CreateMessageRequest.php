@@ -10,6 +10,7 @@ use PhpList\RestBundle\Entity\Request\Message\MessageMetadataRequest;
 use PhpList\RestBundle\Entity\Request\Message\MessageOptionsRequest;
 use PhpList\RestBundle\Entity\Request\Message\MessageScheduleRequest;
 use Symfony\Component\Validator\Constraints as Assert;
+use PhpList\RestBundle\Validator as CustomAssert;
 
 class CreateMessageRequest implements RequestInterface
 {
@@ -32,4 +33,7 @@ class CreateMessageRequest implements RequestInterface
     #[Assert\Valid]
     #[Assert\NotNull]
     public MessageOptionsRequest $options;
+
+    #[CustomAssert\TemplateExists]
+    public ?int $templateId;
 }

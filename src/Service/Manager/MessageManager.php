@@ -8,15 +8,18 @@ use DateTime;
 use PhpList\Core\Domain\Model\Identity\Administrator;
 use PhpList\Core\Domain\Model\Messaging\Message;
 use PhpList\Core\Domain\Repository\Messaging\MessageRepository;
+use PhpList\Core\Domain\Repository\Messaging\TemplateRepository;
 use PhpList\RestBundle\Entity\Request\CreateMessageRequest;
 
 class MessageManager
 {
     private MessageRepository $messageRepository;
+    private TemplateRepository $templateRepository;
 
-    public function __construct(MessageRepository $messageRepository)
+    public function __construct(MessageRepository $messageRepository, TemplateRepository $templateRepository)
     {
         $this->messageRepository = $messageRepository;
+        $this->templateRepository = $templateRepository;
     }
 
     public function createMessage(CreateMessageRequest $createMessageRequest, Administrator $authUser): Message
@@ -32,6 +35,7 @@ class MessageManager
             new DateTime($createMessageRequest->schedule->repeatUntil),
             $createMessageRequest->schedule->requeueInterval,
             new DateTime($createMessageRequest->schedule->requeueUntil),
+            new DateTime($createMessageRequest->schedule->embargo),
         );
 
         $metadata = new Message\MessageMetadata($createMessageRequest->metadata->status);
@@ -47,13 +51,16 @@ class MessageManager
             $createMessageRequest->options->fromField ?? '',
             $createMessageRequest->options->toField ?? '',
             $createMessageRequest->options->replyTo ?? '',
-            new DateTime($createMessageRequest->options->embargo),
             $createMessageRequest->options->userSelection,
             null,
             null
         );
 
-        $message = new Message($format, $schedule, $metadata, $content, $options, $authUser);
+        if ($createMessageRequest->templateId > 0) {
+            $template = $this->templateRepository->find($createMessageRequest->templateId);
+        }
+
+        $message = new Message($format, $schedule, $metadata, $content, $options, $authUser, $template ?? null);
 
         $this->messageRepository->save($message);
 
