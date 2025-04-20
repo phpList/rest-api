@@ -8,6 +8,7 @@ use PhpList\Core\Domain\Model\Subscription\Subscriber;
 use PhpList\Core\Domain\Repository\Subscription\SubscriberRepository;
 use PhpList\RestBundle\Validator\EmailExists;
 use PhpList\RestBundle\Validator\EmailExistsValidator;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
@@ -17,7 +18,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class EmailExistsValidatorTest extends TestCase
 {
-    private SubscriberRepository $subscriberRepository;
+    private SubscriberRepository&MockObject $subscriberRepository;
     private EmailExistsValidator $validator;
 
     protected function setUp(): void
@@ -33,7 +34,7 @@ class EmailExistsValidatorTest extends TestCase
     {
         $this->subscriberRepository->expects($this->never())->method('findOneBy');
         $this->validator->validate(null, new EmailExists());
-        $this->assertTrue(true); // to mark test as passed
+        $this->assertTrue(true);
     }
 
     public function testValidateSkipsEmptyString(): void

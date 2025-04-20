@@ -8,6 +8,7 @@ use PhpList\Core\Domain\Model\Messaging\Template;
 use PhpList\Core\Domain\Repository\Messaging\TemplateRepository;
 use PhpList\RestBundle\Validator\TemplateExists;
 use PhpList\RestBundle\Validator\TemplateExistsValidator;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
@@ -17,7 +18,7 @@ use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
 class TemplateExistsValidatorTest extends TestCase
 {
-    private TemplateRepository $templateRepository;
+    private TemplateRepository&MockObject $templateRepository;
     private TemplateExistsValidator $validator;
 
     protected function setUp(): void

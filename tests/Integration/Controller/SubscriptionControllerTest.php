@@ -54,7 +54,7 @@ class SubscriptionControllerTest extends AbstractTestController
 
         $payload = json_encode(['emails' => ['oliver@example.com']]);
 
-        $this->authenticatedJsonRequest('POST', '/api/v2/lists/1/subscribers',  [], [], [], $payload);
+        $this->authenticatedJsonRequest('POST', '/api/v2/lists/1/subscribers', [], [], [], $payload);
         $this->assertHttpCreated();
     }
 

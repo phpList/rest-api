@@ -9,11 +9,12 @@ use PhpList\Core\Domain\Model\Subscription\SubscriberList;
 use PhpList\Core\Domain\Repository\Subscription\SubscriberListRepository;
 use PhpList\RestBundle\Entity\Request\CreateSubscriberListRequest;
 use PhpList\RestBundle\Service\Manager\SubscriberListManager;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class SubscriberListManagerTest extends TestCase
 {
-    private SubscriberListRepository $subscriberListRepository;
+    private SubscriberListRepository&MockObject $subscriberListRepository;
     private SubscriberListManager $manager;
 
     protected function setUp(): void

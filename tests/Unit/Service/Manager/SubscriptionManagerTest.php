@@ -11,12 +11,13 @@ use PhpList\Core\Domain\Repository\Subscription\SubscriberRepository;
 use PhpList\Core\Domain\Repository\Subscription\SubscriptionRepository;
 use PhpList\RestBundle\Exception\SubscriptionCreationException;
 use PhpList\RestBundle\Service\Manager\SubscriptionManager;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class SubscriptionManagerTest extends TestCase
 {
-    private SubscriptionRepository $subscriptionRepository;
-    private SubscriberRepository $subscriberRepository;
+    private SubscriptionRepository&MockObject $subscriptionRepository;
+    private SubscriberRepository&MockObject $subscriberRepository;
     private SubscriptionManager $manager;
 
     protected function setUp(): void
@@ -83,7 +84,7 @@ class SubscriptionManagerTest extends TestCase
 
         $this->manager->deleteSubscriptions($subscriberList, [$email]);
 
-        $this->addToAssertionCount(1); // if no exception thrown, test is OK
+        $this->addToAssertionCount(1);
     }
 
     public function testGetSubscriberListMembersReturnsList(): void
