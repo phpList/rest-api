@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace PhpList\RestBundle\Tests\Integration\Validator;
+namespace PhpList\RestBundle\Tests\Unit\Validator;
 
 use PhpList\Core\Domain\Model\Subscription\Subscriber;
 use PhpList\Core\Domain\Repository\Subscription\SubscriberRepository;
@@ -11,8 +11,8 @@ use PhpList\RestBundle\Validator\UniqueEmailValidator;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\Validator\Constraint;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
 

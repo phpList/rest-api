@@ -193,4 +193,39 @@ class SessionControllerTest extends AbstractTestController
 
         self::assertNotNull($this->administratorTokenRepository->find(3));
     }
+
+    public function testPostSessionWithExtraFieldsIsIgnored(): void
+    {
+        $this->loadFixtures([AdministratorFixture::class]);
+
+        $jsonData = json_encode([
+            'loginName' => 'john.doe',
+            'password' => 'Bazinga!',
+            'extraField' => 'ignore_me'
+        ]);
+
+        $this->jsonRequest('post', '/api/v2/sessions', [], [], [], $jsonData);
+
+        $this->assertHttpCreated();
+        $response = $this->getDecodedJsonResponseContent();
+        self::assertArrayNotHasKey('extraField', $response);
+    }
+
+    public function testDeleteSessionWithInvalidFormatIdReturns404(): void
+    {
+        $this->authenticatedJsonRequest('DELETE', '/api/v2/sessions/not-an-id');
+        $this->assertHttpNotFound();
+    }
+
+    public function testPostSessionWithWrongHttpMethodReturns405(): void
+    {
+        self::getClient()->request('PUT', '/api/v2/sessions');
+        $this->assertHttpMethodNotAllowed();
+    }
+
+    public function testDeleteSessionWithNoSuchSessionReturns404(): void
+    {
+        $this->authenticatedJsonRequest('DELETE', '/api/v2/sessions/999999');
+        $this->assertHttpNotFound();
+    }
 }

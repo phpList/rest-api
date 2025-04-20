@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace PhpList\RestBundle\Tests\Integration\Service\Manager;
+namespace PhpList\RestBundle\Tests\Unit\Service\Manager;
 
 use Doctrine\ORM\EntityManagerInterface;
 use PhpList\Core\Domain\Model\Subscription\Subscriber;

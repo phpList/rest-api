@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace PhpList\RestBundle\Tests\Integration\Validator;
+namespace PhpList\RestBundle\Tests\Unit\Validator;
 
 use PhpList\RestBundle\Entity\Request\RequestInterface;
 use PhpList\RestBundle\Tests\Helpers\DummyRequestDto;
