@@ -6,7 +6,7 @@ namespace PhpList\RestBundle\Entity\Request\Message;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-class MessageScheduleRequest
+class MessageScheduleRequest implements RequestDtoInterface
 {
     #[Assert\NotBlank]
     public int $repeatInterval;

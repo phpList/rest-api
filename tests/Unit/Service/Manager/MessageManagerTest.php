@@ -7,13 +7,13 @@ namespace PhpList\RestBundle\Tests\Unit\Service\Manager;
 use PhpList\Core\Domain\Model\Identity\Administrator;
 use PhpList\Core\Domain\Model\Messaging\Message;
 use PhpList\Core\Domain\Repository\Messaging\MessageRepository;
-use PhpList\Core\Domain\Repository\Messaging\TemplateRepository;
 use PhpList\RestBundle\Entity\Request\CreateMessageRequest;
 use PhpList\RestBundle\Entity\Request\Message\MessageContentRequest;
 use PhpList\RestBundle\Entity\Request\Message\MessageFormatRequest;
 use PhpList\RestBundle\Entity\Request\Message\MessageMetadataRequest;
 use PhpList\RestBundle\Entity\Request\Message\MessageOptionsRequest;
 use PhpList\RestBundle\Entity\Request\Message\MessageScheduleRequest;
+use PhpList\RestBundle\Service\Builder\MessageBuilder;
 use PhpList\RestBundle\Service\Manager\MessageManager;
 use PHPUnit\Framework\TestCase;
 
@@ -22,9 +22,9 @@ class MessageManagerTest extends TestCase
     public function testCreateMessageReturnsPersistedMessage(): void
     {
         $messageRepository = $this->createMock(MessageRepository::class);
-        $templateRepository = $this->createMock(TemplateRepository::class);
+        $messageBuilder = $this->createMock(MessageBuilder::class);
 
-        $manager = new MessageManager($messageRepository, $templateRepository);
+        $manager = new MessageManager($messageRepository, $messageBuilder);
 
         $format = new MessageFormatRequest();
         $format->htmlFormated = true;
@@ -63,9 +63,24 @@ class MessageManagerTest extends TestCase
 
         $authUser = $this->createMock(Administrator::class);
 
+        $expectedMessage = $this->createMock(Message::class);
+        $expectedContent = $this->createMock(Message\MessageContent::class);
+        $expectedMetadata = $this->createMock(Message\MessageMetadata::class);
+
+        $expectedContent->method('getSubject')->willReturn('Subject');
+        $expectedMetadata->method('getStatus')->willReturn('draft');
+
+        $expectedMessage->method('getContent')->willReturn($expectedContent);
+        $expectedMessage->method('getMetadata')->willReturn($expectedMetadata);
+
+        $messageBuilder->expects($this->once())
+            ->method('buildFromRequest')
+            ->with($request, $this->anything())
+            ->willReturn($expectedMessage);
+
         $messageRepository->expects($this->once())
             ->method('save')
-            ->with($this->isInstanceOf(Message::class));
+            ->with($expectedMessage);
 
         $message = $manager->createMessage($request, $authUser);
 

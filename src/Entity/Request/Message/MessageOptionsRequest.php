@@ -6,7 +6,7 @@ namespace PhpList\RestBundle\Entity\Request\Message;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-class MessageOptionsRequest
+class MessageOptionsRequest implements RequestDtoInterface
 {
     #[Assert\Email]
     public string $fromField;

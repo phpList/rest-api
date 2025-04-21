@@ -6,7 +6,7 @@ namespace PhpList\RestBundle\Entity\Request\Message;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-class MessageMetadataRequest
+class MessageMetadataRequest implements RequestDtoInterface
 {
     #[Assert\NotBlank]
     public string $status;

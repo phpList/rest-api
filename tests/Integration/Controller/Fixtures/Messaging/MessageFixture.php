@@ -70,6 +70,7 @@ class MessageFixture extends Fixture
                 (int)$row['bouncecount'],
                 new DateTime($row['entered']),
                 new DateTime($row['sent']),
+                new DateTime($row['sendstart']),
             );
             $metadata->setProcessed((bool) $row['processed']);
             $metadata->setViews((int)$row['viewed']);
@@ -84,7 +85,6 @@ class MessageFixture extends Fixture
                 $row['tofield'],
                 $row['replyto'],
                 $row['userselection'],
-                new DateTime($row['sendstart']),
                 $row['rsstemplate'],
             );
 
