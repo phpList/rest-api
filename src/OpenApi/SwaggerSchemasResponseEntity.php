@@ -62,6 +62,27 @@ use OpenApi\Attributes as OA;
     type: 'object'
 )]
 #[OA\Schema(
+    schema: 'TemplateImage',
+    properties: [
+        new OA\Property(property: 'id', type: 'integer', example: 12),
+        new OA\Property(property: 'template_id', type: 'integer', example: 1),
+        new OA\Property(property: 'mimetype', type: 'string', example: 'image/png', nullable: true),
+        new OA\Property(property: 'filename', type: 'string', example: 'header.png', nullable: true),
+        new OA\Property(
+            property: 'data',
+            description: 'Base64-encoded image data',
+            type: 'string',
+            format: 'byte',
+            example: 'iVBORw0KGgoAAAANSUhEUgAAA...',
+            nullable: true
+        ),
+        new OA\Property(property: 'width', type: 'integer', example: 600, nullable: true),
+        new OA\Property(property: 'height', type: 'integer', example: 200, nullable: true),
+    ],
+    type: 'object',
+    nullable: true
+)]
+#[OA\Schema(
     schema: 'Template',
     properties: [
         new OA\Property(property: 'id', type: 'integer', example: 1),
@@ -69,6 +90,12 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'template', type: 'string', example: 'Hello World!', nullable: true),
         new OA\Property(property: 'template_text', type: 'string', nullable: true),
         new OA\Property(property: 'order', type: 'integer', nullable: true),
+        new OA\Property(
+            property: 'images',
+            type: 'array',
+            items: new OA\Items(ref: '#/components/schemas/TemplateImage'),
+            nullable: true
+        ),
     ],
     type: 'object',
     nullable: true

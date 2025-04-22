@@ -9,6 +9,10 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class MessageNormalizer implements NormalizerInterface
 {
+    public function __construct(private readonly TemplateNormalizer $templateNormalizer)
+    {
+    }
+
     /**
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
@@ -18,16 +22,11 @@ class MessageNormalizer implements NormalizerInterface
             return [];
         }
 
+        $template = $object->getTemplate();
         return [
             'id' => $object->getId(),
             'unique_id' => $object->getUuid(),
-            'template' => $object->getTemplate()?->getId() ? [
-                'id' => $object->getTemplate()->getId(),
-                'title' => $object->getTemplate()->getTitle(),
-                'template' => $object->getTemplate()->getTemplate(),
-                'template_text' => $object->getTemplate()->getTemplateText(),
-                'order' => $object->getTemplate()->getListOrder(),
-            ] : null,
+            'template' => $template?->getId() ? $this->templateNormalizer->normalize($template) : null,
             'message_content' => [
                 'subject' => $object->getContent()->getSubject(),
                 'text' => $object->getContent()->getText(),

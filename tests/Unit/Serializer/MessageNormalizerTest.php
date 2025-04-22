@@ -13,17 +13,25 @@ use PhpList\Core\Domain\Model\Messaging\Message\MessageOptions;
 use PhpList\Core\Domain\Model\Messaging\Message\MessageSchedule;
 use PhpList\Core\Domain\Model\Messaging\Template;
 use PhpList\RestBundle\Serializer\MessageNormalizer;
+use PhpList\RestBundle\Serializer\TemplateImageNormalizer;
+use PhpList\RestBundle\Serializer\TemplateNormalizer;
 use PHPUnit\Framework\TestCase;
 
 class MessageNormalizerTest extends TestCase
 {
+    private MessageNormalizer $normalizer;
+
+    public function __construct(string $name)
+    {
+        parent::__construct($name);
+        $this->normalizer = new MessageNormalizer(new TemplateNormalizer(new TemplateImageNormalizer()));
+    }
+
     public function testSupportsNormalization(): void
     {
-        $normalizer = new MessageNormalizer();
-
         $message = $this->createMock(Message::class);
-        $this->assertTrue($normalizer->supportsNormalization($message));
-        $this->assertFalse($normalizer->supportsNormalization(new \stdClass()));
+        $this->assertTrue($this->normalizer->supportsNormalization($message));
+        $this->assertFalse($this->normalizer->supportsNormalization(new \stdClass()));
     }
 
     public function testNormalizeReturnsExpectedArray(): void
@@ -70,8 +78,7 @@ class MessageNormalizerTest extends TestCase
         $message->method('getSchedule')->willReturn($schedule);
         $message->method('getOptions')->willReturn($options);
 
-        $normalizer = new MessageNormalizer();
-        $result = $normalizer->normalize($message);
+        $result = $this->normalizer->normalize($message);
 
         $this->assertSame(1, $result['id']);
         $this->assertSame('uuid-123', $result['unique_id']);
@@ -84,7 +91,6 @@ class MessageNormalizerTest extends TestCase
 
     public function testNormalizeWithInvalidObjectReturnsEmptyArray(): void
     {
-        $normalizer = new MessageNormalizer();
-        $this->assertSame([], $normalizer->normalize(new \stdClass()));
+        $this->assertSame([], $this->normalizer->normalize(new \stdClass()));
     }
 }

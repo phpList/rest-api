@@ -30,3 +30,11 @@ services:
   PhpList\RestBundle\Serializer\MessageNormalizer:
     tags: [ 'serializer.normalizer' ]
     autowire: true
+
+  PhpList\RestBundle\Serializer\TemplateImageNormalizer:
+    tags: [ 'serializer.normalizer' ]
+    autowire: true
+
+  PhpList\RestBundle\Serializer\TemplateNormalizer:
+    tags: [ 'serializer.normalizer' ]
+    autowire: true
