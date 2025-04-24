@@ -21,3 +21,6 @@ services:
     PhpList\Core\Security\Authentication:
         autowire: true
         autoconfigure: true
+
+    GuzzleHttp\ClientInterface:
+        class: GuzzleHttp\Client

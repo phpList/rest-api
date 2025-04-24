@@ -9,7 +9,10 @@ use PhpList\Core\Domain\Model\Messaging\Template;
 use PhpList\Core\Domain\Repository\Messaging\TemplateRepository;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Controller\Traits\AuthenticationTrait;
+use PhpList\RestBundle\Entity\Request\CreateTemplateRequest;
 use PhpList\RestBundle\Serializer\TemplateNormalizer;
+use PhpList\RestBundle\Service\Manager\TemplateManager;
+use PhpList\RestBundle\Validator\RequestValidator;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -29,15 +32,21 @@ class TemplateController extends AbstractController
 
     private TemplateRepository $templateRepository;
     private TemplateNormalizer $normalizer;
+    private RequestValidator $validator;
+    private TemplateManager $templateManager;
 
     public function __construct(
         Authentication $authentication,
         TemplateRepository $templateRepository,
         TemplateNormalizer $normalizer,
+        RequestValidator $validator,
+        TemplateManager $templateManager
     ) {
         $this->authentication = $authentication;
         $this->templateRepository = $templateRepository;
         $this->normalizer = $normalizer;
+        $this->validator = $validator;
+        $this->templateManager = $templateManager;
     }
 
     #[Route('', name: 'get_templates', methods: ['GET'])]
@@ -129,5 +138,105 @@ class TemplateController extends AbstractController
         $this->requireAuthentication($request);
 
         return new JsonResponse($this->normalizer->normalize($template), Response::HTTP_OK);
+    }
+
+    #[Route('', name: 'create_template', methods: ['POST'])]
+    #[OA\Post(
+        path: '/templates',
+        description: 'Returns a JSON response of created template.',
+        summary: 'Create a new template.',
+        requestBody: new OA\RequestBody(
+            description: 'Pass session credentials',
+            required: true,
+            content: new OA\MediaType(
+                mediaType: 'multipart/form-data',
+                schema: new OA\Schema(
+                    required: ['title'],
+                    properties: [
+                        new OA\Property(
+                            property: 'title',
+                            type: 'string',
+                            example: 'Newsletter Template'
+                        ),
+                        new OA\Property(
+                            property: 'content',
+                            type: 'string',
+                            example: '<html><body>[CONTENT]</body></html>'
+                        ),
+                        new OA\Property(
+                            property: 'text',
+                            type: 'string',
+                            example: '[CONTENT]'
+                        ),
+                        new OA\Property(
+                            property: 'file',
+                            description: 'Optional file upload for HTML content',
+                            type: 'string',
+                            format: 'binary'
+                        ),
+                        new OA\Property(
+                            property: 'check_links',
+                            description: 'Check that all links have full URLs',
+                            type: 'boolean',
+                            example: true
+                        ),
+                        new OA\Property(
+                            property: 'check_images',
+                            description: 'Check that all images have full URLs',
+                            type: 'boolean',
+                            example: false
+                        ),
+                        new OA\Property(
+                            property: 'check_external_images',
+                            description: 'Check that all external images exist',
+                            type: 'boolean',
+                            example: true
+                        ),
+                    ],
+                    type: 'object'
+                )
+            )
+        ),
+        tags: ['templates'],
+        parameters: [
+            new OA\Parameter(
+                name: 'session',
+                description: 'Session ID obtained from authentication',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(
+                    type: 'string'
+                )
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: 'Success',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Template')
+                )
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
+            ),
+            new OA\Response(
+                response: 422,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/ValidationErrorResponse')
+            ),
+        ]
+    )]
+    public function createTemplates(Request $request): JsonResponse
+    {
+        $this->requireAuthentication($request);
+
+        /** @var CreateTemplateRequest $createTemplateRequest */
+        $createTemplateRequest = $this->validator->validate($request, CreateTemplateRequest::class);
+
+        return new JsonResponse($this->templateManager->create($createTemplateRequest), Response::HTTP_CREATED);
     }
 }

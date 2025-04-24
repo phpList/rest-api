@@ -18,3 +18,11 @@ services:
     autowire: true
     autoconfigure: true
     tags: [ 'validator.constraint_validator' ]
+
+  PhpList\RestBundle\Validator\TemplateLinkValidator:
+    autowire: true
+    autoconfigure: true
+
+  PhpList\RestBundle\Validator\TemplateImageValidator:
+    autowire: true
+    autoconfigure: true

@@ -23,3 +23,11 @@ services:
   PhpList\RestBundle\Service\Manager\MessageManager:
     autowire: true
     autoconfigure: true
+
+  PhpList\RestBundle\Service\Manager\TemplateManager:
+    autowire: true
+    autoconfigure: true
+
+  PhpList\RestBundle\Service\Manager\TemplateImageManager:
+    autowire: true
+    autoconfigure: true
