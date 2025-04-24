@@ -26,8 +26,8 @@ class TemplateNormalizer implements NormalizerInterface
         return [
             'id' => $object->getId(),
             'title' => $object->getTitle(),
-            'template' => $object->getTemplate(),
-            'template_text' => $object->getTemplateText(),
+            'content' => $object->getContent(),
+            'text' => $object->getText(),
             'order' => $object->getListOrder(),
             'images' => $object->getImages()->toArray() ? array_map(function (TemplateImage $image) {
                 return $this->templateImageNormalizer->normalize($image);

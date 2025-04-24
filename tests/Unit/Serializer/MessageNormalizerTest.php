@@ -39,8 +39,8 @@ class MessageNormalizerTest extends TestCase
         $template = $this->createConfiguredMock(Template::class, [
             'getId' => 5,
             'getTitle' => 'Test Template',
-            'getTemplate' => '<html>Hello</html>',
-            'getTemplateText' => 'Hello',
+            'getContent' => '<html>Hello</html>',
+            'getText' => 'Hello',
             'getListOrder' => 1,
         ]);
 

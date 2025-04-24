@@ -87,8 +87,8 @@ use OpenApi\Attributes as OA;
     properties: [
         new OA\Property(property: 'id', type: 'integer', example: 1),
         new OA\Property(property: 'title', type: 'string', example: 'Newsletter'),
-        new OA\Property(property: 'template', type: 'string', example: 'Hello World!', nullable: true),
-        new OA\Property(property: 'template_text', type: 'string', nullable: true),
+        new OA\Property(property: 'content', type: 'string', example: 'Hello World!', nullable: true),
+        new OA\Property(property: 'text', type: 'string', nullable: true),
         new OA\Property(property: 'order', type: 'integer', nullable: true),
         new OA\Property(
             property: 'images',
