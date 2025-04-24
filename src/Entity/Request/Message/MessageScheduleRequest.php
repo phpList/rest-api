@@ -8,17 +8,15 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class MessageScheduleRequest implements RequestDtoInterface
 {
-    #[Assert\NotBlank]
-    public int $repeatInterval;
+    public ?int $repeatInterval = null;
 
     #[Assert\DateTime]
-    public string $repeatUntil;
+    public ?string $repeatUntil = null;
 
-    #[Assert\NotBlank]
-    public int $requeueInterval;
+    public ?int $requeueInterval = null;
 
     #[Assert\DateTime]
-    public string $requeueUntil;
+    public ?string $requeueUntil = null;
 
     #[Assert\NotBlank]
     public string $embargo;

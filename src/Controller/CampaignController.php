@@ -151,13 +151,14 @@ class CampaignController extends AbstractController
             description: 'Create a new message.',
             required: true,
             content: new OA\JsonContent(
+                required: ['content', 'format', 'metadata', 'schedule', 'options'],
                 properties: [
                     new OA\Property(property: 'template_id', type: 'integer', example: 1),
-                    new OA\Property(property: 'message_content', ref: '#/components/schemas/MessageContentRequest'),
-                    new OA\Property(property: 'message_format', ref: '#/components/schemas/MessageFormatRequest'),
-                    new OA\Property(property: 'message_metadata', ref: '#/components/schemas/MessageMetadataRequest'),
-                    new OA\Property(property: 'message_schedule', ref: '#/components/schemas/MessageScheduleRequest'),
-                    new OA\Property(property: 'message_options', ref: '#/components/schemas/MessageOptionsRequest'),
+                    new OA\Property(property: 'content', ref: '#/components/schemas/MessageContentRequest'),
+                    new OA\Property(property: 'format', ref: '#/components/schemas/MessageFormatRequest'),
+                    new OA\Property(property: 'metadata', ref: '#/components/schemas/MessageMetadataRequest'),
+                    new OA\Property(property: 'schedule', ref: '#/components/schemas/MessageScheduleRequest'),
+                    new OA\Property(property: 'options', ref: '#/components/schemas/MessageOptionsRequest'),
                 ],
                 type: 'object'
             )
@@ -212,12 +213,13 @@ class CampaignController extends AbstractController
             description: 'Update message.',
             required: true,
             content: new OA\JsonContent(
+                required: ['content', 'format', 'schedule', 'options'],
                 properties: [
                     new OA\Property(property: 'template_id', type: 'integer', example: 1),
-                    new OA\Property(property: 'message_content', ref: '#/components/schemas/MessageContentRequest'),
-                    new OA\Property(property: 'message_format', ref: '#/components/schemas/MessageFormatRequest'),
-                    new OA\Property(property: 'message_schedule', ref: '#/components/schemas/MessageScheduleRequest'),
-                    new OA\Property(property: 'message_options', ref: '#/components/schemas/MessageOptionsRequest'),
+                    new OA\Property(property: 'content', ref: '#/components/schemas/MessageContentRequest'),
+                    new OA\Property(property: 'format', ref: '#/components/schemas/MessageFormatRequest'),
+                    new OA\Property(property: 'schedule', ref: '#/components/schemas/MessageScheduleRequest'),
+                    new OA\Property(property: 'options', ref: '#/components/schemas/MessageOptionsRequest'),
                 ],
                 type: 'object'
             )

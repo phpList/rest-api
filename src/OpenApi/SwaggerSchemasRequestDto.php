@@ -8,6 +8,7 @@ use OpenApi\Attributes as OA;
 
 #[OA\Schema(
     schema: 'MessageContentRequest',
+    required: ['subject', 'text', 'text_message', 'footer'],
     properties: [
         new OA\Property(property: 'subject', type: 'string', example: 'Campaign Subject'),
         new OA\Property(property: 'text', type: 'string', example: 'Full text content'),
@@ -18,6 +19,7 @@ use OpenApi\Attributes as OA;
 )]
 #[OA\Schema(
     schema: 'MessageFormatRequest',
+    required: ['html_formated', 'send_format', 'format_options'],
     properties: [
         new OA\Property(property: 'html_formated', type: 'boolean', example: true),
         new OA\Property(
@@ -44,6 +46,7 @@ use OpenApi\Attributes as OA;
 )]
 #[OA\Schema(
     schema: 'MessageScheduleRequest',
+    required: ['embargo'],
     properties: [
         new OA\Property(property: 'embargo', type: 'string', format: 'date-time', example: '2025-04-17 09:00:00'),
         new OA\Property(property: 'repeat_interval', type: 'string', example: '24 hours'),
@@ -65,6 +68,7 @@ use OpenApi\Attributes as OA;
 )]
 #[OA\Schema(
     schema: 'MessageOptionsRequest',
+    required: ['from_field'],
     properties: [
         new OA\Property(property: 'from_field', type: 'string', example: 'info@example.com'),
         new OA\Property(property: 'to_field', type: 'string', example: 'subscriber@example.com'),

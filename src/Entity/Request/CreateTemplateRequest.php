@@ -10,6 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class CreateTemplateRequest
 {
     #[Assert\NotBlank]
+    #[Assert\NotNull]
     public string $title;
 
     #[Assert\NotBlank]

@@ -8,6 +8,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class MessageOptionsRequest implements RequestDtoInterface
 {
+    #[Assert\NotBlank]
     #[Assert\Email]
     public string $fromField;
 
