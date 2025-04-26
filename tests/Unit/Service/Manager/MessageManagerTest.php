@@ -87,4 +87,66 @@ class MessageManagerTest extends TestCase
         $this->assertSame('Subject', $message->getContent()->getSubject());
         $this->assertSame('draft', $message->getMetadata()->getStatus());
     }
+
+    public function testUpdateMessageReturnsUpdatedMessage(): void
+    {
+        $messageRepository = $this->createMock(MessageRepository::class);
+        $messageBuilder = $this->createMock(MessageBuilder::class);
+
+        $manager = new MessageManager($messageRepository, $messageBuilder);
+
+        $updateRequest = new \PhpList\RestBundle\Entity\Request\UpdateMessageRequest();
+        $updateRequest->messageId = 1;
+        $updateRequest->format = new MessageFormatRequest();
+        $updateRequest->format->htmlFormated = false;
+        $updateRequest->format->sendFormat = 'text';
+        $updateRequest->format->formatOptions = ['text'];
+
+        $updateRequest->schedule = new MessageScheduleRequest();
+        $updateRequest->schedule->repeatInterval = 0;
+        $updateRequest->schedule->repeatUntil = '2025-04-30T00:00:00+00:00';
+        $updateRequest->schedule->requeueInterval = 0;
+        $updateRequest->schedule->requeueUntil = '2025-04-20T00:00:00+00:00';
+        $updateRequest->schedule->embargo = '2025-04-17T09:00:00+00:00';
+
+        $updateRequest->content = new MessageContentRequest();
+        $updateRequest->content->subject = 'Updated Subject';
+        $updateRequest->content->text = 'Updated Full text';
+        $updateRequest->content->textMessage = 'Updated Short text';
+        $updateRequest->content->footer = 'Updated Footer';
+
+        $updateRequest->options = new MessageOptionsRequest();
+        $updateRequest->options->fromField = 'newfrom@example.com';
+        $updateRequest->options->toField = 'newto@example.com';
+        $updateRequest->options->replyTo = 'newreply@example.com';
+        $updateRequest->options->userSelection = 'active-users';
+
+        $updateRequest->templateId = 2;
+
+        $authUser = $this->createMock(Administrator::class);
+
+        $existingMessage = $this->createMock(Message::class);
+        $expectedContent = $this->createMock(Message\MessageContent::class);
+        $expectedMetadata = $this->createMock(Message\MessageMetadata::class);
+
+        $expectedContent->method('getSubject')->willReturn('Updated Subject');
+        $expectedMetadata->method('getStatus')->willReturn('draft');
+
+        $existingMessage->method('getContent')->willReturn($expectedContent);
+        $existingMessage->method('getMetadata')->willReturn($expectedMetadata);
+
+        $messageBuilder->expects($this->once())
+            ->method('buildFromRequest')
+            ->with($updateRequest, $this->anything())
+            ->willReturn($existingMessage);
+
+        $messageRepository->expects($this->once())
+            ->method('save')
+            ->with($existingMessage);
+
+        $message = $manager->updateMessage($updateRequest, $existingMessage, $authUser);
+
+        $this->assertSame('Updated Subject', $message->getContent()->getSubject());
+        $this->assertSame('draft', $message->getMetadata()->getStatus());
+    }
 }
