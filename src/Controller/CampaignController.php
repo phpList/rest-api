@@ -19,6 +19,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -32,20 +33,17 @@ class CampaignController extends AbstractController
 {
     use AuthenticationTrait;
 
-    private MessageProvider $messageProvider;
     private RequestValidator $validator;
     private MessageNormalizer $normalizer;
     private MessageManager $messageManager;
 
     public function __construct(
         Authentication $authentication,
-        MessageProvider $messageProvider,
         RequestValidator $validator,
         MessageNormalizer $normalizer,
         MessageManager $messageManager
     ) {
         $this->authentication = $authentication;
-        $this->messageProvider = $messageProvider;
         $this->validator = $validator;
         $this->normalizer = $normalizer;
         $this->messageManager = $messageManager;
@@ -87,7 +85,7 @@ class CampaignController extends AbstractController
     public function getMessages(Request $request): JsonResponse
     {
         $authUer = $this->requireAuthentication($request);
-        $data = $this->messageProvider->getMessagesByOwner($authUer);
+        $data = $this->messageManager->getMessagesByOwner($authUer);
 
         $normalized = array_map(function ($item) {
             return $this->normalizer->normalize($item);
@@ -135,9 +133,13 @@ class CampaignController extends AbstractController
     )]
     public function getMessage(
         Request $request,
-        #[MapEntity(mapping: ['messageId' => 'id'])] Message $message
+        #[MapEntity(mapping: ['messageId' => 'id'])] ?Message $message = null
     ): JsonResponse {
         $this->requireAuthentication($request);
+
+        if (!$message) {
+            throw new NotFoundHttpException('Campaign not found.');
+        }
 
         return new JsonResponse($this->normalizer->normalize($message), Response::HTTP_OK);
     }
@@ -263,10 +265,14 @@ class CampaignController extends AbstractController
     )]
     public function updateMessage(
         Request $request,
-        #[MapEntity(mapping: ['messageId' => 'id'])] Message $message,
         SerializerInterface $serializer,
+        #[MapEntity(mapping: ['messageId' => 'id'])] ?Message $message = null,
     ): JsonResponse {
         $authUser = $this->requireAuthentication($request);
+
+        if (!$message) {
+            throw new NotFoundHttpException('Campaign not found.');
+        }
 
         /** @return UpdateMessageRequest $updateMessageRequest */
         $updateMessageRequest = $serializer->deserialize($request->getContent(), UpdateMessageRequest::class, 'json');
@@ -325,9 +331,13 @@ class CampaignController extends AbstractController
     )]
     public function deleteMessage(
         Request $request,
-        #[MapEntity(mapping: ['messageId' => 'id'])] Message $message
+        #[MapEntity(mapping: ['messageId' => 'id'])] ?Message $message = null
     ): JsonResponse {
         $this->requireAuthentication($request);
+
+        if (!$message) {
+            throw new NotFoundHttpException('Campaign not found.');
+        }
 
         $this->messageManager->delete($message);
 

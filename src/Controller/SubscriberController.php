@@ -18,6 +18,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
@@ -164,18 +165,23 @@ class SubscriberController extends AbstractController
             ),
             new OA\Response(
                 response: 404,
-                description: 'Not Found',
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/NotFoundErrorResponse')
             )
         ]
     )]
     public function updateSubscriber(
         Request $request,
-        #[MapEntity(mapping: ['subscriberId' => 'id'])] Subscriber $subscriber,
         SerializerInterface $serializer,
         RequestValidator $validator,
         SubscriberNormalizer $subscriberNormalizer,
+        #[MapEntity(mapping: ['subscriberId' => 'id'])] ?Subscriber $subscriber = null,
     ): JsonResponse {
         $this->requireAuthentication($request);
+
+        if (!$subscriber) {
+            throw new NotFoundHttpException('Subscriber not found.');
+        }
 
         /** @var UpdateSubscriberRequest $dto */
         $dto = $serializer->deserialize($request->getContent(), UpdateSubscriberRequest::class, 'json');
@@ -221,7 +227,8 @@ class SubscriberController extends AbstractController
             ),
             new OA\Response(
                 response: 404,
-                description: 'Not Found',
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/NotFoundErrorResponse')
             )
         ]
     )]
@@ -268,16 +275,20 @@ class SubscriberController extends AbstractController
             ),
             new OA\Response(
                 response: 404,
-                description: 'Not Found',
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/NotFoundErrorResponse')
             )
         ]
     )]
     public function deleteSubscriber(
         Request $request,
-        #[MapEntity(mapping: ['subscriberId' => 'id'])] Subscriber $subscriber,
+        #[MapEntity(mapping: ['subscriberId' => 'id'])] ?Subscriber $subscriber = null,
     ): JsonResponse {
         $this->requireAuthentication($request);
 
+        if (!$subscriber) {
+            throw new NotFoundHttpException('Subscriber not found.');
+        }
         $this->subscriberManager->deleteSubscriber($subscriber);
 
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);

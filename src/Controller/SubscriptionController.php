@@ -18,6 +18,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
@@ -78,15 +79,24 @@ class SubscriptionController extends AbstractController
                 response: 403,
                 description: 'Failure',
                 content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/NotFoundErrorResponse')
             )
         ]
     )]
     public function getListMembers(
         Request $request,
-        #[MapEntity(mapping: ['listId' => 'id'])] SubscriberList $list,
-        SubscriberNormalizer $normalizer
+        SubscriberNormalizer $normalizer,
+        #[MapEntity(mapping: ['listId' => 'id'])] ?SubscriberList $list = null,
     ): JsonResponse {
         $this->requireAuthentication($request);
+
+        if (!$list) {
+            throw new NotFoundHttpException('Subscriber list not found.');
+        }
 
         $subscribers = $this->subscriptionManager->getSubscriberListMembers($list);
         $normalized = array_map(function ($item) use ($normalizer) {
@@ -142,9 +152,13 @@ class SubscriptionController extends AbstractController
     )]
     public function getSubscribersCount(
         Request $request,
-        #[MapEntity(mapping: ['listId' => 'id'])] SubscriberList $list
+        #[MapEntity(mapping: ['listId' => 'id'])] ?SubscriberList $list = null,
     ): JsonResponse {
         $this->requireAuthentication($request);
+
+        if (!$list) {
+            throw new NotFoundHttpException('Subscriber list not found.');
+        }
 
         return new JsonResponse(['subscribers_count' => count($list->getSubscribers())], Response::HTTP_OK);
     }
@@ -196,14 +210,19 @@ class SubscriptionController extends AbstractController
                 )
             ),
             new OA\Response(
+                response: 400,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/BadRequestResponse')
+            ),
+            new OA\Response(
                 response: 403,
                 description: 'Failure',
                 content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
             ),
             new OA\Response(
-                response: 400,
+                response: 404,
                 description: 'Failure',
-                content: new OA\JsonContent(ref: '#/components/schemas/BadRequestResponse')
+                content: new OA\JsonContent(ref: '#/components/schemas/NotFoundErrorResponse')
             ),
             new OA\Response(
                 response: 409,
@@ -219,10 +238,14 @@ class SubscriptionController extends AbstractController
     )]
     public function createSubscription(
         Request $request,
-        #[MapEntity(mapping: ['listId' => 'id'])] SubscriberList $list,
-        SubscriptionNormalizer $serializer
+        SubscriptionNormalizer $serializer,
+        #[MapEntity(mapping: ['listId' => 'id'])] ?SubscriberList $list = null,
     ): JsonResponse {
         $this->requireAuthentication($request);
+
+        if (!$list) {
+            throw new NotFoundHttpException('Subscriber list not found.');
+        }
 
         /** @var SubscriptionRequest $subscriptionRequest */
         $subscriptionRequest = $this->validator->validate($request, SubscriptionRequest::class);
@@ -276,15 +299,19 @@ class SubscriptionController extends AbstractController
             ),
             new OA\Response(
                 response: 404,
-                description: 'Subscriber or subscription not found.'
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/NotFoundErrorResponse')
             )
         ]
     )]
     public function deleteSubscriptions(
         Request $request,
-        #[MapEntity(mapping: ['listId' => 'id'])] SubscriberList $list,
+        #[MapEntity(mapping: ['listId' => 'id'])] ?SubscriberList $list = null,
     ): JsonResponse {
         $this->requireAuthentication($request);
+        if (!$list) {
+            throw new NotFoundHttpException('Subscriber list not found.');
+        }
         $subscriptionRequest = new SubscriptionRequest();
         $subscriptionRequest->emails = $request->query->all('emails');
 

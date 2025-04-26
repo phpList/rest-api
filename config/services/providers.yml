@@ -1,9 +1,0 @@
-services:
-  _defaults:
-    autowire: true
-    autoconfigure: true
-    public: false
-
-  PhpList\RestBundle\Service\Provider\MessageProvider:
-    autowire: true
-    autoconfigure: true

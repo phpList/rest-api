@@ -18,6 +18,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
@@ -128,14 +129,23 @@ class TemplateController extends AbstractController
                 response: 403,
                 description: 'Failure',
                 content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/NotFoundErrorResponse')
             )
         ]
     )]
     public function getTemplate(
         Request $request,
-        #[MapEntity(mapping: ['templateId' => 'id'])] Template $template
+        #[MapEntity(mapping: ['templateId' => 'id'])] ?Template $template = null,
     ): JsonResponse {
         $this->requireAuthentication($request);
+
+        if (!$template) {
+            throw $this->createNotFoundException('Template not found.');
+        }
 
         return new JsonResponse($this->normalizer->normalize($template), Response::HTTP_OK);
     }
@@ -245,7 +255,7 @@ class TemplateController extends AbstractController
 
     #[Route('/{templateId}', name: 'delete_template', methods: ['DELETE'])]
     #[OA\Delete(
-        path: 'templates/{templateId}',
+        path: '/templates/{templateId}',
         description: 'Deletes template by id.',
         summary: 'Deletes a template.',
         tags: ['templates'],
@@ -284,9 +294,13 @@ class TemplateController extends AbstractController
     )]
     public function delete(
         Request $request,
-        #[MapEntity(mapping: ['templateId' => 'id'])] Template $template
+        #[MapEntity(mapping: ['templateId' => 'id'])] ?Template $template = null,
     ): JsonResponse {
         $this->requireAuthentication($request);
+
+        if (!$template) {
+            throw new NotFoundHttpException('Template not found.');
+        }
 
         $this->templateManager->delete($template);
 

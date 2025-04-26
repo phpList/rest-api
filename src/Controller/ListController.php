@@ -17,6 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
@@ -176,9 +177,13 @@ class ListController extends AbstractController
     )]
     public function getList(
         Request $request,
-        #[MapEntity(mapping: ['listId' => 'id'])] SubscriberList $list
+        #[MapEntity(mapping: ['listId' => 'id'])] ?SubscriberList $list = null
     ): JsonResponse {
         $this->requireAuthentication($request);
+
+        if (!$list) {
+            throw new NotFoundHttpException('Subscriber list not found.');
+        }
 
         return new JsonResponse($this->normalizer->normalize($list), Response::HTTP_OK);
     }
@@ -224,9 +229,13 @@ class ListController extends AbstractController
     )]
     public function deleteList(
         Request $request,
-        #[MapEntity(mapping: ['listId' => 'id'])] SubscriberList $list
+        #[MapEntity(mapping: ['listId' => 'id'])] ?SubscriberList $list = null
     ): JsonResponse {
         $this->requireAuthentication($request);
+
+        if (!$list) {
+            throw new NotFoundHttpException('Subscriber list not found.');
+        }
 
         $this->subscriberListManager->delete($list);
 

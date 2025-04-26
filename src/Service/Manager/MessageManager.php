@@ -48,4 +48,10 @@ class MessageManager
     {
         $this->messageRepository->remove($message);
     }
+
+    /** @return Message[] */
+    public function getMessagesByOwner(Administrator $owner): array
+    {
+        return $this->messageRepository->getByOwnerId($owner->getId());
+    }
 }

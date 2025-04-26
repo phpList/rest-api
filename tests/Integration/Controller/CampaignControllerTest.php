@@ -78,4 +78,12 @@ class CampaignControllerTest extends AbstractTestController
         $this->authenticatedJsonRequest('GET', '/api/v2/campaigns/999');
         $this->assertHttpNotFound();
     }
+
+    public function testDeleteCampaignReturnsNoContent(): void
+    {
+        $this->loadFixtures([AdministratorFixture::class, MessageFixture::class]);
+
+        $this->authenticatedJsonRequest('DELETE', '/api/v2/campaigns/1');
+        $this->assertHttpNoContent();
+    }
 }
