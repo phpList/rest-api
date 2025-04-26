@@ -26,3 +26,6 @@ services:
   PhpList\RestBundle\Validator\TemplateImageValidator:
     autowire: true
     autoconfigure: true
+
+  PhpList\RestBundle\Validator\ContainsPlaceholderValidator:
+    tags: ['validator.constraint_validator']

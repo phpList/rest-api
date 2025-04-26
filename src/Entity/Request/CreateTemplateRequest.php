@@ -6,6 +6,7 @@ namespace PhpList\RestBundle\Entity\Request;
 
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
+use PhpList\RestBundle\Validator as CustomAssert;
 
 class CreateTemplateRequest
 {
@@ -14,8 +15,10 @@ class CreateTemplateRequest
     public string $title;
 
     #[Assert\NotBlank]
+    #[CustomAssert\ContainsPlaceholder]
     public string $content;
 
+    #[CustomAssert\ContainsPlaceholder]
     public ?string $text = null;
 
     public ?UploadedFile $file = null;
