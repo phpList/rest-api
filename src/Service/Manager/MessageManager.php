@@ -43,4 +43,9 @@ class MessageManager
 
         return $message;
     }
+
+    public function delete(Message $message): void
+    {
+        $this->messageRepository->remove($message);
+    }
 }

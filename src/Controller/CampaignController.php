@@ -280,4 +280,57 @@ class CampaignController extends AbstractController
             Response::HTTP_OK
         );
     }
+
+    #[Route('/{messageId}', name: 'delete_campaign', methods: ['DELETE'])]
+    #[OA\Delete(
+        path: '/campaigns/{messageId}',
+        description: 'Delete campaign/message by id.',
+        summary: 'Delete campaign by id.',
+        tags: ['campaigns'],
+        parameters: [
+            new OA\Parameter(
+                name: 'session',
+                description: 'Session ID obtained from authentication',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(
+                    type: 'string'
+                )
+            ),
+            new OA\Parameter(
+                name: 'messageId',
+                description: 'message ID',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Success',
+                content: new OA\JsonContent(ref: '#/components/schemas/Message')
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/NotFoundErrorResponse')
+            )
+        ]
+    )]
+    public function deleteMessage(
+        Request $request,
+        #[MapEntity(mapping: ['messageId' => 'id'])] Message $message
+    ): JsonResponse {
+        $this->requireAuthentication($request);
+
+        $this->messageManager->delete($message);
+
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+    }
 }

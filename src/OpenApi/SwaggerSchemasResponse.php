@@ -50,6 +50,18 @@ use OpenApi\Attributes as OA;
     ],
     type: 'object'
 )]
+#[OA\Schema(
+    schema: 'NotFoundErrorResponse',
+    required: ['message'],
+    properties: [
+        new OA\Property(
+            property: 'message',
+            type: 'string',
+            example: 'There is no entity with that ID.'
+        ),
+    ],
+    type: 'object'
+)]
 class SwaggerSchemasResponse
 {
 }
