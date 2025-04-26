@@ -242,4 +242,54 @@ class TemplateController extends AbstractController
             Response::HTTP_CREATED
         );
     }
+
+    #[Route('/{templateId}', name: 'delete_template', methods: ['DELETE'])]
+    #[OA\Delete(
+        path: 'templates/{templateId}',
+        description: 'Deletes template by id.',
+        summary: 'Deletes a template.',
+        tags: ['templates'],
+        parameters: [
+            new OA\Parameter(
+                name: 'session',
+                description: 'Session ID',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                name: 'templateId',
+                description: 'Template ID',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: Response::HTTP_NO_CONTENT,
+                description: 'Success'
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/NotFoundErrorResponse')
+            )
+        ]
+    )]
+    public function delete(
+        Request $request,
+        #[MapEntity(mapping: ['templateId' => 'id'])] Template $template
+    ): JsonResponse {
+        $this->requireAuthentication($request);
+
+        $this->templateManager->delete($template);
+
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+    }
 }
