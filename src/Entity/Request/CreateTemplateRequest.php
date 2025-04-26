@@ -8,7 +8,7 @@ use PhpList\RestBundle\Validator\Constraint as CustomAssert;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class CreateTemplateRequest
+class CreateTemplateRequest implements RequestInterface
 {
     #[Assert\NotBlank]
     #[Assert\NotNull]

@@ -237,6 +237,9 @@ class TemplateController extends AbstractController
         /** @var CreateTemplateRequest $createTemplateRequest */
         $createTemplateRequest = $this->validator->validate($request, CreateTemplateRequest::class);
 
-        return new JsonResponse($this->templateManager->create($createTemplateRequest), Response::HTTP_CREATED);
+        return new JsonResponse(
+            $this->normalizer->normalize($this->templateManager->create($createTemplateRequest)),
+            Response::HTTP_CREATED
+        );
     }
 }

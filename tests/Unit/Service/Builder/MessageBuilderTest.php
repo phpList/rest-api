@@ -21,14 +21,15 @@ use PhpList\RestBundle\Service\Builder\MessageContentBuilder;
 use PhpList\RestBundle\Service\Builder\MessageFormatBuilder;
 use PhpList\RestBundle\Service\Builder\MessageOptionsBuilder;
 use PhpList\RestBundle\Service\Builder\MessageScheduleBuilder;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class MessageBuilderTest extends TestCase
 {
-    private MessageFormatBuilder $formatBuilder;
-    private MessageScheduleBuilder $scheduleBuilder;
-    private MessageContentBuilder $contentBuilder;
-    private MessageOptionsBuilder $optionsBuilder;
+    private MessageFormatBuilder&MockObject $formatBuilder;
+    private MessageScheduleBuilder&MockObject $scheduleBuilder;
+    private MessageContentBuilder&MockObject $contentBuilder;
+    private MessageOptionsBuilder&MockObject $optionsBuilder;
     private MessageBuilder $builder;
 
     protected function setUp(): void
