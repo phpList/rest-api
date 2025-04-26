@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Entity\Request;
 
+use PhpList\RestBundle\Validator\Constraint as CustomAssert;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
-use PhpList\RestBundle\Validator as CustomAssert;
 
 class CreateTemplateRequest
 {

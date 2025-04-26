@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Entity\Request;
 
-use PhpList\RestBundle\Validator\EmailExists;
+use PhpList\RestBundle\Validator\Constraint\EmailExists;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class SubscriptionRequest implements RequestInterface

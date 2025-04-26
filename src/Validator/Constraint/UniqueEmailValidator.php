@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace PhpList\RestBundle\Validator;
+namespace PhpList\RestBundle\Validator\Constraint;
 
 use PhpList\Core\Domain\Repository\Subscription\SubscriberRepository;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace PhpList\RestBundle\Tests\Unit\Validator;
+namespace PhpList\RestBundle\Tests\Unit\Validator\Constraint;
 
 use PhpList\Core\Domain\Model\Subscription\Subscriber;
 use PhpList\Core\Domain\Repository\Subscription\SubscriberRepository;
-use PhpList\RestBundle\Validator\UniqueEmail;
-use PhpList\RestBundle\Validator\UniqueEmailValidator;
+use PhpList\RestBundle\Validator\Constraint\UniqueEmail;
+use PhpList\RestBundle\Validator\Constraint\UniqueEmailValidator;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;

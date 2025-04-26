@@ -4,17 +4,17 @@ services:
     autoconfigure: true
     public: false
 
-  PhpList\RestBundle\Validator\UniqueEmailValidator:
+  PhpList\RestBundle\Validator\Constraint\UniqueEmailValidator:
     autowire: true
     autoconfigure: true
     tags: [ 'validator.constraint_validator' ]
 
-  PhpList\RestBundle\Validator\EmailExistsValidator:
+  PhpList\RestBundle\Validator\Constraint\EmailExistsValidator:
     autowire: true
     autoconfigure: true
     tags: [ 'validator.constraint_validator' ]
 
-  PhpList\RestBundle\Validator\TemplateExistsValidator:
+  PhpList\RestBundle\Validator\Constraint\TemplateExistsValidator:
     autowire: true
     autoconfigure: true
     tags: [ 'validator.constraint_validator' ]
@@ -27,5 +27,5 @@ services:
     autowire: true
     autoconfigure: true
 
-  PhpList\RestBundle\Validator\ContainsPlaceholderValidator:
+  PhpList\RestBundle\Validator\Constraint\ContainsPlaceholderValidator:
     tags: ['validator.constraint_validator']

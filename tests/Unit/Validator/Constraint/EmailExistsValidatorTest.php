@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace PhpList\RestBundle\Tests\Unit\Validator;
+namespace PhpList\RestBundle\Tests\Unit\Validator\Constraint;
 
 use PhpList\Core\Domain\Model\Subscription\Subscriber;
 use PhpList\Core\Domain\Repository\Subscription\SubscriberRepository;
-use PhpList\RestBundle\Validator\EmailExists;
-use PhpList\RestBundle\Validator\EmailExistsValidator;
+use PhpList\RestBundle\Validator\Constraint\EmailExists;
+use PhpList\RestBundle\Validator\Constraint\EmailExistsValidator;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class EmailExistsValidatorTest extends TestCase
 {

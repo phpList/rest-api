@@ -8,8 +8,8 @@ use PhpList\RestBundle\Entity\Request\Message\MessageContentRequest;
 use PhpList\RestBundle\Entity\Request\Message\MessageFormatRequest;
 use PhpList\RestBundle\Entity\Request\Message\MessageOptionsRequest;
 use PhpList\RestBundle\Entity\Request\Message\MessageScheduleRequest;
+use PhpList\RestBundle\Validator\Constraint as CustomAssert;
 use Symfony\Component\Validator\Constraints as Assert;
-use PhpList\RestBundle\Validator as CustomAssert;
 
 class UpdateMessageRequest extends CreateMessageRequest
 {

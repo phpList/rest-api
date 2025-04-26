@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace PhpList\RestBundle\Tests\Unit\Validator;
+namespace PhpList\RestBundle\Tests\Unit\Validator\Constraint;
 
 use PhpList\Core\Domain\Model\Messaging\Template;
 use PhpList\Core\Domain\Repository\Messaging\TemplateRepository;
-use PhpList\RestBundle\Validator\TemplateExists;
-use PhpList\RestBundle\Validator\TemplateExistsValidator;
+use PhpList\RestBundle\Validator\Constraint\TemplateExists;
+use PhpList\RestBundle\Validator\Constraint\TemplateExistsValidator;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
-use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
 class TemplateExistsValidatorTest extends TestCase
 {
