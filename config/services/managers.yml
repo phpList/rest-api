@@ -31,3 +31,7 @@ services:
   PhpList\RestBundle\Service\Manager\TemplateImageManager:
     autowire: true
     autoconfigure: true
+
+  PhpList\RestBundle\Service\Manager\AdministratorManager:
+    autowire: true
+    autoconfigure: true

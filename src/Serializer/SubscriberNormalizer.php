@@ -22,7 +22,7 @@ class SubscriberNormalizer implements NormalizerInterface
         return [
             'id' => $object->getId(),
             'email' => $object->getEmail(),
-            'creation_date' => $object->getCreationDate()->format('Y-m-d\TH:i:sP'),
+            'created_at' => $object->getCreatedAt()->format('Y-m-d\TH:i:sP'),
             'confirmed' => $object->isConfirmed(),
             'blacklisted' => $object->isBlacklisted(),
             'bounce_count' => $object->getBounceCount(),
@@ -34,9 +34,9 @@ class SubscriberNormalizer implements NormalizerInterface
                     'id' => $subscription->getSubscriberList()->getId(),
                     'name' => $subscription->getSubscriberList()->getName(),
                     'description' => $subscription->getSubscriberList()->getDescription(),
-                    'creation_date' => $subscription->getSubscriberList()->getCreationDate()->format('Y-m-d\TH:i:sP'),
+                    'created_at' => $subscription->getSubscriberList()->getCreatedAt()->format('Y-m-d\TH:i:sP'),
                     'public' => $subscription->getSubscriberList()->isPublic(),
-                    'subscription_date' => $subscription->getCreationDate()->format('Y-m-d\TH:i:sP'),
+                    'subscription_date' => $subscription->getCreatedAt()->format('Y-m-d\TH:i:sP'),
                 ];
             }, $object->getSubscriptions()->toArray()),
         ];

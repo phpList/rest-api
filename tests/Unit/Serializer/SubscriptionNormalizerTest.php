@@ -36,7 +36,7 @@ class SubscriptionNormalizerTest extends TestCase
         $subscription = $this->createMock(Subscription::class);
         $subscription->method('getSubscriber')->willReturn($subscriber);
         $subscription->method('getSubscriberList')->willReturn($subscriberList);
-        $subscription->method('getCreationDate')->willReturn($subscriptionDate);
+        $subscription->method('getCreatedAt')->willReturn($subscriptionDate);
 
         $subscriberNormalizer = $this->createMock(SubscriberNormalizer::class);
         $subscriberListNormalizer = $this->createMock(SubscriberListNormalizer::class);

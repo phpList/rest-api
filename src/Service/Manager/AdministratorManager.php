@@ -8,17 +8,17 @@ use Doctrine\ORM\EntityManagerInterface;
 use PhpList\Core\Domain\Model\Identity\Administrator;
 use PhpList\RestBundle\Entity\Request\CreateAdministratorRequest;
 use PhpList\RestBundle\Entity\Request\UpdateAdministratorRequest;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use PhpList\Core\Security\HashGenerator;
 
 class AdministratorManager
 {
     private EntityManagerInterface $entityManager;
-    private UserPasswordHasherInterface $passwordHasher;
+    private HashGenerator $hashGenerator;
 
-    public function __construct(EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher)
+    public function __construct(EntityManagerInterface $entityManager, HashGenerator $hashGenerator)
     {
         $this->entityManager = $entityManager;
-        $this->passwordHasher = $passwordHasher;
+        $this->hashGenerator = $hashGenerator;
     }
 
     public function createAdministrator(CreateAdministratorRequest $dto): Administrator
@@ -27,7 +27,7 @@ class AdministratorManager
         $administrator->setLoginName($dto->loginName);
         $administrator->setEmail($dto->email);
         $administrator->setSuperUser($dto->superUser);
-        $hashedPassword = $this->passwordHasher->hashPassword($administrator, $dto->password);
+        $hashedPassword = $this->hashGenerator->createPasswordHash($dto->password);
         $administrator->setPasswordHash($hashedPassword);
 
         $this->entityManager->persist($administrator);
@@ -48,7 +48,7 @@ class AdministratorManager
             $administrator->setSuperUser($dto->superAdmin);
         }
         if ($dto->password !== null) {
-            $hashedPassword = $this->passwordHasher->hashPassword($administrator, $dto->password);
+            $hashedPassword = $this->hashGenerator->createPasswordHash($dto->password);
             $administrator->setPasswordHash($hashedPassword);
         }
 

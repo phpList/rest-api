@@ -32,7 +32,7 @@ class SubscriptionNormalizer implements NormalizerInterface
         return [
             'subscriber' => $this->subscriberNormalizer->normalize($object->getSubscriber()),
             'subscriber_list' => $this->subscriberListNormalizer->normalize($object->getSubscriberList()),
-            'subscription_date' => $object->getCreationDate()->format('Y-m-d\TH:i:sP'),
+            'subscription_date' => $object->getCreatedAt()->format('Y-m-d\TH:i:sP'),
         ];
     }
 

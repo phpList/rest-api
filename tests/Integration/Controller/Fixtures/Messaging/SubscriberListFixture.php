@@ -60,8 +60,8 @@ class SubscriberListFixture extends Fixture
 
             $manager->persist($subscriberList);
 
-            $this->setSubjectProperty($subscriberList, 'creationDate', new DateTime($row['entered']));
-            $this->setSubjectProperty($subscriberList, 'modificationDate', new DateTime($row['modified']));
+            $this->setSubjectProperty($subscriberList, 'createdAt', new DateTime($row['entered']));
+            $this->setSubjectProperty($subscriberList, 'updatedAt', new DateTime($row['modified']));
         } while (true);
 
         fclose($handle);

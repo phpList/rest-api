@@ -30,17 +30,17 @@ class SubscriberNormalizerTest extends TestCase
         $subscriberList->method('getId')->willReturn(1);
         $subscriberList->method('getName')->willReturn('News');
         $subscriberList->method('getDescription')->willReturn('Latest news');
-        $subscriberList->method('getCreationDate')->willReturn(new DateTime('2025-01-01T00:00:00+00:00'));
+        $subscriberList->method('getCreatedAt')->willReturn(new DateTime('2025-01-01T00:00:00+00:00'));
         $subscriberList->method('isPublic')->willReturn(true);
 
         $subscription = $this->createMock(Subscription::class);
         $subscription->method('getSubscriberList')->willReturn($subscriberList);
-        $subscription->method('getCreationDate')->willReturn(new DateTime('2025-01-10T00:00:00+00:00'));
+        $subscription->method('getCreatedAt')->willReturn(new DateTime('2025-01-10T00:00:00+00:00'));
 
         $subscriber = $this->createMock(Subscriber::class);
         $subscriber->method('getId')->willReturn(101);
         $subscriber->method('getEmail')->willReturn('test@example.com');
-        $subscriber->method('getCreationDate')->willReturn(new DateTime('2024-12-31T12:00:00+00:00'));
+        $subscriber->method('getCreatedAt')->willReturn(new DateTime('2024-12-31T12:00:00+00:00'));
         $subscriber->method('isConfirmed')->willReturn(true);
         $subscriber->method('isBlacklisted')->willReturn(false);
         $subscriber->method('getBounceCount')->willReturn(0);
@@ -54,7 +54,7 @@ class SubscriberNormalizerTest extends TestCase
         $expected = [
             'id' => 101,
             'email' => 'test@example.com',
-            'creation_date' => '2024-12-31T12:00:00+00:00',
+            'created_at' => '2024-12-31T12:00:00+00:00',
             'confirmed' => true,
             'blacklisted' => false,
             'bounce_count' => 0,
@@ -66,7 +66,7 @@ class SubscriberNormalizerTest extends TestCase
                     'id' => 1,
                     'name' => 'News',
                     'description' => 'Latest news',
-                    'creation_date' => '2025-01-01T00:00:00+00:00',
+                    'created_at' => '2025-01-01T00:00:00+00:00',
                     'public' => true,
                     'subscription_date' => '2025-01-10T00:00:00+00:00'
                 ]

@@ -38,3 +38,7 @@ services:
   PhpList\RestBundle\Serializer\TemplateNormalizer:
     tags: [ 'serializer.normalizer' ]
     autowire: true
+
+  PhpList\RestBundle\Serializer\AdministratorNormalizer:
+    tags: [ 'serializer.normalizer' ]
+    autowire: true

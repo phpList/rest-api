@@ -25,7 +25,7 @@ class SubscriberListNormalizerTest extends TestCase
         $mock = $this->createMock(SubscriberList::class);
         $mock->method('getId')->willReturn(101);
         $mock->method('getName')->willReturn('Tech News');
-        $mock->method('getCreationDate')->willReturn(new DateTime('2025-04-01T10:00:00+00:00'));
+        $mock->method('getCreatedAt')->willReturn(new DateTime('2025-04-01T10:00:00+00:00'));
         $mock->method('getDescription')->willReturn('All tech updates');
         $mock->method('getListPosition')->willReturn(2);
         $mock->method('getSubjectPrefix')->willReturn('tech');

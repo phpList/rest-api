@@ -21,7 +21,7 @@ class SubscriberListNormalizer implements NormalizerInterface
         return [
             'id' => $object->getId(),
             'name' => $object->getName(),
-            'creation_date' => $object->getCreationDate()->format('Y-m-d\TH:i:sP'),
+            'creation_date' => $object->getCreatedAt()->format('Y-m-d\TH:i:sP'),
             'description' => $object->getDescription(),
             'list_position' => $object->getListPosition(),
             'subject_prefix' => $object->getSubjectPrefix(),
