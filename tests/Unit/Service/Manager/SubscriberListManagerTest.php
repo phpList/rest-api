@@ -8,6 +8,7 @@ use PhpList\Core\Domain\Model\Identity\Administrator;
 use PhpList\Core\Domain\Model\Subscription\SubscriberList;
 use PhpList\Core\Domain\Repository\Subscription\SubscriberListRepository;
 use PhpList\RestBundle\Entity\Request\CreateSubscriberListRequest;
+use PhpList\RestBundle\Entity\Request\PaginationCursorRequest;
 use PhpList\RestBundle\Service\Manager\SubscriberListManager;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -47,15 +48,15 @@ class SubscriberListManagerTest extends TestCase
         $this->assertSame($admin, $result->getOwner());
     }
 
-    public function testGetAll(): void
+    public function testGetPaginated(): void
     {
         $list = new SubscriberList();
         $this->subscriberListRepository
             ->expects($this->once())
-            ->method('findAll')
+            ->method('getAfterId')
             ->willReturn([$list]);
 
-        $result = $this->manager->getAll();
+        $result = $this->manager->getPaginated(new PaginationCursorRequest(0));
 
         $this->assertIsArray($result);
         $this->assertCount(1, $result);

@@ -62,6 +62,17 @@ use OpenApi\Attributes as OA;
     ],
     type: 'object'
 )]
+
+#[OA\Schema(
+    schema: 'CursorPagination',
+    properties: [
+        new OA\Property(property: 'total', type: 'integer', example: 100),
+        new OA\Property(property: 'limit', type: 'integer', example: 25),
+        new OA\Property(property: 'has_more', type: 'boolean', example: true),
+        new OA\Property(property: 'next_cursor', type: 'integer', example: 129)
+    ],
+    type: 'object'
+)]
 class SwaggerSchemasResponse
 {
 }

@@ -38,7 +38,7 @@ class SubscriberListNormalizerTest extends TestCase
         $this->assertSame([
             'id' => 101,
             'name' => 'Tech News',
-            'creation_date' => '2025-04-01T10:00:00+00:00',
+            'created_at' => '2025-04-01T10:00:00+00:00',
             'description' => 'All tech updates',
             'list_position' => 2,
             'subject_prefix' => 'tech',

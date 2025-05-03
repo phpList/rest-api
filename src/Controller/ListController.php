@@ -10,7 +10,9 @@ use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Controller\Traits\AuthenticationTrait;
 use PhpList\RestBundle\Entity\Request\CreateSubscriberListRequest;
 use PhpList\RestBundle\Serializer\SubscriberListNormalizer;
+use PhpList\RestBundle\Service\Factory\PaginationCursorRequestFactory;
 use PhpList\RestBundle\Service\Manager\SubscriberListManager;
+use PhpList\RestBundle\Service\Provider\SubscriberListProvider;
 use PhpList\RestBundle\Validator\RequestValidator;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -35,17 +37,23 @@ class ListController extends AbstractController
     private SubscriberListNormalizer $normalizer;
     private SubscriberListManager $subscriberListManager;
     private RequestValidator $validator;
+    private PaginationCursorRequestFactory $paginationFactory;
+    private SubscriberListProvider $subscriberListProvider;
 
     public function __construct(
         Authentication $authentication,
         SubscriberListNormalizer $normalizer,
         RequestValidator $validator,
-        SubscriberListManager $subscriberListManager
+        SubscriberListManager $subscriberListManager,
+        PaginationCursorRequestFactory $paginationFactory,
+        SubscriberListProvider $subscriberListProvider
     ) {
         $this->authentication = $authentication;
         $this->normalizer = $normalizer;
         $this->validator = $validator;
         $this->subscriberListManager = $subscriberListManager;
+        $this->paginationFactory = $paginationFactory;
+        $this->subscriberListProvider = $subscriberListProvider;
     }
 
     #[Route('', name: 'get_lists', methods: ['GET'])]
@@ -63,6 +71,20 @@ class ListController extends AbstractController
                 schema: new OA\Schema(
                     type: 'string'
                 )
+            ),
+            new OA\Parameter(
+                name: 'after_id',
+                description: 'Last id (starting from 0)',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'integer', default: 1, minimum: 1)
+            ),
+            new OA\Parameter(
+                name: 'limit',
+                description: 'Number of results per page',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'integer', default: 25, maximum: 100, minimum: 1)
             )
         ],
         responses: [
@@ -70,29 +92,15 @@ class ListController extends AbstractController
                 response: 200,
                 description: 'Success',
                 content: new OA\JsonContent(
-                    type: 'array',
-                    items: new OA\Items(
-                        properties: [
-                            new OA\Property(property: 'name', type: 'string', example: 'News'),
-                            new OA\Property(
-                                property: 'description',
-                                type: 'string',
-                                example: 'News (and some fun stuff)'
-                            ),
-                            new OA\Property(
-                                property: 'creation_date',
-                                type: 'string',
-                                format: 'date-time',
-                                example: '2016-06-22T15:01:17+00:00'
-                            ),
-                            new OA\Property(property: 'list_position', type: 'integer', example: 12),
-                            new OA\Property(property: 'subject_prefix', type: 'string', example: 'phpList'),
-                            new OA\Property(property: 'public', type: 'boolean', example: true),
-                            new OA\Property(property: 'category', type: 'string', example: 'news'),
-                            new OA\Property(property: 'id', type: 'integer', example: 1)
-                        ],
-                        type: 'object'
-                    )
+                    properties: [
+                        new OA\Property(
+                            property: 'items',
+                            type: 'array',
+                            items: new OA\Items(ref: '#/components/schemas/SubscriberList')
+                        ),
+                        new OA\Property(property: 'pagination', ref: '#/components/schemas/CursorPagination')
+                    ],
+                    type: 'object'
                 )
             ),
             new OA\Response(
@@ -105,13 +113,12 @@ class ListController extends AbstractController
     public function getLists(Request $request): JsonResponse
     {
         $this->requireAuthentication($request);
-        $data = $this->subscriberListManager->getAll();
+        $pagination = $this->paginationFactory->fromRequest($request);
 
-        $normalized = array_map(function ($item) {
-            return $this->normalizer->normalize($item);
-        }, $data);
-
-        return new JsonResponse($normalized, Response::HTTP_OK);
+        return new JsonResponse(
+            $this->subscriberListProvider->getPaginatedList($pagination),
+            Response::HTTP_OK
+        );
     }
 
     #[Route('/{listId}', name: 'get_list', methods: ['GET'])]
@@ -140,19 +147,7 @@ class ListController extends AbstractController
             new OA\Response(
                 response: 200,
                 description: 'Success',
-                content: new OA\JsonContent(
-                    type: 'object',
-                    example: [
-                        'name' => 'News',
-                        'description' => 'News (and some fun stuff)',
-                        'creation_date' => '2016-06-22T15:01:17+00:00',
-                        'list_position' => 12,
-                        'subject_prefix' => 'phpList',
-                        'public' => true,
-                        'category' => 'news',
-                        'id' => 1
-                    ]
-                )
+                content: new OA\JsonContent(ref: '#/components/schemas/SubscriberList')
             ),
             new OA\Response(
                 response: 403,
@@ -276,19 +271,7 @@ class ListController extends AbstractController
             new OA\Response(
                 response: 201,
                 description: 'Success',
-                content: new OA\JsonContent(
-                    type: 'object',
-                    example: [
-                        'name' => 'News',
-                        'description' => 'News (and some fun stuff)',
-                        'creation_date' => '2016-06-22T15:01:17+00:00',
-                        'list_position' => 12,
-                        'subject_prefix' => 'phpList',
-                        'public' => true,
-                        'category' => 'news',
-                        'id' => 1
-                    ]
-                )
+                content: new OA\JsonContent(ref: '#/components/schemas/SubscriberList')
             ),
             new OA\Response(
                 response: 403,

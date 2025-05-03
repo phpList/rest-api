@@ -13,7 +13,7 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'name', type: 'string', example: 'Newsletter'),
         new OA\Property(property: 'description', type: 'string', example: 'Monthly updates'),
         new OA\Property(
-            property: 'creation_date',
+            property: 'created_at',
             type: 'string',
             format: 'date-time',
             example: '2022-12-01T10:00:00Z'
@@ -28,7 +28,7 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'id', type: 'integer', example: 1),
         new OA\Property(property: 'email', type: 'string', example: 'subscriber@example.com'),
         new OA\Property(
-            property: 'creation_date',
+            property: 'created_at',
             type: 'string',
             format: 'date-time',
             example: '2023-01-01T12:00:00Z',

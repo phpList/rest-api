@@ -42,3 +42,6 @@ services:
   PhpList\RestBundle\Serializer\AdministratorNormalizer:
     tags: [ 'serializer.normalizer' ]
     autowire: true
+
+  PhpList\RestBundle\Serializer\CursorPaginationNormalizer:
+    autowire: true

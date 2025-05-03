@@ -8,6 +8,7 @@ use PhpList\Core\Domain\Model\Identity\Administrator;
 use PhpList\Core\Domain\Model\Subscription\SubscriberList;
 use PhpList\Core\Domain\Repository\Subscription\SubscriberListRepository;
 use PhpList\RestBundle\Entity\Request\CreateSubscriberListRequest;
+use PhpList\RestBundle\Entity\Request\PaginationCursorRequest;
 
 class SubscriberListManager
 {
@@ -34,10 +35,17 @@ class SubscriberListManager
         return $subscriberList;
     }
 
-    /** @return SubscriberList[] */
-    public function getAll(): array
+    /**
+     * @return SubscriberList[]
+     */
+    public function getPaginated(PaginationCursorRequest $pagination): array
     {
-        return $this->subscriberListRepository->findAll();
+        return $this->subscriberListRepository->getAfterId($pagination->afterId, $pagination->limit);
+    }
+
+    public function getTotalCount(): int
+    {
+        return $this->subscriberListRepository->count();
     }
 
     public function delete(SubscriberList $subscriberList): void

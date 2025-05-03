@@ -60,12 +60,12 @@ class ListControllerTest extends AbstractTestController
 
         $this->authenticatedJsonRequest('get', '/api/v2/lists');
 
-        $this->assertJsonResponseContentEquals(
-            [
+        $this->assertJsonResponseContentEquals([
+            'items' => [
                 [
                     'id' => 1,
                     'name' => 'News',
-                    'creation_date' => '2016-06-22T15:01:17+00:00',
+                    'created_at' => '2016-06-22T15:01:17+00:00',
                     'description' => 'News (and some fun stuff)',
                     'list_position' => 12,
                     'subject_prefix' => 'phpList',
@@ -75,7 +75,7 @@ class ListControllerTest extends AbstractTestController
                 [
                     'id' => 2,
                     'name' => 'More news',
-                    'creation_date' => '2016-06-22T15:01:17+00:00',
+                    'created_at' => '2016-06-22T15:01:17+00:00',
                     'description' => '',
                     'list_position' => 12,
                     'subject_prefix' => '',
@@ -85,15 +85,21 @@ class ListControllerTest extends AbstractTestController
                 [
                     'id' => 3,
                     'name' => 'Tech news',
-                    'creation_date' => '2019-02-11T15:01:15+00:00',
+                    'created_at' => '2019-02-11T15:01:15+00:00',
                     'description' => '',
                     'list_position' => 12,
                     'subject_prefix' => '',
                     'public' => true,
                     'category' => '',
                 ],
-            ]
-        );
+            ],
+            'pagination' => [
+                'total' => 3,
+                'limit' => 25,
+                'has_more' => false,
+                'next_cursor' => 3,
+            ],
+        ]);
     }
 
     public function testGetListWithoutSessionKeyForExistingListReturnsForbiddenStatus()
@@ -131,7 +137,7 @@ class ListControllerTest extends AbstractTestController
             [
                 'id' => 1,
                 'name' => 'News',
-                'creation_date' => '2016-06-22T15:01:17+00:00',
+                'created_at' => '2016-06-22T15:01:17+00:00',
                 'description' => 'News (and some fun stuff)',
                 'list_position' => 12,
                 'subject_prefix' => 'phpList',
