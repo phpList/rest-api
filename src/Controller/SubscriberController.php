@@ -33,8 +33,8 @@ class SubscriberController extends BaseController
 
     public function __construct(
         Authentication $authentication,
-        SubscriberManager $subscriberManager,
         RequestValidator $validator,
+        SubscriberManager $subscriberManager,
         SubscriberNormalizer $subscriberNormalizer,
     ) {
         parent::__construct($authentication, $validator);

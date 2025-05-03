@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Controller;
 
 use OpenApi\Attributes as OA;
+use PhpList\Core\Domain\Filter\MessageFilter;
 use PhpList\Core\Domain\Model\Messaging\Message;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Entity\Request\CreateMessageRequest;
 use PhpList\RestBundle\Entity\Request\UpdateMessageRequest;
 use PhpList\RestBundle\Serializer\MessageNormalizer;
 use PhpList\RestBundle\Service\Manager\MessageManager;
+use PhpList\RestBundle\Service\Provider\PaginatedDataProvider;
 use PhpList\RestBundle\Validator\RequestValidator;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -29,16 +31,19 @@ class CampaignController extends BaseController
 {
     private MessageNormalizer $normalizer;
     private MessageManager $messageManager;
+    private PaginatedDataProvider $paginatedProvider;
 
     public function __construct(
         Authentication $authentication,
         RequestValidator $validator,
         MessageNormalizer $normalizer,
-        MessageManager $messageManager
+        MessageManager $messageManager,
+        PaginatedDataProvider $paginatedProvider,
     ) {
         parent::__construct($authentication, $validator);
         $this->normalizer = $normalizer;
         $this->messageManager = $messageManager;
+        $this->paginatedProvider = $paginatedProvider;
     }
 
     #[Route('', name: 'get_campaigns', methods: ['GET'])]
@@ -56,6 +61,20 @@ class CampaignController extends BaseController
                 schema: new OA\Schema(
                     type: 'string'
                 )
+            ),
+            new OA\Parameter(
+                name: 'after_id',
+                description: 'Last id (starting from 0)',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'integer', default: 1, minimum: 1)
+            ),
+            new OA\Parameter(
+                name: 'limit',
+                description: 'Number of results per page',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'integer', default: 25, maximum: 100, minimum: 1)
             )
         ],
         responses: [
@@ -63,8 +82,15 @@ class CampaignController extends BaseController
                 response: 200,
                 description: 'Success',
                 content: new OA\JsonContent(
-                    type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Message')
+                    properties: [
+                        new OA\Property(
+                            property: 'items',
+                            type: 'array',
+                            items: new OA\Items(ref: '#/components/schemas/Message')
+                        ),
+                        new OA\Property(property: 'pagination', ref: '#/components/schemas/CursorPagination')
+                    ],
+                    type: 'object'
                 )
             ),
             new OA\Response(
@@ -77,13 +103,13 @@ class CampaignController extends BaseController
     public function getMessages(Request $request): JsonResponse
     {
         $authUer = $this->requireAuthentication($request);
-        $data = $this->messageManager->getMessagesByOwner($authUer);
 
-        $normalized = array_map(function ($item) {
-            return $this->normalizer->normalize($item);
-        }, $data);
+        $filter = (new MessageFilter())->setOwner($authUer);
 
-        return new JsonResponse($normalized, Response::HTTP_OK);
+        return new JsonResponse(
+            $this->paginatedProvider->getPaginatedList($request, $this->normalizer, Message::class, $filter),
+            Response::HTTP_OK
+        );
     }
 
     #[Route('/{messageId}', name: 'get_campaign', methods: ['GET'])]

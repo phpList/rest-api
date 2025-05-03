@@ -11,7 +11,7 @@ use PhpList\RestBundle\Entity\Request\CreateAdministratorRequest;
 use PhpList\RestBundle\Entity\Request\UpdateAdministratorRequest;
 use PhpList\RestBundle\Serializer\AdministratorNormalizer;
 use PhpList\RestBundle\Service\Manager\AdministratorManager;
-use PhpList\RestBundle\Service\Provider\AdministratorProvider;
+use PhpList\RestBundle\Service\Provider\PaginatedDataProvider;
 use PhpList\RestBundle\Validator\RequestValidator;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -28,19 +28,19 @@ class AdministratorController extends BaseController
 {
     private AdministratorManager $administratorManager;
     private AdministratorNormalizer $normalizer;
-    private AdministratorProvider $administratorProvider;
+    private PaginatedDataProvider $paginatedProvider;
 
     public function __construct(
         Authentication $authentication,
+        RequestValidator $validator,
         AdministratorManager $administratorManager,
         AdministratorNormalizer $normalizer,
-        RequestValidator $validator,
-        AdministratorProvider $administratorProvider
+        PaginatedDataProvider $paginatedProvider
     ) {
         parent::__construct($authentication, $validator);
         $this->administratorManager = $administratorManager;
         $this->normalizer = $normalizer;
-        $this->administratorProvider = $administratorProvider;
+        $this->paginatedProvider = $paginatedProvider;
     }
 
     #[Route('', name: 'get_administrators', methods: ['GET'])]
@@ -101,7 +101,7 @@ class AdministratorController extends BaseController
         $this->requireAuthentication($request);
 
         return new JsonResponse(
-            $this->administratorProvider->getPaginatedList($request),
+            $this->paginatedProvider->getPaginatedList($request, $this->normalizer, Administrator::class),
             Response::HTTP_OK
         );
     }

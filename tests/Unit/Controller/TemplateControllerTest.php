@@ -36,9 +36,9 @@ class TemplateControllerTest extends TestCase
 
         $this->controller = new TemplateController(
             $authentication,
+            $this->validator,
             $this->templateRepository,
             $this->normalizer,
-            $this->validator,
             $this->templateManager
         );
     }

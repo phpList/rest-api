@@ -32,8 +32,8 @@ class SessionController extends BaseController
 
     public function __construct(
         Authentication $authentication,
+        RequestValidator $validator,
         SessionManager $sessionManager,
-        RequestValidator $validator
     ) {
         parent::__construct($authentication, $validator);
 

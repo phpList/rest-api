@@ -33,8 +33,8 @@ class SubscriptionController extends BaseController
 
     public function __construct(
         Authentication $authentication,
-        SubscriptionManager $subscriptionManager,
         RequestValidator $validator,
+        SubscriptionManager $subscriptionManager,
         SubscriberNormalizer $subscriberNormalizer,
         SubscriptionNormalizer $subscriptionNormalizer,
     ) {

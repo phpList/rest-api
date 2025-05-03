@@ -9,9 +9,8 @@ use PhpList\Core\Domain\Model\Subscription\SubscriberList;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Entity\Request\CreateSubscriberListRequest;
 use PhpList\RestBundle\Serializer\SubscriberListNormalizer;
-use PhpList\RestBundle\Service\Factory\PaginationCursorRequestFactory;
 use PhpList\RestBundle\Service\Manager\SubscriberListManager;
-use PhpList\RestBundle\Service\Provider\SubscriberListProvider;
+use PhpList\RestBundle\Service\Provider\PaginatedDataProvider;
 use PhpList\RestBundle\Validator\RequestValidator;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -32,22 +31,19 @@ class ListController extends BaseController
 {
     private SubscriberListNormalizer $normalizer;
     private SubscriberListManager $subscriberListManager;
-    private PaginationCursorRequestFactory $paginationFactory;
-    private SubscriberListProvider $subscriberListProvider;
+    private PaginatedDataProvider $paginatedDataProvider;
 
     public function __construct(
         Authentication $authentication,
-        SubscriberListNormalizer $normalizer,
         RequestValidator $validator,
+        SubscriberListNormalizer $normalizer,
         SubscriberListManager $subscriberListManager,
-        PaginationCursorRequestFactory $paginationFactory,
-        SubscriberListProvider $subscriberListProvider
+        PaginatedDataProvider $paginatedDataProvider,
     ) {
         parent::__construct($authentication, $validator);
         $this->normalizer = $normalizer;
         $this->subscriberListManager = $subscriberListManager;
-        $this->paginationFactory = $paginationFactory;
-        $this->subscriberListProvider = $subscriberListProvider;
+        $this->paginatedDataProvider = $paginatedDataProvider;
     }
 
     #[Route('', name: 'get_lists', methods: ['GET'])]
@@ -107,10 +103,9 @@ class ListController extends BaseController
     public function getLists(Request $request): JsonResponse
     {
         $this->requireAuthentication($request);
-        $pagination = $this->paginationFactory->fromRequest($request);
 
         return new JsonResponse(
-            $this->subscriberListProvider->getPaginatedList($pagination),
+            $this->paginatedDataProvider->getPaginatedList($request, $this->normalizer, SubscriberList::class),
             Response::HTTP_OK
         );
     }

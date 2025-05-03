@@ -4,10 +4,6 @@ services:
     autoconfigure: true
     public: false
 
-  PhpList\RestBundle\Service\Provider\SubscriberListProvider:
-    autowire: true
-    autoconfigure: true
-
-  PhpList\RestBundle\Service\Provider\AdministratorProvider:
+  PhpList\RestBundle\Service\Provider\PaginatedDataProvider:
     autowire: true
     autoconfigure: true

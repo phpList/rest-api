@@ -33,9 +33,9 @@ class TemplateController extends BaseController
 
     public function __construct(
         Authentication $authentication,
+        RequestValidator $validator,
         TemplateRepository $templateRepository,
         TemplateNormalizer $normalizer,
-        RequestValidator $validator,
         TemplateManager $templateManager
     ) {
         parent::__construct($authentication, $validator);
