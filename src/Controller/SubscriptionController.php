@@ -7,14 +7,12 @@ namespace PhpList\RestBundle\Controller;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Model\Subscription\SubscriberList;
 use PhpList\Core\Security\Authentication;
-use PhpList\RestBundle\Controller\Traits\AuthenticationTrait;
 use PhpList\RestBundle\Entity\Request\SubscriptionRequest;
 use PhpList\RestBundle\Serializer\SubscriberNormalizer;
 use PhpList\RestBundle\Serializer\SubscriptionNormalizer;
 use PhpList\RestBundle\Service\Manager\SubscriptionManager;
 use PhpList\RestBundle\Validator\RequestValidator;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,21 +25,23 @@ use Symfony\Component\Routing\Attribute\Route;
  * @author Tatevik Grigoryan <tatevik@phplist.com>
  */
 #[Route('/lists')]
-class SubscriptionController extends AbstractController
+class SubscriptionController extends BaseController
 {
-    use AuthenticationTrait;
-
     private SubscriptionManager $subscriptionManager;
-    private RequestValidator $validator;
+    private SubscriberNormalizer $subscriberNormalizer;
+    private SubscriptionNormalizer $subscriptionNormalizer;
 
     public function __construct(
         Authentication $authentication,
         SubscriptionManager $subscriptionManager,
-        RequestValidator $validator
+        RequestValidator $validator,
+        SubscriberNormalizer $subscriberNormalizer,
+        SubscriptionNormalizer $subscriptionNormalizer,
     ) {
-        $this->authentication = $authentication;
+        parent::__construct($authentication, $validator);
         $this->subscriptionManager = $subscriptionManager;
-        $this->validator = $validator;
+        $this->subscriberNormalizer = $subscriberNormalizer;
+        $this->subscriptionNormalizer = $subscriptionNormalizer;
     }
 
     #[Route('/{listId}/subscribers', name: 'get_subscriber_from_list', methods: ['GET'])]
@@ -89,7 +89,6 @@ class SubscriptionController extends AbstractController
     )]
     public function getListMembers(
         Request $request,
-        SubscriberNormalizer $normalizer,
         #[MapEntity(mapping: ['listId' => 'id'])] ?SubscriberList $list = null,
     ): JsonResponse {
         $this->requireAuthentication($request);
@@ -99,9 +98,7 @@ class SubscriptionController extends AbstractController
         }
 
         $subscribers = $this->subscriptionManager->getSubscriberListMembers($list);
-        $normalized = array_map(function ($item) use ($normalizer) {
-            return $normalizer->normalize($item);
-        }, $subscribers);
+        $normalized = array_map(fn($subscriber) => $this->subscriberNormalizer->normalize($subscriber), $subscribers);
 
         return new JsonResponse($normalized, Response::HTTP_OK);
     }
@@ -238,7 +235,6 @@ class SubscriptionController extends AbstractController
     )]
     public function createSubscription(
         Request $request,
-        SubscriptionNormalizer $serializer,
         #[MapEntity(mapping: ['listId' => 'id'])] ?SubscriberList $list = null,
     ): JsonResponse {
         $this->requireAuthentication($request);
@@ -250,10 +246,7 @@ class SubscriptionController extends AbstractController
         /** @var SubscriptionRequest $subscriptionRequest */
         $subscriptionRequest = $this->validator->validate($request, SubscriptionRequest::class);
         $subscriptions = $this->subscriptionManager->createSubscriptions($list, $subscriptionRequest->emails);
-
-        $normalized = array_map(function ($item) use ($serializer) {
-            return $serializer->normalize($item);
-        }, $subscriptions);
+        $normalized = array_map(fn($item) => $this->subscriptionNormalizer->normalize($item), $subscriptions);
 
         return new JsonResponse($normalized, Response::HTTP_CREATED);
     }

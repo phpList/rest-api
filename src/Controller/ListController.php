@@ -7,7 +7,6 @@ namespace PhpList\RestBundle\Controller;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Model\Subscription\SubscriberList;
 use PhpList\Core\Security\Authentication;
-use PhpList\RestBundle\Controller\Traits\AuthenticationTrait;
 use PhpList\RestBundle\Entity\Request\CreateSubscriberListRequest;
 use PhpList\RestBundle\Serializer\SubscriberListNormalizer;
 use PhpList\RestBundle\Service\Factory\PaginationCursorRequestFactory;
@@ -15,7 +14,6 @@ use PhpList\RestBundle\Service\Manager\SubscriberListManager;
 use PhpList\RestBundle\Service\Provider\SubscriberListProvider;
 use PhpList\RestBundle\Validator\RequestValidator;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -30,13 +28,10 @@ use Symfony\Component\Routing\Attribute\Route;
  * @author Tatevik Grigoryan <tatevik@phplist.com>
  */
 #[Route('/lists')]
-class ListController extends AbstractController
+class ListController extends BaseController
 {
-    use AuthenticationTrait;
-
     private SubscriberListNormalizer $normalizer;
     private SubscriberListManager $subscriberListManager;
-    private RequestValidator $validator;
     private PaginationCursorRequestFactory $paginationFactory;
     private SubscriberListProvider $subscriberListProvider;
 
@@ -48,9 +43,8 @@ class ListController extends AbstractController
         PaginationCursorRequestFactory $paginationFactory,
         SubscriberListProvider $subscriberListProvider
     ) {
-        $this->authentication = $authentication;
+        parent::__construct($authentication, $validator);
         $this->normalizer = $normalizer;
-        $this->validator = $validator;
         $this->subscriberListManager = $subscriberListManager;
         $this->paginationFactory = $paginationFactory;
         $this->subscriberListProvider = $subscriberListProvider;

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Entity\Request;
 
+use PhpList\Core\Domain\Model\Subscription\Subscriber;
 use PhpList\RestBundle\Validator\Constraint as CustomAssert;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -13,7 +14,7 @@ class UpdateSubscriberRequest implements RequestInterface
 
     #[Assert\NotBlank]
     #[Assert\Email]
-    #[CustomAssert\UniqueEmail]
+    #[CustomAssert\UniqueEmail(entityClass: Subscriber::class)]
     public string $email;
 
     #[Assert\Type(type: 'bool')]

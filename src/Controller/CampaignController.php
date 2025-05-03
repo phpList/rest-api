@@ -7,21 +7,17 @@ namespace PhpList\RestBundle\Controller;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Model\Messaging\Message;
 use PhpList\Core\Security\Authentication;
-use PhpList\RestBundle\Controller\Traits\AuthenticationTrait;
 use PhpList\RestBundle\Entity\Request\CreateMessageRequest;
 use PhpList\RestBundle\Entity\Request\UpdateMessageRequest;
 use PhpList\RestBundle\Serializer\MessageNormalizer;
 use PhpList\RestBundle\Service\Manager\MessageManager;
-use PhpList\RestBundle\Service\Provider\MessageProvider;
 use PhpList\RestBundle\Validator\RequestValidator;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * This controller provides REST API to manage campaigns.
@@ -29,11 +25,8 @@ use Symfony\Component\Serializer\SerializerInterface;
  * @author Tatevik Grigoryan <tatevik@phplist.com>
  */
 #[Route('/campaigns')]
-class CampaignController extends AbstractController
+class CampaignController extends BaseController
 {
-    use AuthenticationTrait;
-
-    private RequestValidator $validator;
     private MessageNormalizer $normalizer;
     private MessageManager $messageManager;
 
@@ -43,8 +36,7 @@ class CampaignController extends AbstractController
         MessageNormalizer $normalizer,
         MessageManager $messageManager
     ) {
-        $this->authentication = $authentication;
-        $this->validator = $validator;
+        parent::__construct($authentication, $validator);
         $this->normalizer = $normalizer;
         $this->messageManager = $messageManager;
     }
@@ -265,7 +257,6 @@ class CampaignController extends AbstractController
     )]
     public function updateMessage(
         Request $request,
-        SerializerInterface $serializer,
         #[MapEntity(mapping: ['messageId' => 'id'])] ?Message $message = null,
     ): JsonResponse {
         $authUser = $this->requireAuthentication($request);
@@ -273,18 +264,11 @@ class CampaignController extends AbstractController
         if (!$message) {
             throw new NotFoundHttpException('Campaign not found.');
         }
+        /** @var UpdateMessageRequest $updateMessageRequest */
+        $updateMessageRequest = $this->validator->validate($request, UpdateMessageRequest::class);
+        $data = $this->messageManager->updateMessage($updateMessageRequest, $message, $authUser);
 
-        /** @return UpdateMessageRequest $updateMessageRequest */
-        $updateMessageRequest = $serializer->deserialize($request->getContent(), UpdateMessageRequest::class, 'json');
-        $updateMessageRequest->messageId = $message->getId();
-        $this->validator->validateDto($updateMessageRequest);
-
-        return new JsonResponse(
-            $this->normalizer->normalize(
-                $this->messageManager->updateMessage($updateMessageRequest, $message, $authUser)
-            ),
-            Response::HTTP_OK
-        );
+        return new JsonResponse($this->normalizer->normalize($data), Response::HTTP_OK);
     }
 
     #[Route('/{messageId}', name: 'delete_campaign', methods: ['DELETE'])]

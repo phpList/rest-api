@@ -6,32 +6,104 @@ namespace PhpList\RestBundle\Controller;
 
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Model\Identity\Administrator;
-use PhpList\RestBundle\Controller\Traits\AuthenticationTrait;
+use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Entity\Request\CreateAdministratorRequest;
 use PhpList\RestBundle\Entity\Request\UpdateAdministratorRequest;
 use PhpList\RestBundle\Serializer\AdministratorNormalizer;
 use PhpList\RestBundle\Service\Manager\AdministratorManager;
+use PhpList\RestBundle\Service\Provider\AdministratorProvider;
 use PhpList\RestBundle\Validator\RequestValidator;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
  * This controller provides CRUD operations for Administrator entities.
  */
 #[Route('/administrators')]
-class AdministratorController extends AbstractController
+class AdministratorController extends BaseController
 {
-    use AuthenticationTrait;
-
     private AdministratorManager $administratorManager;
+    private AdministratorNormalizer $normalizer;
+    private AdministratorProvider $administratorProvider;
 
-    public function __construct(AdministratorManager $administratorManager)
-    {
+    public function __construct(
+        Authentication $authentication,
+        AdministratorManager $administratorManager,
+        AdministratorNormalizer $normalizer,
+        RequestValidator $validator,
+        AdministratorProvider $administratorProvider
+    ) {
+        parent::__construct($authentication, $validator);
         $this->administratorManager = $administratorManager;
+        $this->normalizer = $normalizer;
+        $this->administratorProvider = $administratorProvider;
+    }
+
+    #[Route('', name: 'get_administrators', methods: ['GET'])]
+    #[OA\Post(
+        path: '/administrators',
+        description: 'Get list of administrators.',
+        summary: 'Get Administrators',
+        tags: ['administrators'],
+        parameters: [
+            new OA\Parameter(
+                name: 'session',
+                description: 'Session ID obtained from authentication',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(
+                    type: 'string'
+                )
+            ),
+            new OA\Parameter(
+                name: 'after_id',
+                description: 'Last id (starting from 0)',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'integer', default: 1, minimum: 1)
+            ),
+            new OA\Parameter(
+                name: 'limit',
+                description: 'Number of results per page',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'integer', default: 25, maximum: 100, minimum: 1)
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Success',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: 'items',
+                            type: 'array',
+                            items: new OA\Items(ref: '#/components/schemas/Administrator')
+                        ),
+                        new OA\Property(property: 'pagination', ref: '#/components/schemas/CursorPagination')
+                    ],
+                    type: 'object'
+                )
+            ),
+            new OA\Response(
+                response: 400,
+                description: 'Invalid input'
+            )
+        ]
+    )]
+    public function getAdministrators(Request $request): JsonResponse
+    {
+        $this->requireAuthentication($request);
+
+        return new JsonResponse(
+            $this->administratorProvider->getPaginatedList($request),
+            Response::HTTP_OK
+        );
     }
 
     #[Route('', name: 'create_administrator', methods: ['POST'])]
@@ -49,7 +121,7 @@ class AdministratorController extends AbstractController
             new OA\Response(
                 response: 201,
                 description: 'Administrator created successfully',
-                content: new OA\JsonContent(ref: '#/components/schemas/CreateAdministratorRequest')
+                content: new OA\JsonContent(ref: '#/components/schemas/Administrator')
             ),
             new OA\Response(
                 response: 400,
@@ -62,11 +134,11 @@ class AdministratorController extends AbstractController
         RequestValidator $validator,
         AdministratorNormalizer $normalizer
     ): JsonResponse {
+        $this->requireAuthentication($request);
+
         /** @var CreateAdministratorRequest $dto */
         $dto = $validator->validate($request, CreateAdministratorRequest::class);
-
         $administrator = $this->administratorManager->createAdministrator($dto);
-
         $json = $normalizer->normalize($administrator, 'json');
 
         return new JsonResponse($json, Response::HTTP_CREATED);
@@ -100,16 +172,17 @@ class AdministratorController extends AbstractController
         ]
     )]
     public function getAdministrator(
+        Request $request,
         #[MapEntity(mapping: ['administratorId' => 'id'])] ?Administrator $administrator,
-        AdministratorNormalizer $normalizer
     ): JsonResponse {
+        $this->requireAuthentication($request);
+
         if (!$administrator) {
-            return new JsonResponse(['message' => 'Administrator not found.'], Response::HTTP_NOT_FOUND);
+            throw new NotFoundHttpException('Administrator not found.');
         }
+        $json = $this->normalizer->normalize($administrator, 'json');
 
-        $json = $normalizer->normalize($administrator, 'json');
-
-        return new JsonResponse($json);
+        return new JsonResponse($json, Response::HTTP_OK);
     }
 
     #[Route('/{administratorId}', name: 'update_administrator', methods: ['PUT'])]
@@ -146,15 +219,14 @@ class AdministratorController extends AbstractController
     public function updateAdministrator(
         Request $request,
         #[MapEntity(mapping: ['administratorId' => 'id'])] ?Administrator $administrator,
-        RequestValidator $validator
     ): JsonResponse {
+        $this->requireAuthentication($request);
+
         if (!$administrator) {
-            return new JsonResponse(['message' => 'Administrator not found.'], Response::HTTP_NOT_FOUND);
+            throw new NotFoundHttpException('Administrator not found.');
         }
-
         /** @var UpdateAdministratorRequest $dto */
-        $dto = $validator->validate($request, UpdateAdministratorRequest::class);
-
+        $dto = $this->validator->validate($request, UpdateAdministratorRequest::class);
         $this->administratorManager->updateAdministrator($administrator, $dto);
 
         return new JsonResponse(null, Response::HTTP_OK);
@@ -187,12 +259,14 @@ class AdministratorController extends AbstractController
         ]
     )]
     public function deleteAdministrator(
+        Request $request,
         #[MapEntity(mapping: ['administratorId' => 'id'])] ?Administrator $administrator
     ): JsonResponse {
-        if (!$administrator) {
-            return new JsonResponse(['message' => 'Administrator not found.'], Response::HTTP_NOT_FOUND);
-        }
+        $this->requireAuthentication($request);
 
+        if (!$administrator) {
+            throw new NotFoundHttpException('Administrator not found.');
+        }
         $this->administratorManager->deleteAdministrator($administrator);
 
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);

@@ -36,7 +36,7 @@ class MessageBuilder implements BuilderFromRequestInterface
         $content = $this->messageContentBuilder->buildFromDto($request->content);
         $options = $this->messageOptionsBuilder->buildFromDto($request->options);
         $template = null;
-        if ($request->templateId > 0) {
+        if (isset($request->templateId)) {
             $template = $this->templateRepository->find($request->templateId);
         }
 

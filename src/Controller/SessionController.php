@@ -7,13 +7,11 @@ namespace PhpList\RestBundle\Controller;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Model\Identity\AdministratorToken;
 use PhpList\Core\Security\Authentication;
-use PhpList\RestBundle\Controller\Traits\AuthenticationTrait;
 use PhpList\RestBundle\Entity\Request\CreateSessionRequest;
 use PhpList\RestBundle\Serializer\AdministratorTokenNormalizer;
 use PhpList\RestBundle\Service\Manager\SessionManager;
 use PhpList\RestBundle\Validator\RequestValidator;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,15 +26,17 @@ use Symfony\Component\Routing\Attribute\Route;
  * @author Tatevik Grigoryan <tatevik@phplist.com>
  */
 #[Route('/sessions')]
-class SessionController extends AbstractController
+class SessionController extends BaseController
 {
-    use AuthenticationTrait;
-
     private SessionManager $sessionManager;
 
-    public function __construct(Authentication $authentication, SessionManager $sessionManager)
-    {
-        $this->authentication = $authentication;
+    public function __construct(
+        Authentication $authentication,
+        SessionManager $sessionManager,
+        RequestValidator $validator
+    ) {
+        parent::__construct($authentication, $validator);
+
         $this->sessionManager = $sessionManager;
     }
 
@@ -87,11 +87,10 @@ class SessionController extends AbstractController
     )]
     public function createSession(
         Request $request,
-        RequestValidator $validator,
         AdministratorTokenNormalizer $normalizer
     ): JsonResponse {
         /** @var CreateSessionRequest $createSessionRequest */
-        $createSessionRequest = $validator->validate($request, CreateSessionRequest::class);
+        $createSessionRequest = $this->validator->validate($request, CreateSessionRequest::class);
         $token = $this->sessionManager->createSession($createSessionRequest);
 
         $json = $normalizer->normalize($token, 'json');

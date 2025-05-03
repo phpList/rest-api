@@ -8,13 +8,11 @@ use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Model\Messaging\Template;
 use PhpList\Core\Domain\Repository\Messaging\TemplateRepository;
 use PhpList\Core\Security\Authentication;
-use PhpList\RestBundle\Controller\Traits\AuthenticationTrait;
 use PhpList\RestBundle\Entity\Request\CreateTemplateRequest;
 use PhpList\RestBundle\Serializer\TemplateNormalizer;
 use PhpList\RestBundle\Service\Manager\TemplateManager;
 use PhpList\RestBundle\Validator\RequestValidator;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,13 +25,10 @@ use Symfony\Component\Routing\Attribute\Route;
  * @author Tatevik Grigoryan <tatevik@phplist.com>
  */
 #[Route('/templates')]
-class TemplateController extends AbstractController
+class TemplateController extends BaseController
 {
-    use AuthenticationTrait;
-
     private TemplateRepository $templateRepository;
     private TemplateNormalizer $normalizer;
-    private RequestValidator $validator;
     private TemplateManager $templateManager;
 
     public function __construct(
@@ -43,10 +38,9 @@ class TemplateController extends AbstractController
         RequestValidator $validator,
         TemplateManager $templateManager
     ) {
-        $this->authentication = $authentication;
+        parent::__construct($authentication, $validator);
         $this->templateRepository = $templateRepository;
         $this->normalizer = $normalizer;
-        $this->validator = $validator;
         $this->templateManager = $templateManager;
     }
 

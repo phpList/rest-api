@@ -7,20 +7,17 @@ namespace PhpList\RestBundle\Controller;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Model\Subscription\Subscriber;
 use PhpList\Core\Security\Authentication;
-use PhpList\RestBundle\Controller\Traits\AuthenticationTrait;
 use PhpList\RestBundle\Entity\Request\CreateSubscriberRequest;
 use PhpList\RestBundle\Entity\Request\UpdateSubscriberRequest;
 use PhpList\RestBundle\Serializer\SubscriberNormalizer;
 use PhpList\RestBundle\Service\Manager\SubscriberManager;
 use PhpList\RestBundle\Validator\RequestValidator;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * This controller provides REST API access to subscribers.
@@ -29,16 +26,21 @@ use Symfony\Component\Serializer\SerializerInterface;
  * @author Tatevik Grigoryan <tatevik@phplist.com>
  */
 #[Route('/subscribers')]
-class SubscriberController extends AbstractController
+class SubscriberController extends BaseController
 {
-    use AuthenticationTrait;
-
     private SubscriberManager $subscriberManager;
+    private SubscriberNormalizer $subscriberNormalizer;
 
-    public function __construct(Authentication $authentication, SubscriberManager $subscriberManager)
-    {
+    public function __construct(
+        Authentication $authentication,
+        SubscriberManager $subscriberManager,
+        RequestValidator $validator,
+        SubscriberNormalizer $subscriberNormalizer,
+    ) {
+        parent::__construct($authentication, $validator);
         $this->authentication = $authentication;
         $this->subscriberManager = $subscriberManager;
+        $this->subscriberNormalizer = $subscriberNormalizer;
     }
 
     #[Route('', name: 'create_subscriber', methods: ['POST'])]
@@ -91,22 +93,17 @@ class SubscriberController extends AbstractController
             ),
         ]
     )]
-    public function createSubscriber(
-        Request $request,
-        SerializerInterface $serializer,
-        RequestValidator $validator
-    ): JsonResponse {
+    public function createSubscriber(Request $request): JsonResponse
+    {
         $this->requireAuthentication($request);
 
         /** @var CreateSubscriberRequest $subscriberRequest */
-        $subscriberRequest = $validator->validate($request, CreateSubscriberRequest::class);
+        $subscriberRequest = $this->validator->validate($request, CreateSubscriberRequest::class);
         $subscriber = $this->subscriberManager->createSubscriber($subscriberRequest);
 
         return new JsonResponse(
-            $serializer->serialize($subscriber, 'json'),
-            Response::HTTP_CREATED,
-            [],
-            true
+            $this->subscriberNormalizer->normalize($subscriber, 'json'),
+            Response::HTTP_CREATED
         );
     }
 
@@ -172,9 +169,6 @@ class SubscriberController extends AbstractController
     )]
     public function updateSubscriber(
         Request $request,
-        SerializerInterface $serializer,
-        RequestValidator $validator,
-        SubscriberNormalizer $subscriberNormalizer,
         #[MapEntity(mapping: ['subscriberId' => 'id'])] ?Subscriber $subscriber = null,
     ): JsonResponse {
         $this->requireAuthentication($request);
@@ -182,14 +176,11 @@ class SubscriberController extends AbstractController
         if (!$subscriber) {
             throw new NotFoundHttpException('Subscriber not found.');
         }
-
         /** @var UpdateSubscriberRequest $dto */
-        $dto = $serializer->deserialize($request->getContent(), UpdateSubscriberRequest::class, 'json');
-        $dto->subscriberId = $subscriber->getId();
-        $validator->validateDto($dto);
+        $dto = $this->validator->validate($request, UpdateSubscriberRequest::class);
         $subscriber = $this->subscriberManager->updateSubscriber($dto);
 
-        return new JsonResponse($subscriberNormalizer->normalize($subscriber, 'json'), Response::HTTP_OK);
+        return new JsonResponse($this->subscriberNormalizer->normalize($subscriber, 'json'), Response::HTTP_OK);
     }
 
     #[Route('/{subscriberId}', name: 'get_subscriber_by_id', methods: ['GET'])]
@@ -232,13 +223,13 @@ class SubscriberController extends AbstractController
             )
         ]
     )]
-    public function getSubscriber(Request $request, int $subscriberId, SubscriberNormalizer $serializer): JsonResponse
+    public function getSubscriber(Request $request, int $subscriberId): JsonResponse
     {
         $this->requireAuthentication($request);
 
         $subscriber = $this->subscriberManager->getSubscriber($subscriberId);
 
-        return new JsonResponse($serializer->normalize($subscriber), Response::HTTP_OK);
+        return new JsonResponse($this->subscriberNormalizer->normalize($subscriber), Response::HTTP_OK);
     }
 
     #[Route('/{subscriberId}', name: 'delete_subscriber', requirements: ['subscriberId' => '\d+'], methods: ['DELETE'])]

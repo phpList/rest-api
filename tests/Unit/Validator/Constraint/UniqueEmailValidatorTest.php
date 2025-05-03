@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Unit\Validator\Constraint;
 
+use Doctrine\ORM\EntityManagerInterface;
 use PhpList\Core\Domain\Model\Subscription\Subscriber;
 use PhpList\Core\Domain\Repository\Subscription\SubscriberRepository;
 use PhpList\RestBundle\Validator\Constraint\UniqueEmail;
@@ -18,14 +19,14 @@ use Symfony\Component\Validator\Exception\UnexpectedValueException;
 
 class UniqueEmailValidatorTest extends TestCase
 {
-    private SubscriberRepository|MockObject $repository;
+    private EntityManagerInterface|MockObject $entityManager;
     private UniqueEmailValidator $validator;
     private ExecutionContextInterface|MockObject $context;
 
     protected function setUp(): void
     {
-        $this->repository = $this->createMock(SubscriberRepository::class);
-        $this->validator = new UniqueEmailValidator($this->repository);
+        $this->entityManager = $this->createMock(EntityManagerInterface::class);
+        $this->validator = new UniqueEmailValidator($this->entityManager);
         $this->context = $this->createMock(ExecutionContextInterface::class);
         $this->validator->initialize($this->context);
     }
@@ -38,10 +39,10 @@ class UniqueEmailValidatorTest extends TestCase
 
     public function testSkipsValidationForNullOrEmpty(): void
     {
-        $this->repository->expects(self::never())->method('findOneBy');
+        $this->entityManager->expects(self::never())->method('getRepository');
 
-        $this->validator->validate(null, new UniqueEmail());
-        $this->validator->validate('', new UniqueEmail());
+        $this->validator->validate(null, new UniqueEmail(Subscriber::class));
+        $this->validator->validate('', new UniqueEmail(Subscriber::class));
 
         $this->addToAssertionCount(1);
     }
@@ -49,7 +50,7 @@ class UniqueEmailValidatorTest extends TestCase
     public function testThrowsUnexpectedValueExceptionForNonString(): void
     {
         $this->expectException(UnexpectedValueException::class);
-        $this->validator->validate(123, new UniqueEmail());
+        $this->validator->validate(123, new UniqueEmail(Subscriber::class));
     }
 
     public function testThrowsConflictHttpExceptionWhenEmailAlreadyExistsWithDifferentId(): void
@@ -60,11 +61,17 @@ class UniqueEmailValidatorTest extends TestCase
             'getId' => 99
         ]);
 
-        $this->repository
-            ->expects(self::once())
+        $repo = $this->createMock(SubscriberRepository::class);
+        $repo->expects(self::once())
             ->method('findOneBy')
             ->with(['email' => $email])
             ->willReturn($existingUser);
+
+        $this->entityManager
+            ->expects(self::once())
+            ->method('getRepository')
+            ->with(Subscriber::class)
+            ->willReturn($repo);
 
         $dto = new class {
             public int $subscriberId = 100;
@@ -77,7 +84,7 @@ class UniqueEmailValidatorTest extends TestCase
         $this->expectException(ConflictHttpException::class);
         $this->expectExceptionMessage('Email already exists.');
 
-        $this->validator->validate($email, new UniqueEmail());
+        $this->validator->validate($email, new UniqueEmail(Subscriber::class));
     }
 
     public function testAllowsSameEmailForSameSubscriberId(): void
@@ -88,10 +95,17 @@ class UniqueEmailValidatorTest extends TestCase
             'getId' => 100
         ]);
 
-        $this->repository
-            ->expects(self::once())
+        $repo = $this->createMock(SubscriberRepository::class);
+        $repo->expects(self::once())
             ->method('findOneBy')
+            ->with(['email' => $email])
             ->willReturn($existingUser);
+
+        $this->entityManager
+            ->expects(self::once())
+            ->method('getRepository')
+            ->with(Subscriber::class)
+            ->willReturn($repo);
 
         $dto = new class {
             public int $subscriberId = 100;
@@ -101,17 +115,24 @@ class UniqueEmailValidatorTest extends TestCase
             ->method('getObject')
             ->willReturn($dto);
 
-        $this->validator->validate($email, new UniqueEmail());
+        $this->validator->validate($email, new UniqueEmail(Subscriber::class));
 
         $this->addToAssertionCount(1);
     }
 
     public function testAllowsUniqueEmailWhenNoExistingSubscriber(): void
     {
-        $this->repository
-            ->expects(self::once())
+        $repo = $this->createMock(SubscriberRepository::class);
+        $repo->expects(self::once())
             ->method('findOneBy')
+            ->with(['email' => 'new@example.com'])
             ->willReturn(null);
+
+        $this->entityManager
+            ->expects(self::once())
+            ->method('getRepository')
+            ->with(Subscriber::class)
+            ->willReturn($repo);
 
         $dto = new class {
             public int $subscriberId = 200;
@@ -121,7 +142,7 @@ class UniqueEmailValidatorTest extends TestCase
             ->method('getObject')
             ->willReturn($dto);
 
-        $this->validator->validate('new@example.com', new UniqueEmail());
+        $this->validator->validate('new@example.com', new UniqueEmail(Subscriber::class));
 
         $this->addToAssertionCount(1);
     }

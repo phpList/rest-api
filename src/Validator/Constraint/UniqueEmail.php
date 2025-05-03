@@ -9,14 +9,17 @@ use Symfony\Component\Validator\Constraint;
 #[\Attribute(\Attribute::TARGET_PROPERTY | \Attribute::TARGET_METHOD | \Attribute::IS_REPEATABLE)]
 class UniqueEmail extends Constraint
 {
-    public string $message = 'The email "{{ value }}" is already taken.';
-    public string $mode = 'strict';
+    public string $message = 'This email is already in use.';
+    public string $entityClass;
 
-    public function __construct(?string $mode = null, ?string $message = null, ?array $groups = null, $payload = null)
+    public function __construct(string $entityClass)
     {
-        parent::__construct([], $groups, $payload);
+        parent::__construct([]);
+        $this->entityClass = $entityClass;
+    }
 
-        $this->mode = $mode ?? $this->mode;
-        $this->message = $message ?? $this->message;
+    public function validatedBy(): string
+    {
+        return UniqueEmailValidator::class;
     }
 }

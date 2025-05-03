@@ -4,23 +4,26 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Validator\Constraint;
 
-use Doctrine\ORM\EntityManagerInterface;
+use PhpList\Core\Domain\Repository\Identity\AdministratorRepository;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
 
-class UniqueEmailValidator extends ConstraintValidator
+class UniqueLoginNameValidator extends ConstraintValidator
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager)
+    private AdministratorRepository $administratorRepository;
+
+    public function __construct(AdministratorRepository $administratorRepository)
     {
+        $this->administratorRepository = $administratorRepository;
     }
 
     public function validate($value, Constraint $constraint): void
     {
-        if (!$constraint instanceof UniqueEmail) {
-            throw new UnexpectedTypeException($constraint, UniqueEmail::class);
+        if (!$constraint instanceof UniqueLoginName) {
+            throw new UnexpectedTypeException($constraint, UniqueLoginName::class);
         }
 
         if (null === $value || '' === $value) {
@@ -31,15 +34,13 @@ class UniqueEmailValidator extends ConstraintValidator
             throw new UnexpectedValueException($value, 'string');
         }
 
-        $existingUser = $this->entityManager
-            ->getRepository($constraint->entityClass)
-            ->findOneBy(['email' => $value]);
+        $existingUser = $this->administratorRepository->findOneBy(['loginName' => $value]);
 
         $dto = $this->context->getObject();
-        $updatingId = $dto->subscriberId ?? $dto->administratorId ?? null;
+        $updatingId = $dto->administratorId ?? null;
 
         if ($existingUser && $existingUser->getId() !== $updatingId) {
-            throw new ConflictHttpException('Email already exists.');
+            throw new ConflictHttpException('Login already exists.');
         }
     }
 }

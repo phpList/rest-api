@@ -7,3 +7,7 @@ services:
   PhpList\RestBundle\Service\Provider\SubscriberListProvider:
     autowire: true
     autoconfigure: true
+
+  PhpList\RestBundle\Service\Provider\AdministratorProvider:
+    autowire: true
+    autoconfigure: true

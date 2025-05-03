@@ -9,25 +9,24 @@ use PhpList\RestBundle\Tests\Helpers\DummyRequestDto;
 use PhpList\RestBundle\Validator\RequestValidator;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
-use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class RequestValidatorTest extends TestCase
 {
-    private SerializerInterface|MockObject $serializer;
+    private DenormalizerInterface|MockObject $serializer;
     private ValidatorInterface|MockObject $validator;
     private RequestValidator $requestValidator;
 
     protected function setUp(): void
     {
-        $this->serializer = $this->createMock(SerializerInterface::class);
-        $this->validator  = $this->createMock(ValidatorInterface::class);
+        $this->serializer = $this->createMock(DenormalizerInterface::class);
+        $this->validator = $this->createMock(ValidatorInterface::class);
         $this->requestValidator = new RequestValidator(
             $this->serializer,
             $this->validator
@@ -38,11 +37,17 @@ class RequestValidatorTest extends TestCase
     {
         $dto = $this->createMock(RequestInterface::class);
         $json = '{"foo":"bar"}';
+        $expectedData = ['foo' => 'bar'];
 
         $this->serializer
             ->expects(self::once())
-            ->method('deserialize')
-            ->with($json, DummyRequestDto::class, 'json')
+            ->method('denormalize')
+            ->with(
+                $expectedData,
+                DummyRequestDto::class,
+                null,
+                ['allow_extra_attributes' => true]
+            )
             ->willReturn($dto);
 
         $this->validator
@@ -62,13 +67,8 @@ class RequestValidatorTest extends TestCase
         $json = '{ invalid json }';
         $request = new Request([], [], [], [], [], [], $json);
 
-        $this->serializer
-            ->expects(self::once())
-            ->method('deserialize')
-            ->willThrowException(new RuntimeException('Syntax error'));
-
         $this->expectException(BadRequestHttpException::class);
-        $this->expectExceptionMessage('Invalid JSON: Syntax error');
+        $this->expectExceptionMessage('Invalid JSON');
 
         $this->requestValidator->validate($request, DummyRequestDto::class);
     }
@@ -80,7 +80,8 @@ class RequestValidatorTest extends TestCase
         $request = new Request([], [], [], [], [], [], $json);
 
         $this->serializer
-            ->method('deserialize')
+            ->expects(self::once())
+            ->method('denormalize')
             ->willReturn($dto);
 
         $violation1 = new ConstraintViolation(
@@ -107,9 +108,41 @@ class RequestValidatorTest extends TestCase
             ->willReturn($violations);
 
         $this->expectException(UnprocessableEntityHttpException::class);
-
         $this->expectExceptionMessage("email: Must not be blank\nemail: Must be a valid email");
 
         $this->requestValidator->validate($request, DummyRequestDto::class);
+    }
+
+    public function testValidateMergesRouteParams(): void
+    {
+        $dto = $this->createMock(RequestInterface::class);
+        $json = '{"email":"foo@example.com"}';
+
+        $expectedData = [
+            'subscriberId' => 42,
+            'email' => 'foo@example.com'
+        ];
+
+        $this->serializer
+            ->expects(self::once())
+            ->method('denormalize')
+            ->with(
+                $expectedData,
+                DummyRequestDto::class,
+                null,
+                ['allow_extra_attributes' => true]
+            )
+            ->willReturn($dto);
+
+        $this->validator
+            ->expects(self::once())
+            ->method('validate')
+            ->with($dto)
+            ->willReturn(new ConstraintViolationList());
+
+        $request = new Request([], [], ['_route_params' => ['subscriberId' => '42']], [], [], [], $json);
+
+        $result = $this->requestValidator->validate($request, DummyRequestDto::class);
+        self::assertSame($dto, $result);
     }
 }
