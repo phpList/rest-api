@@ -51,8 +51,8 @@ class CampaignControllerTest extends AbstractTestController
         $response = $this->getDecodedJsonResponseContent();
 
         self::assertIsArray($response);
-        self::assertArrayHasKey('id', $response[0]);
-        self::assertArrayHasKey('message_content', $response[0]);
+        self::assertArrayHasKey('id', $response['items'][0]);
+        self::assertArrayHasKey('message_content', $response['items'][0]);
     }
 
     public function testGetSingleCampaignWithValidSessionReturnsData(): void

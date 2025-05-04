@@ -232,7 +232,15 @@ class ListControllerTest extends AbstractTestController
 
         $this->authenticatedJsonRequest('get', '/api/v2/lists/1/subscribers');
 
-        $this->assertJsonResponseContentEquals([]);
+        $this->assertJsonResponseContentEquals([
+            'items' => [],
+            'pagination' => [
+                'total' => 0,
+                'limit' => 25,
+                'has_more' => false,
+                'next_cursor' => null,
+            ]
+        ]);
     }
 
     public function testGetListMembersWithCurrentSessionKeyForExistingListWithSubscribersReturnsSubscribers()
@@ -243,54 +251,62 @@ class ListControllerTest extends AbstractTestController
 
         $this->assertJsonResponseContentEquals(
             [
-                [
-                    'id' => 1,
-                    'email' => 'oliver@example.com',
-                    'created_at' => '2016-07-22T15:01:17+00:00',
-                    'confirmed' => true,
-                    'blacklisted' => true,
-                    'bounce_count' => 17,
-                    'unique_id' => '95feb7fe7e06e6c11ca8d0c48cb46e89',
-                    'html_email' => true,
-                    'disabled' => true,
-                    'subscribed_lists' => [
-                        [
-                            'id' => 2,
-                            'name' => 'More news',
-                            'description' => '',
-                            'created_at' => '2016-06-22T15:01:17+00:00',
-                            'public' => true,
-                            'subscription_date' => '2016-07-22T15:01:17+00:00',
+                'items' => [
+                    [
+                        'id' => 1,
+                        'email' => 'oliver@example.com',
+                        'created_at' => '2016-07-22T15:01:17+00:00',
+                        'confirmed' => true,
+                        'blacklisted' => true,
+                        'bounce_count' => 17,
+                        'unique_id' => '95feb7fe7e06e6c11ca8d0c48cb46e89',
+                        'html_email' => true,
+                        'disabled' => true,
+                        'subscribed_lists' => [
+                            [
+                                'id' => 2,
+                                'name' => 'More news',
+                                'description' => '',
+                                'created_at' => '2016-06-22T15:01:17+00:00',
+                                'public' => true,
+                                'subscription_date' => '2016-07-22T15:01:17+00:00',
+                            ],
+                        ],
+                    ], [
+                        'id' => 2,
+                        'email' => 'oliver1@example.com',
+                        'created_at' => '2016-07-22T15:01:17+00:00',
+                        'confirmed' => true,
+                        'blacklisted' => true,
+                        'bounce_count' => 17,
+                        'unique_id' => '95feb7fe7e06e6c11ca8d0c48cb46e87',
+                        'html_email' => true,
+                        'disabled' => true,
+                        'subscribed_lists' => [
+                            [
+                                'id' => 2,
+                                'name' => 'More news',
+                                'description' => '',
+                                'created_at' => '2016-06-22T15:01:17+00:00',
+                                'public' => true,
+                                'subscription_date' => '2016-08-22T15:01:17+00:00',
+                            ],
+                            [
+                                'id' => 1,
+                                'name' => 'News',
+                                'description' => 'News (and some fun stuff)',
+                                'created_at' => '2016-06-22T15:01:17+00:00',
+                                'public' => true,
+                                'subscription_date' => '2016-09-22T15:01:17+00:00',
+                            ],
                         ],
                     ],
-                ], [
-                    'id' => 2,
-                    'email' => 'oliver1@example.com',
-                    'created_at' => '2016-07-22T15:01:17+00:00',
-                    'confirmed' => true,
-                    'blacklisted' => true,
-                    'bounce_count' => 17,
-                    'unique_id' => '95feb7fe7e06e6c11ca8d0c48cb46e87',
-                    'html_email' => true,
-                    'disabled' => true,
-                    'subscribed_lists' => [
-                        [
-                            'id' => 2,
-                            'name' => 'More news',
-                            'description' => '',
-                            'created_at' => '2016-06-22T15:01:17+00:00',
-                            'public' => true,
-                            'subscription_date' => '2016-08-22T15:01:17+00:00',
-                        ],
-                        [
-                            'id' => 1,
-                            'name' => 'News',
-                            'description' => 'News (and some fun stuff)',
-                            'created_at' => '2016-06-22T15:01:17+00:00',
-                            'public' => true,
-                            'subscription_date' => '2016-09-22T15:01:17+00:00',
-                        ],
-                    ],
+                ],
+                'pagination' => [
+                    'total' => 3,
+                    'limit' => 25,
+                    'has_more' => false,
+                    'next_cursor' => 2,
                 ],
             ]
         );
