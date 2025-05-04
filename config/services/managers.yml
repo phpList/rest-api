@@ -1,0 +1,37 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  PhpList\RestBundle\Service\Manager\SubscriberManager:
+    autowire: true
+    autoconfigure: true
+
+  PhpList\RestBundle\Service\Manager\SessionManager:
+    autowire: true
+    autoconfigure: true
+
+  PhpList\RestBundle\Service\Manager\SubscriberListManager:
+    autowire: true
+    autoconfigure: true
+
+  PhpList\RestBundle\Service\Manager\SubscriptionManager:
+    autowire: true
+    autoconfigure: true
+
+  PhpList\RestBundle\Service\Manager\MessageManager:
+    autowire: true
+    autoconfigure: true
+
+  PhpList\RestBundle\Service\Manager\TemplateManager:
+    autowire: true
+    autoconfigure: true
+
+  PhpList\RestBundle\Service\Manager\TemplateImageManager:
+    autowire: true
+    autoconfigure: true
+
+  PhpList\RestBundle\Service\Manager\AdministratorManager:
+    autowire: true
+    autoconfigure: true

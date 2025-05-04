@@ -6,8 +6,8 @@ namespace PhpList\RestBundle\Tests\Integration\Controller;
 
 use Doctrine\ORM\Tools\SchemaTool;
 use PhpList\Core\TestingSupport\Traits\DatabaseTestTrait;
-use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\AdministratorFixture;
-use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\AdministratorTokenFixture;
+use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\Identity\AdministratorFixture;
+use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\Identity\AdministratorTokenFixture;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpFoundation\Response;
@@ -240,13 +240,11 @@ abstract class AbstractTestController extends WebTestCase
     protected function assertHttpConflict(): void
     {
         $this->assertHttpStatusWithJsonContentType(Response::HTTP_CONFLICT);
-
-        self::assertSame(
-            [
-                'message' => 'This resource already exists.',
-            ],
-            $this->getDecodedJsonResponseContent()
-        );
+        $data = $this->getDecodedJsonResponseContent();
+        $this->assertArrayHasKey('message', $data);
+        $this->assertIsString($data['message']);
+        $this->assertNotEmpty($data['message']);
+        $this->assertStringContainsString('already exists', $data['message']);
     }
 
     /**

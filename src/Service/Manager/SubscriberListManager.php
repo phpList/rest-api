@@ -1,0 +1,55 @@
+<?php
+
+declare(strict_types=1);
+
+namespace PhpList\RestBundle\Service\Manager;
+
+use PhpList\Core\Domain\Model\Identity\Administrator;
+use PhpList\Core\Domain\Model\Subscription\SubscriberList;
+use PhpList\Core\Domain\Repository\Subscription\SubscriberListRepository;
+use PhpList\RestBundle\Entity\Request\CreateSubscriberListRequest;
+use PhpList\RestBundle\Entity\Request\PaginationCursorRequest;
+
+class SubscriberListManager
+{
+    private SubscriberListRepository $subscriberListRepository;
+
+    public function __construct(SubscriberListRepository $subscriberListRepository)
+    {
+        $this->subscriberListRepository = $subscriberListRepository;
+    }
+
+    public function createSubscriberList(
+        CreateSubscriberListRequest $subscriberListRequest,
+        Administrator $authUser
+    ): SubscriberList {
+        $subscriberList = (new SubscriberList())
+            ->setName($subscriberListRequest->name)
+            ->setOwner($authUser)
+            ->setDescription($subscriberListRequest->description)
+            ->setListPosition($subscriberListRequest->listPosition)
+            ->setPublic($subscriberListRequest->public);
+
+        $this->subscriberListRepository->save($subscriberList);
+
+        return $subscriberList;
+    }
+
+    /**
+     * @return SubscriberList[]
+     */
+    public function getPaginated(PaginationCursorRequest $pagination): array
+    {
+        return $this->subscriberListRepository->getAfterId($pagination->afterId, $pagination->limit);
+    }
+
+    public function getTotalCount(): int
+    {
+        return $this->subscriberListRepository->count();
+    }
+
+    public function delete(SubscriberList $subscriberList): void
+    {
+        $this->subscriberListRepository->remove($subscriberList);
+    }
+}

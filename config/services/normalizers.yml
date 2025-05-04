@@ -1,0 +1,47 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter: ~
+
+  Symfony\Component\Serializer\Normalizer\ObjectNormalizer:
+    arguments:
+      $classMetadataFactory: '@?serializer.mapping.class_metadata_factory'
+      $nameConverter: '@Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter'
+
+  PhpList\RestBundle\Serializer\SubscriberNormalizer:
+    tags: [ 'serializer.normalizer' ]
+    autowire: true
+
+  PhpList\RestBundle\Serializer\AdministratorTokenNormalizer:
+    tags: [ 'serializer.normalizer' ]
+    autowire: true
+
+  PhpList\RestBundle\Serializer\SubscriberListNormalizer:
+    tags: [ 'serializer.normalizer' ]
+    autowire: true
+
+  PhpList\RestBundle\Serializer\SubscriptionNormalizer:
+    tags: [ 'serializer.normalizer' ]
+    autowire: true
+
+  PhpList\RestBundle\Serializer\MessageNormalizer:
+    tags: [ 'serializer.normalizer' ]
+    autowire: true
+
+  PhpList\RestBundle\Serializer\TemplateImageNormalizer:
+    tags: [ 'serializer.normalizer' ]
+    autowire: true
+
+  PhpList\RestBundle\Serializer\TemplateNormalizer:
+    tags: [ 'serializer.normalizer' ]
+    autowire: true
+
+  PhpList\RestBundle\Serializer\AdministratorNormalizer:
+    tags: [ 'serializer.normalizer' ]
+    autowire: true
+
+  PhpList\RestBundle\Serializer\CursorPaginationNormalizer:
+    autowire: true

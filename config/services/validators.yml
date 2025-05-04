@@ -1,0 +1,36 @@
+services:
+  PhpList\RestBundle\Validator\RequestValidator:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  PhpList\RestBundle\Validator\Constraint\UniqueEmailValidator:
+    autowire: true
+    autoconfigure: true
+    tags: [ 'validator.constraint_validator' ]
+
+  PhpList\RestBundle\Validator\Constraint\EmailExistsValidator:
+    autowire: true
+    autoconfigure: true
+    tags: [ 'validator.constraint_validator' ]
+
+  PhpList\RestBundle\Validator\Constraint\TemplateExistsValidator:
+    autowire: true
+    autoconfigure: true
+    tags: [ 'validator.constraint_validator' ]
+
+  PhpList\RestBundle\Validator\TemplateLinkValidator:
+    autowire: true
+    autoconfigure: true
+
+  PhpList\RestBundle\Validator\TemplateImageValidator:
+    autowire: true
+    autoconfigure: true
+
+  PhpList\RestBundle\Validator\Constraint\ContainsPlaceholderValidator:
+    tags: ['validator.constraint_validator']
+
+  PhpList\RestBundle\Validator\Constraint\UniqueLoginNameValidator:
+    autowire: true
+    autoconfigure: true
+    tags: [ 'validator.constraint_validator' ]

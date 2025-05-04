@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Integration\Controller;
 
-use PhpList\Core\Domain\Repository\Messaging\SubscriberListRepository;
+use PhpList\Core\Domain\Repository\Subscription\SubscriberListRepository;
 use PhpList\RestBundle\Controller\ListController;
-use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\AdministratorFixture;
-use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\AdministratorTokenFixture;
-use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\SubscriberFixture;
-use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\SubscriberListFixture;
-use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\SubscriptionFixture;
+use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\Identity\AdministratorFixture;
+use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\Identity\AdministratorTokenFixture;
+use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\Messaging\SubscriberListFixture;
+use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\Subscription\SubscriberFixture;
+use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\Subscription\SubscriptionFixture;
 
 /**
  * Testcase.
@@ -60,40 +60,46 @@ class ListControllerTest extends AbstractTestController
 
         $this->authenticatedJsonRequest('get', '/api/v2/lists');
 
-        $this->assertJsonResponseContentEquals(
-            [
+        $this->assertJsonResponseContentEquals([
+            'items' => [
                 [
+                    'id' => 1,
                     'name' => 'News',
+                    'created_at' => '2016-06-22T15:01:17+00:00',
                     'description' => 'News (and some fun stuff)',
-                    'creation_date' => '2016-06-22T15:01:17+00:00',
                     'list_position' => 12,
                     'subject_prefix' => 'phpList',
                     'public' => true,
                     'category' => 'news',
-                    'id' => 1,
                 ],
                 [
-                    'name' => 'More news',
-                    'description' => '',
-                    'creation_date' => '2016-06-22T15:01:17+00:00',
-                    'list_position' => 12,
-                    'subject_prefix' => '',
-                    'public' => true,
-                    'category' => '',
                     'id' => 2,
-                ],
-                [
-                    'name' => 'Tech news',
+                    'name' => 'More news',
+                    'created_at' => '2016-06-22T15:01:17+00:00',
                     'description' => '',
-                    'creation_date' => '2019-02-11T15:01:15+00:00',
                     'list_position' => 12,
                     'subject_prefix' => '',
                     'public' => true,
                     'category' => '',
-                    'id' => 3,
                 ],
-            ]
-        );
+                [
+                    'id' => 3,
+                    'name' => 'Tech news',
+                    'created_at' => '2019-02-11T15:01:15+00:00',
+                    'description' => '',
+                    'list_position' => 12,
+                    'subject_prefix' => '',
+                    'public' => true,
+                    'category' => '',
+                ],
+            ],
+            'pagination' => [
+                'total' => 3,
+                'limit' => 25,
+                'has_more' => false,
+                'next_cursor' => 3,
+            ],
+        ]);
     }
 
     public function testGetListWithoutSessionKeyForExistingListReturnsForbiddenStatus()
@@ -129,14 +135,14 @@ class ListControllerTest extends AbstractTestController
 
         $this->assertJsonResponseContentEquals(
             [
+                'id' => 1,
                 'name' => 'News',
+                'created_at' => '2016-06-22T15:01:17+00:00',
                 'description' => 'News (and some fun stuff)',
-                'creation_date' => '2016-06-22T15:01:17+00:00',
                 'list_position' => 12,
                 'subject_prefix' => 'phpList',
                 'public' => true,
                 'category' => 'news',
-                'id' => 1,
             ]
         );
     }
@@ -226,7 +232,15 @@ class ListControllerTest extends AbstractTestController
 
         $this->authenticatedJsonRequest('get', '/api/v2/lists/1/subscribers');
 
-        $this->assertJsonResponseContentEquals([]);
+        $this->assertJsonResponseContentEquals([
+            'items' => [],
+            'pagination' => [
+                'total' => 0,
+                'limit' => 25,
+                'has_more' => false,
+                'next_cursor' => null,
+            ]
+        ]);
     }
 
     public function testGetListMembersWithCurrentSessionKeyForExistingListWithSubscribersReturnsSubscribers()
@@ -237,110 +251,102 @@ class ListControllerTest extends AbstractTestController
 
         $this->assertJsonResponseContentEquals(
             [
-                [
-                    'id' => 1,
-                    'email' => 'oliver@example.com',
-                    'creation_date' => '2016-07-22T15:01:17+00:00',
-                    'confirmed' => true,
-                    'blacklisted' => true,
-                    'bounce_count' => 17,
-                    'unique_id' => '95feb7fe7e06e6c11ca8d0c48cb46e89',
-                    'html_email' => true,
-                    'disabled' => true,
-                    'subscribedLists' => [
-                        [
-                            'id' => 2,
-                            'name' => 'More news',
-                            'description' => '',
-                            'creation_date' => '2016-06-22T15:01:17+00:00',
-                            'public' => true,
+                'items' => [
+                    [
+                        'id' => 1,
+                        'email' => 'oliver@example.com',
+                        'created_at' => '2016-07-22T15:01:17+00:00',
+                        'confirmed' => true,
+                        'blacklisted' => true,
+                        'bounce_count' => 17,
+                        'unique_id' => '95feb7fe7e06e6c11ca8d0c48cb46e89',
+                        'html_email' => true,
+                        'disabled' => true,
+                        'subscribed_lists' => [
+                            [
+                                'id' => 2,
+                                'name' => 'More news',
+                                'description' => '',
+                                'created_at' => '2016-06-22T15:01:17+00:00',
+                                'public' => true,
+                                'subscription_date' => '2016-07-22T15:01:17+00:00',
+                            ],
+                        ],
+                    ], [
+                        'id' => 2,
+                        'email' => 'oliver1@example.com',
+                        'created_at' => '2016-07-22T15:01:17+00:00',
+                        'confirmed' => true,
+                        'blacklisted' => true,
+                        'bounce_count' => 17,
+                        'unique_id' => '95feb7fe7e06e6c11ca8d0c48cb46e87',
+                        'html_email' => true,
+                        'disabled' => true,
+                        'subscribed_lists' => [
+                            [
+                                'id' => 2,
+                                'name' => 'More news',
+                                'description' => '',
+                                'created_at' => '2016-06-22T15:01:17+00:00',
+                                'public' => true,
+                                'subscription_date' => '2016-08-22T15:01:17+00:00',
+                            ],
+                            [
+                                'id' => 1,
+                                'name' => 'News',
+                                'description' => 'News (and some fun stuff)',
+                                'created_at' => '2016-06-22T15:01:17+00:00',
+                                'public' => true,
+                                'subscription_date' => '2016-09-22T15:01:17+00:00',
+                            ],
                         ],
                     ],
-                ], [
-                    'id' => 2,
-                    'email' => 'oliver1@example.com',
-                    'creation_date' => '2016-07-22T15:01:17+00:00',
-                    'confirmed' => true,
-                    'blacklisted' => true,
-                    'bounce_count' => 17,
-                    'unique_id' => '95feb7fe7e06e6c11ca8d0c48cb46e87',
-                    'html_email' => true,
-                    'disabled' => true,
-                    'subscribedLists' => [
-                        [
-                            'id' => 2,
-                            'name' => 'More news',
-                            'description' => '',
-                            'creation_date' => '2016-06-22T15:01:17+00:00',
-                            'public' => true,
-                        ],
-                        [
-                            'id' => 1,
-                            'name' => 'News',
-                            'description' => 'News (and some fun stuff)',
-                            'creation_date' => '2016-06-22T15:01:17+00:00',
-                            'public' => true,
-                        ],
-                    ],
+                ],
+                'pagination' => [
+                    'total' => 3,
+                    'limit' => 25,
+                    'has_more' => false,
+                    'next_cursor' => 2,
                 ],
             ]
         );
     }
 
-    public function testGetListSubscribersCountForExistingListWithoutSessionKeyReturnsForbiddenStatus()
+    public function testCreateListWithValidPayloadReturns201(): void
     {
-        $this->loadFixtures([SubscriberListFixture::class]);
+        $this->loadFixtures([AdministratorFixture::class, AdministratorTokenFixture::class]);
 
-        self::getClient()->request('get', '/api/v2/lists/1/subscribers/count');
-
-        $this->assertHttpForbidden();
-    }
-
-    public function testGetListSubscribersCountForExistingListWithExpiredSessionKeyReturnsForbiddenStatus()
-    {
-        $this->loadFixtures([
-            SubscriberListFixture::class,
-            AdministratorFixture::class,
-            AdministratorTokenFixture::class,
+        $payload = json_encode([
+            'name' => 'New List',
+            'description' => 'This is a new subscriber list.',
+            'listPosition' => 3,
+            'public' => true,
         ]);
 
-        self::getClient()->request(
-            'get',
-            '/api/v2/lists/1/subscribers/count',
-            [],
-            [],
-            ['PHP_AUTH_USER' => 'unused', 'PHP_AUTH_PW' => 'cfdf64eecbbf336628b0f3071adba764']
-        );
+        $this->authenticatedJsonRequest('POST', '/api/v2/lists', [], [], [], $payload);
+
+        $this->assertHttpCreated();
+        $response = $this->getDecodedJsonResponseContent();
+
+        self::assertSame('New List', $response['name']);
+    }
+
+    public function testCreateListWithMissingNameReturnsValidationError(): void
+    {
+        $this->loadFixtures([AdministratorFixture::class, AdministratorTokenFixture::class]);
+
+        $payload = [
+            'description' => 'Missing name field'
+        ];
+
+        $this->authenticatedJsonRequest('POST', '/api/v2/lists', [], [], [], json_encode($payload));
+        $this->assertHttpUnprocessableEntity();
+    }
+
+    public function testCreateListWithoutSessionKeyReturnsForbidden(): void
+    {
+        self::getClient()->request('POST', '/api/v2/lists', [], [], [], json_encode([ 'name' => 'UnauthorizedList']));
 
         $this->assertHttpForbidden();
-    }
-
-    public function testGetListSubscribersCountWithCurrentSessionKeyForExistingListReturnsOkayStatus()
-    {
-        $this->loadFixtures([SubscriberListFixture::class]);
-
-        $this->authenticatedJsonRequest('get', '/api/v2/lists/1/subscribers/count');
-
-        $this->assertHttpOkay();
-    }
-
-    public function testGetSubscribersCountForEmptyListWithValidSession()
-    {
-        $this->loadFixtures([SubscriberListFixture::class, SubscriberFixture::class, SubscriptionFixture::class]);
-
-        $this->authenticatedJsonRequest('get', '/api/v2/lists/3/subscribers/count');
-        $responseContent = $this->getResponseContentAsInt();
-
-        self::assertSame(0, $responseContent);
-    }
-
-    public function testGetSubscribersCountForListWithValidSession()
-    {
-        $this->loadFixtures([SubscriberListFixture::class, SubscriberFixture::class, SubscriptionFixture::class]);
-
-        $this->authenticatedJsonRequest('get', '/api/v2/lists/2/subscribers/count');
-        $responseContent = $this->getResponseContentAsInt();
-
-        self::assertSame(2, $responseContent);
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\EventListener;
 
 use Exception;
+use PhpList\RestBundle\Exception\SubscriptionCreationException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -27,6 +28,11 @@ class ExceptionListener
                 'message' => $exception->getMessage(),
             ], $exception->getStatusCode());
 
+            $event->setResponse($response);
+        } elseif ($exception instanceof SubscriptionCreationException) {
+            $response = new JsonResponse([
+                'message' => $exception->getMessage(),
+            ], $exception->getStatusCode());
             $event->setResponse($response);
         } elseif ($exception instanceof Exception) {
             $response = new JsonResponse([

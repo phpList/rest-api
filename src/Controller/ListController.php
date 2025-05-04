@@ -4,20 +4,19 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Controller;
 
-use PhpList\Core\Domain\Model\Messaging\SubscriberList;
-use PhpList\Core\Domain\Repository\Subscription\SubscriberRepository;
-use Symfony\Bridge\Doctrine\Attribute\MapEntity;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use PhpList\Core\Domain\Repository\Messaging\SubscriberListRepository;
+use OpenApi\Attributes as OA;
+use PhpList\Core\Domain\Model\Subscription\SubscriberList;
 use PhpList\Core\Security\Authentication;
-use PhpList\RestBundle\Controller\Traits\AuthenticationTrait;
+use PhpList\RestBundle\Entity\Request\CreateSubscriberListRequest;
+use PhpList\RestBundle\Serializer\SubscriberListNormalizer;
+use PhpList\RestBundle\Service\Manager\SubscriberListManager;
+use PhpList\RestBundle\Service\Provider\PaginatedDataProvider;
+use PhpList\RestBundle\Validator\RequestValidator;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
-use Symfony\Component\Serializer\SerializerInterface;
-use OpenApi\Attributes as OA;
 
 /**
  * This controller provides REST API access to subscriber lists.
@@ -26,27 +25,27 @@ use OpenApi\Attributes as OA;
  * @author Xheni Myrtaj <xheni@phplist.com>
  * @author Tatevik Grigoryan <tatevik@phplist.com>
  */
-class ListController extends AbstractController
+#[Route('/lists')]
+class ListController extends BaseController
 {
-    use AuthenticationTrait;
-
-    private SubscriberListRepository $subscriberListRepository;
-    private SubscriberRepository $subscriberRepository;
-    private SerializerInterface $serializer;
+    private SubscriberListNormalizer $normalizer;
+    private SubscriberListManager $subscriberListManager;
+    private PaginatedDataProvider $paginatedDataProvider;
 
     public function __construct(
         Authentication $authentication,
-        SubscriberListRepository $repository,
-        SubscriberRepository $subscriberRepository,
-        SerializerInterface $serializer
+        RequestValidator $validator,
+        SubscriberListNormalizer $normalizer,
+        SubscriberListManager $subscriberListManager,
+        PaginatedDataProvider $paginatedDataProvider,
     ) {
-        $this->authentication = $authentication;
-        $this->subscriberListRepository = $repository;
-        $this->subscriberRepository = $subscriberRepository;
-        $this->serializer = $serializer;
+        parent::__construct($authentication, $validator);
+        $this->normalizer = $normalizer;
+        $this->subscriberListManager = $subscriberListManager;
+        $this->paginatedDataProvider = $paginatedDataProvider;
     }
 
-    #[Route('/lists', name: 'get_lists', methods: ['GET'])]
+    #[Route('', name: 'get_lists', methods: ['GET'])]
     #[OA\Get(
         path: '/lists',
         description: 'Returns a JSON list of all subscriber lists.',
@@ -61,6 +60,20 @@ class ListController extends AbstractController
                 schema: new OA\Schema(
                     type: 'string'
                 )
+            ),
+            new OA\Parameter(
+                name: 'after_id',
+                description: 'Last id (starting from 0)',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'integer', default: 1, minimum: 1)
+            ),
+            new OA\Parameter(
+                name: 'limit',
+                description: 'Number of results per page',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'integer', default: 25, maximum: 100, minimum: 1)
             )
         ],
         responses: [
@@ -68,59 +81,35 @@ class ListController extends AbstractController
                 response: 200,
                 description: 'Success',
                 content: new OA\JsonContent(
-                    type: 'array',
-                    items: new OA\Items(
-                        properties: [
-                            new OA\Property(property: 'name', type: 'string', example: 'News'),
-                            new OA\Property(
-                                property: 'description',
-                                type: 'string',
-                                example: 'News (and some fun stuff)'
-                            ),
-                            new OA\Property(
-                                property: 'creation_date',
-                                type: 'string',
-                                format: 'date-time',
-                                example: '2016-06-22T15:01:17+00:00'
-                            ),
-                            new OA\Property(property: 'list_position', type: 'integer', example: 12),
-                            new OA\Property(property: 'subject_prefix', type: 'string', example: 'phpList'),
-                            new OA\Property(property: 'public', type: 'boolean', example: true),
-                            new OA\Property(property: 'category', type: 'string', example: 'news'),
-                            new OA\Property(property: 'id', type: 'integer', example: 1)
-                        ],
-                        type: 'object'
-                    )
+                    properties: [
+                        new OA\Property(
+                            property: 'items',
+                            type: 'array',
+                            items: new OA\Items(ref: '#/components/schemas/SubscriberList')
+                        ),
+                        new OA\Property(property: 'pagination', ref: '#/components/schemas/CursorPagination')
+                    ],
+                    type: 'object'
                 )
             ),
             new OA\Response(
                 response: 403,
                 description: 'Failure',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(
-                            property: 'message',
-                            type: 'string',
-                            example: 'No valid session key was provided as basic auth password.'
-                        )
-                    ],
-                    type: 'object'
-                )
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
             )
         ]
     )]
     public function getLists(Request $request): JsonResponse
     {
         $this->requireAuthentication($request);
-        $data = $this->subscriberListRepository->findAll();
-        $json = $this->serializer->serialize($data, 'json', [
-            AbstractNormalizer::GROUPS => 'SubscriberList',
-        ]);
 
-        return new JsonResponse($json, Response::HTTP_OK, [], true);
+        return $this->json(
+            $this->paginatedDataProvider->getPaginatedList($request, $this->normalizer, SubscriberList::class),
+            Response::HTTP_OK
+        );
     }
 
-    #[Route('/lists/{listId}', name: 'get_list', methods: ['GET'])]
+    #[Route('/{listId}', name: 'get_list', methods: ['GET'])]
     #[OA\Get(
         path: '/lists/{listId}',
         description: 'Returns a single subscriber list with specified ID.',
@@ -146,33 +135,12 @@ class ListController extends AbstractController
             new OA\Response(
                 response: 200,
                 description: 'Success',
-                content: new OA\JsonContent(
-                    type: 'object',
-                    example: [
-                        'name' => 'News',
-                        'description' => 'News (and some fun stuff)',
-                        'creation_date' => '2016-06-22T15:01:17+00:00',
-                        'list_position' => 12,
-                        'subject_prefix' => 'phpList',
-                        'public' => true,
-                        'category' => 'news',
-                        'id' => 1
-                    ]
-                )
+                content: new OA\JsonContent(ref: '#/components/schemas/SubscriberList')
             ),
             new OA\Response(
                 response: 403,
                 description: 'Failure',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(
-                            property: 'message',
-                            type: 'string',
-                            example: 'No valid session key was provided as basic auth password.'
-                        )
-                    ],
-                    type: 'object'
-                )
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
             ),
             new OA\Response(
                 response: 404,
@@ -192,17 +160,18 @@ class ListController extends AbstractController
     )]
     public function getList(
         Request $request,
-        #[MapEntity(mapping: ['listId' => 'id'])] SubscriberList $list
+        #[MapEntity(mapping: ['listId' => 'id'])] ?SubscriberList $list = null
     ): JsonResponse {
         $this->requireAuthentication($request);
-        $json = $this->serializer->serialize($list, 'json', [
-            AbstractNormalizer::GROUPS => 'SubscriberList',
-        ]);
 
-        return new JsonResponse($json, Response::HTTP_OK, [], true);
+        if (!$list) {
+            throw $this->createNotFoundException('Subscriber list not found.');
+        }
+
+        return $this->json($this->normalizer->normalize($list), Response::HTTP_OK);
     }
 
-    #[Route('/lists/{listId}', name: 'delete_list', methods: ['DELETE'])]
+    #[Route('/{listId}', name: 'delete_list', methods: ['DELETE'])]
     #[OA\Delete(
         path: '/lists/{listId}',
         description: 'Deletes a single subscriber list.',
@@ -232,49 +201,48 @@ class ListController extends AbstractController
             new OA\Response(
                 response: 403,
                 description: 'Failure',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(
-                            property: 'message',
-                            type: 'string',
-                            example: 'No valid session key was provided.'
-                        )
-                    ],
-                    type: 'object'
-                )
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
             ),
             new OA\Response(
                 response: 404,
                 description: 'Failure',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(
-                            property: 'message',
-                            type: 'string',
-                            example: 'There is no session with that ID.'
-                        )
-                    ],
-                    type: 'object'
-                )
+                content: new OA\JsonContent(ref: '#/components/schemas/NotFoundErrorResponse')
             )
         ]
     )]
     public function deleteList(
         Request $request,
-        #[MapEntity(mapping: ['listId' => 'id'])] SubscriberList $list
+        #[MapEntity(mapping: ['listId' => 'id'])] ?SubscriberList $list = null
     ): JsonResponse {
         $this->requireAuthentication($request);
 
-        $this->subscriberListRepository->remove($list);
+        if (!$list) {
+            throw $this->createNotFoundException('Subscriber list not found.');
+        }
 
-        return new JsonResponse(null, Response::HTTP_NO_CONTENT, [], false);
+        $this->subscriberListManager->delete($list);
+
+        return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 
-    #[Route('/lists/{listId}/subscribers', name: 'get_subscriber_from_list', methods: ['GET'])]
-    #[OA\Get(
-        path: '/lists/{listId}/subscribers',
-        description: 'Returns a JSON list of all subscribers for a subscriber list.',
-        summary: 'Gets a list of all subscribers of a subscriber list.',
+    #[Route('', name: 'create_list', methods: ['POST'])]
+    #[OA\Post(
+        path: '/lists',
+        description: 'Returns created list.',
+        summary: 'Create a subscriber list.',
+        requestBody: new OA\RequestBody(
+            description: 'Pass parameters to create a new subscriber list.',
+            required: true,
+            content: new OA\JsonContent(
+                required: ['name'],
+                properties: [
+                    new OA\Property(property: 'name', type: 'string', format: 'string', example: 'News'),
+                    new OA\Property(property: 'description', type: 'string', example: 'News (and some fun stuff)'),
+                    new OA\Property(property: 'list_position', type: 'number', example: 12),
+                    new OA\Property(property: 'public', type: 'boolean', example: true),
+                ]
+            )
+        ),
         tags: ['lists'],
         parameters: [
             new OA\Parameter(
@@ -282,147 +250,37 @@ class ListController extends AbstractController
                 description: 'Session ID obtained from authentication',
                 in: 'header',
                 required: true,
-                schema: new OA\Schema(type: 'string')
-            ),
-            new OA\Parameter(
-                name: 'listId',
-                description: 'List ID',
-                in: 'path',
-                required: true,
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(
+                    type: 'string'
+                )
             )
         ],
         responses: [
             new OA\Response(
-                response: 200,
+                response: 201,
                 description: 'Success',
-                content: new OA\JsonContent(
-                    type: 'array',
-                    items: new OA\Items(
-                        properties: [
-                            new OA\Property(property: 'id', type: 'integer', example: 1),
-                            new OA\Property(property: 'email', type: 'string', example: 'subscriber@example.com'),
-                            new OA\Property(
-                                property: 'creation_date',
-                                type: 'string',
-                                format: 'date-time',
-                                example: '2023-01-01T12:00:00Z'
-                            ),
-                            new OA\Property(property: 'confirmed', type: 'boolean', example: true),
-                            new OA\Property(property: 'blacklisted', type: 'boolean', example: false),
-                            new OA\Property(property: 'bounce_count', type: 'integer', example: 0),
-                            new OA\Property(property: 'unique_id', type: 'string', example: 'abc123'),
-                            new OA\Property(property: 'html_email', type: 'boolean', example: true),
-                            new OA\Property(property: 'disabled', type: 'boolean', example: false),
-                            new OA\Property(
-                                property: 'subscribedLists',
-                                type: 'array',
-                                items: new OA\Items(
-                                    properties: [
-                                        new OA\Property(property: 'id', type: 'integer', example: 2),
-                                        new OA\Property(property: 'name', type: 'string', example: 'Newsletter'),
-                                        new OA\Property(
-                                            property: 'description',
-                                            type: 'string',
-                                            example: 'Monthly updates'
-                                        ),
-                                        new OA\Property(
-                                            property: 'creation_date',
-                                            type: 'string',
-                                            format: 'date-time',
-                                            example: '2022-12-01T10:00:00Z'
-                                        ),
-                                        new OA\Property(property: 'public', type: 'boolean', example: true),
-                                    ],
-                                    type: 'object'
-                                )
-                            ),
-                        ],
-                        type: 'object'
-                    )
-                )
+                content: new OA\JsonContent(ref: '#/components/schemas/SubscriberList')
             ),
             new OA\Response(
                 response: 403,
                 description: 'Failure',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(
-                            property: 'message',
-                            type: 'string',
-                            example: 'No valid session key was provided as basic auth password.'
-                        )
-                    ],
-                    type: 'object'
-                )
-            )
-        ]
-    )]
-    public function getListMembers(
-        Request $request,
-        #[MapEntity(mapping: ['listId' => 'id'])] SubscriberList $list
-    ): JsonResponse {
-        $this->requireAuthentication($request);
-
-        $subscribers = $this->subscriberRepository->getSubscribersBySubscribedListId($list->getId());
-
-        $json = $this->serializer->serialize($subscribers, 'json', [
-            AbstractNormalizer::GROUPS => 'SubscriberListMembers',
-        ]);
-
-        return new JsonResponse($json, Response::HTTP_OK, [], true);
-    }
-
-    #[Route('/lists/{listId}/subscribers/count', name: 'get_subscribers_count_from_list', methods: ['GET'])]
-    #[OA\Get(
-        path: '/lists/{listId}/count',
-        description: 'Returns a count of all subscribers in a given list.',
-        summary: 'Gets the total number of subscribers of a list',
-        tags: ['lists'],
-        parameters: [
-            new OA\Parameter(
-                name: 'session',
-                description: 'Session ID obtained from authentication',
-                in: 'header',
-                required: true,
-                schema: new OA\Schema(type: 'string')
-            ),
-            new OA\Parameter(
-                name: 'listId',
-                description: 'List ID',
-                in: 'path',
-                required: true,
-                schema: new OA\Schema(type: 'string')
-            )
-        ],
-        responses: [
-            new OA\Response(
-                response: 200,
-                description: 'Success'
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
             ),
             new OA\Response(
-                response: 403,
+                response: 422,
                 description: 'Failure',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(
-                            property: 'message',
-                            type: 'string',
-                            example: 'No valid session key was provided as basic auth password.'
-                        )
-                    ],
-                    type: 'object'
-                )
-            )
+                content: new OA\JsonContent(ref: '#/components/schemas/ValidationErrorResponse')
+            ),
         ]
     )]
-    public function getSubscribersCount(
-        Request $request,
-        #[MapEntity(mapping: ['listId' => 'id'])] SubscriberList $list
-    ): JsonResponse {
-        $this->requireAuthentication($request);
-        $json = $this->serializer->serialize(count($list->getSubscribers()), 'json');
+    public function createList(Request $request, SubscriberListNormalizer $normalizer): JsonResponse
+    {
+        $authUser = $this->requireAuthentication($request);
 
-        return new JsonResponse($json, Response::HTTP_OK, [], true);
+        /** @var CreateSubscriberListRequest $subscriberListRequest */
+        $subscriberListRequest = $this->validator->validate($request, CreateSubscriberListRequest::class);
+        $data = $this->subscriberListManager->createSubscriberList($subscriberListRequest, $authUser);
+
+        return $this->json($normalizer->normalize($data), Response::HTTP_CREATED);
     }
 }

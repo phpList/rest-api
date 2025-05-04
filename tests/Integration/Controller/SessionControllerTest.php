@@ -8,8 +8,8 @@ use DateTime;
 use PhpList\Core\Domain\Model\Identity\AdministratorToken;
 use PhpList\Core\Domain\Repository\Identity\AdministratorTokenRepository;
 use PhpList\RestBundle\Controller\SessionController;
-use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\AdministratorFixture;
-use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\AdministratorTokenFixture;
+use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\Identity\AdministratorFixture;
+use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\Identity\AdministratorTokenFixture;
 
 /**
  * Testcase.
@@ -46,11 +46,8 @@ class SessionControllerTest extends AbstractTestController
         $this->jsonRequest('post', '/api/v2/sessions');
 
         $this->assertHttpBadRequest();
-        $this->assertJsonResponseContentEquals(
-            [
-                'message' => 'Empty JSON data',
-            ]
-        );
+        $data = $this->getDecodedJsonResponseContent();
+        $this->assertStringContainsString('Invalid JSON:', $data['message']);
     }
 
     public function testPostSessionsWithInvalidJsonWithJsonContentTypeReturnsError400()
@@ -58,21 +55,18 @@ class SessionControllerTest extends AbstractTestController
         $this->jsonRequest('post', '/api/v2/sessions', [], [], [], 'Here be dragons, but no JSON.');
 
         $this->assertHttpBadRequest();
-        $this->assertJsonResponseContentEquals(
-            [
-                'message' => 'Could not decode request body.',
-            ]
-        );
+        $data = $this->getDecodedJsonResponseContent();
+        $this->assertStringContainsString('Invalid JSON:', $data['message']);
     }
 
-    public function testPostSessionsWithValidEmptyJsonWithOtherTypeReturnsError400()
+    public function testPostSessionsWithValidEmptyJsonWithOtherTypeReturnsError422()
     {
         self::getClient()->request('post', '/api/v2/sessions', [], [], ['CONTENT_TYPE' => 'application/xml'], '[]');
 
-        $this->assertHttpBadRequest();
+        $this->assertHttpUnprocessableEntity();
         $this->assertJsonResponseContentEquals(
             [
-                'message' => 'Incomplete credentials',
+                'message' => "loginName: This value should not be blank.\npassword: This value should not be blank.",
             ]
         );
     }
@@ -84,7 +78,7 @@ class SessionControllerTest extends AbstractTestController
     {
         return [
             'neither login_name nor password' => ['{}'],
-            'login_name, but no password' => ['{"login_name": "larry@example.com"}'],
+            'login_name, but no password' => ['{"loginName": "larry@example.com"}'],
             'password, but no login_name' => ['{"password": "t67809oibuzfq2qg3"}'],
         ];
     }
@@ -96,12 +90,9 @@ class SessionControllerTest extends AbstractTestController
     {
         $this->jsonRequest('post', '/api/v2/sessions', [], [], [], $jsonData);
 
-        $this->assertHttpBadRequest();
-        $this->assertJsonResponseContentEquals(
-            [
-                'message' => 'Incomplete credentials',
-            ]
-        );
+        $this->assertHttpUnprocessableEntity();
+        $data = $this->getDecodedJsonResponseContent();
+        $this->assertStringContainsString('This value should not be blank', $data['message']);
     }
 
     public function testPostSessionsWithInvalidCredentialsReturnsNotAuthorized()
@@ -110,7 +101,7 @@ class SessionControllerTest extends AbstractTestController
 
         $loginName = 'john.doe';
         $password = 'a sandwich and a cup of coffee';
-        $jsonData = ['login_name' => $loginName, 'password' => $password];
+        $jsonData = ['loginName' => $loginName, 'password' => $password];
 
         $this->jsonRequest('post', '/api/v2/sessions', [], [], [], json_encode($jsonData));
 
@@ -128,7 +119,7 @@ class SessionControllerTest extends AbstractTestController
 
         $loginName = 'john.doe';
         $password = 'Bazinga!';
-        $jsonData = ['login_name' => $loginName, 'password' => $password];
+        $jsonData = ['loginName' => $loginName, 'password' => $password];
 
         $this->jsonRequest('post', '/api/v2/sessions', [], [], [], json_encode($jsonData));
 
@@ -139,7 +130,7 @@ class SessionControllerTest extends AbstractTestController
     {
         $administratorId = 1;
         $this->loadFixtures([AdministratorFixture::class, AdministratorTokenFixture::class]);
-        $jsonData = ['login_name' => 'john.doe', 'password' => 'Bazinga!'];
+        $jsonData = ['loginName' => 'john.doe', 'password' => 'Bazinga!'];
 
         $this->jsonRequest('post', '/api/v2/sessions', [], [], [], json_encode($jsonData));
 
@@ -201,5 +192,40 @@ class SessionControllerTest extends AbstractTestController
         $this->authenticatedJsonRequest('delete', '/api/v2/sessions/3');
 
         self::assertNotNull($this->administratorTokenRepository->find(3));
+    }
+
+    public function testPostSessionWithExtraFieldsIsIgnored(): void
+    {
+        $this->loadFixtures([AdministratorFixture::class]);
+
+        $jsonData = json_encode([
+            'loginName' => 'john.doe',
+            'password' => 'Bazinga!',
+            'extraField' => 'ignore_me'
+        ]);
+
+        $this->jsonRequest('post', '/api/v2/sessions', [], [], [], $jsonData);
+
+        $this->assertHttpCreated();
+        $response = $this->getDecodedJsonResponseContent();
+        self::assertArrayNotHasKey('extraField', $response);
+    }
+
+    public function testDeleteSessionWithInvalidFormatIdReturns404(): void
+    {
+        $this->authenticatedJsonRequest('DELETE', '/api/v2/sessions/not-an-id');
+        $this->assertHttpNotFound();
+    }
+
+    public function testPostSessionWithWrongHttpMethodReturns405(): void
+    {
+        self::getClient()->request('PUT', '/api/v2/sessions');
+        $this->assertHttpMethodNotAllowed();
+    }
+
+    public function testDeleteSessionWithNoSuchSessionReturns404(): void
+    {
+        $this->authenticatedJsonRequest('DELETE', '/api/v2/sessions/999999');
+        $this->assertHttpNotFound();
     }
 }

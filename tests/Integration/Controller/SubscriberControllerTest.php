@@ -7,7 +7,7 @@ namespace PhpList\RestBundle\Tests\Integration\Controller;
 use PhpList\Core\Domain\Model\Subscription\Subscriber;
 use PhpList\Core\Domain\Repository\Subscription\SubscriberRepository;
 use PhpList\RestBundle\Controller\SubscriberController;
-use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\SubscriberFixture;
+use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\Subscription\SubscriberFixture;
 
 /**
  * Testcase.
@@ -96,24 +96,6 @@ class SubscriberControllerTest extends AbstractTestController
     }
 
     /**
-     * @return array[][]
-     */
-    public static function invalidSubscriberDataProvider(): array
-    {
-        return [
-            'no data' => [[]],
-            'email is null' => [['email' => null]],
-            'email is an empty string' => [['email' => '']],
-            'email is invalid string' => [['email' => 'coffee and cigarettes']],
-            'email as boolean' => [['email' => true]],
-            'html_email as integer' => [['email' => 'kate@example.com', 'html_email' => 1]],
-            'html_email as string' => [['email' => 'kate@example.com', 'html_email' => 'yes']],
-            'request_confirmation as string' => [['email' => 'kate@example.com', 'request_confirmation' => 'needed']],
-            'disabled as string' => [['email' => 'kate@example.com', 'request_confirmation' => 1]],
-        ];
-    }
-
-    /**
      * @dataProvider invalidSubscriberDataProvider
      * @param array[] $jsonData
      */
@@ -124,14 +106,51 @@ class SubscriberControllerTest extends AbstractTestController
         $this->assertHttpUnprocessableEntity();
     }
 
+    /**
+     * @return array[][]
+     */
+    public static function invalidSubscriberDataProvider(): array
+    {
+        return [
+            'no data' => [[]],
+            'email is an empty string' => [['email' => '']],
+            'email is invalid string' => [['email' => 'coffee and cigarettes']],
+        ];
+    }
+
+    /**
+     * @dataProvider invalidDataProvider
+     * @param array[] $jsonData
+     */
+    public function testPostSubscribersWithInvalidJsonCreatesHttpBadRequestStatus(array $jsonData)
+    {
+        $this->authenticatedJsonRequest('post', '/api/v2/subscribers', [], [], [], json_encode($jsonData));
+
+        $this->assertHttpBadRequest();
+    }
+
+    /**
+     * @return array[][]
+     */
+    public static function invalidDataProvider(): array
+    {
+        return [
+            'email is null' => [['email' => null]],
+            'email as boolean' => [['email' => true]],
+            'html_email as integer' => [['email' => 'kate@example.com', 'htmlEmail' => 1]],
+            'html_email as string' => [['email' => 'kate@example.com', 'htmlEmail' => 'yes']],
+            'request_confirmation as string' => [['email' => 'kate@example.com', 'requestConfirmation' => 'needed']],
+        ];
+    }
+
     public function testPostSubscribersWithValidSessionKeyAssignsProvidedSubscriberData()
     {
         $email = 'subscriber@example.com';
         $jsonData = [
             'email' => $email,
-            'confirmed' => true,
+            'requestConfirmation' => true,
             'blacklisted' => true,
-            'html_email' => true,
+            'htmlEmail' => true,
             'disabled' => true,
         ];
 
