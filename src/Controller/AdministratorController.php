@@ -43,7 +43,7 @@ class AdministratorController extends BaseController
     }
 
     #[Route('', name: 'get_administrators', methods: ['GET'])]
-    #[OA\Post(
+    #[OA\Get(
         path: '/administrators',
         description: 'Get list of administrators.',
         summary: 'Get Administrators',
