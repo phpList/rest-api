@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace PhpList\RestBundle\Tests\System\Controller;
+namespace PhpList\RestBundle\Tests\Integration\ViewHandler;
 
 use PhpList\RestBundle\Tests\Integration\Controller\AbstractTestController;
 
