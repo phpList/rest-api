@@ -16,7 +16,6 @@ use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
@@ -104,7 +103,7 @@ class ListController extends BaseController
     {
         $this->requireAuthentication($request);
 
-        return new JsonResponse(
+        return $this->json(
             $this->paginatedDataProvider->getPaginatedList($request, $this->normalizer, SubscriberList::class),
             Response::HTTP_OK
         );
@@ -166,10 +165,10 @@ class ListController extends BaseController
         $this->requireAuthentication($request);
 
         if (!$list) {
-            throw new NotFoundHttpException('Subscriber list not found.');
+            throw $this->createNotFoundException('Subscriber list not found.');
         }
 
-        return new JsonResponse($this->normalizer->normalize($list), Response::HTTP_OK);
+        return $this->json($this->normalizer->normalize($list), Response::HTTP_OK);
     }
 
     #[Route('/{listId}', name: 'delete_list', methods: ['DELETE'])]
@@ -218,12 +217,12 @@ class ListController extends BaseController
         $this->requireAuthentication($request);
 
         if (!$list) {
-            throw new NotFoundHttpException('Subscriber list not found.');
+            throw $this->createNotFoundException('Subscriber list not found.');
         }
 
         $this->subscriberListManager->delete($list);
 
-        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+        return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 
     #[Route('', name: 'create_list', methods: ['POST'])]
@@ -282,6 +281,6 @@ class ListController extends BaseController
         $subscriberListRequest = $this->validator->validate($request, CreateSubscriberListRequest::class);
         $data = $this->subscriberListManager->createSubscriberList($subscriberListRequest, $authUser);
 
-        return new JsonResponse($normalizer->normalize($data), Response::HTTP_CREATED);
+        return $this->json($normalizer->normalize($data), Response::HTTP_CREATED);
     }
 }

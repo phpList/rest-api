@@ -6,17 +6,16 @@ namespace PhpList\RestBundle\Controller;
 
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Model\Messaging\Template;
-use PhpList\Core\Domain\Repository\Messaging\TemplateRepository;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Entity\Request\CreateTemplateRequest;
 use PhpList\RestBundle\Serializer\TemplateNormalizer;
 use PhpList\RestBundle\Service\Manager\TemplateManager;
+use PhpList\RestBundle\Service\Provider\PaginatedDataProvider;
 use PhpList\RestBundle\Validator\RequestValidator;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
@@ -27,21 +26,21 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/templates')]
 class TemplateController extends BaseController
 {
-    private TemplateRepository $templateRepository;
     private TemplateNormalizer $normalizer;
     private TemplateManager $templateManager;
+    private PaginatedDataProvider $paginatedDataProvider;
 
     public function __construct(
         Authentication $authentication,
         RequestValidator $validator,
-        TemplateRepository $templateRepository,
         TemplateNormalizer $normalizer,
-        TemplateManager $templateManager
+        TemplateManager $templateManager,
+        PaginatedDataProvider $paginatedDataProvider,
     ) {
         parent::__construct($authentication, $validator);
-        $this->templateRepository = $templateRepository;
         $this->normalizer = $normalizer;
         $this->templateManager = $templateManager;
+        $this->paginatedDataProvider = $paginatedDataProvider;
     }
 
     #[Route('', name: 'get_templates', methods: ['GET'])]
@@ -59,6 +58,20 @@ class TemplateController extends BaseController
                 schema: new OA\Schema(
                     type: 'string'
                 )
+            ),
+            new OA\Parameter(
+                name: 'after_id',
+                description: 'Last id (starting from 0)',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'integer', default: 1, minimum: 1)
+            ),
+            new OA\Parameter(
+                name: 'limit',
+                description: 'Number of results per page',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'integer', default: 25, maximum: 100, minimum: 1)
             )
         ],
         responses: [
@@ -66,8 +79,15 @@ class TemplateController extends BaseController
                 response: 200,
                 description: 'Success',
                 content: new OA\JsonContent(
-                    type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Template')
+                    properties: [
+                        new OA\Property(
+                            property: 'items',
+                            type: 'array',
+                            items: new OA\Items(ref: '#/components/schemas/Template')
+                        ),
+                        new OA\Property(property: 'pagination', ref: '#/components/schemas/CursorPagination')
+                    ],
+                    type: 'object'
                 )
             ),
             new OA\Response(
@@ -80,13 +100,15 @@ class TemplateController extends BaseController
     public function getTemplates(Request $request): JsonResponse
     {
         $this->requireAuthentication($request);
-        $data = $this->templateRepository->findAll();
 
-        $normalized = array_map(function ($item) {
-            return $this->normalizer->normalize($item);
-        }, $data);
-
-        return new JsonResponse($normalized, Response::HTTP_OK);
+        return $this->json(
+            $this->paginatedDataProvider->getPaginatedList(
+                $request,
+                $this->normalizer,
+                Template::class,
+            ),
+            Response::HTTP_OK
+        );
     }
 
     #[Route('/{templateId}', name: 'get_template', methods: ['GET'])]
@@ -141,7 +163,7 @@ class TemplateController extends BaseController
             throw $this->createNotFoundException('Template not found.');
         }
 
-        return new JsonResponse($this->normalizer->normalize($template), Response::HTTP_OK);
+        return $this->json($this->normalizer->normalize($template), Response::HTTP_OK);
     }
 
     #[Route('', name: 'create_template', methods: ['POST'])]
@@ -241,7 +263,7 @@ class TemplateController extends BaseController
         /** @var CreateTemplateRequest $createTemplateRequest */
         $createTemplateRequest = $this->validator->validate($request, CreateTemplateRequest::class);
 
-        return new JsonResponse(
+        return $this->json(
             $this->normalizer->normalize($this->templateManager->create($createTemplateRequest)),
             Response::HTTP_CREATED
         );
@@ -293,11 +315,11 @@ class TemplateController extends BaseController
         $this->requireAuthentication($request);
 
         if (!$template) {
-            throw new NotFoundHttpException('Template not found.');
+            throw $this->createNotFoundException('Template not found.');
         }
 
         $this->templateManager->delete($template);
 
-        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+        return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 }

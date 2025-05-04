@@ -16,7 +16,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
@@ -95,7 +94,7 @@ class SessionController extends BaseController
 
         $json = $normalizer->normalize($token, 'json');
 
-        return new JsonResponse($json, Response::HTTP_CREATED);
+        return $this->json($json, Response::HTTP_CREATED);
     }
 
     /**
@@ -104,7 +103,6 @@ class SessionController extends BaseController
      * This action may only be called for sessions that are owned by the authenticated administrator.
      *
      * @throws AccessDeniedHttpException
-     * @throws NotFoundHttpException
      */
     #[Route('/{sessionId}', name: 'delete_session', methods: ['DELETE'])]
     #[OA\Delete(
@@ -145,7 +143,7 @@ class SessionController extends BaseController
         $administrator = $this->requireAuthentication($request);
 
         if (!$token) {
-            throw new NotFoundHttpException('Token not found.');
+            throw $this->createNotFoundException('Token not found.');
         }
         if ($token->getAdministrator() !== $administrator) {
             throw new AccessDeniedHttpException('You do not have access to this session.', null, 1519831644);
@@ -153,6 +151,6 @@ class SessionController extends BaseController
 
         $this->sessionManager->deleteSession($token);
 
-        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+        return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 }

@@ -123,7 +123,7 @@ class SubscriptionController extends BaseController
             throw $this->createNotFoundException('Subscriber list not found.');
         }
 
-        return new JsonResponse(
+        return $this->json(
             $this->paginatedProvider->getPaginatedList(
                 $request,
                 $this->subscriberNormalizer,
@@ -188,7 +188,7 @@ class SubscriptionController extends BaseController
             throw $this->createNotFoundException('Subscriber list not found.');
         }
 
-        return new JsonResponse(['subscribers_count' => count($list->getSubscribers())], Response::HTTP_OK);
+        return $this->json(['subscribers_count' => count($list->getSubscribers())], Response::HTTP_OK);
     }
 
     #[Route('/{listId}/subscribers', name: 'create_subscription', methods: ['POST'])]
@@ -279,7 +279,7 @@ class SubscriptionController extends BaseController
         $subscriptions = $this->subscriptionManager->createSubscriptions($list, $subscriptionRequest->emails);
         $normalized = array_map(fn($item) => $this->subscriptionNormalizer->normalize($item), $subscriptions);
 
-        return new JsonResponse($normalized, Response::HTTP_CREATED);
+        return $this->json($normalized, Response::HTTP_CREATED);
     }
 
     #[Route('/{listId}/subscribers', name: 'delete_subscription', methods: ['DELETE'])]
@@ -343,6 +343,6 @@ class SubscriptionController extends BaseController
         $subscriptionRequest = $this->validator->validateDto($subscriptionRequest);
         $this->subscriptionManager->deleteSubscriptions($list, $subscriptionRequest->emails);
 
-        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+        return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 }

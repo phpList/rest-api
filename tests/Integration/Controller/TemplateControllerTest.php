@@ -52,8 +52,8 @@ class TemplateControllerTest extends AbstractTestController
         $response = $this->getDecodedJsonResponseContent();
 
         self::assertIsArray($response);
-        self::assertArrayHasKey('id', $response[0]);
-        self::assertArrayHasKey('title', $response[0]);
+        self::assertArrayHasKey('id', $response['items'][0]);
+        self::assertArrayHasKey('title', $response['items'][0]);
     }
 
     public function testGetTemplateWithoutSessionKeyReturnsForbidden(): void

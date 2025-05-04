@@ -18,7 +18,6 @@ use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
@@ -106,7 +105,7 @@ class CampaignController extends BaseController
 
         $filter = (new MessageFilter())->setOwner($authUer);
 
-        return new JsonResponse(
+        return $this->json(
             $this->paginatedProvider->getPaginatedList($request, $this->normalizer, Message::class, $filter),
             Response::HTTP_OK
         );
@@ -156,10 +155,10 @@ class CampaignController extends BaseController
         $this->requireAuthentication($request);
 
         if (!$message) {
-            throw new NotFoundHttpException('Campaign not found.');
+            throw $this->createNotFoundException('Campaign not found.');
         }
 
-        return new JsonResponse($this->normalizer->normalize($message), Response::HTTP_OK);
+        return $this->json($this->normalizer->normalize($message), Response::HTTP_OK);
     }
 
     #[Route('', name: 'create_message', methods: ['POST'])]
@@ -221,7 +220,7 @@ class CampaignController extends BaseController
         $createMessageRequest = $this->validator->validate($request, CreateMessageRequest::class);
         $data = $this->messageManager->createMessage($createMessageRequest, $authUser);
 
-        return new JsonResponse($normalizer->normalize($data), Response::HTTP_CREATED);
+        return $this->json($normalizer->normalize($data), Response::HTTP_CREATED);
     }
 
     #[Route('/{messageId}', name: 'update_campaign', methods: ['PUT'])]
@@ -288,13 +287,13 @@ class CampaignController extends BaseController
         $authUser = $this->requireAuthentication($request);
 
         if (!$message) {
-            throw new NotFoundHttpException('Campaign not found.');
+            throw $this->createNotFoundException('Campaign not found.');
         }
         /** @var UpdateMessageRequest $updateMessageRequest */
         $updateMessageRequest = $this->validator->validate($request, UpdateMessageRequest::class);
         $data = $this->messageManager->updateMessage($updateMessageRequest, $message, $authUser);
 
-        return new JsonResponse($this->normalizer->normalize($data), Response::HTTP_OK);
+        return $this->json($this->normalizer->normalize($data), Response::HTTP_OK);
     }
 
     #[Route('/{messageId}', name: 'delete_campaign', methods: ['DELETE'])]
@@ -346,11 +345,11 @@ class CampaignController extends BaseController
         $this->requireAuthentication($request);
 
         if (!$message) {
-            throw new NotFoundHttpException('Campaign not found.');
+            throw $this->createNotFoundException('Campaign not found.');
         }
 
         $this->messageManager->delete($message);
 
-        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+        return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 }

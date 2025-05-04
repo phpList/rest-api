@@ -17,7 +17,6 @@ use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
@@ -100,7 +99,7 @@ class AdministratorController extends BaseController
     {
         $this->requireAuthentication($request);
 
-        return new JsonResponse(
+        return $this->json(
             $this->paginatedProvider->getPaginatedList($request, $this->normalizer, Administrator::class),
             Response::HTTP_OK
         );
@@ -141,7 +140,7 @@ class AdministratorController extends BaseController
         $administrator = $this->administratorManager->createAdministrator($dto);
         $json = $normalizer->normalize($administrator, 'json');
 
-        return new JsonResponse($json, Response::HTTP_CREATED);
+        return $this->json($json, Response::HTTP_CREATED);
     }
 
     #[Route('/{administratorId}', name: 'get_administrator', methods: ['GET'])]
@@ -178,11 +177,11 @@ class AdministratorController extends BaseController
         $this->requireAuthentication($request);
 
         if (!$administrator) {
-            throw new NotFoundHttpException('Administrator not found.');
+            throw $this->createNotFoundException('Administrator not found.');
         }
         $json = $this->normalizer->normalize($administrator, 'json');
 
-        return new JsonResponse($json, Response::HTTP_OK);
+        return $this->json($json, Response::HTTP_OK);
     }
 
     #[Route('/{administratorId}', name: 'update_administrator', methods: ['PUT'])]
@@ -223,13 +222,13 @@ class AdministratorController extends BaseController
         $this->requireAuthentication($request);
 
         if (!$administrator) {
-            throw new NotFoundHttpException('Administrator not found.');
+            throw $this->createNotFoundException('Administrator not found.');
         }
         /** @var UpdateAdministratorRequest $dto */
         $dto = $this->validator->validate($request, UpdateAdministratorRequest::class);
         $this->administratorManager->updateAdministrator($administrator, $dto);
 
-        return new JsonResponse(null, Response::HTTP_OK);
+        return $this->json(null, Response::HTTP_OK);
     }
 
     #[Route('/{administratorId}', name: 'delete_administrator', methods: ['DELETE'])]
@@ -265,10 +264,10 @@ class AdministratorController extends BaseController
         $this->requireAuthentication($request);
 
         if (!$administrator) {
-            throw new NotFoundHttpException('Administrator not found.');
+            throw $this->createNotFoundException('Administrator not found.');
         }
         $this->administratorManager->deleteAdministrator($administrator);
 
-        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+        return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 }

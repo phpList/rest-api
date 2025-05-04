@@ -16,7 +16,6 @@ use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
@@ -101,7 +100,7 @@ class SubscriberController extends BaseController
         $subscriberRequest = $this->validator->validate($request, CreateSubscriberRequest::class);
         $subscriber = $this->subscriberManager->createSubscriber($subscriberRequest);
 
-        return new JsonResponse(
+        return $this->json(
             $this->subscriberNormalizer->normalize($subscriber, 'json'),
             Response::HTTP_CREATED
         );
@@ -174,13 +173,13 @@ class SubscriberController extends BaseController
         $this->requireAuthentication($request);
 
         if (!$subscriber) {
-            throw new NotFoundHttpException('Subscriber not found.');
+            throw $this->createNotFoundException('Subscriber not found.');
         }
         /** @var UpdateSubscriberRequest $dto */
         $dto = $this->validator->validate($request, UpdateSubscriberRequest::class);
         $subscriber = $this->subscriberManager->updateSubscriber($dto);
 
-        return new JsonResponse($this->subscriberNormalizer->normalize($subscriber, 'json'), Response::HTTP_OK);
+        return $this->json($this->subscriberNormalizer->normalize($subscriber, 'json'), Response::HTTP_OK);
     }
 
     #[Route('/{subscriberId}', name: 'get_subscriber_by_id', methods: ['GET'])]
@@ -229,7 +228,7 @@ class SubscriberController extends BaseController
 
         $subscriber = $this->subscriberManager->getSubscriber($subscriberId);
 
-        return new JsonResponse($this->subscriberNormalizer->normalize($subscriber), Response::HTTP_OK);
+        return $this->json($this->subscriberNormalizer->normalize($subscriber), Response::HTTP_OK);
     }
 
     #[Route('/{subscriberId}', name: 'delete_subscriber', requirements: ['subscriberId' => '\d+'], methods: ['DELETE'])]
@@ -278,10 +277,10 @@ class SubscriberController extends BaseController
         $this->requireAuthentication($request);
 
         if (!$subscriber) {
-            throw new NotFoundHttpException('Subscriber not found.');
+            throw $this->createNotFoundException('Subscriber not found.');
         }
         $this->subscriberManager->deleteSubscriber($subscriber);
 
-        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+        return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 }
