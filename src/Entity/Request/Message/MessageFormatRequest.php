@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Entity\Request\Message;
 
+use PhpList\Core\Domain\Model\Messaging\Dto\Message\MessageFormatDto;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class MessageFormatRequest implements RequestDtoInterface
@@ -19,4 +20,13 @@ class MessageFormatRequest implements RequestDtoInterface
         new Assert\Choice(['text', 'html', 'pdf']),
     ])]
     public array $formatOptions;
+
+    public function getDto(): MessageFormatDto
+    {
+        return new MessageFormatDto(
+            htmlFormated: $this->htmlFormated,
+            sendFormat: $this->sendFormat,
+            formatOptions: $this->formatOptions,
+        );
+    }
 }

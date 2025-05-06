@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Entity\Request;
 
+use PhpList\Core\Domain\Model\Messaging\Dto\CreateMessageDto;
+use PhpList\Core\Domain\Model\Messaging\Dto\MessageDtoInterface;
 use PhpList\RestBundle\Entity\Request\Message\MessageContentRequest;
 use PhpList\RestBundle\Entity\Request\Message\MessageFormatRequest;
 use PhpList\RestBundle\Entity\Request\Message\MessageMetadataRequest;
@@ -36,4 +38,16 @@ class CreateMessageRequest implements RequestInterface
 
     #[CustomAssert\TemplateExists]
     public ?int $templateId;
+
+    public function getDto(): MessageDtoInterface
+    {
+        return new CreateMessageDto(
+            content: $this->content->getDto(),
+            format: $this->format->getDto(),
+            metadata: $this->metadata->getDto(),
+            options: $this->options->getDto(),
+            schedule: $this->schedule->getDto(),
+            templateId: $this->templateId,
+        );
+    }
 }

@@ -17,4 +17,9 @@ class SubscriptionRequest implements RequestInterface
         new EmailExists()
     ])]
     public array $emails = [];
+
+    public function getDto(): SubscriptionRequest
+    {
+        return $this;
+    }
 }

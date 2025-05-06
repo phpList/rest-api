@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Entity\Request;
 
 use PhpList\Core\Domain\Model\Identity\Administrator;
+use PhpList\Core\Domain\Model\Identity\Dto\UpdateAdministratorDto;
 use Symfony\Component\Validator\Constraints as Assert;
 use PhpList\RestBundle\Validator\Constraint as CustomAssert;
 
-class UpdateAdministratorRequest
+class UpdateAdministratorRequest implements RequestInterface
 {
     public int $administratorId;
 
@@ -25,4 +26,15 @@ class UpdateAdministratorRequest
 
     #[Assert\Type('bool')]
     public ?bool $superAdmin = null;
+
+    public function getDto(): UpdateAdministratorDto
+    {
+        return new UpdateAdministratorDto(
+            administratorId: $this->administratorId,
+            loginName: $this->loginName,
+            password: $this->password,
+            email: $this->email,
+            superAdmin: $this->superAdmin,
+        );
+    }
 }

@@ -6,10 +6,10 @@ namespace PhpList\RestBundle\Controller;
 
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Model\Subscription\SubscriberList;
+use PhpList\Core\Domain\Service\Manager\SubscriptionManager;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Entity\Request\SubscriptionRequest;
 use PhpList\RestBundle\Serializer\SubscriptionNormalizer;
-use PhpList\RestBundle\Service\Manager\SubscriptionManager;
 use PhpList\RestBundle\Validator\RequestValidator;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\EventListener;
 
 use Exception;
-use PhpList\RestBundle\Exception\SubscriptionCreationException;
+use PhpList\Core\Domain\Exception\SubscriptionCreationException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;

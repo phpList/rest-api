@@ -15,4 +15,9 @@ class CreateSessionRequest implements RequestInterface
     #[Assert\NotBlank]
     #[Assert\Type(type: 'string')]
     public string $password;
+
+    public function getDto(): CreateSessionRequest
+    {
+        return $this;
+    }
 }

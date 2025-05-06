@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Controller;
 
 use OpenApi\Attributes as OA;
-use PhpList\Core\Domain\Filter\MessageFilter;
+use PhpList\Core\Domain\Model\Dto\Filter\MessageFilter;
 use PhpList\Core\Domain\Model\Messaging\Message;
+use PhpList\Core\Domain\Service\Manager\MessageManager;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Entity\Request\CreateMessageRequest;
 use PhpList\RestBundle\Entity\Request\UpdateMessageRequest;
 use PhpList\RestBundle\Serializer\MessageNormalizer;
-use PhpList\RestBundle\Service\Manager\MessageManager;
 use PhpList\RestBundle\Service\Provider\PaginatedDataProvider;
 use PhpList\RestBundle\Validator\RequestValidator;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -218,7 +218,7 @@ class CampaignController extends BaseController
 
         /** @var CreateMessageRequest $createMessageRequest */
         $createMessageRequest = $this->validator->validate($request, CreateMessageRequest::class);
-        $data = $this->messageManager->createMessage($createMessageRequest, $authUser);
+        $data = $this->messageManager->createMessage($createMessageRequest->getDto(), $authUser);
 
         return $this->json($normalizer->normalize($data), Response::HTTP_CREATED);
     }
@@ -291,7 +291,7 @@ class CampaignController extends BaseController
         }
         /** @var UpdateMessageRequest $updateMessageRequest */
         $updateMessageRequest = $this->validator->validate($request, UpdateMessageRequest::class);
-        $data = $this->messageManager->updateMessage($updateMessageRequest, $message, $authUser);
+        $data = $this->messageManager->updateMessage($updateMessageRequest->getDto(), $message, $authUser);
 
         return $this->json($this->normalizer->normalize($data), Response::HTTP_OK);
     }

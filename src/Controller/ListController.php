@@ -6,10 +6,10 @@ namespace PhpList\RestBundle\Controller;
 
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Model\Subscription\SubscriberList;
+use PhpList\Core\Domain\Service\Manager\SubscriberListManager;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Entity\Request\CreateSubscriberListRequest;
 use PhpList\RestBundle\Serializer\SubscriberListNormalizer;
-use PhpList\RestBundle\Service\Manager\SubscriberListManager;
 use PhpList\RestBundle\Service\Provider\PaginatedDataProvider;
 use PhpList\RestBundle\Validator\RequestValidator;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -279,7 +279,7 @@ class ListController extends BaseController
 
         /** @var CreateSubscriberListRequest $subscriberListRequest */
         $subscriberListRequest = $this->validator->validate($request, CreateSubscriberListRequest::class);
-        $data = $this->subscriberListManager->createSubscriberList($subscriberListRequest, $authUser);
+        $data = $this->subscriberListManager->createSubscriberList($subscriberListRequest->getDto(), $authUser);
 
         return $this->json($normalizer->normalize($data), Response::HTTP_CREATED);
     }

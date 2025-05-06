@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Tests\Helpers;
 
 use Doctrine\ORM\EntityRepository;
-use PhpList\Core\Domain\Filter\FilterRequestInterface;
+use PhpList\Core\Domain\Model\Dto\Filter\FilterRequestInterface;
 use PhpList\Core\Domain\Repository\Interfaces\PaginatableRepositoryInterface;
 
 class DummyPaginatableRepository extends EntityRepository implements PaginatableRepositoryInterface

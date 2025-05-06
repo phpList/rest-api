@@ -6,11 +6,11 @@ namespace PhpList\RestBundle\Controller;
 
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Model\Subscription\Subscriber;
+use PhpList\Core\Domain\Service\Manager\SubscriberManager;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Entity\Request\CreateSubscriberRequest;
 use PhpList\RestBundle\Entity\Request\UpdateSubscriberRequest;
 use PhpList\RestBundle\Serializer\SubscriberNormalizer;
-use PhpList\RestBundle\Service\Manager\SubscriberManager;
 use PhpList\RestBundle\Validator\RequestValidator;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -98,7 +98,7 @@ class SubscriberController extends BaseController
 
         /** @var CreateSubscriberRequest $subscriberRequest */
         $subscriberRequest = $this->validator->validate($request, CreateSubscriberRequest::class);
-        $subscriber = $this->subscriberManager->createSubscriber($subscriberRequest);
+        $subscriber = $this->subscriberManager->createSubscriber($subscriberRequest->getDto());
 
         return $this->json(
             $this->subscriberNormalizer->normalize($subscriber, 'json'),
@@ -175,9 +175,9 @@ class SubscriberController extends BaseController
         if (!$subscriber) {
             throw $this->createNotFoundException('Subscriber not found.');
         }
-        /** @var UpdateSubscriberRequest $dto */
-        $dto = $this->validator->validate($request, UpdateSubscriberRequest::class);
-        $subscriber = $this->subscriberManager->updateSubscriber($dto);
+        /** @var UpdateSubscriberRequest $updateSubscriberRequest */
+        $updateSubscriberRequest = $this->validator->validate($request, UpdateSubscriberRequest::class);
+        $subscriber = $this->subscriberManager->updateSubscriber($updateSubscriberRequest->getDto());
 
         return $this->json($this->subscriberNormalizer->normalize($subscriber, 'json'), Response::HTTP_OK);
     }

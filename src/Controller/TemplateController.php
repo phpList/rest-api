@@ -6,10 +6,10 @@ namespace PhpList\RestBundle\Controller;
 
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Model\Messaging\Template;
+use PhpList\Core\Domain\Service\Manager\TemplateManager;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Entity\Request\CreateTemplateRequest;
 use PhpList\RestBundle\Serializer\TemplateNormalizer;
-use PhpList\RestBundle\Service\Manager\TemplateManager;
 use PhpList\RestBundle\Service\Provider\PaginatedDataProvider;
 use PhpList\RestBundle\Validator\RequestValidator;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -264,7 +264,7 @@ class TemplateController extends BaseController
         $createTemplateRequest = $this->validator->validate($request, CreateTemplateRequest::class);
 
         return $this->json(
-            $this->normalizer->normalize($this->templateManager->create($createTemplateRequest)),
+            $this->normalizer->normalize($this->templateManager->create($createTemplateRequest->getDto())),
             Response::HTTP_CREATED
         );
     }

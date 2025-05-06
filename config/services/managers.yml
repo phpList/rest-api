@@ -4,34 +4,34 @@ services:
     autoconfigure: true
     public: false
 
-  PhpList\RestBundle\Service\Manager\SubscriberManager:
+  PhpList\Core\Domain\Service\Manager\SubscriberManager:
     autowire: true
     autoconfigure: true
 
-  PhpList\RestBundle\Service\Manager\SessionManager:
+  PhpList\Core\Domain\Service\Manager\SessionManager:
     autowire: true
     autoconfigure: true
 
-  PhpList\RestBundle\Service\Manager\SubscriberListManager:
+  PhpList\Core\Domain\Service\Manager\SubscriberListManager:
     autowire: true
     autoconfigure: true
 
-  PhpList\RestBundle\Service\Manager\SubscriptionManager:
+  PhpList\Core\Domain\Service\Manager\SubscriptionManager:
     autowire: true
     autoconfigure: true
 
-  PhpList\RestBundle\Service\Manager\MessageManager:
+  PhpList\Core\Domain\Service\Manager\MessageManager:
     autowire: true
     autoconfigure: true
 
-  PhpList\RestBundle\Service\Manager\TemplateManager:
+  PhpList\Core\Domain\Service\Manager\TemplateManager:
     autowire: true
     autoconfigure: true
 
-  PhpList\RestBundle\Service\Manager\TemplateImageManager:
+  PhpList\Core\Domain\Service\Manager\TemplateImageManager:
     autowire: true
     autoconfigure: true
 
-  PhpList\RestBundle\Service\Manager\AdministratorManager:
+  PhpList\Core\Domain\Service\Manager\AdministratorManager:
     autowire: true
     autoconfigure: true

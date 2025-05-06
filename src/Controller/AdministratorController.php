@@ -6,11 +6,11 @@ namespace PhpList\RestBundle\Controller;
 
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Model\Identity\Administrator;
+use PhpList\Core\Domain\Service\Manager\AdministratorManager;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Entity\Request\CreateAdministratorRequest;
 use PhpList\RestBundle\Entity\Request\UpdateAdministratorRequest;
 use PhpList\RestBundle\Serializer\AdministratorNormalizer;
-use PhpList\RestBundle\Service\Manager\AdministratorManager;
 use PhpList\RestBundle\Service\Provider\PaginatedDataProvider;
 use PhpList\RestBundle\Validator\RequestValidator;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -135,9 +135,10 @@ class AdministratorController extends BaseController
     ): JsonResponse {
         $this->requireAuthentication($request);
 
-        /** @var CreateAdministratorRequest $dto */
-        $dto = $validator->validate($request, CreateAdministratorRequest::class);
-        $administrator = $this->administratorManager->createAdministrator($dto);
+        /** @var CreateAdministratorRequest $createAdministratorRequest */
+        $createAdministratorRequest = $validator->validate($request, CreateAdministratorRequest::class);
+
+        $administrator = $this->administratorManager->createAdministrator($createAdministratorRequest->getDto());
         $json = $normalizer->normalize($administrator, 'json');
 
         return $this->json($json, Response::HTTP_CREATED);
@@ -224,9 +225,9 @@ class AdministratorController extends BaseController
         if (!$administrator) {
             throw $this->createNotFoundException('Administrator not found.');
         }
-        /** @var UpdateAdministratorRequest $dto */
-        $dto = $this->validator->validate($request, UpdateAdministratorRequest::class);
-        $this->administratorManager->updateAdministrator($administrator, $dto);
+        /** @var UpdateAdministratorRequest $updateAdministratorRequest */
+        $updateAdministratorRequest = $this->validator->validate($request, UpdateAdministratorRequest::class);
+        $this->administratorManager->updateAdministrator($administrator, $updateAdministratorRequest->getDto());
 
         return $this->json(null, Response::HTTP_OK);
     }
