@@ -7,7 +7,7 @@ namespace PhpList\RestBundle\Tests\Unit\Serializer;
 use DateTime;
 use InvalidArgumentException;
 use PhpList\Core\Domain\Identity\Model\Administrator;
-use PhpList\RestBundle\Serializer\AdministratorNormalizer;
+use PhpList\RestBundle\Identity\Serializer\AdministratorNormalizer;
 use PHPUnit\Framework\TestCase;
 
 class AdministratorNormalizerTest extends TestCase

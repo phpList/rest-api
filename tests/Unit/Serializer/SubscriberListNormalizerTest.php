@@ -6,7 +6,7 @@ namespace PhpList\RestBundle\Tests\Unit\Serializer;
 
 use DateTime;
 use PhpList\Core\Domain\Subscription\Model\SubscriberList;
-use PhpList\RestBundle\Serializer\SubscriberListNormalizer;
+use PhpList\RestBundle\Subscription\Serializer\SubscriberListNormalizer;
 use PHPUnit\Framework\TestCase;
 
 class SubscriberListNormalizerTest extends TestCase

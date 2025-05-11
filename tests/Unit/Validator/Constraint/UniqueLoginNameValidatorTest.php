@@ -6,11 +6,11 @@ namespace PhpList\RestBundle\Tests\Unit\Validator\Constraint;
 
 use PhpList\Core\Domain\Identity\Model\Administrator;
 use PhpList\Core\Domain\Identity\Repository\AdministratorRepository;
-use PhpList\RestBundle\Validator\Constraint\UniqueLoginName;
-use PhpList\RestBundle\Validator\Constraint\UniqueLoginNameValidator;
+use PhpList\RestBundle\Identity\Validator\Constraint\UniqueLoginName;
+use PhpList\RestBundle\Identity\Validator\Constraint\UniqueLoginNameValidator;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class UniqueLoginNameValidatorTest extends TestCase
 {

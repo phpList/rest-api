@@ -6,8 +6,8 @@ namespace PhpList\RestBundle\Tests\Unit\Validator\Constraint;
 
 use PhpList\Core\Domain\Messaging\Model\Template;
 use PhpList\Core\Domain\Messaging\Repository\TemplateRepository;
-use PhpList\RestBundle\Validator\Constraint\TemplateExists;
-use PhpList\RestBundle\Validator\Constraint\TemplateExistsValidator;
+use PhpList\RestBundle\Messaging\Validator\Constraint\TemplateExists;
+use PhpList\RestBundle\Messaging\Validator\Constraint\TemplateExistsValidator;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;

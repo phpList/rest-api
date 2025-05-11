@@ -6,7 +6,7 @@ namespace PhpList\RestBundle\Tests\Unit\Serializer;
 
 use PhpList\Core\Domain\Messaging\Model\Template;
 use PhpList\Core\Domain\Messaging\Model\TemplateImage;
-use PhpList\RestBundle\Serializer\TemplateImageNormalizer;
+use PhpList\RestBundle\Messaging\Serializer\TemplateImageNormalizer;
 use PHPUnit\Framework\TestCase;
 
 class TemplateImageNormalizerTest extends TestCase

@@ -1,20 +1,25 @@
 services:
-  PhpList\RestBundle\Validator\RequestValidator:
+  PhpList\RestBundle\Common\Validator\RequestValidator:
     autowire: true
     autoconfigure: true
     public: false
 
-  PhpList\RestBundle\Validator\Constraint\UniqueEmailValidator:
+  PhpList\RestBundle\Identity\Validator\UniqueEmailValidator:
     autowire: true
     autoconfigure: true
     tags: [ 'validator.constraint_validator' ]
 
-  PhpList\RestBundle\Validator\Constraint\EmailExistsValidator:
+  PhpList\RestBundle\Subscription\Validator\Constraint\UniqueEmailValidator:
     autowire: true
     autoconfigure: true
     tags: [ 'validator.constraint_validator' ]
 
-  PhpList\RestBundle\Validator\Constraint\TemplateExistsValidator:
+  PhpList\RestBundle\Subscription\Validator\Constraint\EmailExistsValidator:
+    autowire: true
+    autoconfigure: true
+    tags: [ 'validator.constraint_validator' ]
+
+  PhpList\RestBundle\Messaging\Validator\Constraint\TemplateExistsValidator:
     autowire: true
     autoconfigure: true
     tags: [ 'validator.constraint_validator' ]
@@ -27,10 +32,10 @@ services:
     autowire: true
     autoconfigure: true
 
-  PhpList\RestBundle\Validator\Constraint\ContainsPlaceholderValidator:
+  PhpList\RestBundle\Messaging\Validator\Constraint\ContainsPlaceholderValidator:
     tags: ['validator.constraint_validator']
 
-  PhpList\RestBundle\Validator\Constraint\UniqueLoginNameValidator:
+  PhpList\RestBundle\Identity\Validator\Constraint\UniqueLoginNameValidator:
     autowire: true
     autoconfigure: true
     tags: [ 'validator.constraint_validator' ]

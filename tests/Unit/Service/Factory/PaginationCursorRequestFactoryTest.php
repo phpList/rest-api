@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Unit\Service\Factory;
 
-use PhpList\RestBundle\Service\Factory\PaginationCursorRequestFactory;
+use PhpList\RestBundle\Common\Service\Factory\PaginationCursorRequestFactory;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 

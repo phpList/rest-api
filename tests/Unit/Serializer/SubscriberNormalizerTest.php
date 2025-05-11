@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Tests\Unit\Serializer;
 
 use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
 use PhpList\Core\Domain\Subscription\Model\Subscriber;
 use PhpList\Core\Domain\Subscription\Model\SubscriberList;
 use PhpList\Core\Domain\Subscription\Model\Subscription;
-use PhpList\RestBundle\Serializer\SubscriberNormalizer;
+use PhpList\RestBundle\Subscription\Serializer\SubscriberNormalizer;
 use PHPUnit\Framework\TestCase;
-use Doctrine\Common\Collections\ArrayCollection;
 use stdClass;
 
 class SubscriberNormalizerTest extends TestCase

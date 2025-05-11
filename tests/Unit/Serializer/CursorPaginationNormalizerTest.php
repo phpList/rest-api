@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Unit\Serializer;
 
-use PhpList\RestBundle\Entity\Dto\CursorPaginationResult;
-use PhpList\RestBundle\Serializer\CursorPaginationNormalizer;
+use PhpList\RestBundle\Common\Dto\CursorPaginationResult;
+use PhpList\RestBundle\Common\Serializer\CursorPaginationNormalizer;
 use PHPUnit\Framework\TestCase;
 
 class CursorPaginationNormalizerTest extends TestCase

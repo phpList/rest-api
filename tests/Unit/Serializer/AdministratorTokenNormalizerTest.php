@@ -6,7 +6,7 @@ namespace PhpList\RestBundle\Tests\Unit\Serializer;
 
 use DateTime;
 use PhpList\Core\Domain\Identity\Model\AdministratorToken;
-use PhpList\RestBundle\Serializer\AdministratorTokenNormalizer;
+use PhpList\RestBundle\Identity\Serializer\AdministratorTokenNormalizer;
 use PHPUnit\Framework\TestCase;
 
 class AdministratorTokenNormalizerTest extends TestCase

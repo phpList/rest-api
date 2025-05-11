@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Integration\Controller;
 
-use PhpList\RestBundle\Controller\CampaignController;
+use PhpList\RestBundle\Messaging\Controller\CampaignController;
 use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\Identity\AdministratorFixture;
 use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\Identity\AdministratorTokenFixture;
 use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\Messaging\MessageFixture;

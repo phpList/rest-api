@@ -5,17 +5,17 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Tests\Unit\Service\Provider;
 
 use Doctrine\ORM\EntityManagerInterface;
-use PhpList\RestBundle\Entity\Dto\CursorPaginationResult;
-use PhpList\RestBundle\Entity\Request\PaginationCursorRequest;
-use PhpList\RestBundle\Service\Factory\PaginationCursorRequestFactory;
-use PhpList\RestBundle\Service\Provider\PaginatedDataProvider;
-use PhpList\RestBundle\Serializer\CursorPaginationNormalizer;
+use PhpList\RestBundle\Common\Dto\CursorPaginationResult;
+use PhpList\RestBundle\Common\Request\PaginationCursorRequest;
+use PhpList\RestBundle\Common\Serializer\CursorPaginationNormalizer;
+use PhpList\RestBundle\Common\Service\Factory\PaginationCursorRequestFactory;
+use PhpList\RestBundle\Common\Service\Provider\PaginatedDataProvider;
 use PhpList\RestBundle\Tests\Helpers\DummyPaginatableRepository;
 use PhpList\RestBundle\Tests\Helpers\DummyRepository;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
-use RuntimeException;
 
 class PaginatedDataProviderTest extends TestCase
 {

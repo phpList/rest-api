@@ -4,10 +4,10 @@ services:
     autoconfigure: true
     public: false
 
-  PhpList\RestBundle\EventListener\ExceptionListener:
+  PhpList\RestBundle\Common\EventListener\ExceptionListener:
     tags:
       - { name: kernel.event_listener, event: kernel.exception }
 
-  PhpList\RestBundle\EventListener\ResponseListener:
+  PhpList\RestBundle\Common\EventListener\ResponseListener:
     tags:
       - { name: kernel.event_listener, event: kernel.response }

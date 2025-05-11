@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Unit\Validator\Constraint;
 
-use PhpList\RestBundle\Validator\Constraint\ContainsPlaceholder;
-use PhpList\RestBundle\Validator\Constraint\ContainsPlaceholderValidator;
+use PhpList\RestBundle\Messaging\Validator\Constraint\ContainsPlaceholder;
+use PhpList\RestBundle\Messaging\Validator\Constraint\ContainsPlaceholderValidator;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\Validator\Violation\ConstraintViolationBuilderInterface;

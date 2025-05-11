@@ -97,8 +97,18 @@
                 "PhpList\\RestBundle\\PhpListRestBundle"
             ],
             "routes": {
-                "rest-api": {
-                    "resource": "@PhpListRestBundle/Controller/",
+                "rest-api-identity": {
+                    "resource": "@PhpListRestBundle/Identity/Controller/",
+                    "type": "attribute",
+                    "prefix": "/api/v2"
+                },
+                "rest-api-subscription": {
+                    "resource": "@PhpListRestBundle/Subscription/Controller/",
+                    "type": "attribute",
+                    "prefix": "/api/v2"
+                },
+                "rest-api-messaging": {
+                    "resource": "@PhpListRestBundle/Messaging/Controller/",
                     "type": "attribute",
                     "prefix": "/api/v2"
                 }

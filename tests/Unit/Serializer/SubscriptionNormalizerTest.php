@@ -8,9 +8,9 @@ use DateTime;
 use PhpList\Core\Domain\Subscription\Model\Subscriber;
 use PhpList\Core\Domain\Subscription\Model\SubscriberList;
 use PhpList\Core\Domain\Subscription\Model\Subscription;
-use PhpList\RestBundle\Serializer\SubscriberListNormalizer;
-use PhpList\RestBundle\Serializer\SubscriberNormalizer;
-use PhpList\RestBundle\Serializer\SubscriptionNormalizer;
+use PhpList\RestBundle\Subscription\Serializer\SubscriberListNormalizer;
+use PhpList\RestBundle\Subscription\Serializer\SubscriberNormalizer;
+use PhpList\RestBundle\Subscription\Serializer\SubscriptionNormalizer;
 use PHPUnit\Framework\TestCase;
 
 class SubscriptionNormalizerTest extends TestCase

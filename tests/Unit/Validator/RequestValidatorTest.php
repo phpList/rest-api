@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Unit\Validator;
 
-use PhpList\RestBundle\Entity\Request\RequestInterface;
+use PhpList\RestBundle\Common\Request\RequestInterface;
+use PhpList\RestBundle\Common\Validator\RequestValidator;
 use PhpList\RestBundle\Tests\Helpers\DummyRequestDto;
-use PhpList\RestBundle\Validator\RequestValidator;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;

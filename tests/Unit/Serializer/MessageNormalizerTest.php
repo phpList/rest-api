@@ -7,9 +7,9 @@ namespace PhpList\RestBundle\Tests\Unit\Serializer;
 use DateTime;
 use PhpList\Core\Domain\Messaging\Model\Message;
 use PhpList\Core\Domain\Messaging\Model\Template;
-use PhpList\RestBundle\Serializer\MessageNormalizer;
-use PhpList\RestBundle\Serializer\TemplateImageNormalizer;
-use PhpList\RestBundle\Serializer\TemplateNormalizer;
+use PhpList\RestBundle\Messaging\Serializer\MessageNormalizer;
+use PhpList\RestBundle\Messaging\Serializer\TemplateImageNormalizer;
+use PhpList\RestBundle\Messaging\Serializer\TemplateNormalizer;
 use PHPUnit\Framework\TestCase;
 
 class MessageNormalizerTest extends TestCase

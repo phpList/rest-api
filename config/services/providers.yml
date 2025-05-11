@@ -4,6 +4,6 @@ services:
     autoconfigure: true
     public: false
 
-  PhpList\RestBundle\Service\Provider\PaginatedDataProvider:
+  PhpList\RestBundle\Common\Service\Provider\PaginatedDataProvider:
     autowire: true
     autoconfigure: true

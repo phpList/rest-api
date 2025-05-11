@@ -4,12 +4,6 @@ services:
     Psr\Container\ContainerInterface:
         alias: 'service_container'
 
-    PhpList\RestBundle\Controller\:
-        resource: '../src/Controller'
-        public: true
-        autowire: true
-        tags: ['controller.service_arguments']
-
     my.secure_handler:
         class: PhpList\RestBundle\ViewHandler\SecuredViewHandler
 

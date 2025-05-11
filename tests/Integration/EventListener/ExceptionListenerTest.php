@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Tests\Integration\EventListener;
 
 use PhpList\Core\Domain\Subscription\Exception\SubscriptionCreationException;
-use PhpList\RestBundle\EventListener\ExceptionListener;
+use PhpList\RestBundle\Common\EventListener\ExceptionListener;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
-use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Throwable;
 
 class ExceptionListenerTest extends TestCase

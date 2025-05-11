@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Unit\Serializer;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use PhpList\Core\Domain\Messaging\Model\Template;
 use PhpList\Core\Domain\Messaging\Model\TemplateImage;
-use PhpList\RestBundle\Serializer\TemplateImageNormalizer;
-use PhpList\RestBundle\Serializer\TemplateNormalizer;
+use PhpList\RestBundle\Messaging\Serializer\TemplateImageNormalizer;
+use PhpList\RestBundle\Messaging\Serializer\TemplateNormalizer;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Doctrine\Common\Collections\ArrayCollection;
 
 class TemplateNormalizerTest extends TestCase
 {

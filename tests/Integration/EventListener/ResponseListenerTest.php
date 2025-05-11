@@ -2,7 +2,7 @@
 
 namespace PhpList\RestBundle\Tests\Integration\EventListener;
 
-use PhpList\RestBundle\EventListener\ResponseListener;
+use PhpList\RestBundle\Common\EventListener\ResponseListener;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
