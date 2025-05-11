@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/attributes')]
-class AttributeDefinitionController extends BaseController
+class SubscriberAttributeDefinitionController extends BaseController
 {
     private AttributeDefinitionManager $definitionManager;
     private AttributeDefinitionNormalizer $normalizer;

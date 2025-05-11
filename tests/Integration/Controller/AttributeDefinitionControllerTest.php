@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Tests\Integration\Controller;
 
 use PhpList\Core\Domain\Repository\Subscription\SubscriberAttributeDefinitionRepository;
-use PhpList\RestBundle\Controller\AttributeDefinitionController;
+use PhpList\RestBundle\Controller\SubscriberAttributeDefinitionController;
 use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\Identity\AdministratorFixture;
 use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\Identity\AdministratorTokenFixture;
 use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\Subscription\AttributeDefinitionFixture;
@@ -15,8 +15,8 @@ class AttributeDefinitionControllerTest extends AbstractTestController
     public function testControllerIsAvailableViaContainer()
     {
         self::assertInstanceOf(
-            AttributeDefinitionController::class,
-            self::getContainer()->get(AttributeDefinitionController::class)
+            SubscriberAttributeDefinitionController::class,
+            self::getContainer()->get(SubscriberAttributeDefinitionController::class)
         );
     }
 
