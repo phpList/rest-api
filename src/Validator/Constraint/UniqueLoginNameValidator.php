@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Validator\Constraint;
 
-use PhpList\Core\Domain\Repository\Identity\AdministratorRepository;
+use PhpList\Core\Domain\Identity\Repository\AdministratorRepository;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;

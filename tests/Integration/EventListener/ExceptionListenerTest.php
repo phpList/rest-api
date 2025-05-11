@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Integration\EventListener;
 
+use PhpList\Core\Domain\Subscription\Exception\SubscriptionCreationException;
 use PhpList\RestBundle\EventListener\ExceptionListener;
-use PhpList\Core\Domain\Exception\SubscriptionCreationException;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Entity\Request;
 
-use PhpList\Core\Domain\Model\Subscription\Dto\CreateSubscriberListDto;
+use PhpList\Core\Domain\Subscription\Model\Dto\CreateSubscriberListDto;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class CreateSubscriberListRequest implements RequestInterface

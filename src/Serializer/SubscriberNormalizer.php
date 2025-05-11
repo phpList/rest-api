@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Serializer;
 
-use PhpList\Core\Domain\Model\Subscription\Subscriber;
-use PhpList\Core\Domain\Model\Subscription\Subscription;
+use PhpList\Core\Domain\Subscription\Model\Subscriber;
+use PhpList\Core\Domain\Subscription\Model\Subscription;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class SubscriberNormalizer implements NormalizerInterface

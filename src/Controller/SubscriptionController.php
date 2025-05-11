@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Controller;
 
 use OpenApi\Attributes as OA;
-use PhpList\Core\Domain\Model\Subscription\SubscriberList;
-use PhpList\Core\Domain\Service\Manager\SubscriptionManager;
+use PhpList\Core\Domain\Subscription\Model\SubscriberList;
+use PhpList\Core\Domain\Subscription\Service\SubscriptionManager;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Entity\Request\SubscriptionRequest;
 use PhpList\RestBundle\Serializer\SubscriptionNormalizer;

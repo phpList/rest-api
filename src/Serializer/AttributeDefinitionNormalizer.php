@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Serializer;
 
-use PhpList\Core\Domain\Model\Subscription\SubscriberAttributeDefinition;
+use PhpList\Core\Domain\Subscription\Model\SubscriberAttributeDefinition;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class AttributeDefinitionNormalizer implements NormalizerInterface

@@ -7,7 +7,7 @@ namespace PhpList\RestBundle\Tests\Integration\Controller\Fixtures\Subscription;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use PhpList\Core\Domain\Model\Subscription\SubscriberAttributeDefinition;
+use PhpList\Core\Domain\Subscription\Model\SubscriberAttributeDefinition;
 
 class AttributeDefinitionFixture extends Fixture implements FixtureInterface
 {

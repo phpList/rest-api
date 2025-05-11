@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Integration\Controller;
 
-use PhpList\Core\Domain\Model\Subscription\Subscriber;
-use PhpList\Core\Domain\Repository\Subscription\SubscriberRepository;
+use PhpList\Core\Domain\Subscription\Model\Subscriber;
+use PhpList\Core\Domain\Subscription\Repository\SubscriberRepository;
 use PhpList\RestBundle\Controller\SubscriberController;
 use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\Subscription\SubscriberFixture;
 

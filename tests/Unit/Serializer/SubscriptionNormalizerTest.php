@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Tests\Unit\Serializer;
 
 use DateTime;
-use PhpList\Core\Domain\Model\Subscription\Subscriber;
-use PhpList\Core\Domain\Model\Subscription\SubscriberList;
-use PhpList\Core\Domain\Model\Subscription\Subscription;
+use PhpList\Core\Domain\Subscription\Model\Subscriber;
+use PhpList\Core\Domain\Subscription\Model\SubscriberList;
+use PhpList\Core\Domain\Subscription\Model\Subscription;
 use PhpList\RestBundle\Serializer\SubscriberListNormalizer;
 use PhpList\RestBundle\Serializer\SubscriberNormalizer;
 use PhpList\RestBundle\Serializer\SubscriptionNormalizer;

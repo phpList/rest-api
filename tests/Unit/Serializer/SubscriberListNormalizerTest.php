@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Tests\Unit\Serializer;
 
 use DateTime;
-use PhpList\Core\Domain\Model\Subscription\SubscriberList;
+use PhpList\Core\Domain\Subscription\Model\SubscriberList;
 use PhpList\RestBundle\Serializer\SubscriberListNormalizer;
 use PHPUnit\Framework\TestCase;
 

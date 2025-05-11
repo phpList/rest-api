@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Entity\Request\Message;
 
-use PhpList\Core\Domain\Model\Messaging\Dto\Message\MessageContentDto;
+use PhpList\Core\Domain\Messaging\Model\Dto\Message\MessageContentDto;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class MessageContentRequest implements RequestDtoInterface

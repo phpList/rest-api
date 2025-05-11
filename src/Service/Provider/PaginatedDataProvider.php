@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Service\Provider;
 
 use Doctrine\ORM\EntityManagerInterface;
-use PhpList\Core\Domain\Model\Dto\Filter\FilterRequestInterface;
-use PhpList\Core\Domain\Repository\Interfaces\PaginatableRepositoryInterface;
+use PhpList\Core\Domain\Common\Model\Filter\FilterRequestInterface;
+use PhpList\Core\Domain\Common\Repository\Interfaces\PaginatableRepositoryInterface;
 use PhpList\RestBundle\Entity\Dto\CursorPaginationResult;
 use PhpList\RestBundle\Serializer\CursorPaginationNormalizer;
 use PhpList\RestBundle\Service\Factory\PaginationCursorRequestFactory;

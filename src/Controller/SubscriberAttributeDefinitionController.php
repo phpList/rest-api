@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Controller;
 
 use OpenApi\Attributes as OA;
-use PhpList\Core\Domain\Model\Subscription\SubscriberAttributeDefinition;
-use PhpList\Core\Domain\Service\Manager\AttributeDefinitionManager;
+use PhpList\Core\Domain\Subscription\Model\SubscriberAttributeDefinition;
+use PhpList\Core\Domain\Subscription\Service\AttributeDefinitionManager;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Entity\Request\CreateAttributeDefinitionRequest;
 use PhpList\RestBundle\Entity\Request\UpdateAttributeDefinitionRequest;

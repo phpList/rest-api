@@ -5,13 +5,8 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Tests\Unit\Serializer;
 
 use DateTime;
-use PhpList\Core\Domain\Model\Messaging\Message;
-use PhpList\Core\Domain\Model\Messaging\Message\MessageContent;
-use PhpList\Core\Domain\Model\Messaging\Message\MessageFormat;
-use PhpList\Core\Domain\Model\Messaging\Message\MessageMetadata;
-use PhpList\Core\Domain\Model\Messaging\Message\MessageOptions;
-use PhpList\Core\Domain\Model\Messaging\Message\MessageSchedule;
-use PhpList\Core\Domain\Model\Messaging\Template;
+use PhpList\Core\Domain\Messaging\Model\Message;
+use PhpList\Core\Domain\Messaging\Model\Template;
 use PhpList\RestBundle\Serializer\MessageNormalizer;
 use PhpList\RestBundle\Serializer\TemplateImageNormalizer;
 use PhpList\RestBundle\Serializer\TemplateNormalizer;
@@ -44,21 +39,21 @@ class MessageNormalizerTest extends TestCase
             'getListOrder' => 1,
         ]);
 
-        $content = new MessageContent('Subject', 'Text', 'TextMsg', 'Footer');
-        $format = new MessageFormat(true, 'html');
+        $content = new Message\MessageContent('Subject', 'Text', 'TextMsg', 'Footer');
+        $format = new Message\MessageFormat(true, 'html');
         $format->setFormatOptions(['text', 'html']);
 
         $entered = new DateTime('2025-01-01T10:00:00+00:00');
         $sent = new DateTime('2025-01-02T10:00:00+00:00');
 
-        $metadata = new MessageMetadata('draft');
+        $metadata = new Message\MessageMetadata('draft');
         $metadata->setProcessed(true);
         $metadata->setViews(10);
         $metadata->setBounceCount(3);
         $metadata->setEntered($entered);
         $metadata->setSent($sent);
 
-        $schedule = new MessageSchedule(
+        $schedule = new Message\MessageSchedule(
             24,
             new DateTime('2025-01-10T00:00:00+00:00'),
             12,
@@ -66,7 +61,7 @@ class MessageNormalizerTest extends TestCase
             new DateTime('2025-01-01T00:00:00+00:00')
         );
 
-        $options = new MessageOptions('from@example.com', 'to@example.com', 'reply@example.com', 'group');
+        $options = new Message\MessageOptions('from@example.com', 'to@example.com', 'reply@example.com', 'group');
 
         $message = $this->createMock(Message::class);
         $message->method('getId')->willReturn(1);

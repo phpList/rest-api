@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Tests\Unit\Serializer;
 
 use DateTime;
-use PhpList\Core\Domain\Model\Identity\AdministratorToken;
+use PhpList\Core\Domain\Identity\Model\AdministratorToken;
 use PhpList\RestBundle\Serializer\AdministratorTokenNormalizer;
 use PHPUnit\Framework\TestCase;
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Entity\Request;
 
-use PhpList\Core\Domain\Model\Subscription\Dto\AttributeDefinitionDto;
+use PhpList\Core\Domain\Subscription\Model\Dto\AttributeDefinitionDto;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class CreateAttributeDefinitionRequest implements RequestInterface

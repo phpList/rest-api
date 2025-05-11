@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Controller;
 
 use OpenApi\Attributes as OA;
-use PhpList\Core\Domain\Model\Identity\AdministratorToken;
-use PhpList\Core\Domain\Service\Manager\SessionManager;
+use PhpList\Core\Domain\Identity\Model\AdministratorToken;
+use PhpList\Core\Domain\Identity\Service\SessionManager;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Entity\Request\CreateSessionRequest;
 use PhpList\RestBundle\Serializer\AdministratorTokenNormalizer;

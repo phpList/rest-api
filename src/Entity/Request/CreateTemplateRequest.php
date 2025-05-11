@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Entity\Request;
 
-use PhpList\Core\Domain\Model\Messaging\Dto\CreateTemplateDto;
+use PhpList\Core\Domain\Messaging\Model\Dto\CreateTemplateDto;
 use PhpList\RestBundle\Validator\Constraint as CustomAssert;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;

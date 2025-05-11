@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PhpList\RestBundle\Tests\Integration\Controller\Fixtures\Messaging;
 
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
-use PhpList\Core\Domain\Model\Messaging\Template;
+use PhpList\Core\Domain\Messaging\Model\Template;
 use PhpList\Core\TestingSupport\Traits\ModelTestTrait;
 use RuntimeException;
 

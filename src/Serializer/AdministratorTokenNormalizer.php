@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Serializer;
 
-use PhpList\Core\Domain\Model\Identity\AdministratorToken;
+use PhpList\Core\Domain\Identity\Model\AdministratorToken;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class AdministratorTokenNormalizer implements NormalizerInterface

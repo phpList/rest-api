@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Serializer;
 
-use PhpList\Core\Domain\Model\Subscription\SubscriberAttributeValue;
+use PhpList\Core\Domain\Subscription\Model\SubscriberAttributeValue;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class SubscriberAttributeValueNormalizer implements NormalizerInterface
 {
     public function __construct(
-        private readonly AttributeDefinitionNormalizer $attributeDefinitionNormalizer,
+        private readonly AttributeDefinitionNormalizer $definitionNormalizer,
         private readonly SubscriberNormalizer $subscriberNormalizer,
     ) {
     }
@@ -26,7 +26,7 @@ class SubscriberAttributeValueNormalizer implements NormalizerInterface
 
         return [
             'subscriber' => $this->subscriberNormalizer->normalize($object->getSubscriber()),
-            'definition' => $this->attributeDefinitionNormalizer->normalize($object->getAttributeDefinition()),
+            'definition' => $this->definitionNormalizer->normalize($object->getAttributeDefinition()),
             'value' => $object->getValue(),
         ];
     }

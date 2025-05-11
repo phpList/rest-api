@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Entity\Request;
 
-use PhpList\Core\Domain\Model\Identity\Administrator;
-use PhpList\Core\Domain\Model\Identity\Dto\UpdateAdministratorDto;
+use PhpList\Core\Domain\Identity\Model\Administrator;
+use PhpList\Core\Domain\Identity\Model\Dto\UpdateAdministratorDto;
 use Symfony\Component\Validator\Constraints as Assert;
 use PhpList\RestBundle\Validator\Constraint as CustomAssert;
 

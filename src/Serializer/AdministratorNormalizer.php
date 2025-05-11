@@ -6,7 +6,7 @@ namespace PhpList\RestBundle\Serializer;
 
 use DateTimeInterface;
 use InvalidArgumentException;
-use PhpList\Core\Domain\Model\Identity\Administrator;
+use PhpList\Core\Domain\Identity\Model\Administrator;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class AdministratorNormalizer implements NormalizerInterface

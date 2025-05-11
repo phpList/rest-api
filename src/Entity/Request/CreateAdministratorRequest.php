@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Entity\Request;
 
-use PhpList\Core\Domain\Model\Identity\Administrator;
+use PhpList\Core\Domain\Identity\Model\Administrator;
+use PhpList\Core\Domain\Identity\Model\Dto\CreateAdministratorDto;
 use Symfony\Component\Validator\Constraints as Assert;
 use PhpList\RestBundle\Validator\Constraint as CustomAssert;
-use PhpList\Core\Domain\Model\Identity\Dto\CreateAdministratorDto;
 
 class CreateAdministratorRequest implements RequestInterface
 {

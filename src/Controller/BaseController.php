@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Controller;
 
-use PhpList\Core\Domain\Model\Identity\Administrator;
+use PhpList\Core\Domain\Identity\Model\Administrator;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Validator\RequestValidator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

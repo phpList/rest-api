@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Tests\Integration\Controller;
 
 use DateTime;
-use PhpList\Core\Domain\Model\Identity\AdministratorToken;
-use PhpList\Core\Domain\Repository\Identity\AdministratorTokenRepository;
+use PhpList\Core\Domain\Identity\Model\AdministratorToken;
+use PhpList\Core\Domain\Identity\Repository\AdministratorTokenRepository;
 use PhpList\RestBundle\Controller\SessionController;
 use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\Identity\AdministratorFixture;
 use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\Identity\AdministratorTokenFixture;

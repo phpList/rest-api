@@ -7,7 +7,7 @@ namespace PhpList\RestBundle\Tests\Integration\Controller\Fixtures\Identity;
 use DateTime;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
-use PhpList\Core\Domain\Model\Identity\Administrator;
+use PhpList\Core\Domain\Identity\Model\Administrator;
 use PhpList\Core\TestingSupport\Traits\ModelTestTrait;
 use RuntimeException;
 

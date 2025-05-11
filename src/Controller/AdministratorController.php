@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Controller;
 
 use OpenApi\Attributes as OA;
-use PhpList\Core\Domain\Model\Identity\Administrator;
-use PhpList\Core\Domain\Service\Manager\AdministratorManager;
+use PhpList\Core\Domain\Identity\Model\Administrator;
+use PhpList\Core\Domain\Identity\Service\AdministratorManager;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Entity\Request\CreateAdministratorRequest;
 use PhpList\RestBundle\Entity\Request\UpdateAdministratorRequest;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Validator\Constraint;
 
-use PhpList\Core\Domain\Repository\Subscription\SubscriberRepository;
+use PhpList\Core\Domain\Subscription\Repository\SubscriberRepository;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;

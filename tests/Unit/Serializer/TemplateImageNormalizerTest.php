@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Unit\Serializer;
 
-use PhpList\Core\Domain\Model\Messaging\Template;
-use PhpList\Core\Domain\Model\Messaging\TemplateImage;
+use PhpList\Core\Domain\Messaging\Model\Template;
+use PhpList\Core\Domain\Messaging\Model\TemplateImage;
 use PhpList\RestBundle\Serializer\TemplateImageNormalizer;
 use PHPUnit\Framework\TestCase;
 

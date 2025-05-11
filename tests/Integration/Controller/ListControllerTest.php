@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Integration\Controller;
 
-use PhpList\Core\Domain\Repository\Subscription\SubscriberListRepository;
+use PhpList\Core\Domain\Subscription\Repository\SubscriberListRepository;
 use PhpList\RestBundle\Controller\ListController;
 use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\Identity\AdministratorFixture;
 use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\Identity\AdministratorTokenFixture;

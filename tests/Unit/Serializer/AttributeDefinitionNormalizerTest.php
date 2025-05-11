@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Unit\Serializer;
 
-use PhpList\Core\Domain\Model\Subscription\SubscriberAttributeDefinition;
+use PhpList\Core\Domain\Subscription\Model\SubscriberAttributeDefinition;
 use PhpList\RestBundle\Serializer\AttributeDefinitionNormalizer;
 use PHPUnit\Framework\TestCase;
 

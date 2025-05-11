@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Entity\Request;
 
-use PhpList\Core\Domain\Model\Subscription\Dto\CreateSubscriberDto;
-use PhpList\Core\Domain\Model\Subscription\Subscriber;
+use PhpList\Core\Domain\Subscription\Model\Dto\CreateSubscriberDto;
+use PhpList\Core\Domain\Subscription\Model\Subscriber;
 use PhpList\RestBundle\Validator\Constraint as CustomAssert;
 use Symfony\Component\Validator\Constraints as Assert;
 

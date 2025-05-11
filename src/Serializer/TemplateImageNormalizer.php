@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Serializer;
 
-use PhpList\Core\Domain\Model\Messaging\TemplateImage;
+use PhpList\Core\Domain\Messaging\Model\TemplateImage;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class TemplateImageNormalizer implements NormalizerInterface

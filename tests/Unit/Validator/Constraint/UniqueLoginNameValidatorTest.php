@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Unit\Validator\Constraint;
 
-use PhpList\Core\Domain\Model\Identity\Administrator;
-use PhpList\Core\Domain\Repository\Identity\AdministratorRepository;
+use PhpList\Core\Domain\Identity\Model\Administrator;
+use PhpList\Core\Domain\Identity\Repository\AdministratorRepository;
 use PhpList\RestBundle\Validator\Constraint\UniqueLoginName;
 use PhpList\RestBundle\Validator\Constraint\UniqueLoginNameValidator;
 use PHPUnit\Framework\TestCase;

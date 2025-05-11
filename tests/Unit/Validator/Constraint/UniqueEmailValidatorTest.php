@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Tests\Unit\Validator\Constraint;
 
 use Doctrine\ORM\EntityManagerInterface;
-use PhpList\Core\Domain\Model\Subscription\Subscriber;
-use PhpList\Core\Domain\Repository\Subscription\SubscriberRepository;
+use PhpList\Core\Domain\Subscription\Model\Subscriber;
+use PhpList\Core\Domain\Subscription\Repository\SubscriberRepository;
 use PhpList\RestBundle\Validator\Constraint\UniqueEmail;
 use PhpList\RestBundle\Validator\Constraint\UniqueEmailValidator;
 use PHPUnit\Framework\MockObject\MockObject;

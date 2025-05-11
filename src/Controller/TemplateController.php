@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Controller;
 
 use OpenApi\Attributes as OA;
-use PhpList\Core\Domain\Model\Messaging\Template;
-use PhpList\Core\Domain\Service\Manager\TemplateManager;
+use PhpList\Core\Domain\Messaging\Model\Template;
+use PhpList\Core\Domain\Messaging\Service\TemplateManager;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Entity\Request\CreateTemplateRequest;
 use PhpList\RestBundle\Serializer\TemplateNormalizer;

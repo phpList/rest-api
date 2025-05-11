@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Serializer;
 
-use PhpList\Core\Domain\Model\Messaging\Message;
+use PhpList\Core\Domain\Messaging\Model\Message;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class MessageNormalizer implements NormalizerInterface

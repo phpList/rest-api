@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Unit\Validator\Constraint;
 
-use PhpList\Core\Domain\Model\Subscription\Subscriber;
-use PhpList\Core\Domain\Repository\Subscription\SubscriberRepository;
+use PhpList\Core\Domain\Subscription\Model\Subscriber;
+use PhpList\Core\Domain\Subscription\Repository\SubscriberRepository;
 use PhpList\RestBundle\Validator\Constraint\EmailExists;
 use PhpList\RestBundle\Validator\Constraint\EmailExistsValidator;
 use PHPUnit\Framework\MockObject\MockObject;

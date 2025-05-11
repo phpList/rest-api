@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Controller;
 
 use OpenApi\Attributes as OA;
-use PhpList\Core\Domain\Model\Dto\Filter\MessageFilter;
-use PhpList\Core\Domain\Model\Messaging\Message;
-use PhpList\Core\Domain\Service\Manager\MessageManager;
+use PhpList\Core\Domain\Messaging\Model\Filter\MessageFilter;
+use PhpList\Core\Domain\Messaging\Model\Message;
+use PhpList\Core\Domain\Messaging\Service\MessageManager;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Entity\Request\CreateMessageRequest;
 use PhpList\RestBundle\Entity\Request\UpdateMessageRequest;

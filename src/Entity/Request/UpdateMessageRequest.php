@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Entity\Request;
 
-use PhpList\Core\Domain\Model\Messaging\Dto\MessageDtoInterface;
-use PhpList\Core\Domain\Model\Messaging\Dto\UpdateMessageDto;
+use PhpList\Core\Domain\Messaging\Model\Dto\MessageDtoInterface;
+use PhpList\Core\Domain\Messaging\Model\Dto\UpdateMessageDto;
 
 class UpdateMessageRequest extends CreateMessageRequest
 {

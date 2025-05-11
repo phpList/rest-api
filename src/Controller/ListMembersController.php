@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Controller;
 
 use OpenApi\Attributes as OA;
-use PhpList\Core\Domain\Model\Dto\Filter\SubscriberFilter;
-use PhpList\Core\Domain\Model\Subscription\Subscriber;
-use PhpList\Core\Domain\Model\Subscription\SubscriberList;
+use PhpList\Core\Domain\Subscription\Model\Filter\SubscriberFilter;
+use PhpList\Core\Domain\Subscription\Model\Subscriber;
+use PhpList\Core\Domain\Subscription\Model\SubscriberList;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Serializer\SubscriberNormalizer;
 use PhpList\RestBundle\Service\Provider\PaginatedDataProvider;
