@@ -43,5 +43,9 @@ services:
     tags: [ 'serializer.normalizer' ]
     autowire: true
 
+  PhpList\RestBundle\Serializer\AttributeDefinitionNormalizer:
+    tags: [ 'serializer.normalizer' ]
+    autowire: true
+
   PhpList\RestBundle\Serializer\CursorPaginationNormalizer:
     autowire: true

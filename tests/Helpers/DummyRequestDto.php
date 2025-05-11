@@ -8,5 +8,8 @@ use PhpList\RestBundle\Entity\Request\RequestInterface;
 
 class DummyRequestDto implements RequestInterface
 {
-
+    public function getDto(): mixed
+    {
+        return null;
+    }
 }

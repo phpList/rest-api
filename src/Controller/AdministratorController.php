@@ -135,10 +135,10 @@ class AdministratorController extends BaseController
     ): JsonResponse {
         $this->requireAuthentication($request);
 
-        /** @var CreateAdministratorRequest $createAdministratorRequest */
-        $createAdministratorRequest = $validator->validate($request, CreateAdministratorRequest::class);
+        /** @var CreateAdministratorRequest $createRequest */
+        $createRequest = $validator->validate($request, CreateAdministratorRequest::class);
 
-        $administrator = $this->administratorManager->createAdministrator($createAdministratorRequest->getDto());
+        $administrator = $this->administratorManager->createAdministrator($createRequest->getDto());
         $json = $normalizer->normalize($administrator, 'json');
 
         return $this->json($json, Response::HTTP_CREATED);
@@ -225,9 +225,9 @@ class AdministratorController extends BaseController
         if (!$administrator) {
             throw $this->createNotFoundException('Administrator not found.');
         }
-        /** @var UpdateAdministratorRequest $updateAdministratorRequest */
-        $updateAdministratorRequest = $this->validator->validate($request, UpdateAdministratorRequest::class);
-        $this->administratorManager->updateAdministrator($administrator, $updateAdministratorRequest->getDto());
+        /** @var UpdateAdministratorRequest $updateRequest */
+        $updateRequest = $this->validator->validate($request, UpdateAdministratorRequest::class);
+        $this->administratorManager->updateAdministrator($administrator, $updateRequest->getDto());
 
         return $this->json(null, Response::HTTP_OK);
     }
