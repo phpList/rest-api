@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Unit\Serializer;
 
-use PhpList\Core\Domain\Model\Subscription\AttributeDefinition;
+use PhpList\Core\Domain\Model\Subscription\SubscriberAttributeDefinition;
 use PhpList\RestBundle\Serializer\AttributeDefinitionNormalizer;
 use PHPUnit\Framework\TestCase;
 
@@ -14,7 +14,7 @@ class AttributeDefinitionNormalizerTest extends TestCase
     {
         $normalizer = new AttributeDefinitionNormalizer();
 
-        $definition = $this->createMock(AttributeDefinition::class);
+        $definition = $this->createMock(SubscriberAttributeDefinition::class);
         self::assertTrue($normalizer->supportsNormalization($definition));
 
         $nonSupported = new \stdClass();
@@ -23,7 +23,7 @@ class AttributeDefinitionNormalizerTest extends TestCase
 
     public function testNormalize(): void
     {
-        $definition = $this->createMock(AttributeDefinition::class);
+        $definition = $this->createMock(SubscriberAttributeDefinition::class);
         $definition->method('getId')->willReturn(1);
         $definition->method('getName')->willReturn('Country');
         $definition->method('getType')->willReturn('text');

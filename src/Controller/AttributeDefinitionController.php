@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Controller;
 
 use OpenApi\Attributes as OA;
-use PhpList\Core\Domain\Model\Subscription\AttributeDefinition;
+use PhpList\Core\Domain\Model\Subscription\SubscriberAttributeDefinition;
 use PhpList\Core\Domain\Service\Manager\AttributeDefinitionManager;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Entity\Request\CreateAttributeDefinitionRequest;
@@ -159,7 +159,7 @@ class AttributeDefinitionController extends BaseController
     )]
     public function update(
         Request $request,
-        #[MapEntity(mapping: ['definitionId' => 'id'])] ?AttributeDefinition $attributeDefinition,
+        #[MapEntity(mapping: ['definitionId' => 'id'])] ?SubscriberAttributeDefinition $attributeDefinition,
     ): JsonResponse {
         $this->requireAuthentication($request);
         if (!$attributeDefinition) {
@@ -219,7 +219,7 @@ class AttributeDefinitionController extends BaseController
     )]
     public function delete(
         Request $request,
-        #[MapEntity(mapping: ['definitionId' => 'id'])] ?AttributeDefinition $attributeDefinition,
+        #[MapEntity(mapping: ['definitionId' => 'id'])] ?SubscriberAttributeDefinition $attributeDefinition,
     ): JsonResponse {
         $this->requireAuthentication($request);
         if (!$attributeDefinition) {
@@ -290,7 +290,11 @@ class AttributeDefinitionController extends BaseController
         $this->requireAuthentication($request);
 
         return $this->json(
-            $this->paginatedDataProvider->getPaginatedList($request, $this->normalizer, AttributeDefinition::class),
+            $this->paginatedDataProvider->getPaginatedList(
+                $request,
+                $this->normalizer,
+                SubscriberAttributeDefinition::class,
+            ),
             Response::HTTP_OK
         );
     }
@@ -346,7 +350,7 @@ class AttributeDefinitionController extends BaseController
     )]
     public function getAttributeDefinition(
         Request $request,
-        #[MapEntity(mapping: ['definitionId' => 'id'])] ?AttributeDefinition $attributeDefinition,
+        #[MapEntity(mapping: ['definitionId' => 'id'])] ?SubscriberAttributeDefinition $attributeDefinition,
     ): JsonResponse {
         $this->requireAuthentication($request);
         if (!$attributeDefinition) {

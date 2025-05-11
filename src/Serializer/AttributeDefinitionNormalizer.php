@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Serializer;
 
-use PhpList\Core\Domain\Model\Subscription\AttributeDefinition;
+use PhpList\Core\Domain\Model\Subscription\SubscriberAttributeDefinition;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class AttributeDefinitionNormalizer implements NormalizerInterface
@@ -14,7 +14,7 @@ class AttributeDefinitionNormalizer implements NormalizerInterface
      */
     public function normalize($object, string $format = null, array $context = []): array
     {
-        if (!$object instanceof AttributeDefinition) {
+        if (!$object instanceof SubscriberAttributeDefinition) {
             return [];
         }
 
@@ -34,6 +34,6 @@ class AttributeDefinitionNormalizer implements NormalizerInterface
      */
     public function supportsNormalization($data, string $format = null): bool
     {
-        return $data instanceof AttributeDefinition;
+        return $data instanceof SubscriberAttributeDefinition;
     }
 }

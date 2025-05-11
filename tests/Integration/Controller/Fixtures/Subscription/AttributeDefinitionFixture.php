@@ -7,13 +7,13 @@ namespace PhpList\RestBundle\Tests\Integration\Controller\Fixtures\Subscription;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use PhpList\Core\Domain\Model\Subscription\AttributeDefinition;
+use PhpList\Core\Domain\Model\Subscription\SubscriberAttributeDefinition;
 
 class AttributeDefinitionFixture extends Fixture implements FixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
-        $definition = new AttributeDefinition();
+        $definition = new SubscriberAttributeDefinition();
         $definition->setName('Country');
         $definition->setType('checkbox');
         $definition->setListOrder(1);

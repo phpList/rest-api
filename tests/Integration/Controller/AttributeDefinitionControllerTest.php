@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Integration\Controller;
 
-use PhpList\Core\Domain\Repository\Subscription\AttributeDefinitionRepository;
+use PhpList\Core\Domain\Repository\Subscription\SubscriberAttributeDefinitionRepository;
 use PhpList\RestBundle\Controller\AttributeDefinitionController;
 use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\Identity\AdministratorFixture;
 use PhpList\RestBundle\Tests\Integration\Controller\Fixtures\Identity\AdministratorTokenFixture;
@@ -95,7 +95,7 @@ class AttributeDefinitionControllerTest extends AbstractTestController
         $this->authenticatedJsonRequest('DELETE', '/api/v2/attributes/1');
         $this->assertHttpNoContent();
 
-        $repo = self::getContainer()->get(AttributeDefinitionRepository::class);
+        $repo = self::getContainer()->get(SubscriberAttributeDefinitionRepository::class);
         self::assertNull($repo->find(1));
     }
 
