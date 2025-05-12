@@ -55,7 +55,7 @@ class ListMembersController extends BaseController
                 description: 'List ID',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(type: 'integer')
             ),
             new OA\Parameter(
                 name: 'after_id',

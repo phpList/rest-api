@@ -74,6 +74,14 @@ use OpenApi\Attributes as OA;
     ],
     type: 'object'
 )]
+#[OA\Schema(
+    schema: 'SubscriberAttributeValue',
+    properties: [
+        new OA\Property(property: 'subscriber', ref: '#/components/schemas/Subscriber'),
+        new OA\Property(property: 'definition', ref: '#/components/schemas/AttributeDefinition'),
+        new OA\Property(property: 'value', type: 'string', example: 'United States'),
+    ],
+)]
 class SwaggerSchemasResponse
 {
 }
