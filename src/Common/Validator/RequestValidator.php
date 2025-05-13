@@ -38,6 +38,9 @@ class RequestValidator
         if (isset($routeParams['listId'])) {
             $routeParams['listId'] = (int) $routeParams['listId'];
         }
+        if (isset($routeParams['administratorId'])) {
+            $routeParams['administratorId'] = (int) $routeParams['administratorId'];
+        }
 
         $data = array_merge($routeParams, $body ?? []);
 

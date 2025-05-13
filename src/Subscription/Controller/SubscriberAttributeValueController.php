@@ -5,58 +5,53 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Subscription\Controller;
 
 use OpenApi\Attributes as OA;
+use PhpList\Core\Domain\Subscription\Model\Filter\SubscriberAttributeValueFilter;
+use PhpList\Core\Domain\Subscription\Model\Subscriber;
 use PhpList\Core\Domain\Subscription\Model\SubscriberAttributeDefinition;
-use PhpList\Core\Domain\Subscription\Service\AttributeDefinitionManager;
+use PhpList\Core\Domain\Subscription\Model\SubscriberAttributeValue;
+use PhpList\Core\Domain\Subscription\Service\SubscriberAttributeManager;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Service\Provider\PaginatedDataProvider;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
-use PhpList\RestBundle\Subscription\Request\CreateAttributeDefinitionRequest;
-use PhpList\RestBundle\Subscription\Request\UpdateAttributeDefinitionRequest;
-use PhpList\RestBundle\Subscription\Serializer\AttributeDefinitionNormalizer;
+use PhpList\RestBundle\Subscription\Serializer\SubscriberAttributeValueNormalizer;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/subscribers/attributes')]
-class SubscriberAttributeDefinitionController extends BaseController
+#[Route('/subscribers/attribute-values')]
+class SubscriberAttributeValueController extends BaseController
 {
-    private AttributeDefinitionManager $definitionManager;
-    private AttributeDefinitionNormalizer $normalizer;
+    private SubscriberAttributeManager $attributeManager;
+    private SubscriberAttributeValueNormalizer $normalizer;
     private PaginatedDataProvider $paginatedDataProvider;
 
     public function __construct(
         Authentication $authentication,
         RequestValidator $validator,
-        AttributeDefinitionManager $definitionManager,
-        AttributeDefinitionNormalizer $normalizer,
+        SubscriberAttributeManager $attributeManager,
+        SubscriberAttributeValueNormalizer $normalizer,
         PaginatedDataProvider $paginatedDataProvider
     ) {
         parent::__construct($authentication, $validator);
-        $this->definitionManager = $definitionManager;
+        $this->attributeManager = $attributeManager;
         $this->normalizer = $normalizer;
         $this->paginatedDataProvider = $paginatedDataProvider;
     }
 
-    #[Route('', name: 'create_attribute_definition', methods: ['POST'])]
+    #[Route('/{subscriberId}/{definitionId}', name: 'create_subscriber_attribute_value', methods: ['POST', 'PUT'])]
     #[OA\Post(
-        path: '/subscriber/attributes',
-        description: 'Returns created subscriber attribute definition.',
-        summary: 'Create a subscriber attribute definition.',
+        path: '/subscriber/attribute-values/{subscriberId}/{definitionId}',
+        description: 'Returns created/updated subscriber attribute.',
+        summary: 'Create/update a subscriber attribute.',
         requestBody: new OA\RequestBody(
             description: 'Pass parameters to create subscriber attribute.',
             required: true,
             content: new OA\JsonContent(
-                required: ['name'],
                 properties: [
-                    new OA\Property(property: 'name', type: 'string', format: 'string', example: 'Country'),
-                    new OA\Property(property: 'type', type: 'string', example: 'checkbox'),
-                    new OA\Property(property: 'order', type: 'number', example: 12),
-                    new OA\Property(property: 'default_value', type: 'string', example: 'United States'),
-                    new OA\Property(property: 'required', type: 'boolean', example: true),
-                    new OA\Property(property: 'table_name', type: 'string', example: 'list_attributes'),
+                    new OA\Property(property: 'value', type: 'string', example: 'United States'),
                 ]
             )
         ),
@@ -67,16 +62,28 @@ class SubscriberAttributeDefinitionController extends BaseController
                 description: 'Session ID obtained from authentication',
                 in: 'header',
                 required: true,
-                schema: new OA\Schema(
-                    type: 'string'
-                )
-            )
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                name: 'definitionId',
+                description: 'attribute definition id',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'subscriberId',
+                description: 'Subscriber id',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
         ],
         responses: [
             new OA\Response(
                 response: 201,
                 description: 'Success',
-                content: new OA\JsonContent(ref: '#/components/schemas/AttributeDefinition')
+                content: new OA\JsonContent(ref: '#/components/schemas/SubscriberAttributeValue')
             ),
             new OA\Response(
                 response: 403,
@@ -90,100 +97,35 @@ class SubscriberAttributeDefinitionController extends BaseController
             ),
         ]
     )]
-    public function create(Request $request): JsonResponse
-    {
+    public function createOrUpdate(
+        Request $request,
+        #[MapEntity(mapping: ['definitionId' => 'id'])] ?SubscriberAttributeDefinition $definition = null,
+        #[MapEntity(mapping: ['subscriberId' => 'id'])] ?Subscriber $subscriber = null,
+    ): JsonResponse {
         $this->requireAuthentication($request);
 
-        /** @var CreateAttributeDefinitionRequest $definitionRequest */
-        $definitionRequest = $this->validator->validate($request, CreateAttributeDefinitionRequest::class);
+        if (!$definition) {
+            throw $this->createNotFoundException('Attribute definition not found.');
+        }
+        if (!$subscriber) {
+            throw $this->createNotFoundException('Subscriber not found.');
+        }
 
-        $attributeDefinition = $this->definitionManager->create($definitionRequest->getDto());
+        $attributeDefinition = $this->attributeManager->createOrUpdate(
+            subscriber:$subscriber,
+            definition: $definition,
+            value: $request->toArray()['value'] ?? null
+        );
         $json = $this->normalizer->normalize($attributeDefinition, 'json');
 
         return $this->json($json, Response::HTTP_CREATED);
     }
 
-    #[Route('/{definitionId}', name: 'update_attribute_definition', methods: ['PUT'])]
-    #[OA\Put(
-        path: '/subscriber/attributes/{definitionId}',
-        description: 'Returns updated subscriber attribute definition.',
-        summary: 'Update a subscriber attribute definition.',
-        requestBody: new OA\RequestBody(
-            description: 'Pass parameters to update subscriber attribute.',
-            required: true,
-            content: new OA\JsonContent(
-                required: ['name'],
-                properties: [
-                    new OA\Property(property: 'name', type: 'string', format: 'string', example: 'Country'),
-                    new OA\Property(property: 'type', type: 'string', example: 'checkbox'),
-                    new OA\Property(property: 'order', type: 'number', example: 12),
-                    new OA\Property(property: 'default_value', type: 'string', example: 'United States'),
-                    new OA\Property(property: 'required', type: 'boolean', example: true),
-                    new OA\Property(property: 'table_name', type: 'string', example: 'list_attributes'),
-                ]
-            )
-        ),
-        tags: ['subscriber-attributes'],
-        parameters: [
-            new OA\Parameter(
-                name: 'definitionId',
-                description: 'Definition ID',
-                in: 'path',
-                required: true,
-                schema: new OA\Schema(type: 'string')
-            ),
-            new OA\Parameter(
-                name: 'session',
-                description: 'Session ID obtained from authentication',
-                in: 'header',
-                required: true,
-                schema: new OA\Schema(type: 'string')
-            )
-        ],
-        responses: [
-            new OA\Response(
-                response: 200,
-                description: 'Success',
-                content: new OA\JsonContent(ref: '#/components/schemas/AttributeDefinition')
-            ),
-            new OA\Response(
-                response: 403,
-                description: 'Failure',
-                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
-            ),
-            new OA\Response(
-                response: 422,
-                description: 'Failure',
-                content: new OA\JsonContent(ref: '#/components/schemas/ValidationErrorResponse')
-            ),
-        ]
-    )]
-    public function update(
-        Request $request,
-        #[MapEntity(mapping: ['definitionId' => 'id'])] ?SubscriberAttributeDefinition $attributeDefinition,
-    ): JsonResponse {
-        $this->requireAuthentication($request);
-        if (!$attributeDefinition) {
-            throw $this->createNotFoundException('Attribute definition not found.');
-        }
-
-        /** @var UpdateAttributeDefinitionRequest $definitionRequest */
-        $definitionRequest = $this->validator->validate($request, UpdateAttributeDefinitionRequest::class);
-
-        $attributeDefinition = $this->definitionManager->update(
-            $attributeDefinition,
-            $definitionRequest->getDto(),
-        );
-        $json = $this->normalizer->normalize($attributeDefinition, 'json');
-
-        return $this->json($json, Response::HTTP_OK);
-    }
-
-    #[Route('/{definitionId}', name: 'delete_attribute_definition', methods: ['DELETE'])]
+    #[Route('/{subscriberId}/{definitionId}', name: 'delete_subscriber_attribute', methods: ['DELETE'])]
     #[OA\Delete(
-        path: '/subscriber/attributes/{definitionId}',
-        description: 'Deletes a single subscriber attribute definition.',
-        summary: 'Deletes an attribute definition.',
+        path: '/subscriber/attribute-values/{subscriberId}/{definitionId}',
+        description: 'Deletes a single subscriber attribute.',
+        summary: 'Deletes an attribute.',
         tags: ['subscriber-attributes'],
         parameters: [
             new OA\Parameter(
@@ -195,11 +137,18 @@ class SubscriberAttributeDefinitionController extends BaseController
             ),
             new OA\Parameter(
                 name: 'definitionId',
-                description: 'Definition ID',
+                description: 'attribute definition id',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'string')
-            )
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'subscriberId',
+                description: 'Subscriber id',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
         ],
         responses: [
             new OA\Response(
@@ -220,23 +169,24 @@ class SubscriberAttributeDefinitionController extends BaseController
     )]
     public function delete(
         Request $request,
-        #[MapEntity(mapping: ['definitionId' => 'id'])] ?SubscriberAttributeDefinition $attributeDefinition,
+        #[MapEntity(mapping: ['definitionId' => 'id'])] ?SubscriberAttributeDefinition $definition = null,
+        #[MapEntity(mapping: ['subscriberId' => 'id'])] ?Subscriber $subscriber = null,
     ): JsonResponse {
         $this->requireAuthentication($request);
-        if (!$attributeDefinition) {
-            throw $this->createNotFoundException('Attribute definition not found.');
+        if (!$definition || !$subscriber) {
+            throw $this->createNotFoundException('Subscriber attribute not found.');
         }
-
-        $this->definitionManager->delete($attributeDefinition);
+        $attribute = $this->attributeManager->getSubscriberAttribute($definition->getId(), $subscriber->getId());
+        $this->attributeManager->delete($attribute);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 
-    #[Route('', name: 'get_attribute_definitions', methods: ['GET'])]
+    #[Route('/{subscriberId}', name: 'get_subscriber_attributes', methods: ['GET'])]
     #[OA\Get(
-        path: '/subscriber/attributes',
-        description: 'Returns a JSON list of all subscriber attribute definitions.',
-        summary: 'Gets a list of all subscriber attribute definitions.',
+        path: '/subscriber/attribute-values/{subscriberId}',
+        description: 'Returns a JSON list of all subscriber attributes.',
+        summary: 'Gets a list of all subscriber attributes.',
         tags: ['subscriber-attributes'],
         parameters: [
             new OA\Parameter(
@@ -244,9 +194,14 @@ class SubscriberAttributeDefinitionController extends BaseController
                 description: 'Session ID obtained from authentication',
                 in: 'header',
                 required: true,
-                schema: new OA\Schema(
-                    type: 'string'
-                )
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                name: 'subscriberId',
+                description: 'Subscriber id',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
             ),
             new OA\Parameter(
                 name: 'after_id',
@@ -272,7 +227,7 @@ class SubscriberAttributeDefinitionController extends BaseController
                         new OA\Property(
                             property: 'items',
                             type: 'array',
-                            items: new OA\Items(ref: '#/components/schemas/AttributeDefinition')
+                            items: new OA\Items(ref: '#/components/schemas/SubscriberAttributeValue')
                         ),
                         new OA\Property(property: 'pagination', ref: '#/components/schemas/CursorPagination')
                     ],
@@ -289,30 +244,39 @@ class SubscriberAttributeDefinitionController extends BaseController
     public function getPaginated(Request $request): JsonResponse
     {
         $this->requireAuthentication($request);
+        $filter = (new SubscriberAttributeValueFilter())->setSubscriberId($request->query->getInt('subscriberId'));
 
         return $this->json(
             $this->paginatedDataProvider->getPaginatedList(
                 $request,
                 $this->normalizer,
-                SubscriberAttributeDefinition::class,
+                SubscriberAttributeValue::class,
+                $filter
             ),
             Response::HTTP_OK
         );
     }
 
-    #[Route('/{definitionId}', name: 'get_attribute_definition', methods: ['GET'])]
+    #[Route('/{subscriberId}/{definitionId}', name: 'get_subscriber_attribute', methods: ['GET'])]
     #[OA\Get(
-        path: '/subscriber/attributes/{definitionId}',
-        description: 'Returns a single attribute with specified ID.',
-        summary: 'Gets attribute with specified ID.',
+        path: '/subscriber/attribute-values/{subscriberId}/{definitionId}',
+        description: 'Returns a single attribute.',
+        summary: 'Gets subscriber attribute.',
         tags: ['subscriber-attributes'],
         parameters: [
             new OA\Parameter(
                 name: 'definitionId',
-                description: 'Definition ID',
+                description: 'attribute definition id',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'subscriberId',
+                description: 'Subscriber id',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
             ),
             new OA\Parameter(
                 name: 'session',
@@ -326,7 +290,7 @@ class SubscriberAttributeDefinitionController extends BaseController
             new OA\Response(
                 response: 200,
                 description: 'Success',
-                content: new OA\JsonContent(ref: '#/components/schemas/AttributeDefinition')
+                content: new OA\JsonContent(ref: '#/components/schemas/SubscriberAttributeValue')
             ),
             new OA\Response(
                 response: 403,
@@ -351,15 +315,18 @@ class SubscriberAttributeDefinitionController extends BaseController
     )]
     public function getAttributeDefinition(
         Request $request,
-        #[MapEntity(mapping: ['definitionId' => 'id'])] ?SubscriberAttributeDefinition $attributeDefinition,
+        #[MapEntity(mapping: ['subscriberId' => 'id'])] ?SubscriberAttributeDefinition $subscriber,
+        #[MapEntity(mapping: ['definitionId' => 'id'])] ?SubscriberAttributeDefinition $definition,
     ): JsonResponse {
         $this->requireAuthentication($request);
-        if (!$attributeDefinition) {
-            throw $this->createNotFoundException('Attribute definition not found.');
+        if (!$definition || !$subscriber) {
+            throw $this->createNotFoundException('Subscriber attribute not found.');
         }
+        $attribute = $this->attributeManager->getSubscriberAttribute($definition->getId(), $subscriber->getId());
+        $this->attributeManager->delete($attribute);
 
         return $this->json(
-            $this->normalizer->normalize($attributeDefinition),
+            $this->normalizer->normalize($attribute),
             Response::HTTP_OK
         );
     }

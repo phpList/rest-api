@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Identity\Validator\Constraint;
 
-use Doctrine\ORM\EntityManagerInterface;
+use PhpList\Core\Domain\Identity\Repository\AdministratorRepository;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
@@ -13,7 +13,7 @@ use Symfony\Component\Validator\Exception\UnexpectedValueException;
 
 class UniqueEmailValidator extends ConstraintValidator
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager)
+    public function __construct(private readonly AdministratorRepository $repository)
     {
     }
 
@@ -31,9 +31,7 @@ class UniqueEmailValidator extends ConstraintValidator
             throw new UnexpectedValueException($value, 'string');
         }
 
-        $existingUser = $this->entityManager
-            ->getRepository($constraint->entityClass)
-            ->findOneBy(['email' => $value]);
+        $existingUser = $this->repository->findOneBy(['email' => $value]);
 
         $dto = $this->context->getObject();
         $updatingId = $dto->administratorId ?? null;

@@ -230,7 +230,7 @@ class AdministratorController extends BaseController
         $updateRequest = $this->validator->validate($request, UpdateAdministratorRequest::class);
         $this->administratorManager->updateAdministrator($administrator, $updateRequest->getDto());
 
-        return $this->json(null, Response::HTTP_OK);
+        return $this->json($this->normalizer->normalize($administrator), Response::HTTP_OK);
     }
 
     #[Route('/{administratorId}', name: 'delete_administrator', methods: ['DELETE'])]
