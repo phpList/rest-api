@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Tests\Integration\Subscription\Controller;
 
 use PhpList\Core\Domain\Subscription\Repository\SubscriberListRepository;
-use PhpList\RestBundle\Subscription\Controller\ListController;
+use PhpList\RestBundle\Subscription\Controller\SubscriberListController;
 use PhpList\RestBundle\Tests\Integration\Common\AbstractTestController;
 use PhpList\RestBundle\Tests\Integration\Identity\Fixtures\AdministratorFixture;
 use PhpList\RestBundle\Tests\Integration\Identity\Fixtures\AdministratorTokenFixture;
@@ -19,11 +19,14 @@ use PhpList\RestBundle\Tests\Integration\Subscription\Fixtures\SubscriptionFixtu
  * @author Oliver Klee <oliver@phplist.com>
  * @author Xheni Myrtaj <xheni@phplist.com>
  */
-class ListControllerTest extends AbstractTestController
+class SubscriberListControllerTest extends AbstractTestController
 {
     public function testControllerIsAvailableViaContainer()
     {
-        self::assertInstanceOf(ListController::class, self::getContainer()->get(ListController::class));
+        self::assertInstanceOf(
+            SubscriberListController::class,
+            self::getContainer()->get(SubscriberListController::class)
+        );
     }
 
     public function testGetListsWithoutSessionKeyReturnsForbiddenStatus()

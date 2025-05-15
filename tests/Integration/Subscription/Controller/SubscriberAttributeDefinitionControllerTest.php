@@ -9,7 +9,7 @@ use PhpList\RestBundle\Subscription\Controller\SubscriberAttributeDefinitionCont
 use PhpList\RestBundle\Tests\Integration\Common\AbstractTestController;
 use PhpList\RestBundle\Tests\Integration\Identity\Fixtures\AdministratorFixture;
 use PhpList\RestBundle\Tests\Integration\Identity\Fixtures\AdministratorTokenFixture;
-use PhpList\RestBundle\Tests\Integration\Subscription\Fixtures\AttributeDefinitionFixture;
+use PhpList\RestBundle\Tests\Integration\Subscription\Fixtures\SubscriberAttributeDefinitionFixture;
 
 class SubscriberAttributeDefinitionControllerTest extends AbstractTestController
 {
@@ -67,7 +67,7 @@ class SubscriberAttributeDefinitionControllerTest extends AbstractTestController
         $this->loadFixtures([
             AdministratorFixture::class,
             AdministratorTokenFixture::class,
-            AttributeDefinitionFixture::class,
+            SubscriberAttributeDefinitionFixture::class,
         ]);
 
         $payload = json_encode([
@@ -90,7 +90,7 @@ class SubscriberAttributeDefinitionControllerTest extends AbstractTestController
         $this->loadFixtures([
             AdministratorFixture::class,
             AdministratorTokenFixture::class,
-            AttributeDefinitionFixture::class,
+            SubscriberAttributeDefinitionFixture::class,
         ]);
 
         $this->authenticatedJsonRequest('DELETE', '/api/v2/subscribers/attributes/1');

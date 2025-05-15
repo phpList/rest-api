@@ -27,7 +27,7 @@ use Symfony\Component\Routing\Attribute\Route;
  * @author Tatevik Grigoryan <tatevik@phplist.com>
  */
 #[Route('/lists')]
-class ListController extends BaseController
+class SubscriberListController extends BaseController
 {
     private SubscriberListNormalizer $normalizer;
     private SubscriberListManager $subscriberListManager;

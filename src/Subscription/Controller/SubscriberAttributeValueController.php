@@ -176,15 +176,18 @@ class SubscriberAttributeValueController extends BaseController
         if (!$definition || !$subscriber) {
             throw $this->createNotFoundException('Subscriber attribute not found.');
         }
-        $attribute = $this->attributeManager->getSubscriberAttribute($definition->getId(), $subscriber->getId());
+        $attribute = $this->attributeManager->getSubscriberAttribute($subscriber->getId(), $definition->getId());
+        if ($attribute === null) {
+            throw $this->createNotFoundException('Subscriber attribute not found.');
+        }
         $this->attributeManager->delete($attribute);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 
-    #[Route('/{subscriberId}', name: 'get_subscriber_attributes', methods: ['GET'])]
+    #[Route('/{subscriberId}', name: 'get_subscriber_attribute_list', methods: ['GET'])]
     #[OA\Get(
-        path: '/subscriber/attribute-values/{subscriberId}',
+        path: '/subscribers/attribute-values/{subscriberId}',
         description: 'Returns a JSON list of all subscriber attributes.',
         summary: 'Gets a list of all subscriber attributes.',
         tags: ['subscriber-attributes'],
@@ -241,10 +244,13 @@ class SubscriberAttributeValueController extends BaseController
             )
         ]
     )]
-    public function getPaginated(Request $request): JsonResponse
-    {
+    public function getPaginated(
+        Request $request,
+        #[MapEntity(mapping: ['subscriberId' => 'id'])] ?Subscriber $subscriber = null,
+    ): JsonResponse {
         $this->requireAuthentication($request);
-        $filter = (new SubscriberAttributeValueFilter())->setSubscriberId($request->query->getInt('subscriberId'));
+
+        $filter = (new SubscriberAttributeValueFilter())->setSubscriberId($subscriber->getId());
 
         return $this->json(
             $this->paginatedDataProvider->getPaginatedList(

@@ -9,7 +9,7 @@ use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use PhpList\Core\Domain\Subscription\Model\SubscriberAttributeDefinition;
 
-class AttributeDefinitionFixture extends Fixture implements FixtureInterface
+class SubscriberAttributeDefinitionFixture extends Fixture implements FixtureInterface
 {
     public function load(ObjectManager $manager): void
     {
