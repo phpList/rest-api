@@ -9,7 +9,7 @@ use PhpList\Core\Domain\Subscription\Model\Subscriber;
 use PhpList\Core\Domain\Subscription\Model\SubscriberList;
 use PhpList\Core\Domain\Subscription\Model\Subscription;
 use PhpList\RestBundle\Subscription\Serializer\SubscriberListNormalizer;
-use PhpList\RestBundle\Subscription\Serializer\SubscriberNormalizer;
+use PhpList\RestBundle\Subscription\Serializer\SubscriberOnlyNormalizer;
 use PhpList\RestBundle\Subscription\Serializer\SubscriptionNormalizer;
 use PHPUnit\Framework\TestCase;
 
@@ -18,7 +18,7 @@ class SubscriptionNormalizerTest extends TestCase
     public function testSupportsNormalization(): void
     {
         $normalizer = new SubscriptionNormalizer(
-            $this->createMock(SubscriberNormalizer::class),
+            $this->createMock(SubscriberOnlyNormalizer::class),
             $this->createMock(SubscriberListNormalizer::class)
         );
 
@@ -38,7 +38,7 @@ class SubscriptionNormalizerTest extends TestCase
         $subscription->method('getSubscriberList')->willReturn($subscriberList);
         $subscription->method('getCreatedAt')->willReturn($subscriptionDate);
 
-        $subscriberNormalizer = $this->createMock(SubscriberNormalizer::class);
+        $subscriberNormalizer = $this->createMock(SubscriberOnlyNormalizer::class);
         $subscriberListNormalizer = $this->createMock(SubscriberListNormalizer::class);
 
         $subscriberNormalizer->method('normalize')->with($subscriber)->willReturn(['subscriber_data']);
@@ -58,7 +58,7 @@ class SubscriptionNormalizerTest extends TestCase
     public function testNormalizeWithInvalidObjectReturnsEmptyArray(): void
     {
         $normalizer = new SubscriptionNormalizer(
-            $this->createMock(SubscriberNormalizer::class),
+            $this->createMock(SubscriberOnlyNormalizer::class),
             $this->createMock(SubscriberListNormalizer::class)
         );
 

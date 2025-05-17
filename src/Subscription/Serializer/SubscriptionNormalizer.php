@@ -9,11 +9,11 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class SubscriptionNormalizer implements NormalizerInterface
 {
-    private SubscriberNormalizer $subscriberNormalizer;
+    private SubscriberOnlyNormalizer $subscriberNormalizer;
     private SubscriberListNormalizer $subscriberListNormalizer;
 
     public function __construct(
-        SubscriberNormalizer $subscriberNormalizer,
+        SubscriberOnlyNormalizer $subscriberNormalizer,
         SubscriberListNormalizer $subscriberListNormalizer
     ) {
         $this->subscriberNormalizer = $subscriberNormalizer;

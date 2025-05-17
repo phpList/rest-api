@@ -15,6 +15,10 @@ services:
     tags: [ 'serializer.normalizer' ]
     autowire: true
 
+  PhpList\RestBundle\Subscription\Serializer\SubscriberOnlyNormalizer:
+    tags: [ 'serializer.normalizer' ]
+    autowire: true
+
   PhpList\RestBundle\Identity\Serializer\AdministratorTokenNormalizer:
     tags: [ 'serializer.normalizer' ]
     autowire: true

@@ -5,15 +5,10 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Subscription\Serializer;
 
 use PhpList\Core\Domain\Subscription\Model\Subscriber;
-use PhpList\Core\Domain\Subscription\Model\Subscription;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
-class SubscriberNormalizer implements NormalizerInterface
+class SubscriberOnlyNormalizer implements NormalizerInterface
 {
-    public function __construct(private readonly SubscriberListNormalizer $subscriberListNormalizer)
-    {
-    }
-
     /**
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
@@ -33,9 +28,6 @@ class SubscriberNormalizer implements NormalizerInterface
             'unique_id' => $object->getUniqueId(),
             'html_email' => $object->hasHtmlEmail(),
             'disabled' => $object->isDisabled(),
-            'subscribed_lists' => array_map(function (Subscription $subscription) {
-                return $this->subscriberListNormalizer->normalize($subscription->getSubscriberList());
-            }, $object->getSubscriptions()->toArray()),
         ];
     }
 

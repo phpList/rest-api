@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use PhpList\Core\Domain\Subscription\Model\Subscriber;
 use PhpList\Core\Domain\Subscription\Model\SubscriberList;
 use PhpList\Core\Domain\Subscription\Model\Subscription;
+use PhpList\RestBundle\Subscription\Serializer\SubscriberListNormalizer;
 use PhpList\RestBundle\Subscription\Serializer\SubscriberNormalizer;
 use PHPUnit\Framework\TestCase;
 use stdClass;
@@ -17,7 +18,7 @@ class SubscriberNormalizerTest extends TestCase
 {
     public function testSupportsNormalization(): void
     {
-        $normalizer = new SubscriberNormalizer();
+        $normalizer = new SubscriberNormalizer(new SubscriberListNormalizer());
         $subscriber = $this->createMock(Subscriber::class);
 
         $this->assertTrue($normalizer->supportsNormalization($subscriber));
@@ -49,7 +50,7 @@ class SubscriberNormalizerTest extends TestCase
         $subscriber->method('isDisabled')->willReturn(false);
         $subscriber->method('getSubscriptions')->willReturn(new ArrayCollection([$subscription]));
 
-        $normalizer = new SubscriberNormalizer();
+        $normalizer = new SubscriberNormalizer(new SubscriberListNormalizer());
 
         $expected = [
             'id' => 101,
@@ -65,10 +66,12 @@ class SubscriberNormalizerTest extends TestCase
                 [
                     'id' => 1,
                     'name' => 'News',
-                    'description' => 'Latest news',
                     'created_at' => '2025-01-01T00:00:00+00:00',
+                    'description' => 'Latest news',
+                    'list_position' => null,
+                    'subject_prefix' => null,
                     'public' => true,
-                    'subscription_date' => '2025-01-10T00:00:00+00:00'
+                    'category' => '',
                 ]
             ]
         ];
@@ -78,7 +81,7 @@ class SubscriberNormalizerTest extends TestCase
 
     public function testNormalizeWithInvalidObject(): void
     {
-        $normalizer = new SubscriberNormalizer();
+        $normalizer = new SubscriberNormalizer(new SubscriberListNormalizer());
         $this->assertSame([], $normalizer->normalize(new stdClass()));
     }
 }
