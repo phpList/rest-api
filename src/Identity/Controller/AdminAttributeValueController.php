@@ -2,37 +2,37 @@
 
 declare(strict_types=1);
 
-namespace PhpList\RestBundle\Subscription\Controller;
+namespace PhpList\RestBundle\Identity\Controller;
 
 use OpenApi\Attributes as OA;
-use PhpList\Core\Domain\Subscription\Model\Filter\SubscriberAttributeValueFilter;
-use PhpList\Core\Domain\Subscription\Model\Subscriber;
-use PhpList\Core\Domain\Subscription\Model\SubscriberAttributeDefinition;
-use PhpList\Core\Domain\Subscription\Model\SubscriberAttributeValue;
-use PhpList\Core\Domain\Subscription\Service\SubscriberAttributeManager;
+use PhpList\Core\Domain\Identity\Model\Filter\AdminAttributeValueFilter;
+use PhpList\Core\Domain\Identity\Model\Administrator;
+use PhpList\Core\Domain\Identity\Model\AdminAttributeDefinition;
+use PhpList\Core\Domain\Identity\Model\AdminAttributeValue;
+use PhpList\Core\Domain\Identity\Service\AdminAttributeManager;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Service\Provider\PaginatedDataProvider;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
-use PhpList\RestBundle\Subscription\Serializer\SubscriberAttributeValueNormalizer;
+use PhpList\RestBundle\Identity\Serializer\AdminAttributeValueNormalizer;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/subscribers/attribute-values')]
-class SubscriberAttributeValueController extends BaseController
+#[Route('/administrators/attribute-values')]
+class AdminAttributeValueController extends BaseController
 {
-    private SubscriberAttributeManager $attributeManager;
-    private SubscriberAttributeValueNormalizer $normalizer;
+    private AdminAttributeManager $attributeManager;
+    private AdminAttributeValueNormalizer $normalizer;
     private PaginatedDataProvider $paginatedDataProvider;
 
     public function __construct(
         Authentication $authentication,
         RequestValidator $validator,
-        SubscriberAttributeManager $attributeManager,
-        SubscriberAttributeValueNormalizer $normalizer,
+        AdminAttributeManager $attributeManager,
+        AdminAttributeValueNormalizer $normalizer,
         PaginatedDataProvider $paginatedDataProvider
     ) {
         parent::__construct($authentication, $validator);
@@ -41,13 +41,13 @@ class SubscriberAttributeValueController extends BaseController
         $this->paginatedDataProvider = $paginatedDataProvider;
     }
 
-    #[Route('/{subscriberId}/{definitionId}', name: 'create_subscriber_attribute_value', methods: ['POST', 'PUT'])]
+    #[Route('/{adminId}/{definitionId}', name: 'create_admin_attribute_value', methods: ['POST', 'PUT'])]
     #[OA\Post(
-        path: '/subscriber/attribute-values/{subscriberId}/{definitionId}',
-        description: 'Returns created/updated subscriber attribute.',
-        summary: 'Create/update a subscriber attribute.',
+        path: '/administrators/attribute-values/{adminId}/{definitionId}',
+        description: 'Returns created/updated admin attribute.',
+        summary: 'Create/update an admin attribute.',
         requestBody: new OA\RequestBody(
-            description: 'Pass parameters to create subscriber attribute.',
+            description: 'Pass parameters to create admin attribute.',
             required: true,
             content: new OA\JsonContent(
                 properties: [
@@ -55,7 +55,7 @@ class SubscriberAttributeValueController extends BaseController
                 ]
             )
         ),
-        tags: ['subscriber-attributes'],
+        tags: ['admin-attributes'],
         parameters: [
             new OA\Parameter(
                 name: 'session',
@@ -72,8 +72,8 @@ class SubscriberAttributeValueController extends BaseController
                 schema: new OA\Schema(type: 'integer')
             ),
             new OA\Parameter(
-                name: 'subscriberId',
-                description: 'Subscriber id',
+                name: 'adminId',
+                description: 'Administrator id',
                 in: 'path',
                 required: true,
                 schema: new OA\Schema(type: 'integer')
@@ -83,7 +83,7 @@ class SubscriberAttributeValueController extends BaseController
             new OA\Response(
                 response: 201,
                 description: 'Success',
-                content: new OA\JsonContent(ref: '#/components/schemas/SubscriberAttributeValue')
+                content: new OA\JsonContent(ref: '#/components/schemas/AdminAttributeValue')
             ),
             new OA\Response(
                 response: 403,
@@ -99,20 +99,20 @@ class SubscriberAttributeValueController extends BaseController
     )]
     public function createOrUpdate(
         Request $request,
-        #[MapEntity(mapping: ['definitionId' => 'id'])] ?SubscriberAttributeDefinition $definition = null,
-        #[MapEntity(mapping: ['subscriberId' => 'id'])] ?Subscriber $subscriber = null,
+        #[MapEntity(mapping: ['definitionId' => 'id'])] ?AdminAttributeDefinition $definition = null,
+        #[MapEntity(mapping: ['adminId' => 'id'])] ?Administrator $admin = null,
     ): JsonResponse {
         $this->requireAuthentication($request);
 
         if (!$definition) {
             throw $this->createNotFoundException('Attribute definition not found.');
         }
-        if (!$subscriber) {
-            throw $this->createNotFoundException('Subscriber not found.');
+        if (!$admin) {
+            throw $this->createNotFoundException('Administrator not found.');
         }
 
         $attributeDefinition = $this->attributeManager->createOrUpdate(
-            subscriber:$subscriber,
+            admin:$admin,
             definition: $definition,
             value: $request->toArray()['value'] ?? null
         );
@@ -121,12 +121,12 @@ class SubscriberAttributeValueController extends BaseController
         return $this->json($json, Response::HTTP_CREATED);
     }
 
-    #[Route('/{subscriberId}/{definitionId}', name: 'delete_subscriber_attribute', methods: ['DELETE'])]
+    #[Route('/{adminId}/{definitionId}', name: 'delete_admin_attribute', methods: ['DELETE'])]
     #[OA\Delete(
-        path: '/subscriber/attribute-values/{subscriberId}/{definitionId}',
-        description: 'Deletes a single subscriber attribute.',
+        path: '/administrators/attribute-values/{admin}/{definitionId}',
+        description: 'Deletes a single admin attribute.',
         summary: 'Deletes an attribute.',
-        tags: ['subscriber-attributes'],
+        tags: ['admin-attributes'],
         parameters: [
             new OA\Parameter(
                 name: 'session',
@@ -143,8 +143,8 @@ class SubscriberAttributeValueController extends BaseController
                 schema: new OA\Schema(type: 'integer')
             ),
             new OA\Parameter(
-                name: 'subscriberId',
-                description: 'Subscriber id',
+                name: 'adminId',
+                description: 'Administrator id',
                 in: 'path',
                 required: true,
                 schema: new OA\Schema(type: 'integer')
@@ -169,28 +169,28 @@ class SubscriberAttributeValueController extends BaseController
     )]
     public function delete(
         Request $request,
-        #[MapEntity(mapping: ['definitionId' => 'id'])] ?SubscriberAttributeDefinition $definition = null,
-        #[MapEntity(mapping: ['subscriberId' => 'id'])] ?Subscriber $subscriber = null,
+        #[MapEntity(mapping: ['definitionId' => 'id'])] ?AdminAttributeDefinition $definition = null,
+        #[MapEntity(mapping: ['adminId' => 'id'])] ?Administrator $admin = null,
     ): JsonResponse {
         $this->requireAuthentication($request);
-        if (!$definition || !$subscriber) {
-            throw $this->createNotFoundException('Subscriber attribute not found.');
+        if (!$definition || !$admin) {
+            throw $this->createNotFoundException('Administrator attribute not found.');
         }
-        $attribute = $this->attributeManager->getSubscriberAttribute($subscriber->getId(), $definition->getId());
+        $attribute = $this->attributeManager->getAdminAttribute($admin->getId(), $definition->getId());
         if ($attribute === null) {
-            throw $this->createNotFoundException('Subscriber attribute not found.');
+            throw $this->createNotFoundException('Administrator attribute not found.');
         }
         $this->attributeManager->delete($attribute);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 
-    #[Route('/{subscriberId}', name: 'get_subscriber_attribute_list', methods: ['GET'])]
+    #[Route('/{adminId}', name: 'get_admin_attribute_list', methods: ['GET'])]
     #[OA\Get(
-        path: '/subscribers/attribute-values/{subscriberId}',
-        description: 'Returns a JSON list of all subscriber attributes.',
-        summary: 'Gets a list of all subscriber attributes.',
-        tags: ['subscriber-attributes'],
+        path: '/administrators/attribute-values/{adminId}',
+        description: 'Returns a JSON list of all admin attributes.',
+        summary: 'Gets a list of all admin attributes.',
+        tags: ['admin-attributes'],
         parameters: [
             new OA\Parameter(
                 name: 'session',
@@ -200,8 +200,8 @@ class SubscriberAttributeValueController extends BaseController
                 schema: new OA\Schema(type: 'string')
             ),
             new OA\Parameter(
-                name: 'subscriberId',
-                description: 'Subscriber id',
+                name: 'adminId',
+                description: 'Administrator id',
                 in: 'path',
                 required: true,
                 schema: new OA\Schema(type: 'integer')
@@ -230,7 +230,7 @@ class SubscriberAttributeValueController extends BaseController
                         new OA\Property(
                             property: 'items',
                             type: 'array',
-                            items: new OA\Items(ref: '#/components/schemas/SubscriberAttributeValue')
+                            items: new OA\Items(ref: '#/components/schemas/AdminAttributeValue')
                         ),
                         new OA\Property(property: 'pagination', ref: '#/components/schemas/CursorPagination')
                     ],
@@ -246,29 +246,32 @@ class SubscriberAttributeValueController extends BaseController
     )]
     public function getPaginated(
         Request $request,
-        #[MapEntity(mapping: ['subscriberId' => 'id'])] ?Subscriber $subscriber = null,
+        #[MapEntity(mapping: ['adminId' => 'id'])] ?Administrator $admin = null,
     ): JsonResponse {
         $this->requireAuthentication($request);
+        if (!$admin) {
+            $this->createNotFoundException('Administrator not found.');
+        }
 
-        $filter = (new SubscriberAttributeValueFilter())->setSubscriberId($subscriber->getId());
+        $filter = (new AdminAttributeValueFilter())->setAdminId($admin->getId());
 
         return $this->json(
             $this->paginatedDataProvider->getPaginatedList(
                 $request,
                 $this->normalizer,
-                SubscriberAttributeValue::class,
+                AdminAttributeValue::class,
                 $filter
             ),
             Response::HTTP_OK
         );
     }
 
-    #[Route('/{subscriberId}/{definitionId}', name: 'get_subscriber_attribute', methods: ['GET'])]
+    #[Route('/{adminId}/{definitionId}', name: 'get_admin_attribute', methods: ['GET'])]
     #[OA\Get(
-        path: '/subscribers/attribute-values/{subscriberId}/{definitionId}',
+        path: '/administrators/attribute-values/{adminId}/{definitionId}',
         description: 'Returns a single attribute.',
-        summary: 'Gets subscriber attribute.',
-        tags: ['subscriber-attributes'],
+        summary: 'Gets admin attribute.',
+        tags: ['admin-attributes'],
         parameters: [
             new OA\Parameter(
                 name: 'definitionId',
@@ -278,8 +281,8 @@ class SubscriberAttributeValueController extends BaseController
                 schema: new OA\Schema(type: 'integer')
             ),
             new OA\Parameter(
-                name: 'subscriberId',
-                description: 'Subscriber id',
+                name: 'adminId',
+                description: 'Administrator id',
                 in: 'path',
                 required: true,
                 schema: new OA\Schema(type: 'integer')
@@ -296,7 +299,7 @@ class SubscriberAttributeValueController extends BaseController
             new OA\Response(
                 response: 200,
                 description: 'Success',
-                content: new OA\JsonContent(ref: '#/components/schemas/SubscriberAttributeValue')
+                content: new OA\JsonContent(ref: '#/components/schemas/AdminAttributeValue')
             ),
             new OA\Response(
                 response: 403,
@@ -321,14 +324,17 @@ class SubscriberAttributeValueController extends BaseController
     )]
     public function getAttributeDefinition(
         Request $request,
-        #[MapEntity(mapping: ['subscriberId' => 'id'])] ?SubscriberAttributeDefinition $subscriber,
-        #[MapEntity(mapping: ['definitionId' => 'id'])] ?SubscriberAttributeDefinition $definition,
+        #[MapEntity(mapping: ['adminId' => 'id'])] ?AdminAttributeDefinition $admin,
+        #[MapEntity(mapping: ['definitionId' => 'id'])] ?AdminAttributeDefinition $definition,
     ): JsonResponse {
         $this->requireAuthentication($request);
-        if (!$definition || !$subscriber) {
-            throw $this->createNotFoundException('Subscriber attribute not found.');
+        if (!$definition || !$admin) {
+            throw $this->createNotFoundException('Administrator attribute not found.');
         }
-        $attribute = $this->attributeManager->getSubscriberAttribute($subscriber->getId(), $definition->getId());
+        $attribute = $this->attributeManager->getAdminAttribute(
+            adminId: $admin->getId(),
+            attributeDefinitionId: $definition->getId()
+        );
         $this->attributeManager->delete($attribute);
 
         return $this->json(

@@ -47,6 +47,14 @@ services:
     tags: [ 'serializer.normalizer' ]
     autowire: true
 
+  PhpList\RestBundle\Identity\Serializer\AdminAttributeDefinitionNormalizer:
+    tags: [ 'serializer.normalizer' ]
+    autowire: true
+
+  PhpList\RestBundle\Identity\Serializer\AdminAttributeValueNormalizer:
+    tags: [ 'serializer.normalizer' ]
+    autowire: true
+
   PhpList\RestBundle\Subscription\Serializer\AttributeDefinitionNormalizer:
     tags: [ 'serializer.normalizer' ]
     autowire: true
