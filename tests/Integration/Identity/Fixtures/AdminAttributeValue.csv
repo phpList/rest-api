@@ -1,0 +1,7 @@
+admin_id,definition_id,value
+1,1,"test value"
+1,7,"original value"
+1,8,"to be deleted"
+1,9,"value 1"
+1,10,"value 2"
+1,11,"test get value"

@@ -76,7 +76,7 @@ class AdminAttributeDefinitionController extends BaseController
             new OA\Response(
                 response: 201,
                 description: 'Success',
-                content: new OA\JsonContent(ref: '#/components/schemas/AttributeDefinition')
+                content: new OA\JsonContent(ref: '#/components/schemas/AdminAttributeDefinition')
             ),
             new OA\Response(
                 response: 403,
@@ -144,7 +144,7 @@ class AdminAttributeDefinitionController extends BaseController
             new OA\Response(
                 response: 200,
                 description: 'Success',
-                content: new OA\JsonContent(ref: '#/components/schemas/AttributeDefinition')
+                content: new OA\JsonContent(ref: '#/components/schemas/AdminAttributeDefinition')
             ),
             new OA\Response(
                 response: 403,
@@ -272,7 +272,7 @@ class AdminAttributeDefinitionController extends BaseController
                         new OA\Property(
                             property: 'items',
                             type: 'array',
-                            items: new OA\Items(ref: '#/components/schemas/AttributeDefinition')
+                            items: new OA\Items(ref: '#/components/schemas/AdminAttributeDefinition')
                         ),
                         new OA\Property(property: 'pagination', ref: '#/components/schemas/CursorPagination')
                     ],
@@ -326,7 +326,7 @@ class AdminAttributeDefinitionController extends BaseController
             new OA\Response(
                 response: 200,
                 description: 'Success',
-                content: new OA\JsonContent(ref: '#/components/schemas/AttributeDefinition')
+                content: new OA\JsonContent(ref: '#/components/schemas/AdminAttributeDefinition')
             ),
             new OA\Response(
                 response: 403,

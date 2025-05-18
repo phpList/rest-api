@@ -123,7 +123,7 @@ class AdminAttributeValueController extends BaseController
 
     #[Route('/{adminId}/{definitionId}', name: 'delete_admin_attribute', methods: ['DELETE'])]
     #[OA\Delete(
-        path: '/administrators/attribute-values/{admin}/{definitionId}',
+        path: '/administrators/attribute-values/{adminId}/{definitionId}',
         description: 'Deletes a single admin attribute.',
         summary: 'Deletes an attribute.',
         tags: ['admin-attributes'],
@@ -250,7 +250,7 @@ class AdminAttributeValueController extends BaseController
     ): JsonResponse {
         $this->requireAuthentication($request);
         if (!$admin) {
-            $this->createNotFoundException('Administrator not found.');
+            throw $this->createNotFoundException('Administrator not found.');
         }
 
         $filter = (new AdminAttributeValueFilter())->setAdminId($admin->getId());
