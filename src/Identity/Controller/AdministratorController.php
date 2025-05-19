@@ -23,7 +23,7 @@ use Symfony\Component\Routing\Attribute\Route;
 /**
  * This controller provides CRUD operations for Administrator entities.
  */
-#[Route('/administrators')]
+#[Route('/administrators', name: 'admin_')]
 class AdministratorController extends BaseController
 {
     private AdministratorManager $administratorManager;
@@ -43,7 +43,7 @@ class AdministratorController extends BaseController
         $this->paginatedProvider = $paginatedProvider;
     }
 
-    #[Route('', name: 'get_administrators', methods: ['GET'])]
+    #[Route('', name: 'get_list', methods: ['GET'])]
     #[OA\Get(
         path: '/administrators',
         description: 'Get list of administrators.',
@@ -106,7 +106,7 @@ class AdministratorController extends BaseController
         );
     }
 
-    #[Route('', name: 'create_administrator', methods: ['POST'])]
+    #[Route('', name: 'create', methods: ['POST'])]
     #[OA\Post(
         path: '/administrators',
         description: 'Create a new administrator.',
@@ -145,7 +145,7 @@ class AdministratorController extends BaseController
         return $this->json($json, Response::HTTP_CREATED);
     }
 
-    #[Route('/{administratorId}', name: 'get_administrator', methods: ['GET'])]
+    #[Route('/{administratorId}', name: 'get_one', requirements: ['administratorId' => '\d+'], methods: ['GET'])]
     #[OA\Get(
         path: '/administrators/{administratorId}',
         description: 'Get administrator by ID.',
@@ -186,7 +186,7 @@ class AdministratorController extends BaseController
         return $this->json($json, Response::HTTP_OK);
     }
 
-    #[Route('/{administratorId}', name: 'update_administrator', methods: ['PUT'])]
+    #[Route('/{administratorId}', name: 'update', requirements: ['administratorId' => '\d+'], methods: ['PUT'])]
     #[OA\Put(
         path: '/administrators/{administratorId}',
         description: 'Update an administrator.',
@@ -233,7 +233,7 @@ class AdministratorController extends BaseController
         return $this->json($this->normalizer->normalize($administrator), Response::HTTP_OK);
     }
 
-    #[Route('/{administratorId}', name: 'delete_administrator', methods: ['DELETE'])]
+    #[Route('/{administratorId}', name: 'delete', requirements: ['administratorId' => '\d+'], methods: ['DELETE'])]
     #[OA\Delete(
         path: '/administrators/{administratorId}',
         description: 'Delete an administrator.',

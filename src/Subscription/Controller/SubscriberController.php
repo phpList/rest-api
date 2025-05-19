@@ -25,7 +25,7 @@ use Symfony\Component\Routing\Attribute\Route;
  * @author Oliver Klee <oliver@phplist.com>
  * @author Tatevik Grigoryan <tatevik@phplist.com>
  */
-#[Route('/subscribers')]
+#[Route('/subscribers', name: 'subscriber_')]
 class SubscriberController extends BaseController
 {
     private SubscriberManager $subscriberManager;
@@ -43,7 +43,7 @@ class SubscriberController extends BaseController
         $this->subscriberNormalizer = $subscriberNormalizer;
     }
 
-    #[Route('', name: 'create_subscriber', methods: ['POST'])]
+    #[Route('', name: 'create', methods: ['POST'])]
     #[OA\Post(
         path: '/subscribers',
         description: 'Creates a new subscriber (if there is no subscriber with the given email address yet).',
@@ -51,14 +51,7 @@ class SubscriberController extends BaseController
         requestBody: new OA\RequestBody(
             description: 'Pass session credentials',
             required: true,
-            content: new OA\JsonContent(
-                required: ['email'],
-                properties: [
-                    new OA\Property(property: 'email', type: 'string', format: 'string', example: 'admin@example.com'),
-                    new OA\Property(property: 'request_confirmation', type: 'boolean', example: false),
-                    new OA\Property(property: 'html_email', type: 'boolean', example: false),
-                ]
-            )
+            content: new OA\JsonContent(ref: '#/components/schemas/CreateSubscriberRequest')
         ),
         tags: ['subscribers'],
         parameters: [
@@ -107,7 +100,7 @@ class SubscriberController extends BaseController
         );
     }
 
-    #[Route('/{subscriberId}', name: 'update_subscriber', requirements: ['subscriberId' => '\d+'], methods: ['PUT'])]
+    #[Route('/{subscriberId}', name: 'update', requirements: ['subscriberId' => '\d+'], methods: ['PUT'])]
     #[OA\Put(
         path: '/subscribers/{subscriberId}',
         description: 'Update subscriber data by id.',
@@ -115,17 +108,7 @@ class SubscriberController extends BaseController
         requestBody: new OA\RequestBody(
             description: 'Pass session credentials',
             required: true,
-            content: new OA\JsonContent(
-                required: ['email'],
-                properties: [
-                    new OA\Property(property: 'email', type: 'string', format: 'string', example: 'admin@example.com'),
-                    new OA\Property(property: 'confirmed', type: 'boolean', example: false),
-                    new OA\Property(property: 'blacklisted', type: 'boolean', example: false),
-                    new OA\Property(property: 'html_email', type: 'boolean', example: false),
-                    new OA\Property(property: 'disabled', type: 'boolean', example: false),
-                    new OA\Property(property: 'additional_data', type: 'string', example: 'asdf'),
-                ]
-            )
+            content: new OA\JsonContent(ref: '#/components/schemas/UpdateSubscriberRequest')
         ),
         tags: ['subscribers'],
         parameters: [
@@ -183,7 +166,7 @@ class SubscriberController extends BaseController
         return $this->json($this->subscriberNormalizer->normalize($subscriber, 'json'), Response::HTTP_OK);
     }
 
-    #[Route('/{subscriberId}', name: 'get_subscriber_by_id', methods: ['GET'])]
+    #[Route('/{subscriberId}', name: 'get_one', requirements: ['subscriberId' => '\d+'], methods: ['GET'])]
     #[OA\Get(
         path: '/subscribers/{subscriberId}',
         description: 'Get subscriber data by id.',
@@ -232,7 +215,7 @@ class SubscriberController extends BaseController
         return $this->json($this->subscriberNormalizer->normalize($subscriber), Response::HTTP_OK);
     }
 
-    #[Route('/{subscriberId}', name: 'delete_subscriber', requirements: ['subscriberId' => '\d+'], methods: ['DELETE'])]
+    #[Route('/{subscriberId}', name: 'delete', requirements: ['subscriberId' => '\d+'], methods: ['DELETE'])]
     #[OA\Delete(
         path: '/subscribers/{subscriberId}',
         description: 'Delete subscriber by id.',

@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/subscribers/attribute-values')]
+#[Route('/subscribers/attribute-values', name: 'subscriber_attribute_value_')]
 class SubscriberAttributeValueController extends BaseController
 {
     private SubscriberAttributeManager $attributeManager;
@@ -41,7 +41,12 @@ class SubscriberAttributeValueController extends BaseController
         $this->paginatedDataProvider = $paginatedDataProvider;
     }
 
-    #[Route('/{subscriberId}/{definitionId}', name: 'create_subscriber_attribute_value', methods: ['POST', 'PUT'])]
+    #[Route(
+        path: '/{subscriberId}/{definitionId}',
+        name: 'create',
+        requirements: ['subscriberId' => '\d+', 'definitionId' => '\d+'],
+        methods: ['POST', 'PUT']
+    )]
     #[OA\Post(
         path: '/subscriber/attribute-values/{subscriberId}/{definitionId}',
         description: 'Returns created/updated subscriber attribute.',
@@ -121,7 +126,12 @@ class SubscriberAttributeValueController extends BaseController
         return $this->json($json, Response::HTTP_CREATED);
     }
 
-    #[Route('/{subscriberId}/{definitionId}', name: 'delete_subscriber_attribute', methods: ['DELETE'])]
+    #[Route(
+        path: '/{subscriberId}/{definitionId}',
+        name: 'delete',
+        requirements: ['subscriberId' => '\d+', 'definitionId' => '\d+'],
+        methods: ['DELETE']
+    )]
     #[OA\Delete(
         path: '/subscriber/attribute-values/{subscriberId}/{definitionId}',
         description: 'Deletes a single subscriber attribute.',
@@ -185,7 +195,7 @@ class SubscriberAttributeValueController extends BaseController
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 
-    #[Route('/{subscriberId}', name: 'get_subscriber_attribute_list', methods: ['GET'])]
+    #[Route('/{subscriberId}', name: 'get_list', requirements: ['subscriberId' => '\d+'], methods: ['GET'])]
     #[OA\Get(
         path: '/subscribers/attribute-values/{subscriberId}',
         description: 'Returns a JSON list of all subscriber attributes.',
@@ -263,7 +273,12 @@ class SubscriberAttributeValueController extends BaseController
         );
     }
 
-    #[Route('/{subscriberId}/{definitionId}', name: 'get_subscriber_attribute', methods: ['GET'])]
+    #[Route(
+        path: '/{subscriberId}/{definitionId}',
+        name: 'get_one',
+        requirements: ['subscriberId' => '\d+', 'definitionId' => '\d+'],
+        methods: ['GET']
+    )]
     #[OA\Get(
         path: '/subscribers/attribute-values/{subscriberId}/{definitionId}',
         description: 'Returns a single attribute.',

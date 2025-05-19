@@ -23,7 +23,7 @@ use Symfony\Component\Routing\Attribute\Route;
  *
  * @author Tatevik Grigoryan <tatevik@phplist.com>
  */
-#[Route('/lists')]
+#[Route('/lists', name: 'subscription_')]
 class SubscriptionController extends BaseController
 {
     private SubscriptionManager $subscriptionManager;
@@ -40,7 +40,7 @@ class SubscriptionController extends BaseController
         $this->subscriptionNormalizer = $subscriptionNormalizer;
     }
 
-    #[Route('/{listId}/subscribers', name: 'create_subscription', methods: ['POST'])]
+    #[Route('/{listId}/subscribers', name: 'create', requirements: ['listId' => '\d+'], methods: ['POST'])]
     #[OA\Post(
         path: '/lists/{listId}/subscribers',
         description: 'Subscribe subscriber to a list.',
@@ -131,7 +131,7 @@ class SubscriptionController extends BaseController
         return $this->json($normalized, Response::HTTP_CREATED);
     }
 
-    #[Route('/{listId}/subscribers', name: 'delete_subscription', methods: ['DELETE'])]
+    #[Route('/{listId}/subscribers', name: 'delete', requirements: ['listId' => '\d+'], methods: ['DELETE'])]
     #[OA\Delete(
         path: '/lists/{listId}/subscribers',
         description: 'Delete subscription.',

@@ -26,7 +26,7 @@ use Symfony\Component\Routing\Attribute\Route;
  *
  * @author Tatevik Grigoryan <tatevik@phplist.com>
  */
-#[Route('/campaigns')]
+#[Route('/campaigns', name: 'campaign_')]
 class CampaignController extends BaseController
 {
     private MessageNormalizer $normalizer;
@@ -46,7 +46,7 @@ class CampaignController extends BaseController
         $this->paginatedProvider = $paginatedProvider;
     }
 
-    #[Route('', name: 'get_campaigns', methods: ['GET'])]
+    #[Route('', name: 'get_list', methods: ['GET'])]
     #[OA\Get(
         path: '/campaigns',
         description: 'Returns a JSON list of all campaigns/messages.',
@@ -112,7 +112,7 @@ class CampaignController extends BaseController
         );
     }
 
-    #[Route('/{messageId}', name: 'get_campaign', methods: ['GET'])]
+    #[Route('/{messageId}', name: 'get_one', requirements: ['messageId' => '\d+'], methods: ['GET'])]
     #[OA\Get(
         path: '/campaigns/{messageId}',
         description: 'Returns campaign/message by id.',
@@ -162,7 +162,7 @@ class CampaignController extends BaseController
         return $this->json($this->normalizer->normalize($message), Response::HTTP_OK);
     }
 
-    #[Route('', name: 'create_message', methods: ['POST'])]
+    #[Route('', name: 'create', methods: ['POST'])]
     #[OA\Post(
         path: '/campaigns',
         description: 'Returns created message.',
@@ -224,7 +224,7 @@ class CampaignController extends BaseController
         return $this->json($normalizer->normalize($data), Response::HTTP_CREATED);
     }
 
-    #[Route('/{messageId}', name: 'update_campaign', methods: ['PUT'])]
+    #[Route('/{messageId}', name: 'update', requirements: ['messageId' => '\d+'], methods: ['PUT'])]
     #[OA\Put(
         path: '/campaigns/{messageId}',
         description: 'Updates campaign/message by id.',
@@ -297,7 +297,7 @@ class CampaignController extends BaseController
         return $this->json($this->normalizer->normalize($data), Response::HTTP_OK);
     }
 
-    #[Route('/{messageId}', name: 'delete_campaign', methods: ['DELETE'])]
+    #[Route('/{messageId}', name: 'delete', requirements: ['messageId' => '\d+'], methods: ['DELETE'])]
     #[OA\Delete(
         path: '/campaigns/{messageId}',
         description: 'Delete campaign/message by id.',

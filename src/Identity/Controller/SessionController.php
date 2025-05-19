@@ -25,7 +25,7 @@ use Symfony\Component\Routing\Attribute\Route;
  * @author Oliver Klee <oliver@phplist.com>
  * @author Tatevik Grigoryan <tatevik@phplist.com>
  */
-#[Route('/sessions')]
+#[Route('/sessions', name: 'session_')]
 class SessionController extends BaseController
 {
     private SessionManager $sessionManager;
@@ -40,7 +40,7 @@ class SessionController extends BaseController
         $this->sessionManager = $sessionManager;
     }
 
-    #[Route('', name: 'create_session', methods: ['POST'])]
+    #[Route('', name: 'create', methods: ['POST'])]
     #[OA\Post(
         path: '/sessions',
         description: 'Given valid login data, this will generate a login token that will be valid for 1 hour.',
@@ -92,8 +92,8 @@ class SessionController extends BaseController
         /** @var CreateSessionRequest $createSessionRequest */
         $createSessionRequest = $this->validator->validate($request, CreateSessionRequest::class);
         $token = $this->sessionManager->createSession(
-            $createSessionRequest->loginName,
-            $createSessionRequest->password
+            loginName:$createSessionRequest->loginName,
+            password: $createSessionRequest->password
         );
 
         $json = $normalizer->normalize($token, 'json');
@@ -108,7 +108,7 @@ class SessionController extends BaseController
      *
      * @throws AccessDeniedHttpException
      */
-    #[Route('/{sessionId}', name: 'delete_session', methods: ['DELETE'])]
+    #[Route('/{sessionId}', name: 'delete', requirements: ['sessionId' => '\d+'], methods: ['DELETE'])]
     #[OA\Delete(
         path: '/sessions/{sessionId}',
         description: 'Delete the session passed as a parameter.',

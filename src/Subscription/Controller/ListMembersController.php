@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/lists')]
+#[Route('/lists', name: 'list_members_')]
 class ListMembersController extends BaseController
 {
     private SubscriberNormalizer $subscriberNormalizer;
@@ -36,7 +36,7 @@ class ListMembersController extends BaseController
         $this->paginatedProvider = $paginatedProvider;
     }
 
-    #[Route('/{listId}/subscribers', name: 'get_subscriber_from_list', methods: ['GET'])]
+    #[Route('/{listId}/subscribers', name: 'get_list', requirements: ['listId' => '\d+'], methods: ['GET'])]
     #[OA\Get(
         path: '/lists/{listId}/subscribers',
         description: 'Returns a JSON list of all subscribers for a subscriber list.',
@@ -121,7 +121,7 @@ class ListMembersController extends BaseController
         );
     }
 
-    #[Route('/{listId}/subscribers/count', name: 'get_subscribers_count_from_list', methods: ['GET'])]
+    #[Route('/{listId}/subscribers/count', name: 'get_count', requirements: ['listId' => '\d+'], methods: ['GET'])]
     #[OA\Get(
         path: '/lists/{listId}/count',
         description: 'Returns a count of all subscribers in a given list.',

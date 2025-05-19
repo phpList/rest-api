@@ -24,7 +24,7 @@ use Symfony\Component\Routing\Attribute\Route;
  *
  * @author Tatevik Grigoryan <tatevik@phplist.com>
  */
-#[Route('/templates')]
+#[Route('/templates', name: 'template_')]
 class TemplateController extends BaseController
 {
     private TemplateNormalizer $normalizer;
@@ -44,7 +44,7 @@ class TemplateController extends BaseController
         $this->paginatedDataProvider = $paginatedDataProvider;
     }
 
-    #[Route('', name: 'get_templates', methods: ['GET'])]
+    #[Route('', name: 'get_list', methods: ['GET'])]
     #[OA\Get(
         path: '/templates',
         description: 'Returns a JSON list of all templates.',
@@ -112,7 +112,7 @@ class TemplateController extends BaseController
         );
     }
 
-    #[Route('/{templateId}', name: 'get_template', methods: ['GET'])]
+    #[Route('/{templateId}', name: 'get_one', requirements: ['templateId' => '\d+'], methods: ['GET'])]
     #[OA\Get(
         path: '/templates/{templateId}',
         description: 'Returns template by id.',
@@ -167,7 +167,7 @@ class TemplateController extends BaseController
         return $this->json($this->normalizer->normalize($template), Response::HTTP_OK);
     }
 
-    #[Route('', name: 'create_template', methods: ['POST'])]
+    #[Route('', name: 'create', methods: ['POST'])]
     #[OA\Post(
         path: '/templates',
         description: 'Returns a JSON response of created template.',
@@ -270,7 +270,7 @@ class TemplateController extends BaseController
         );
     }
 
-    #[Route('/{templateId}', name: 'delete_template', methods: ['DELETE'])]
+    #[Route('/{templateId}', name: 'delete', requirements: ['templateId' => '\d+'], methods: ['DELETE'])]
     #[OA\Delete(
         path: '/templates/{templateId}',
         description: 'Deletes template by id.',

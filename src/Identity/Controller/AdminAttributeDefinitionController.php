@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/administrators/attributes')]
+#[Route('/administrators/attributes', name: 'admin_attribute_definition_')]
 class AdminAttributeDefinitionController extends BaseController
 {
     private AdminAttributeDefinitionManager $definitionManager;
@@ -40,7 +40,7 @@ class AdminAttributeDefinitionController extends BaseController
         $this->paginatedDataProvider = $paginatedDataProvider;
     }
 
-    #[Route('', name: 'create_admin_attribute_definition', methods: ['POST'])]
+    #[Route('', name: 'create', methods: ['POST'])]
     #[OA\Post(
         path: '/administrators/attributes',
         description: 'Returns created admin attribute definition.',
@@ -48,17 +48,7 @@ class AdminAttributeDefinitionController extends BaseController
         requestBody: new OA\RequestBody(
             description: 'Pass parameters to create admin attribute.',
             required: true,
-            content: new OA\JsonContent(
-                required: ['name'],
-                properties: [
-                    new OA\Property(property: 'name', type: 'string', format: 'string', example: 'Country'),
-                    new OA\Property(property: 'type', type: 'string', example: 'checkbox'),
-                    new OA\Property(property: 'order', type: 'number', example: 12),
-                    new OA\Property(property: 'default_value', type: 'string', example: 'United States'),
-                    new OA\Property(property: 'required', type: 'boolean', example: true),
-                    new OA\Property(property: 'table_name', type: 'string', example: 'list_attributes'),
-                ]
-            )
+            content: new OA\JsonContent(ref: '#/components/schemas/CreateAdminAttributeDefinitionRequest')
         ),
         tags: ['admin-attributes'],
         parameters: [
@@ -103,7 +93,7 @@ class AdminAttributeDefinitionController extends BaseController
         return $this->json($json, Response::HTTP_CREATED);
     }
 
-    #[Route('/{definitionId}', name: 'update_admin_attribute_definition', methods: ['PUT'])]
+    #[Route('/{definitionId}', name: 'update', requirements: ['definitionId' => '\d+'], methods: ['PUT'])]
     #[OA\Put(
         path: '/administrators/attributes/{definitionId}',
         description: 'Returns updated admin attribute definition.',
@@ -111,17 +101,7 @@ class AdminAttributeDefinitionController extends BaseController
         requestBody: new OA\RequestBody(
             description: 'Pass parameters to update admin attribute.',
             required: true,
-            content: new OA\JsonContent(
-                required: ['name'],
-                properties: [
-                    new OA\Property(property: 'name', type: 'string', format: 'string', example: 'Country'),
-                    new OA\Property(property: 'type', type: 'string', example: 'checkbox'),
-                    new OA\Property(property: 'order', type: 'number', example: 12),
-                    new OA\Property(property: 'default_value', type: 'string', example: 'United States'),
-                    new OA\Property(property: 'required', type: 'boolean', example: true),
-                    new OA\Property(property: 'table_name', type: 'string', example: 'list_attributes'),
-                ]
-            )
+            content: new OA\JsonContent(ref: '#/components/schemas/CreateAdminAttributeDefinitionRequest')
         ),
         tags: ['admin-attributes'],
         parameters: [
@@ -179,7 +159,7 @@ class AdminAttributeDefinitionController extends BaseController
         return $this->json($json, Response::HTTP_OK);
     }
 
-    #[Route('/{definitionId}', name: 'delete_admin_attribute_definition', methods: ['DELETE'])]
+    #[Route('/{definitionId}', name: 'delete', requirements: ['definitionId' => '\d+'], methods: ['DELETE'])]
     #[OA\Delete(
         path: '/administrators/attributes/{definitionId}',
         description: 'Deletes a single admin attribute definition.',
@@ -232,11 +212,11 @@ class AdminAttributeDefinitionController extends BaseController
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 
-    #[Route('', name: 'get_admin_attribute_definitions', methods: ['GET'])]
+    #[Route('', name: 'get_lists', methods: ['GET'])]
     #[OA\Get(
         path: '/administrators/attributes',
         description: 'Returns a JSON list of all admin attribute definitions.',
-        summary: 'Gets a list of all DMIN attribute definitions.',
+        summary: 'Gets a list of all admin attribute definitions.',
         tags: ['admin-attributes'],
         parameters: [
             new OA\Parameter(
@@ -300,7 +280,7 @@ class AdminAttributeDefinitionController extends BaseController
         );
     }
 
-    #[Route('/{definitionId}', name: 'get_admin_attribute_definition', methods: ['GET'])]
+    #[Route('/{definitionId}', name: 'get_one', requirements: ['definitionId' => '\d+'], methods: ['GET'])]
     #[OA\Get(
         path: '/administrators/attributes/{definitionId}',
         description: 'Returns a single attribute with specified ID.',

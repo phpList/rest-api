@@ -26,7 +26,7 @@ use Symfony\Component\Routing\Attribute\Route;
  * @author Xheni Myrtaj <xheni@phplist.com>
  * @author Tatevik Grigoryan <tatevik@phplist.com>
  */
-#[Route('/lists')]
+#[Route('/lists', name: 'subscriber_list_')]
 class SubscriberListController extends BaseController
 {
     private SubscriberListNormalizer $normalizer;
@@ -46,7 +46,7 @@ class SubscriberListController extends BaseController
         $this->paginatedDataProvider = $paginatedDataProvider;
     }
 
-    #[Route('', name: 'get_lists', methods: ['GET'])]
+    #[Route('', name: 'get_list', methods: ['GET'])]
     #[OA\Get(
         path: '/lists',
         description: 'Returns a JSON list of all subscriber lists.',
@@ -110,7 +110,7 @@ class SubscriberListController extends BaseController
         );
     }
 
-    #[Route('/{listId}', name: 'get_list', methods: ['GET'])]
+    #[Route('/{listId}', name: 'get_one', requirements: ['listId' => '\d+'], methods: ['GET'])]
     #[OA\Get(
         path: '/lists/{listId}',
         description: 'Returns a single subscriber list with specified ID.',
@@ -172,7 +172,7 @@ class SubscriberListController extends BaseController
         return $this->json($this->normalizer->normalize($list), Response::HTTP_OK);
     }
 
-    #[Route('/{listId}', name: 'delete_list', methods: ['DELETE'])]
+    #[Route('/{listId}', name: 'delete', requirements: ['listId' => '\d+'], methods: ['DELETE'])]
     #[OA\Delete(
         path: '/lists/{listId}',
         description: 'Deletes a single subscriber list.',
@@ -226,7 +226,7 @@ class SubscriberListController extends BaseController
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 
-    #[Route('', name: 'create_list', methods: ['POST'])]
+    #[Route('', name: 'create', methods: ['POST'])]
     #[OA\Post(
         path: '/lists',
         description: 'Returns created list.',

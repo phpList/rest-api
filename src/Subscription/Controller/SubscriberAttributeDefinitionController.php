@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/subscribers/attributes')]
+#[Route('/subscribers/attributes', name: 'subscriber_attribute_definition_')]
 class SubscriberAttributeDefinitionController extends BaseController
 {
     private AttributeDefinitionManager $definitionManager;
@@ -40,7 +40,7 @@ class SubscriberAttributeDefinitionController extends BaseController
         $this->paginatedDataProvider = $paginatedDataProvider;
     }
 
-    #[Route('', name: 'create_attribute_definition', methods: ['POST'])]
+    #[Route('', name: 'create', methods: ['POST'])]
     #[OA\Post(
         path: '/subscriber/attributes',
         description: 'Returns created subscriber attribute definition.',
@@ -48,17 +48,7 @@ class SubscriberAttributeDefinitionController extends BaseController
         requestBody: new OA\RequestBody(
             description: 'Pass parameters to create subscriber attribute.',
             required: true,
-            content: new OA\JsonContent(
-                required: ['name'],
-                properties: [
-                    new OA\Property(property: 'name', type: 'string', format: 'string', example: 'Country'),
-                    new OA\Property(property: 'type', type: 'string', example: 'checkbox'),
-                    new OA\Property(property: 'order', type: 'number', example: 12),
-                    new OA\Property(property: 'default_value', type: 'string', example: 'United States'),
-                    new OA\Property(property: 'required', type: 'boolean', example: true),
-                    new OA\Property(property: 'table_name', type: 'string', example: 'list_attributes'),
-                ]
-            )
+            content: new OA\JsonContent(ref: '#/components/schemas/CreateSubscriberAttributeDefinitionRequest')
         ),
         tags: ['subscriber-attributes'],
         parameters: [
@@ -103,7 +93,7 @@ class SubscriberAttributeDefinitionController extends BaseController
         return $this->json($json, Response::HTTP_CREATED);
     }
 
-    #[Route('/{definitionId}', name: 'update_attribute_definition', methods: ['PUT'])]
+    #[Route('/{definitionId}', name: 'update', requirements: ['definitionId' => '\d+'], methods: ['PUT'])]
     #[OA\Put(
         path: '/subscriber/attributes/{definitionId}',
         description: 'Returns updated subscriber attribute definition.',
@@ -111,17 +101,7 @@ class SubscriberAttributeDefinitionController extends BaseController
         requestBody: new OA\RequestBody(
             description: 'Pass parameters to update subscriber attribute.',
             required: true,
-            content: new OA\JsonContent(
-                required: ['name'],
-                properties: [
-                    new OA\Property(property: 'name', type: 'string', format: 'string', example: 'Country'),
-                    new OA\Property(property: 'type', type: 'string', example: 'checkbox'),
-                    new OA\Property(property: 'order', type: 'number', example: 12),
-                    new OA\Property(property: 'default_value', type: 'string', example: 'United States'),
-                    new OA\Property(property: 'required', type: 'boolean', example: true),
-                    new OA\Property(property: 'table_name', type: 'string', example: 'list_attributes'),
-                ]
-            )
+            content: new OA\JsonContent(ref: '#/components/schemas/CreateSubscriberAttributeDefinitionRequest')
         ),
         tags: ['subscriber-attributes'],
         parameters: [
@@ -171,15 +151,15 @@ class SubscriberAttributeDefinitionController extends BaseController
         $definitionRequest = $this->validator->validate($request, UpdateAttributeDefinitionRequest::class);
 
         $attributeDefinition = $this->definitionManager->update(
-            $attributeDefinition,
-            $definitionRequest->getDto(),
+            attributeDefinition: $attributeDefinition,
+            attributeDefinitionDto: $definitionRequest->getDto(),
         );
         $json = $this->normalizer->normalize($attributeDefinition, 'json');
 
         return $this->json($json, Response::HTTP_OK);
     }
 
-    #[Route('/{definitionId}', name: 'delete_attribute_definition', methods: ['DELETE'])]
+    #[Route('/{definitionId}', name: 'delete', requirements: ['definitionId' => '\d+'], methods: ['DELETE'])]
     #[OA\Delete(
         path: '/subscriber/attributes/{definitionId}',
         description: 'Deletes a single subscriber attribute definition.',
@@ -232,7 +212,7 @@ class SubscriberAttributeDefinitionController extends BaseController
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 
-    #[Route('', name: 'get_attribute_definitions', methods: ['GET'])]
+    #[Route('', name: 'get_list', methods: ['GET'])]
     #[OA\Get(
         path: '/subscriber/attributes',
         description: 'Returns a JSON list of all subscriber attribute definitions.',
@@ -300,7 +280,7 @@ class SubscriberAttributeDefinitionController extends BaseController
         );
     }
 
-    #[Route('/{definitionId}', name: 'get_attribute_definition', methods: ['GET'])]
+    #[Route('/{definitionId}', name: 'get_one', requirements: ['definitionId' => '\d+'], methods: ['GET'])]
     #[OA\Get(
         path: '/subscriber/attributes/{definitionId}',
         description: 'Returns a single attribute with specified ID.',
