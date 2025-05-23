@@ -115,7 +115,7 @@ class ListMembersController extends BaseController
                 $request,
                 $this->subscriberNormalizer,
                 Subscriber::class,
-                (new SubscriberFilter())->setListId($list->getId())
+                new SubscriberFilter($list->getId())
             ),
             Response::HTTP_OK
         );

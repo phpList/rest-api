@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Subscription\Controller;
 
 use OpenApi\Attributes as OA;
-use PhpList\Core\Domain\Subscription\Model\Filter\SubscriberFilter;
 use PhpList\Core\Domain\Subscription\Service\SubscriberCsvExporter;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
+use PhpList\RestBundle\Subscription\Request\SubscribersExportRequest;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -43,11 +43,46 @@ class SubscriberExportController extends BaseController
                 schema: new OA\Schema(type: 'string')
             ),
             new OA\Parameter(
-                name: 'batch_size',
-                description: 'Number of subscribers to process in each batch (default: 1000)',
+                name: 'date_type',
+                description: 'What date needs to be used for filtering (any, signup, changed, changelog, subscribed)',
                 in: 'query',
                 required: false,
-                schema: new OA\Schema(type: 'integer', default: 1000)
+                schema: new OA\Schema(
+                    type: 'string',
+                    default: 'any',
+                    enum: ['any', 'signup', 'changed', 'changelog', 'subscribed']
+                )
+            ),
+            new OA\Parameter(
+                name: 'list_id',
+                description: 'List ID from where to export',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'date_from',
+                description: 'Start date for filtering (format: Y-m-d)',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'string', format: 'date')
+            ),
+            new OA\Parameter(
+                name: 'date_to',
+                description: 'End date for filtering (format: Y-m-d)',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'string', format: 'date')
+            ),
+            new OA\Parameter(
+                name: 'columns',
+                description: 'Columns to include in the export (comma-separated)',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(
+                    type: 'string',
+                    default: 'id,email,confirmed,blacklisted,bounceCount,createdAt,updatedAt,uniqueId,htmlEmail,disabled,extraData'
+                )
             )
         ],
         responses: [
@@ -70,10 +105,9 @@ class SubscriberExportController extends BaseController
     {
         $this->requireAuthentication($request);
 
-        $batchSize = (int)$request->query->get('batch_size', 1000);
-        
-        $filter = new SubscriberFilter();
-        
-        return $this->exportManager->exportToCsv($filter, $batchSize);
+        /** @var SubscribersExportRequest $exportRequest */
+        $exportRequest = $this->validator->validate($request, SubscribersExportRequest::class);
+
+        return $this->exportManager->exportToCsv($exportRequest->getDto());
     }
 }

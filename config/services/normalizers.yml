@@ -65,3 +65,7 @@ services:
 
   PhpList\RestBundle\Common\Serializer\CursorPaginationNormalizer:
     autowire: true
+
+  PhpList\RestBundle\Subscription\Serializer\SubscribersExportRequestNormalizer:
+    tags: [ 'serializer.normalizer' ]
+    autowire: true
