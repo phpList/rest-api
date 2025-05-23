@@ -6,7 +6,7 @@ namespace PhpList\RestBundle\Subscription\Controller;
 
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Subscription\Model\SubscriberList;
-use PhpList\Core\Domain\Subscription\Service\SubscriberListManager;
+use PhpList\Core\Domain\Subscription\Service\Manager\SubscriberListManager;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Service\Provider\PaginatedDataProvider;

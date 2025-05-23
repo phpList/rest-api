@@ -44,7 +44,6 @@ class SubscriberImportControllerTest extends AbstractTestController
 
         $this->assertHttpBadRequest();
         $responseContent = $this->getDecodedJsonResponseContent();
-        self::assertSame(false, $responseContent['success']);
         self::assertStringContainsString('No file uploaded', $responseContent['message']);
     }
 
@@ -70,7 +69,6 @@ class SubscriberImportControllerTest extends AbstractTestController
 
         $this->assertHttpBadRequest();
         $responseContent = $this->getDecodedJsonResponseContent();
-        self::assertSame(false, $responseContent['success']);
         self::assertStringContainsString('File must be a CSV', $responseContent['message']);
     }
 
@@ -99,7 +97,6 @@ class SubscriberImportControllerTest extends AbstractTestController
         self::assertSame(Response::HTTP_OK, $response->getStatusCode());
         
         $responseContent = $this->getDecodedJsonResponseContent();
-        self::assertSame(true, $responseContent['success']);
         self::assertArrayHasKey('imported', $responseContent);
         self::assertArrayHasKey('skipped', $responseContent);
         self::assertArrayHasKey('errors', $responseContent);
@@ -133,7 +130,9 @@ class SubscriberImportControllerTest extends AbstractTestController
         self::assertSame(Response::HTTP_OK, $response->getStatusCode());
         
         $responseContent = $this->getDecodedJsonResponseContent();
-        self::assertSame(true, $responseContent['success']);
+        self::assertArrayHasKey('imported', $responseContent);
+        self::assertArrayHasKey('skipped', $responseContent);
+        self::assertArrayHasKey('errors', $responseContent);
     }
 
     public function testGetMethodIsNotAllowed(): void

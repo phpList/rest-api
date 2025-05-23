@@ -7,7 +7,7 @@ namespace PhpList\RestBundle\Subscription\Controller;
 use Exception;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Subscription\Model\Dto\SubscriberImportOptions;
-use PhpList\Core\Domain\Subscription\Service\SubscriberCsvImportManager;
+use PhpList\Core\Domain\Subscription\Service\SubscriberCsvImporter;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
@@ -20,12 +20,12 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/subscribers', name: 'subscriber_import_')]
 class SubscriberImportController extends BaseController
 {
-    private SubscriberCsvImportManager $importManager;
+    private SubscriberCsvImporter $importManager;
 
     public function __construct(
         Authentication $authentication,
         RequestValidator $validator,
-        SubscriberCsvImportManager $importManager
+        SubscriberCsvImporter $importManager
     ) {
         parent::__construct($authentication, $validator);
         $this->importManager = $importManager;
@@ -49,16 +49,16 @@ class SubscriberImportController extends BaseController
                             format: 'binary'
                         ),
                         new OA\Property(
-                            property: 'request_confirmation',
-                            description: 'Whether to request confirmation from imported subscribers',
-                            type: 'boolean',
-                            default: false
+                            property: 'list_id',
+                            description: 'List id to add imported subscribers to',
+                            type: 'integer',
+                            default: null
                         ),
                         new OA\Property(
-                            property: 'html_email',
-                            description: 'Whether imported subscribers prefer HTML emails',
+                            property: 'update_existing',
+                            description: 'Weather to update existing subscribers or not',
                             type: 'boolean',
-                            default: true
+                            default: false
                         )
                     ],
                     type: 'object'
@@ -111,17 +111,18 @@ class SubscriberImportController extends BaseController
         $file = $request->files->get('file');
 
         if (!$file) {
-            return $this->json(['success' => false, 'message' => 'No file uploaded'], Response::HTTP_BAD_REQUEST);
+            return $this->json(['message' => 'No file uploaded'], Response::HTTP_BAD_REQUEST);
         }
 
         if ($file->getClientMimeType() !== 'text/csv' && $file->getClientOriginalExtension() !== 'csv') {
-            return $this->json(['success' => false, 'message' => 'File must be a CSV'], Response::HTTP_BAD_REQUEST);
+            return $this->json(['message' => 'File must be a CSV'], Response::HTTP_BAD_REQUEST);
         }
 
         try {
-            $options = new SubscriberImportOptions();
-
-            $stats = $this->importManager->importFromCsv($file, $options);
+            $stats = $this->importManager->importFromCsv(
+                $file,
+                new SubscriberImportOptions($request->getPayload()->getBoolean('update_existing'))
+            );
 
             return $this->json([
                 'imported' => $stats['created'],

@@ -6,7 +6,7 @@ namespace PhpList\RestBundle\Subscription\Controller;
 
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Subscription\Model\Filter\SubscriberFilter;
-use PhpList\Core\Domain\Subscription\Service\SubscriberCsvExportManager;
+use PhpList\Core\Domain\Subscription\Service\SubscriberCsvExporter;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
@@ -17,12 +17,12 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/subscribers', name: 'subscriber_export_')]
 class SubscriberExportController extends BaseController
 {
-    private SubscriberCsvExportManager $exportManager;
+    private SubscriberCsvExporter $exportManager;
 
     public function __construct(
         Authentication $authentication,
         RequestValidator $validator,
-        SubscriberCsvExportManager $exportManager
+        SubscriberCsvExporter $exportManager
     ) {
         parent::__construct($authentication, $validator);
         $this->exportManager = $exportManager;

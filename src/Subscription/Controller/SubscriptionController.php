@@ -6,7 +6,7 @@ namespace PhpList\RestBundle\Subscription\Controller;
 
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Subscription\Model\SubscriberList;
-use PhpList\Core\Domain\Subscription\Service\SubscriptionManager;
+use PhpList\Core\Domain\Subscription\Service\Manager\SubscriptionManager;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
