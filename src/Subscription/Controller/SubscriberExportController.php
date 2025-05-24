@@ -28,11 +28,16 @@ class SubscriberExportController extends BaseController
         $this->exportManager = $exportManager;
     }
 
-    #[Route('/export', name: 'csv', methods: ['GET'])]
-    #[OA\Get(
+    #[Route('/export', name: 'csv', methods: ['POST'])]
+    #[OA\Post(
         path: '/subscribers/export',
         description: 'Export subscribers to CSV file.',
         summary: 'Export subscribers',
+        requestBody: new OA\RequestBody(
+            description: 'Filter parameters for subscribers to export. ',
+            required: true,
+            content: new OA\JsonContent(ref: '#/components/schemas/ExportSubscriberRequest')
+        ),
         tags: ['subscribers'],
         parameters: [
             new OA\Parameter(
@@ -42,48 +47,6 @@ class SubscriberExportController extends BaseController
                 required: true,
                 schema: new OA\Schema(type: 'string')
             ),
-            new OA\Parameter(
-                name: 'date_type',
-                description: 'What date needs to be used for filtering (any, signup, changed, changelog, subscribed)',
-                in: 'query',
-                required: false,
-                schema: new OA\Schema(
-                    type: 'string',
-                    default: 'any',
-                    enum: ['any', 'signup', 'changed', 'changelog', 'subscribed']
-                )
-            ),
-            new OA\Parameter(
-                name: 'list_id',
-                description: 'List ID from where to export',
-                in: 'query',
-                required: false,
-                schema: new OA\Schema(type: 'integer')
-            ),
-            new OA\Parameter(
-                name: 'date_from',
-                description: 'Start date for filtering (format: Y-m-d)',
-                in: 'query',
-                required: false,
-                schema: new OA\Schema(type: 'string', format: 'date')
-            ),
-            new OA\Parameter(
-                name: 'date_to',
-                description: 'End date for filtering (format: Y-m-d)',
-                in: 'query',
-                required: false,
-                schema: new OA\Schema(type: 'string', format: 'date')
-            ),
-            new OA\Parameter(
-                name: 'columns',
-                description: 'Columns to include in the export (comma-separated)',
-                in: 'query',
-                required: false,
-                schema: new OA\Schema(
-                    type: 'string',
-                    default: 'id,email,confirmed,blacklisted,bounceCount,createdAt,updatedAt,uniqueId,htmlEmail,disabled,extraData'
-                )
-            )
         ],
         responses: [
             new OA\Response(

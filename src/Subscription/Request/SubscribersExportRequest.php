@@ -52,14 +52,15 @@ class SubscribersExportRequest implements RequestInterface
 
     private function resolveDates(): array
     {
-        $dateFrom = new DateTimeImmutable($this->dateFrom);
-        $dateTo = new DateTimeImmutable($this->dateTo);
+        $dateFrom = $this->dateFrom ? new DateTimeImmutable($this->dateFrom) : null;
+        $dateTo = $this->dateTo ? new DateTimeImmutable($this->dateTo) : null;
 
         return match ($this->dateType) {
             'subscribed' => [$dateFrom, $dateTo, null, null, null, null],
             'signup' => [null, null, $dateFrom, $dateTo, null, null],
             'changed' => [null, null, null, null, $dateFrom, $dateTo],
             'any', 'changelog' => [null, null, null, null, null, null],
+            default => [null, null, null, null, null, null],
         };
     }
 
