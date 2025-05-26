@@ -43,7 +43,7 @@ class SubscriptionController extends BaseController
     #[Route('/{listId}/subscribers', name: 'create', requirements: ['listId' => '\d+'], methods: ['POST'])]
     #[OA\Post(
         path: '/lists/{listId}/subscribers',
-        description: 'Subscribe subscriber to a list.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. Subscribe subscriber to a list.',
         summary: 'Create subscription',
         requestBody: new OA\RequestBody(
             description: 'Pass session credentials',
@@ -134,7 +134,7 @@ class SubscriptionController extends BaseController
     #[Route('/{listId}/subscribers', name: 'delete', requirements: ['listId' => '\d+'], methods: ['DELETE'])]
     #[OA\Delete(
         path: '/lists/{listId}/subscribers',
-        description: 'Delete subscription.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. Delete subscription.',
         summary: 'Delete subscription',
         tags: ['subscriptions'],
         parameters: [

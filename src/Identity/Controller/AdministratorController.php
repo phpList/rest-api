@@ -46,7 +46,7 @@ class AdministratorController extends BaseController
     #[Route('', name: 'get_list', methods: ['GET'])]
     #[OA\Get(
         path: '/administrators',
-        description: 'Get list of administrators.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. Get list of administrators.',
         summary: 'Get Administrators',
         tags: ['administrators'],
         parameters: [
@@ -109,7 +109,7 @@ class AdministratorController extends BaseController
     #[Route('', name: 'create', methods: ['POST'])]
     #[OA\Post(
         path: '/administrators',
-        description: 'Create a new administrator.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. Create a new administrator.',
         summary: 'Create Administrator',
         requestBody: new OA\RequestBody(
             description: 'Administrator data',
@@ -148,7 +148,7 @@ class AdministratorController extends BaseController
     #[Route('/{administratorId}', name: 'get_one', requirements: ['administratorId' => '\d+'], methods: ['GET'])]
     #[OA\Get(
         path: '/administrators/{administratorId}',
-        description: 'Get administrator by ID.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. Get administrator by ID.',
         summary: 'Get Administrator',
         tags: ['administrators'],
         parameters: [
@@ -189,7 +189,7 @@ class AdministratorController extends BaseController
     #[Route('/{administratorId}', name: 'update', requirements: ['administratorId' => '\d+'], methods: ['PUT'])]
     #[OA\Put(
         path: '/administrators/{administratorId}',
-        description: 'Update an administrator.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. Update an administrator.',
         summary: 'Update Administrator',
         requestBody: new OA\RequestBody(
             description: 'Administrator update data',
@@ -236,7 +236,7 @@ class AdministratorController extends BaseController
     #[Route('/{administratorId}', name: 'delete', requirements: ['administratorId' => '\d+'], methods: ['DELETE'])]
     #[OA\Delete(
         path: '/administrators/{administratorId}',
-        description: 'Delete an administrator.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. Delete an administrator.',
         summary: 'Delete Administrator',
         tags: ['administrators'],
         parameters: [

@@ -39,7 +39,7 @@ class ListMembersController extends BaseController
     #[Route('/{listId}/subscribers', name: 'get_list', requirements: ['listId' => '\d+'], methods: ['GET'])]
     #[OA\Get(
         path: '/lists/{listId}/subscribers',
-        description: 'Returns a JSON list of all subscribers for a subscriber list.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. 🚧 **Status: Beta** – This method is under development. Avoid using in production. Returns a JSON list of all subscribers for a subscriber list.',
         summary: 'Gets a list of all subscribers of a subscriber list.',
         tags: ['subscriptions'],
         parameters: [
@@ -124,7 +124,7 @@ class ListMembersController extends BaseController
     #[Route('/{listId}/subscribers/count', name: 'get_count', requirements: ['listId' => '\d+'], methods: ['GET'])]
     #[OA\Get(
         path: '/lists/{listId}/count',
-        description: 'Returns a count of all subscribers in a given list.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. 🚧 **Status: Beta** – This method is under development. Avoid using in production. Returns a count of all subscribers in a given list.',
         summary: 'Gets the total number of subscribers of a list',
         tags: ['subscriptions'],
         parameters: [

@@ -34,7 +34,7 @@ class SubscriberImportController extends BaseController
     #[Route('/import', name: 'csv', methods: ['POST'])]
     #[OA\Post(
         path: '/subscribers/import',
-        description: 'Import subscribers from CSV file.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. Import subscribers from CSV file.',
         summary: 'Import subscribers',
         requestBody: new OA\RequestBody(
             required: true,

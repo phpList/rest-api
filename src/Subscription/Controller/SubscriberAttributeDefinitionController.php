@@ -43,7 +43,7 @@ class SubscriberAttributeDefinitionController extends BaseController
     #[Route('', name: 'create', methods: ['POST'])]
     #[OA\Post(
         path: '/subscriber/attributes',
-        description: 'Returns created subscriber attribute definition.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. Returns created subscriber attribute definition.',
         summary: 'Create a subscriber attribute definition.',
         requestBody: new OA\RequestBody(
             description: 'Pass parameters to create subscriber attribute.',
@@ -96,7 +96,7 @@ class SubscriberAttributeDefinitionController extends BaseController
     #[Route('/{definitionId}', name: 'update', requirements: ['definitionId' => '\d+'], methods: ['PUT'])]
     #[OA\Put(
         path: '/subscriber/attributes/{definitionId}',
-        description: 'Returns updated subscriber attribute definition.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. Returns updated subscriber attribute definition.',
         summary: 'Update a subscriber attribute definition.',
         requestBody: new OA\RequestBody(
             description: 'Pass parameters to update subscriber attribute.',
@@ -162,7 +162,7 @@ class SubscriberAttributeDefinitionController extends BaseController
     #[Route('/{definitionId}', name: 'delete', requirements: ['definitionId' => '\d+'], methods: ['DELETE'])]
     #[OA\Delete(
         path: '/subscriber/attributes/{definitionId}',
-        description: 'Deletes a single subscriber attribute definition.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. Deletes a single subscriber attribute definition.',
         summary: 'Deletes an attribute definition.',
         tags: ['subscriber-attributes'],
         parameters: [
@@ -215,7 +215,7 @@ class SubscriberAttributeDefinitionController extends BaseController
     #[Route('', name: 'get_list', methods: ['GET'])]
     #[OA\Get(
         path: '/subscriber/attributes',
-        description: 'Returns a JSON list of all subscriber attribute definitions.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. Returns a JSON list of all subscriber attribute definitions.',
         summary: 'Gets a list of all subscriber attribute definitions.',
         tags: ['subscriber-attributes'],
         parameters: [
@@ -283,7 +283,7 @@ class SubscriberAttributeDefinitionController extends BaseController
     #[Route('/{definitionId}', name: 'get_one', requirements: ['definitionId' => '\d+'], methods: ['GET'])]
     #[OA\Get(
         path: '/subscriber/attributes/{definitionId}',
-        description: 'Returns a single attribute with specified ID.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. Returns a single attribute with specified ID.',
         summary: 'Gets attribute with specified ID.',
         tags: ['subscriber-attributes'],
         parameters: [

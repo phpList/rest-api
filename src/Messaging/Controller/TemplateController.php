@@ -47,7 +47,7 @@ class TemplateController extends BaseController
     #[Route('', name: 'get_list', methods: ['GET'])]
     #[OA\Get(
         path: '/templates',
-        description: 'Returns a JSON list of all templates.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. Returns a JSON list of all templates.',
         summary: 'Gets a list of all templates.',
         tags: ['templates'],
         parameters: [
@@ -115,7 +115,7 @@ class TemplateController extends BaseController
     #[Route('/{templateId}', name: 'get_one', requirements: ['templateId' => '\d+'], methods: ['GET'])]
     #[OA\Get(
         path: '/templates/{templateId}',
-        description: 'Returns template by id.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. Returns template by id.',
         summary: 'Gets a templateI by id.',
         tags: ['templates'],
         parameters: [
@@ -170,7 +170,7 @@ class TemplateController extends BaseController
     #[Route('', name: 'create', methods: ['POST'])]
     #[OA\Post(
         path: '/templates',
-        description: 'Returns a JSON response of created template.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. Returns a JSON response of created template.',
         summary: 'Create a new template.',
         requestBody: new OA\RequestBody(
             description: 'Pass session credentials',
@@ -273,7 +273,7 @@ class TemplateController extends BaseController
     #[Route('/{templateId}', name: 'delete', requirements: ['templateId' => '\d+'], methods: ['DELETE'])]
     #[OA\Delete(
         path: '/templates/{templateId}',
-        description: 'Deletes template by id.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. Deletes template by id.',
         summary: 'Deletes a template.',
         tags: ['templates'],
         parameters: [

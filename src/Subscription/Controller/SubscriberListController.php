@@ -49,7 +49,7 @@ class SubscriberListController extends BaseController
     #[Route('', name: 'get_list', methods: ['GET'])]
     #[OA\Get(
         path: '/lists',
-        description: 'Returns a JSON list of all subscriber lists.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. Returns a JSON list of all subscriber lists.',
         summary: 'Gets a list of all subscriber lists.',
         tags: ['lists'],
         parameters: [
@@ -113,7 +113,7 @@ class SubscriberListController extends BaseController
     #[Route('/{listId}', name: 'get_one', requirements: ['listId' => '\d+'], methods: ['GET'])]
     #[OA\Get(
         path: '/lists/{listId}',
-        description: 'Returns a single subscriber list with specified ID.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. Returns a single subscriber list with specified ID.',
         summary: 'Gets a subscriber list.',
         tags: ['lists'],
         parameters: [
@@ -175,7 +175,7 @@ class SubscriberListController extends BaseController
     #[Route('/{listId}', name: 'delete', requirements: ['listId' => '\d+'], methods: ['DELETE'])]
     #[OA\Delete(
         path: '/lists/{listId}',
-        description: 'Deletes a single subscriber list.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. Deletes a single subscriber list.',
         summary: 'Deletes a list.',
         tags: ['lists'],
         parameters: [
@@ -229,7 +229,7 @@ class SubscriberListController extends BaseController
     #[Route('', name: 'create', methods: ['POST'])]
     #[OA\Post(
         path: '/lists',
-        description: 'Returns created list.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. Returns created list.',
         summary: 'Create a subscriber list.',
         requestBody: new OA\RequestBody(
             description: 'Pass parameters to create a new subscriber list.',

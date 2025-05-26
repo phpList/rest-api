@@ -49,7 +49,7 @@ class AdminAttributeValueController extends BaseController
     )]
     #[OA\Post(
         path: '/administrators/attribute-values/{adminId}/{definitionId}',
-        description: 'Returns created/updated admin attribute.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. Returns created/updated admin attribute.',
         summary: 'Create/update an admin attribute.',
         requestBody: new OA\RequestBody(
             description: 'Pass parameters to create admin attribute.',
@@ -134,7 +134,7 @@ class AdminAttributeValueController extends BaseController
     )]
     #[OA\Delete(
         path: '/administrators/attribute-values/{adminId}/{definitionId}',
-        description: 'Deletes a single admin attribute.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. Deletes a single admin attribute.',
         summary: 'Deletes an attribute.',
         tags: ['admin-attributes'],
         parameters: [
@@ -198,7 +198,7 @@ class AdminAttributeValueController extends BaseController
     #[Route('/{adminId}', name: 'get__list', requirements: ['adminId' => '\d+'], methods: ['GET'])]
     #[OA\Get(
         path: '/administrators/attribute-values/{adminId}',
-        description: 'Returns a JSON list of all admin attributes.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. Returns a JSON list of all admin attributes.',
         summary: 'Gets a list of all admin attributes.',
         tags: ['admin-attributes'],
         parameters: [
@@ -279,7 +279,7 @@ class AdminAttributeValueController extends BaseController
     #[Route('/{adminId}/{definitionId}', name: 'get_one', methods: ['GET'])]
     #[OA\Get(
         path: '/administrators/attribute-values/{adminId}/{definitionId}',
-        description: 'Returns a single attribute.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. Returns a single attribute.',
         summary: 'Gets admin attribute.',
         tags: ['admin-attributes'],
         parameters: [

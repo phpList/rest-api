@@ -43,7 +43,7 @@ class AdminAttributeDefinitionController extends BaseController
     #[Route('', name: 'create', methods: ['POST'])]
     #[OA\Post(
         path: '/administrators/attributes',
-        description: 'Returns created admin attribute definition.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. Returns created admin attribute definition.',
         summary: 'Create an admin attribute definition.',
         requestBody: new OA\RequestBody(
             description: 'Pass parameters to create admin attribute.',
@@ -96,7 +96,7 @@ class AdminAttributeDefinitionController extends BaseController
     #[Route('/{definitionId}', name: 'update', requirements: ['definitionId' => '\d+'], methods: ['PUT'])]
     #[OA\Put(
         path: '/administrators/attributes/{definitionId}',
-        description: 'Returns updated admin attribute definition.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. Returns updated admin attribute definition.',
         summary: 'Update an admin attribute definition.',
         requestBody: new OA\RequestBody(
             description: 'Pass parameters to update admin attribute.',
@@ -162,7 +162,7 @@ class AdminAttributeDefinitionController extends BaseController
     #[Route('/{definitionId}', name: 'delete', requirements: ['definitionId' => '\d+'], methods: ['DELETE'])]
     #[OA\Delete(
         path: '/administrators/attributes/{definitionId}',
-        description: 'Deletes a single admin attribute definition.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. Deletes a single admin attribute definition.',
         summary: 'Deletes an attribute definition.',
         tags: ['admin-attributes'],
         parameters: [
@@ -215,7 +215,7 @@ class AdminAttributeDefinitionController extends BaseController
     #[Route('', name: 'get_lists', methods: ['GET'])]
     #[OA\Get(
         path: '/administrators/attributes',
-        description: 'Returns a JSON list of all admin attribute definitions.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. Returns a JSON list of all admin attribute definitions.',
         summary: 'Gets a list of all admin attribute definitions.',
         tags: ['admin-attributes'],
         parameters: [
@@ -283,7 +283,7 @@ class AdminAttributeDefinitionController extends BaseController
     #[Route('/{definitionId}', name: 'get_one', requirements: ['definitionId' => '\d+'], methods: ['GET'])]
     #[OA\Get(
         path: '/administrators/attributes/{definitionId}',
-        description: 'Returns a single attribute with specified ID.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. Returns a single attribute with specified ID.',
         summary: 'Gets attribute with specified ID.',
         tags: ['admin-attributes'],
         parameters: [
