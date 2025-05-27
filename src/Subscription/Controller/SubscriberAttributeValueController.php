@@ -49,7 +49,8 @@ class SubscriberAttributeValueController extends BaseController
     )]
     #[OA\Post(
         path: '/subscriber/attribute-values/{subscriberId}/{definitionId}',
-        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. Returns created/updated subscriber attribute.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
+            'Returns created/updated subscriber attribute.',
         summary: 'Create/update a subscriber attribute.',
         requestBody: new OA\RequestBody(
             description: 'Pass parameters to create subscriber attribute.',
@@ -134,7 +135,8 @@ class SubscriberAttributeValueController extends BaseController
     )]
     #[OA\Delete(
         path: '/subscriber/attribute-values/{subscriberId}/{definitionId}',
-        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. Deletes a single subscriber attribute.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
+            'Deletes a single subscriber attribute.',
         summary: 'Deletes an attribute.',
         tags: ['subscriber-attributes'],
         parameters: [
@@ -198,7 +200,8 @@ class SubscriberAttributeValueController extends BaseController
     #[Route('/{subscriberId}', name: 'get_list', requirements: ['subscriberId' => '\d+'], methods: ['GET'])]
     #[OA\Get(
         path: '/subscribers/attribute-values/{subscriberId}',
-        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. Returns a JSON list of all subscriber attributes.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
+            'Returns a JSON list of all subscriber attributes.',
         summary: 'Gets a list of all subscriber attributes.',
         tags: ['subscriber-attributes'],
         parameters: [
@@ -281,7 +284,8 @@ class SubscriberAttributeValueController extends BaseController
     )]
     #[OA\Get(
         path: '/subscribers/attribute-values/{subscriberId}/{definitionId}',
-        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. Returns a single attribute.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
+            'Returns a single attribute.',
         summary: 'Gets subscriber attribute.',
         tags: ['subscriber-attributes'],
         parameters: [

@@ -49,7 +49,8 @@ class CampaignController extends BaseController
     #[Route('', name: 'get_list', methods: ['GET'])]
     #[OA\Get(
         path: '/campaigns',
-        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. Returns a JSON list of all campaigns/messages.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
+            'Returns a JSON list of all campaigns/messages.',
         summary: 'Gets a list of all campaigns.',
         tags: ['campaigns'],
         parameters: [
@@ -115,7 +116,8 @@ class CampaignController extends BaseController
     #[Route('/{messageId}', name: 'get_one', requirements: ['messageId' => '\d+'], methods: ['GET'])]
     #[OA\Get(
         path: '/campaigns/{messageId}',
-        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. Returns campaign/message by id.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
+            'Returns campaign/message by id.',
         summary: 'Gets a campaign by id.',
         tags: ['campaigns'],
         parameters: [
@@ -165,7 +167,8 @@ class CampaignController extends BaseController
     #[Route('', name: 'create', methods: ['POST'])]
     #[OA\Post(
         path: '/campaigns',
-        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. Returns created message.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
+            'Returns created message.',
         summary: 'Create a message for campaign.',
         requestBody: new OA\RequestBody(
             description: 'Create a new message.',
@@ -227,7 +230,8 @@ class CampaignController extends BaseController
     #[Route('/{messageId}', name: 'update', requirements: ['messageId' => '\d+'], methods: ['PUT'])]
     #[OA\Put(
         path: '/campaigns/{messageId}',
-        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. Updates campaign/message by id.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
+            'Updates campaign/message by id.',
         summary: 'Update campaign by id.',
         requestBody: new OA\RequestBody(
             description: 'Update message.',
@@ -300,7 +304,8 @@ class CampaignController extends BaseController
     #[Route('/{messageId}', name: 'delete', requirements: ['messageId' => '\d+'], methods: ['DELETE'])]
     #[OA\Delete(
         path: '/campaigns/{messageId}',
-        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. Delete campaign/message by id.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
+            'Delete campaign/message by id.',
         summary: 'Delete campaign by id.',
         tags: ['campaigns'],
         parameters: [

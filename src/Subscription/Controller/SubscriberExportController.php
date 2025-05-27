@@ -31,7 +31,8 @@ class SubscriberExportController extends BaseController
     #[Route('/export', name: 'csv', methods: ['POST'])]
     #[OA\Post(
         path: '/subscribers/export',
-        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. 🚧 **Status: Beta** – This method is under development. Avoid using in production. Export subscribers to CSV file.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
+            'Export subscribers to CSV file.',
         summary: 'Export subscribers',
         requestBody: new OA\RequestBody(
             description: 'Filter parameters for subscribers to export. ',

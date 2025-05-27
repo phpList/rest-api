@@ -43,7 +43,8 @@ class SessionController extends BaseController
     #[Route('', name: 'create', methods: ['POST'])]
     #[OA\Post(
         path: '/sessions',
-        description: '✅ **Status: Stable** – This method is stable and safe for production use.  Given valid login data, this will generate a login token that will be valid for 1 hour.',
+        description: '✅ **Status: Stable** – This method is stable and safe for production use. ' .
+            'Given valid login data, this will generate a login token that will be valid for 1 hour.',
         summary: 'Log in or create new session.',
         requestBody: new OA\RequestBody(
             description: 'Pass session credentials',
@@ -111,7 +112,8 @@ class SessionController extends BaseController
     #[Route('/{sessionId}', name: 'delete', requirements: ['sessionId' => '\d+'], methods: ['DELETE'])]
     #[OA\Delete(
         path: '/sessions/{sessionId}',
-        description: '✅ **Status: Stable** – This method is stable and safe for production use. Delete the session passed as a parameter.',
+        description: '✅ **Status: Stable** – This method is stable and safe for production use. ' .
+            'Delete the session passed as a parameter.',
         summary: 'Delete a session.',
         tags: ['sessions'],
         parameters: [

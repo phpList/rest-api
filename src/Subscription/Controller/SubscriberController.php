@@ -46,7 +46,8 @@ class SubscriberController extends BaseController
     #[Route('', name: 'create', methods: ['POST'])]
     #[OA\Post(
         path: '/subscribers',
-        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. 🚧 **Status: Beta** – This method is under development. Avoid using in production. Creates a new subscriber (if there is no subscriber with the given email address yet).',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
+            'Creates a new subscriber (if there is no subscriber with the given email address yet).',
         summary: 'Create a subscriber',
         requestBody: new OA\RequestBody(
             description: 'Pass session credentials',
@@ -103,7 +104,8 @@ class SubscriberController extends BaseController
     #[Route('/{subscriberId}', name: 'update', requirements: ['subscriberId' => '\d+'], methods: ['PUT'])]
     #[OA\Put(
         path: '/subscribers/{subscriberId}',
-        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. 🚧 **Status: Beta** – This method is under development. Avoid using in production. Update subscriber data by id.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
+            'Update subscriber data by id.',
         summary: 'Update subscriber',
         requestBody: new OA\RequestBody(
             description: 'Pass session credentials',
@@ -169,7 +171,8 @@ class SubscriberController extends BaseController
     #[Route('/{subscriberId}', name: 'get_one', requirements: ['subscriberId' => '\d+'], methods: ['GET'])]
     #[OA\Get(
         path: '/subscribers/{subscriberId}',
-        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. 🚧 **Status: Beta** – This method is under development. Avoid using in production. Get subscriber data by id.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
+            'Get subscriber data by id.',
         summary: 'Get a subscriber',
         tags: ['subscribers'],
         parameters: [
@@ -218,7 +221,8 @@ class SubscriberController extends BaseController
     #[Route('/{subscriberId}', name: 'delete', requirements: ['subscriberId' => '\d+'], methods: ['DELETE'])]
     #[OA\Delete(
         path: '/subscribers/{subscriberId}',
-        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. 🚧 **Status: Beta** – This method is under development. Avoid using in production. Delete subscriber by id.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
+            'Delete subscriber by id.',
         summary: 'Delete subscriber',
         tags: ['subscribers'],
         parameters: [
