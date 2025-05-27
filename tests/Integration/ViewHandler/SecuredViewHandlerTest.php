@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Integration\ViewHandler;
 
-use PhpList\RestBundle\Tests\Integration\Controller\AbstractTestController;
+use PhpList\RestBundle\Tests\Integration\Common\AbstractTestController;
 
 /**
  * Test for security headers

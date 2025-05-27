@@ -4,6 +4,6 @@ services:
     autoconfigure: true
     public: false
 
-  PhpList\RestBundle\Service\Factory\PaginationCursorRequestFactory:
+  PhpList\RestBundle\Common\Service\Factory\PaginationCursorRequestFactory:
     autowire: true
     autoconfigure: true

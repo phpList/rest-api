@@ -1,0 +1,26 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  PhpList\RestBundle\Identity\Controller\:
+    resource: '../src/Identity/Controller'
+    tags: [ 'controller.service_arguments' ]
+    autowire: true
+    autoconfigure: true
+    public: true
+
+  PhpList\RestBundle\Messaging\Controller\:
+    resource: '../src/Messaging/Controller'
+    tags: [ 'controller.service_arguments' ]
+    autowire: true
+    autoconfigure: true
+    public: true
+
+  PhpList\RestBundle\Subscription\Controller\:
+    resource: '../src/Subscription/Controller'
+    tags: [ 'controller.service_arguments' ]
+    autowire: true
+    autoconfigure: true
+    public: true

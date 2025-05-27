@@ -11,37 +11,61 @@ services:
       $classMetadataFactory: '@?serializer.mapping.class_metadata_factory'
       $nameConverter: '@Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter'
 
-  PhpList\RestBundle\Serializer\SubscriberNormalizer:
+  PhpList\RestBundle\Subscription\Serializer\SubscriberNormalizer:
     tags: [ 'serializer.normalizer' ]
     autowire: true
 
-  PhpList\RestBundle\Serializer\AdministratorTokenNormalizer:
+  PhpList\RestBundle\Subscription\Serializer\SubscriberOnlyNormalizer:
     tags: [ 'serializer.normalizer' ]
     autowire: true
 
-  PhpList\RestBundle\Serializer\SubscriberListNormalizer:
+  PhpList\RestBundle\Identity\Serializer\AdministratorTokenNormalizer:
     tags: [ 'serializer.normalizer' ]
     autowire: true
 
-  PhpList\RestBundle\Serializer\SubscriptionNormalizer:
+  PhpList\RestBundle\Subscription\Serializer\SubscriberListNormalizer:
     tags: [ 'serializer.normalizer' ]
     autowire: true
 
-  PhpList\RestBundle\Serializer\MessageNormalizer:
+  PhpList\RestBundle\Subscription\Serializer\SubscriptionNormalizer:
     tags: [ 'serializer.normalizer' ]
     autowire: true
 
-  PhpList\RestBundle\Serializer\TemplateImageNormalizer:
+  PhpList\RestBundle\Messaging\Serializer\MessageNormalizer:
     tags: [ 'serializer.normalizer' ]
     autowire: true
 
-  PhpList\RestBundle\Serializer\TemplateNormalizer:
+  PhpList\RestBundle\Messaging\Serializer\TemplateImageNormalizer:
     tags: [ 'serializer.normalizer' ]
     autowire: true
 
-  PhpList\RestBundle\Serializer\AdministratorNormalizer:
+  PhpList\RestBundle\Messaging\Serializer\TemplateNormalizer:
     tags: [ 'serializer.normalizer' ]
     autowire: true
 
-  PhpList\RestBundle\Serializer\CursorPaginationNormalizer:
+  PhpList\RestBundle\Identity\Serializer\AdministratorNormalizer:
+    tags: [ 'serializer.normalizer' ]
+    autowire: true
+
+  PhpList\RestBundle\Identity\Serializer\AdminAttributeDefinitionNormalizer:
+    tags: [ 'serializer.normalizer' ]
+    autowire: true
+
+  PhpList\RestBundle\Identity\Serializer\AdminAttributeValueNormalizer:
+    tags: [ 'serializer.normalizer' ]
+    autowire: true
+
+  PhpList\RestBundle\Subscription\Serializer\AttributeDefinitionNormalizer:
+    tags: [ 'serializer.normalizer' ]
+    autowire: true
+
+  PhpList\RestBundle\Subscription\Serializer\SubscriberAttributeValueNormalizer:
+    tags: [ 'serializer.normalizer' ]
+    autowire: true
+
+  PhpList\RestBundle\Common\Serializer\CursorPaginationNormalizer:
+    autowire: true
+
+  PhpList\RestBundle\Subscription\Serializer\SubscribersExportRequestNormalizer:
+    tags: [ 'serializer.normalizer' ]
     autowire: true

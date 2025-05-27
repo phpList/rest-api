@@ -107,6 +107,7 @@ class ScriptsTest extends TestCase
     {
         return dirname(__DIR__, 3) . '/config/routing_modules.yml';
     }
+
     public function testModuleRoutesConfigurationFileExists()
     {
         self::assertFileExists($this->getModuleRoutesConfigurationFilePath());
@@ -119,7 +120,9 @@ class ScriptsTest extends TestCase
     {
         return [
             'route name' => ['phplist/rest-api.rest-api'],
-            'resource' => ["resource: '@PhpListRestBundle/Controller/'"],
+            'identity' => ["resource: '@PhpListRestBundle/Identity/Controller/'"],
+            'messaging' => ["resource: '@PhpListRestBundle/Messaging/Controller/'"],
+            'subscription' => ["resource: '@PhpListRestBundle/Subscription/Controller/'"],
             'type' => ['type: attribute'],
         ];
     }

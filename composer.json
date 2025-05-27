@@ -31,7 +31,7 @@
     },
     "require": {
         "php": "^8.1",
-        "phplist/core": "v5.0.0-alpha6",
+        "phplist/core": "v5.0.0-alpha7",
         "friendsofsymfony/rest-bundle": "*",
         "symfony/test-pack": "^1.0",
         "symfony/process": "^6.4",
@@ -97,8 +97,18 @@
                 "PhpList\\RestBundle\\PhpListRestBundle"
             ],
             "routes": {
-                "rest-api": {
-                    "resource": "@PhpListRestBundle/Controller/",
+                "rest-api-identity": {
+                    "resource": "@PhpListRestBundle/Identity/Controller/",
+                    "type": "attribute",
+                    "prefix": "/api/v2"
+                },
+                "rest-api-subscription": {
+                    "resource": "@PhpListRestBundle/Subscription/Controller/",
+                    "type": "attribute",
+                    "prefix": "/api/v2"
+                },
+                "rest-api-messaging": {
+                    "resource": "@PhpListRestBundle/Messaging/Controller/",
                     "type": "attribute",
                     "prefix": "/api/v2"
                 }
