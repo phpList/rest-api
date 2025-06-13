@@ -18,6 +18,12 @@ class UpdateAdministratorRequestTest extends TestCase
         $request->password = 'password123';
         $request->email = 'test@example.com';
         $request->superAdmin = true;
+        $request->privileges = [
+            'subscribers' => true,
+            'campaigns' => false,
+            'statistics' => true,
+            'settings' => false,
+        ];
 
         $dto = $request->getDto();
 
@@ -26,6 +32,12 @@ class UpdateAdministratorRequestTest extends TestCase
         $this->assertEquals('password123', $dto->password);
         $this->assertEquals('test@example.com', $dto->email);
         $this->assertTrue($dto->superAdmin);
+        $this->assertEquals([
+            'subscribers' => true,
+            'campaigns' => false,
+            'statistics' => true,
+            'settings' => false,
+        ], $dto->privileges);
     }
 
     public function testGetDtoWithNullValues(): void
@@ -40,5 +52,6 @@ class UpdateAdministratorRequestTest extends TestCase
         $this->assertNull($dto->password);
         $this->assertNull($dto->email);
         $this->assertNull($dto->superAdmin);
+        $this->assertEquals([], $dto->privileges);
     }
 }
