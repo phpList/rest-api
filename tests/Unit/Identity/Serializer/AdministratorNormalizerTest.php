@@ -7,6 +7,7 @@ namespace PhpList\RestBundle\Tests\Unit\Identity\Serializer;
 use DateTime;
 use InvalidArgumentException;
 use PhpList\Core\Domain\Identity\Model\Administrator;
+use PhpList\Core\Domain\Identity\Model\Privileges;
 use PhpList\RestBundle\Identity\Serializer\AdministratorNormalizer;
 use PHPUnit\Framework\TestCase;
 
@@ -20,6 +21,12 @@ class AdministratorNormalizerTest extends TestCase
         $admin->method('getEmail')->willReturn('admin@example.com');
         $admin->method('isSuperUser')->willReturn(true);
         $admin->method('getCreatedAt')->willReturn(new DateTime('2024-01-01T10:00:00+00:00'));
+        $admin->method('getPrivileges')->willReturn(new Privileges([
+            'subscribers' => true,
+            'campaigns' => false,
+            'statistics' => true,
+            'settings' => false,
+        ]));
 
         $normalizer = new AdministratorNormalizer();
         $data = $normalizer->normalize($admin);
@@ -30,6 +37,12 @@ class AdministratorNormalizerTest extends TestCase
             'login_name' => 'admin',
             'email' => 'admin@example.com',
             'super_admin' => true,
+            'privileges' => [
+                'subscribers' => true,
+                'campaigns' => false,
+                'statistics' => true,
+                'settings' => false,
+            ],
             'created_at' => '2024-01-01T10:00:00+00:00',
         ], $data);
     }

@@ -36,6 +36,18 @@ use OpenApi\Attributes as OA;
             type: 'boolean',
             example: false
         ),
+        new OA\Property(
+            property: 'privileges',
+            description: 'Array of privileges where keys are privilege names and values are booleans',
+            properties: [
+                new OA\Property(property: 'subscribers', type: 'boolean', example: true),
+                new OA\Property(property: 'campaigns', type: 'boolean', example: false),
+                new OA\Property(property: 'statistics', type: 'boolean', example: true),
+                new OA\Property(property: 'settings', type: 'boolean', example: false),
+            ],
+            type: 'object',
+            example: ['subscribers' => true, 'campaigns' => false, 'statistics' => true, 'settings' => false]
+        ),
     ],
     type: 'object'
 )]
@@ -67,6 +79,18 @@ use OpenApi\Attributes as OA;
             property: 'super_user',
             type: 'boolean',
             example: false
+        ),
+        new OA\Property(
+            property: 'privileges',
+            description: 'Array of privileges where keys are privilege names and values are booleans',
+            properties: [
+                new OA\Property(property: 'subscribers', type: 'boolean', example: true),
+                new OA\Property(property: 'campaigns', type: 'boolean', example: false),
+                new OA\Property(property: 'statistics', type: 'boolean', example: true),
+                new OA\Property(property: 'settings', type: 'boolean', example: false),
+            ],
+            type: 'object',
+            example: ['subscribers' => true, 'campaigns' => false, 'statistics' => true, 'settings' => false]
         ),
     ],
     type: 'object'

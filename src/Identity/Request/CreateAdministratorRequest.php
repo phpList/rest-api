@@ -6,6 +6,7 @@ namespace PhpList\RestBundle\Identity\Request;
 
 use PhpList\Core\Domain\Identity\Model\Administrator;
 use PhpList\Core\Domain\Identity\Model\Dto\CreateAdministratorDto;
+use PhpList\Core\Domain\Identity\Model\PrivilegeFlag;
 use PhpList\RestBundle\Common\Request\RequestInterface;
 use PhpList\RestBundle\Identity\Validator\Constraint\UniqueEmail;
 use PhpList\RestBundle\Identity\Validator\Constraint\UniqueLoginName;
@@ -31,13 +32,26 @@ class CreateAdministratorRequest implements RequestInterface
     #[Assert\Type('bool')]
     public bool $superUser = false;
 
+    /**
+     * Array of privileges where keys are privilege names (from PrivilegeFlag enum) and values are booleans.
+     * Example: ['subscribers' => true, 'campaigns' => false, 'statistics' => true, 'settings' => false]
+     */
+    #[Assert\Type('array')]
+    #[Assert\All([
+        'constraints' => [
+            new Assert\Type(['type' => 'bool']),
+        ],
+    ])]
+    public array $privileges = [];
+
     public function getDto(): CreateAdministratorDto
     {
         return new CreateAdministratorDto(
-            $this->loginName,
-            $this->password,
-            $this->email,
-            $this->superUser
+            loginName: $this->loginName,
+            password: $this->password,
+            email: $this->email,
+            isSuperUser: $this->superUser,
+            privileges: $this->privileges
         );
     }
 }
