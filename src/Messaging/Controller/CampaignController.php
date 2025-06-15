@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Messaging\Controller;
 
 use OpenApi\Attributes as OA;
+use PhpList\Core\Domain\Identity\Model\PrivilegeFlag;
 use PhpList\Core\Domain\Messaging\Model\Filter\MessageFilter;
 use PhpList\Core\Domain\Messaging\Model\Message;
 use PhpList\Core\Domain\Messaging\Service\MessageManager;
@@ -219,6 +220,9 @@ class CampaignController extends BaseController
     public function createMessage(Request $request, MessageNormalizer $normalizer): JsonResponse
     {
         $authUser = $this->requireAuthentication($request);
+        if (!$authUser->getPrivileges()->has(PrivilegeFlag::Campaigns)) {
+            throw $this->createAccessDeniedException('You are not allowed to create campaigns.');
+        }
 
         /** @var CreateMessageRequest $createMessageRequest */
         $createMessageRequest = $this->validator->validate($request, CreateMessageRequest::class);
@@ -290,6 +294,9 @@ class CampaignController extends BaseController
         #[MapEntity(mapping: ['messageId' => 'id'])] ?Message $message = null,
     ): JsonResponse {
         $authUser = $this->requireAuthentication($request);
+        if (!$authUser->getPrivileges()->has(PrivilegeFlag::Campaigns)) {
+            throw $this->createAccessDeniedException('You are not allowed to update campaigns.');
+        }
 
         if (!$message) {
             throw $this->createNotFoundException('Campaign not found.');
@@ -348,7 +355,10 @@ class CampaignController extends BaseController
         Request $request,
         #[MapEntity(mapping: ['messageId' => 'id'])] ?Message $message = null
     ): JsonResponse {
-        $this->requireAuthentication($request);
+        $authUser = $this->requireAuthentication($request);
+        if (!$authUser->getPrivileges()->has(PrivilegeFlag::Campaigns)) {
+            throw $this->createAccessDeniedException('You are not allowed to delete campaigns.');
+        }
 
         if (!$message) {
             throw $this->createNotFoundException('Campaign not found.');
