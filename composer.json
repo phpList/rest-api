@@ -111,6 +111,11 @@
                     "resource": "@PhpListRestBundle/Messaging/Controller/",
                     "type": "attribute",
                     "prefix": "/api/v2"
+                },
+                "rest-api-analitics": {
+                    "resource": "@PhpListRestBundle/Statistics/Controller/",
+                    "type": "attribute",
+                    "prefix": "/api/v2"
                 }
             }
         }
