@@ -69,3 +69,7 @@ services:
   PhpList\RestBundle\Subscription\Serializer\SubscribersExportRequestNormalizer:
     tags: [ 'serializer.normalizer' ]
     autowire: true
+
+  PhpList\RestBundle\Statistics\Serializer\CampaignStatisticsNormalizer:
+    tags: [ 'serializer.normalizer' ]
+    autowire: true

@@ -10,6 +10,7 @@ use PhpList\Core\Domain\Identity\Model\PrivilegeFlag;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
+use PhpList\RestBundle\Statistics\Serializer\CampaignStatisticsNormalizer;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,15 +22,19 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/analytics', name: 'analytics_')]
 class AnalyticsController extends BaseController
 {
+    public const BATCH_SIZE = 20;
     private AnalyticsService $analyticsService;
+    private CampaignStatisticsNormalizer $campaignStatisticsNormalizer;
 
     public function __construct(
         Authentication $authentication,
         RequestValidator $validator,
-        AnalyticsService $analyticsService
+        AnalyticsService $analyticsService,
+        CampaignStatisticsNormalizer $campaignStatisticsNormalizer
     ) {
         parent::__construct($authentication, $validator);
         $this->analyticsService = $analyticsService;
+        $this->campaignStatisticsNormalizer = $campaignStatisticsNormalizer;
     }
 
     #[Route('/campaigns', name: 'campaign_statistics', methods: ['GET'])]
@@ -56,7 +61,7 @@ class AnalyticsController extends BaseController
                 schema: new OA\Schema(type: 'integer', default: 50, maximum: 100, minimum: 1)
             ),
             new OA\Parameter(
-                name: 'last_id',
+                name: 'after_id',
                 description: 'Last seen campaign ID for pagination',
                 in: 'query',
                 required: false,
@@ -70,26 +75,11 @@ class AnalyticsController extends BaseController
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(
-                            property: 'campaigns',
+                            property: 'items',
                             type: 'array',
-                            items: new OA\Items(
-                                properties: [
-                                    new OA\Property(property: 'campaignId', type: 'integer'),
-                                    new OA\Property(property: 'subject', type: 'string'),
-                                    new OA\Property(property: 'dateSent', type: 'string', format: 'date-time'),
-                                    new OA\Property(property: 'sent', type: 'integer'),
-                                    new OA\Property(property: 'bounces', type: 'integer'),
-                                    new OA\Property(property: 'forwards', type: 'integer'),
-                                    new OA\Property(property: 'uniqueViews', type: 'integer'),
-                                    new OA\Property(property: 'totalClicks', type: 'integer'),
-                                    new OA\Property(property: 'uniqueClicks', type: 'integer'),
-                                ],
-                                type: 'object'
-                            )
+                            items: new OA\Items(ref: '#/components/schemas/CampaignStatistics')
                         ),
-                        new OA\Property(property: 'total', type: 'integer'),
-                        new OA\Property(property: 'hasMore', type: 'boolean'),
-                        new OA\Property(property: 'lastId', type: 'integer'),
+                        new OA\Property(property: 'pagination', ref: '#/components/schemas/CursorPagination')
                     ],
                     type: 'object'
                 )
@@ -108,12 +98,13 @@ class AnalyticsController extends BaseController
             throw $this->createAccessDeniedException('You are not allowed to access statistics.');
         }
 
-        $limit = (int) $request->query->get('limit', 50);
-        $lastId = (int) $request->query->get('last_id', 0);
+        $limit = (int) $request->query->get('limit', self::BATCH_SIZE);
+        $lastId = (int) $request->query->get('after_id', 0);
 
         $data = $this->analyticsService->getCampaignStatistics($limit, $lastId);
+        $normalizedData = $this->campaignStatisticsNormalizer->normalize($data, null, ['limit' => $limit]);
 
-        return $this->json($data, Response::HTTP_OK);
+        return $this->json($normalizedData, Response::HTTP_OK);
     }
 
     #[Route('/view-opens', name: 'view_opens_statistics', methods: ['GET'])]
