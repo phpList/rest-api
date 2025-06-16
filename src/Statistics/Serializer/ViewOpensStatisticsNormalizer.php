@@ -7,10 +7,10 @@ namespace PhpList\RestBundle\Statistics\Serializer;
 use PhpList\RestBundle\Statistics\Controller\AnalyticsController;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
-class CampaignStatisticsNormalizer implements NormalizerInterface
+class ViewOpensStatisticsNormalizer implements NormalizerInterface
 {
     /**
-     * Normalizes campaign statistics data into an array.
+     * Normalizes view opens statistics data into an array.
      *
      * @param mixed $object The object to normalize
      * @param string|null $format The format being (de)serialized from or into
@@ -25,17 +25,13 @@ class CampaignStatisticsNormalizer implements NormalizerInterface
         }
 
         return [
-            'items' => array_map(function ($campaign) {
+            'items' => array_map(function ($item) {
                 return [
-                    'campaign_id' => $campaign['campaignId'] ?? 0,
-                    'subject' => $campaign['subject'] ?? '',
-                    'sent' => $campaign['sent'] ?? 0,
-                    'bounces' => $campaign['bounces'] ?? 0,
-                    'forwards' => $campaign['forwards'] ?? 0,
-                    'unique_views' => $campaign['uniqueViews'] ?? 0,
-                    'total_clicks' => $campaign['totalClicks'] ?? 0,
-                    'unique_clicks' => $campaign['uniqueClicks'] ?? 0,
-                    'date_sent' => $campaign['dateSent'] ?? null,
+                    'campaign_id' => $item['campaignId'] ?? 0,
+                    'subject' => $item['subject'] ?? '',
+                    'sent' => $item['sent'] ?? 0,
+                    'unique_views' => $item['uniqueViews'] ?? 0,
+                    'rate' => $item['rate'] ?? 0.0,
                 ];
             }, $object['campaigns']),
             'pagination' => [
@@ -58,6 +54,6 @@ class CampaignStatisticsNormalizer implements NormalizerInterface
      */
     public function supportsNormalization(mixed $data, string $format = null, array $context = []): bool
     {
-        return is_array($data) && isset($data['campaigns']);
+        return is_array($data) && isset($data['items']) && isset($context['view_opens_statistics']);
     }
 }

@@ -11,6 +11,7 @@ use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
 use PhpList\RestBundle\Statistics\Serializer\CampaignStatisticsNormalizer;
+use PhpList\RestBundle\Statistics\Serializer\ViewOpensStatisticsNormalizer;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,16 +26,19 @@ class AnalyticsController extends BaseController
     public const BATCH_SIZE = 20;
     private AnalyticsService $analyticsService;
     private CampaignStatisticsNormalizer $campaignStatisticsNormalizer;
+    private ViewOpensStatisticsNormalizer $viewOpensStatisticsNormalizer;
 
     public function __construct(
         Authentication $authentication,
         RequestValidator $validator,
         AnalyticsService $analyticsService,
-        CampaignStatisticsNormalizer $campaignStatisticsNormalizer
+        CampaignStatisticsNormalizer $campaignStatisticsNormalizer,
+        ViewOpensStatisticsNormalizer $viewOpensStatisticsNormalizer
     ) {
         parent::__construct($authentication, $validator);
         $this->analyticsService = $analyticsService;
         $this->campaignStatisticsNormalizer = $campaignStatisticsNormalizer;
+        $this->viewOpensStatisticsNormalizer = $viewOpensStatisticsNormalizer;
     }
 
     #[Route('/campaigns', name: 'campaign_statistics', methods: ['GET'])]
@@ -58,7 +62,7 @@ class AnalyticsController extends BaseController
                 description: 'Maximum number of campaigns to return',
                 in: 'query',
                 required: false,
-                schema: new OA\Schema(type: 'integer', default: 50, maximum: 100, minimum: 1)
+                schema: new OA\Schema(type: 'integer', default: 20, minimum: 1)
             ),
             new OA\Parameter(
                 name: 'after_id',
@@ -128,10 +132,10 @@ class AnalyticsController extends BaseController
                 description: 'Maximum number of campaigns to return',
                 in: 'query',
                 required: false,
-                schema: new OA\Schema(type: 'integer', default: 50, maximum: 100, minimum: 1)
+                schema: new OA\Schema(type: 'integer', default: 20, minimum: 1)
             ),
             new OA\Parameter(
-                name: 'last_id',
+                name: 'after_id',
                 description: 'Last seen campaign ID for pagination',
                 in: 'query',
                 required: false,
@@ -145,22 +149,11 @@ class AnalyticsController extends BaseController
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(
-                            property: 'campaigns',
+                            property: 'items',
                             type: 'array',
-                            items: new OA\Items(
-                                properties: [
-                                    new OA\Property(property: 'campaignId', type: 'integer'),
-                                    new OA\Property(property: 'subject', type: 'string'),
-                                    new OA\Property(property: 'sent', type: 'integer'),
-                                    new OA\Property(property: 'uniqueViews', type: 'integer'),
-                                    new OA\Property(property: 'rate', type: 'number', format: 'float'),
-                                ],
-                                type: 'object'
-                            )
+                            items: new OA\Items(ref: '#/components/schemas/ViewOpensStatistics')
                         ),
-                        new OA\Property(property: 'total', type: 'integer'),
-                        new OA\Property(property: 'hasMore', type: 'boolean'),
-                        new OA\Property(property: 'lastId', type: 'integer'),
+                        new OA\Property(property: 'pagination', ref: '#/components/schemas/CursorPagination')
                     ],
                     type: 'object'
                 )
@@ -179,12 +172,16 @@ class AnalyticsController extends BaseController
             throw $this->createAccessDeniedException('You are not allowed to access statistics.');
         }
 
-        $limit = (int) $request->query->get('limit', 50);
-        $lastId = (int) $request->query->get('last_id', 0);
+        $limit = (int) $request->query->get('limit', self::BATCH_SIZE);
+        $lastId = (int) $request->query->get('after_id', 0);
 
         $data = $this->analyticsService->getViewOpensStatistics($limit, $lastId);
+        $normalizedData = $this->viewOpensStatisticsNormalizer->normalize($data, null, [
+            'view_opens_statistics' => true,
+            'limit' => $limit
+        ]);
 
-        return $this->json($data, Response::HTTP_OK);
+        return $this->json($normalizedData, Response::HTTP_OK);
     }
 
     #[Route('/domains/top', name: 'top_domains', methods: ['GET'])]
@@ -208,7 +205,7 @@ class AnalyticsController extends BaseController
                 description: 'Maximum number of domains to return',
                 in: 'query',
                 required: false,
-                schema: new OA\Schema(type: 'integer', default: 50, maximum: 100, minimum: 1)
+                schema: new OA\Schema(type: 'integer', default: 20, minimum: 1)
             ),
             new OA\Parameter(
                 name: 'min_subscribers',
@@ -254,7 +251,7 @@ class AnalyticsController extends BaseController
             throw $this->createAccessDeniedException('You are not allowed to access statistics.');
         }
 
-        $limit = (int) $request->query->get('limit', 50);
+        $limit = (int) $request->query->get('limit', self::BATCH_SIZE);
         $minSubscribers = (int) $request->query->get('min_subscribers', 5);
 
         $data = $this->analyticsService->getTopDomains($limit, $minSubscribers);

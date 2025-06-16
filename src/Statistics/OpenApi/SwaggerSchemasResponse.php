@@ -22,6 +22,18 @@ use OpenApi\Attributes as OA;
     type: 'object',
     nullable: true
 )]
+#[OA\Schema(
+    schema: 'ViewOpensStatistics',
+    properties: [
+        new OA\Property(property: 'campaign_id', type: 'integer'),
+        new OA\Property(property: 'subject', type: 'string'),
+        new OA\Property(property: 'sent', type: 'integer'),
+        new OA\Property(property: 'unique_views', type: 'integer'),
+        new OA\Property(property: 'rate', type: 'number', format: 'float'),
+    ],
+    type: 'object',
+    nullable: true
+)]
 class SwaggerSchemasResponse
 {
 }

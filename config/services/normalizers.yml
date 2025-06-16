@@ -73,3 +73,7 @@ services:
   PhpList\RestBundle\Statistics\Serializer\CampaignStatisticsNormalizer:
     tags: [ 'serializer.normalizer' ]
     autowire: true
+
+  PhpList\RestBundle\Statistics\Serializer\ViewOpensStatisticsNormalizer:
+    tags: [ 'serializer.normalizer' ]
+    autowire: true

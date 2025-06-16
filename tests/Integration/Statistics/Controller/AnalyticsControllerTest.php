@@ -55,10 +55,8 @@ class AnalyticsControllerTest extends AbstractTestController
         $response = $this->getDecodedJsonResponseContent();
 
         self::assertIsArray($response);
-        self::assertArrayHasKey('campaigns', $response);
-        self::assertArrayHasKey('total', $response);
-        self::assertArrayHasKey('hasMore', $response);
-        self::assertArrayHasKey('lastId', $response);
+        self::assertArrayHasKey('items', $response);
+        self::assertArrayHasKey('pagination', $response);
     }
 
     public function testGetViewOpensStatisticsWithoutSessionKeyReturnsForbidden(): void

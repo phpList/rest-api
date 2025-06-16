@@ -12,6 +12,7 @@ use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
 use PhpList\RestBundle\Statistics\Controller\AnalyticsController;
 use PhpList\RestBundle\Statistics\Serializer\CampaignStatisticsNormalizer;
+use PhpList\RestBundle\Statistics\Serializer\ViewOpensStatisticsNormalizer;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -46,12 +47,14 @@ class AnalyticsControllerTest extends TestCase
         $this->authentication = $this->createMock(Authentication::class);
         $this->validator = $this->createMock(RequestValidator::class);
         $this->analyticsService = $this->createMock(AnalyticsService::class);
-        $this->campaignStatisticsNormalizer = $this->createMock(CampaignStatisticsNormalizer::class);
+        $this->campaignStatisticsNormalizer = new CampaignStatisticsNormalizer();
+        $this->viewOpensStatisticsNormalizer = new ViewOpensStatisticsNormalizer();
         $this->controller = new TestableAnalyticsController(
             $this->authentication,
             $this->validator,
             $this->analyticsService,
-            $this->campaignStatisticsNormalizer
+            $this->campaignStatisticsNormalizer,
+            $this->viewOpensStatisticsNormalizer,
         );
 
         $this->privileges = $this->createMock(Privileges::class);
@@ -85,7 +88,7 @@ class AnalyticsControllerTest extends TestCase
     {
         $request = new Request();
         $request->query->set('limit', '20');
-        $request->query->set('last_id', '10');
+        $request->query->set('after_id', '10');
 
         $serviceData = [
             'campaigns' => [
@@ -107,22 +110,25 @@ class AnalyticsControllerTest extends TestCase
         ];
 
         $normalizedData = [
-            'campaigns' => [
+            'items' => [
                 [
-                    'campaignId' => 1,
+                    'campaign_id' => 1,
                     'subject' => 'Test Campaign',
-                    'dateSent' => '2023-01-01T00:00:00+00:00',
+                    'date_sent' => '2023-01-01T00:00:00+00:00',
                     'sent' => 100,
                     'bounces' => 5,
                     'forwards' => 2,
-                    'uniqueViews' => 80,
-                    'totalClicks' => 150,
-                    'uniqueClicks' => 70,
+                    'unique_views' => 80,
+                    'total_clicks' => 150,
+                    'unique_clicks' => 70,
                 ]
             ],
-            'total' => 1,
-            'hasMore' => false,
-            'lastId' => 1,
+            'pagination' => [
+                'total' => 1,
+                'limit' => 20,
+                'has_more' => false,
+                'next_cursor' => 2,
+            ],
         ];
 
         $this->authentication
@@ -143,15 +149,8 @@ class AnalyticsControllerTest extends TestCase
             ->with(20, 10)
             ->willReturn($serviceData);
 
-        $this->campaignStatisticsNormalizer
-            ->expects(self::once())
-            ->method('normalize')
-            ->with($serviceData)
-            ->willReturn($normalizedData);
-
         $response = $this->controller->getCampaignStatistics($request);
 
-        self::assertInstanceOf(JsonResponse::class, $response);
         self::assertEquals(Response::HTTP_OK, $response->getStatusCode());
         self::assertEquals($normalizedData, json_decode($response->getContent(), true));
     }
@@ -182,7 +181,7 @@ class AnalyticsControllerTest extends TestCase
     {
         $request = new Request();
         $request->query->set('limit', '20');
-        $request->query->set('last_id', '10');
+        $request->query->set('after_id', '10');
 
         $expectedData = [
             'campaigns' => [
@@ -197,6 +196,24 @@ class AnalyticsControllerTest extends TestCase
             'total' => 1,
             'hasMore' => false,
             'lastId' => 1,
+        ];
+
+        $normalizedData = [
+            'items' => [
+                [
+                    'campaign_id' => 1,
+                    'subject' => 'Test Campaign',
+                    'sent' => 100,
+                    'unique_views' => 80,
+                    'rate' => 80,
+                ]
+            ],
+            'pagination' => [
+                'total' => 1,
+                'limit' => 20,
+                'has_more' => false,
+                'next_cursor' => 2,
+            ],
         ];
 
         $this->authentication
@@ -219,9 +236,8 @@ class AnalyticsControllerTest extends TestCase
 
         $response = $this->controller->getViewOpensStatistics($request);
 
-        self::assertInstanceOf(JsonResponse::class, $response);
         self::assertEquals(Response::HTTP_OK, $response->getStatusCode());
-        self::assertEquals($expectedData, json_decode($response->getContent(), true));
+        self::assertEquals($normalizedData, json_decode($response->getContent(), true));
     }
 
     public function testGetTopDomainsWithoutStatisticsPrivilegeThrowsException(): void
