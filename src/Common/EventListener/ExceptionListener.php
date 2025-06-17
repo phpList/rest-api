@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use Symfony\Component\Validator\Exception\ValidatorException;
 
 class ExceptionListener
 {
@@ -33,6 +34,11 @@ class ExceptionListener
             $response = new JsonResponse([
                 'message' => $exception->getMessage(),
             ], $exception->getStatusCode());
+            $event->setResponse($response);
+        } elseif ($exception instanceof ValidatorException) {
+            $response = new JsonResponse([
+                'message' => $exception->getMessage(),
+            ], 400);
             $event->setResponse($response);
         } elseif ($exception instanceof Exception) {
             $response = new JsonResponse([
