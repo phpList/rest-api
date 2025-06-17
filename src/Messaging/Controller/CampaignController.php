@@ -5,17 +5,13 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Messaging\Controller;
 
 use OpenApi\Attributes as OA;
-use PhpList\Core\Domain\Identity\Model\PrivilegeFlag;
-use PhpList\Core\Domain\Messaging\Model\Filter\MessageFilter;
 use PhpList\Core\Domain\Messaging\Model\Message;
-use PhpList\Core\Domain\Messaging\Service\MessageManager;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
-use PhpList\RestBundle\Common\Service\Provider\PaginatedDataProvider;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
 use PhpList\RestBundle\Messaging\Request\CreateMessageRequest;
 use PhpList\RestBundle\Messaging\Request\UpdateMessageRequest;
-use PhpList\RestBundle\Messaging\Serializer\MessageNormalizer;
+use PhpList\RestBundle\Messaging\Service\CampaignService;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -30,21 +26,15 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/campaigns', name: 'campaign_')]
 class CampaignController extends BaseController
 {
-    private MessageNormalizer $normalizer;
-    private MessageManager $messageManager;
-    private PaginatedDataProvider $paginatedProvider;
+    private CampaignService $campaignService;
 
     public function __construct(
         Authentication $authentication,
         RequestValidator $validator,
-        MessageNormalizer $normalizer,
-        MessageManager $messageManager,
-        PaginatedDataProvider $paginatedProvider,
+        CampaignService $campaignService,
     ) {
         parent::__construct($authentication, $validator);
-        $this->normalizer = $normalizer;
-        $this->messageManager = $messageManager;
-        $this->paginatedProvider = $paginatedProvider;
+        $this->campaignService = $campaignService;
     }
 
     #[Route('', name: 'get_list', methods: ['GET'])]
@@ -104,12 +94,10 @@ class CampaignController extends BaseController
     )]
     public function getMessages(Request $request): JsonResponse
     {
-        $authUer = $this->requireAuthentication($request);
-
-        $filter = (new MessageFilter())->setOwner($authUer);
+        $authUser = $this->requireAuthentication($request);
 
         return $this->json(
-            $this->paginatedProvider->getPaginatedList($request, $this->normalizer, Message::class, $filter),
+            $this->campaignService->getMessages($request, $authUser),
             Response::HTTP_OK
         );
     }
@@ -158,11 +146,7 @@ class CampaignController extends BaseController
     ): JsonResponse {
         $this->requireAuthentication($request);
 
-        if (!$message) {
-            throw $this->createNotFoundException('Campaign not found.');
-        }
-
-        return $this->json($this->normalizer->normalize($message), Response::HTTP_OK);
+        return $this->json($this->campaignService->getMessage($message), Response::HTTP_OK);
     }
 
     #[Route('', name: 'create', methods: ['POST'])]
@@ -217,18 +201,17 @@ class CampaignController extends BaseController
             ),
         ]
     )]
-    public function createMessage(Request $request, MessageNormalizer $normalizer): JsonResponse
+    public function createMessage(Request $request): JsonResponse
     {
         $authUser = $this->requireAuthentication($request);
-        if (!$authUser->getPrivileges()->has(PrivilegeFlag::Campaigns)) {
-            throw $this->createAccessDeniedException('You are not allowed to create campaigns.');
-        }
 
         /** @var CreateMessageRequest $createMessageRequest */
         $createMessageRequest = $this->validator->validate($request, CreateMessageRequest::class);
-        $data = $this->messageManager->createMessage($createMessageRequest->getDto(), $authUser);
 
-        return $this->json($normalizer->normalize($data), Response::HTTP_CREATED);
+        return $this->json(
+            $this->campaignService->createMessage($createMessageRequest, $authUser),
+            Response::HTTP_CREATED
+        );
     }
 
     #[Route('/{messageId}', name: 'update', requirements: ['messageId' => '\d+'], methods: ['PUT'])]
@@ -294,18 +277,14 @@ class CampaignController extends BaseController
         #[MapEntity(mapping: ['messageId' => 'id'])] ?Message $message = null,
     ): JsonResponse {
         $authUser = $this->requireAuthentication($request);
-        if (!$authUser->getPrivileges()->has(PrivilegeFlag::Campaigns)) {
-            throw $this->createAccessDeniedException('You are not allowed to update campaigns.');
-        }
 
-        if (!$message) {
-            throw $this->createNotFoundException('Campaign not found.');
-        }
         /** @var UpdateMessageRequest $updateMessageRequest */
         $updateMessageRequest = $this->validator->validate($request, UpdateMessageRequest::class);
-        $data = $this->messageManager->updateMessage($updateMessageRequest->getDto(), $message, $authUser);
 
-        return $this->json($this->normalizer->normalize($data), Response::HTTP_OK);
+        return $this->json(
+            $this->campaignService->updateMessage($updateMessageRequest, $authUser, $message),
+            Response::HTTP_OK
+        );
     }
 
     #[Route('/{messageId}', name: 'delete', requirements: ['messageId' => '\d+'], methods: ['DELETE'])]
@@ -356,15 +335,8 @@ class CampaignController extends BaseController
         #[MapEntity(mapping: ['messageId' => 'id'])] ?Message $message = null
     ): JsonResponse {
         $authUser = $this->requireAuthentication($request);
-        if (!$authUser->getPrivileges()->has(PrivilegeFlag::Campaigns)) {
-            throw $this->createAccessDeniedException('You are not allowed to delete campaigns.');
-        }
 
-        if (!$message) {
-            throw $this->createNotFoundException('Campaign not found.');
-        }
-
-        $this->messageManager->delete($message);
+        $this->campaignService->deleteMessage($authUser, $message);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }

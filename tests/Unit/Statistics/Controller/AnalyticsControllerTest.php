@@ -13,6 +13,7 @@ use PhpList\RestBundle\Common\Validator\RequestValidator;
 use PhpList\RestBundle\Statistics\Controller\AnalyticsController;
 use PhpList\RestBundle\Statistics\Serializer\CampaignStatisticsNormalizer;
 use PhpList\RestBundle\Statistics\Serializer\ViewOpensStatisticsNormalizer;
+use PhpList\RestBundle\Tests\Helpers\DummyAnalyticsController;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -20,24 +21,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
-/**
- * Test-specific subclass of AnalyticsController that overrides the json() method
- * to avoid relying on the container.
- */
-class TestableAnalyticsController extends AnalyticsController
-{
-    protected function json($data, int $status = 200, array $headers = [], array $context = []): JsonResponse
-    {
-        return new JsonResponse($data, $status, $headers);
-    }
-}
-
 class AnalyticsControllerTest extends TestCase
 {
     private Authentication|MockObject $authentication;
-    private RequestValidator|MockObject $validator;
     private AnalyticsService|MockObject $analyticsService;
-    private CampaignStatisticsNormalizer|MockObject $campaignStatisticsNormalizer;
     private AnalyticsController $controller;
     private Administrator|MockObject $administrator;
     private Privileges|MockObject $privileges;
@@ -45,16 +32,16 @@ class AnalyticsControllerTest extends TestCase
     protected function setUp(): void
     {
         $this->authentication = $this->createMock(Authentication::class);
-        $this->validator = $this->createMock(RequestValidator::class);
+        $validator = $this->createMock(RequestValidator::class);
         $this->analyticsService = $this->createMock(AnalyticsService::class);
-        $this->campaignStatisticsNormalizer = new CampaignStatisticsNormalizer();
-        $this->viewOpensStatisticsNormalizer = new ViewOpensStatisticsNormalizer();
-        $this->controller = new TestableAnalyticsController(
+        $campaignStatisticsNormalizer = new CampaignStatisticsNormalizer();
+        $viewOpensStatisticsNormalizer = new ViewOpensStatisticsNormalizer();
+        $this->controller = new DummyAnalyticsController(
             $this->authentication,
-            $this->validator,
+            $validator,
             $this->analyticsService,
-            $this->campaignStatisticsNormalizer,
-            $this->viewOpensStatisticsNormalizer,
+            $campaignStatisticsNormalizer,
+            $viewOpensStatisticsNormalizer,
         );
 
         $this->privileges = $this->createMock(Privileges::class);

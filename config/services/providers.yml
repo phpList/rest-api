@@ -7,3 +7,7 @@ services:
   PhpList\RestBundle\Common\Service\Provider\PaginatedDataProvider:
     autowire: true
     autoconfigure: true
+
+  PhpList\RestBundle\Messaging\Service\CampaignService:
+    autowire: true
+    autoconfigure: true

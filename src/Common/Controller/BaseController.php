@@ -11,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
+/**  @SuppressWarnings(PHPMD.NumberOfChildren) */
 abstract class BaseController extends AbstractController
 {
     protected Authentication $authentication;

@@ -25,26 +25,27 @@ class AnalyticsController extends BaseController
 {
     public const BATCH_SIZE = 20;
     private AnalyticsService $analyticsService;
-    private CampaignStatisticsNormalizer $campaignStatisticsNormalizer;
-    private ViewOpensStatisticsNormalizer $viewOpensStatisticsNormalizer;
+    private CampaignStatisticsNormalizer $campaignStatsNormalizer;
+    private ViewOpensStatisticsNormalizer $viewOpensStatsNormalizer;
 
     public function __construct(
         Authentication $authentication,
         RequestValidator $validator,
         AnalyticsService $analyticsService,
-        CampaignStatisticsNormalizer $campaignStatisticsNormalizer,
-        ViewOpensStatisticsNormalizer $viewOpensStatisticsNormalizer
+        CampaignStatisticsNormalizer $campaignStatsNormalizer,
+        ViewOpensStatisticsNormalizer $viewOpensStatsNormalizer
     ) {
         parent::__construct($authentication, $validator);
         $this->analyticsService = $analyticsService;
-        $this->campaignStatisticsNormalizer = $campaignStatisticsNormalizer;
-        $this->viewOpensStatisticsNormalizer = $viewOpensStatisticsNormalizer;
+        $this->campaignStatsNormalizer = $campaignStatsNormalizer;
+        $this->viewOpensStatsNormalizer = $viewOpensStatsNormalizer;
     }
 
     #[Route('/campaigns', name: 'campaign_statistics', methods: ['GET'])]
     #[OA\Get(
         path: '/analytics/campaigns',
-        description: 'Returns statistics overview for campaigns.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
+            'Returns statistics overview for campaigns.',
         summary: 'Gets campaign statistics.',
         tags: ['analytics'],
         parameters: [
@@ -106,7 +107,7 @@ class AnalyticsController extends BaseController
         $lastId = (int) $request->query->get('after_id', 0);
 
         $data = $this->analyticsService->getCampaignStatistics($limit, $lastId);
-        $normalizedData = $this->campaignStatisticsNormalizer->normalize($data, null, [
+        $normalizedData = $this->campaignStatsNormalizer->normalize($data, null, [
             'limit' => $limit,
             'campaign_statistics' => true,
         ]);
@@ -117,7 +118,8 @@ class AnalyticsController extends BaseController
     #[Route('/view-opens', name: 'view_opens_statistics', methods: ['GET'])]
     #[OA\Get(
         path: '/analytics/view-opens',
-        description: 'Returns statistics for view opens.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
+            'Returns statistics for view opens.',
         summary: 'Gets view opens statistics.',
         tags: ['analytics'],
         parameters: [
@@ -179,7 +181,7 @@ class AnalyticsController extends BaseController
         $lastId = (int) $request->query->get('after_id', 0);
 
         $data = $this->analyticsService->getViewOpensStatistics($limit, $lastId);
-        $normalizedData = $this->viewOpensStatisticsNormalizer->normalize($data, null, [
+        $normalizedData = $this->viewOpensStatsNormalizer->normalize($data, null, [
             'view_opens_statistics' => true,
             'limit' => $limit
         ]);
@@ -190,7 +192,8 @@ class AnalyticsController extends BaseController
     #[Route('/domains/top', name: 'top_domains', methods: ['GET'])]
     #[OA\Get(
         path: '/analytics/domains/top',
-        description: 'Returns statistics for the top domains with more than 5 subscribers.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
+            'Returns statistics for the top domains with more than 5 subscribers.',
         summary: 'Gets top domains statistics.',
         tags: ['analytics'],
         parameters: [
@@ -265,7 +268,8 @@ class AnalyticsController extends BaseController
     #[Route('/domains/confirmation', name: 'domain_confirmation_statistics', methods: ['GET'])]
     #[OA\Get(
         path: '/analytics/domains/confirmation',
-        description: 'Returns statistics for domains showing confirmation status.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
+            'Returns statistics for domains showing confirmation status.',
         summary: 'Gets domain confirmation statistics.',
         tags: ['analytics'],
         parameters: [
@@ -363,7 +367,8 @@ class AnalyticsController extends BaseController
     #[Route('/local-parts/top', name: 'top_local_parts', methods: ['GET'])]
     #[OA\Get(
         path: '/analytics/local-parts/top',
-        description: 'Returns statistics for the top local-parts of email addresses.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
+            'Returns statistics for the top local-parts of email addresses.',
         summary: 'Gets top local-parts statistics.',
         tags: ['analytics'],
         parameters: [
