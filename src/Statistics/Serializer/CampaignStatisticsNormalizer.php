@@ -58,6 +58,6 @@ class CampaignStatisticsNormalizer implements NormalizerInterface
      */
     public function supportsNormalization(mixed $data, string $format = null, array $context = []): bool
     {
-        return is_array($data) && isset($data['campaigns']);
+        return is_array($data) && isset($data['campaign_statistics']);
     }
 }

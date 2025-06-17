@@ -106,7 +106,10 @@ class AnalyticsController extends BaseController
         $lastId = (int) $request->query->get('after_id', 0);
 
         $data = $this->analyticsService->getCampaignStatistics($limit, $lastId);
-        $normalizedData = $this->campaignStatisticsNormalizer->normalize($data, null, ['limit' => $limit]);
+        $normalizedData = $this->campaignStatisticsNormalizer->normalize($data, null, [
+            'limit' => $limit,
+            'campaign_statistics' => true,
+        ]);
 
         return $this->json($normalizedData, Response::HTTP_OK);
     }
