@@ -11,6 +11,7 @@ use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
 use PhpList\RestBundle\Statistics\Serializer\CampaignStatisticsNormalizer;
+use PhpList\RestBundle\Statistics\Serializer\TopDomainsNormalizer;
 use PhpList\RestBundle\Statistics\Serializer\ViewOpensStatisticsNormalizer;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,18 +28,21 @@ class AnalyticsController extends BaseController
     private AnalyticsService $analyticsService;
     private CampaignStatisticsNormalizer $campaignStatsNormalizer;
     private ViewOpensStatisticsNormalizer $viewOpensStatsNormalizer;
+    private TopDomainsNormalizer $topDomainsNormalizer;
 
     public function __construct(
         Authentication $authentication,
         RequestValidator $validator,
         AnalyticsService $analyticsService,
         CampaignStatisticsNormalizer $campaignStatsNormalizer,
-        ViewOpensStatisticsNormalizer $viewOpensStatsNormalizer
+        ViewOpensStatisticsNormalizer $viewOpensStatsNormalizer,
+        TopDomainsNormalizer $topDomainsNormalizer
     ) {
         parent::__construct($authentication, $validator);
         $this->analyticsService = $analyticsService;
         $this->campaignStatsNormalizer = $campaignStatsNormalizer;
         $this->viewOpensStatsNormalizer = $viewOpensStatsNormalizer;
+        $this->topDomainsNormalizer = $topDomainsNormalizer;
     }
 
     #[Route('/campaigns', name: 'campaign_statistics', methods: ['GET'])]
@@ -245,8 +249,11 @@ class AnalyticsController extends BaseController
         $minSubscribers = (int) $request->query->get('min_subscribers', 5);
 
         $data = $this->analyticsService->getTopDomains($limit, $minSubscribers);
+        $normalizedData = $this->topDomainsNormalizer->normalize($data, null, [
+            'top_domains' => true,
+        ]);
 
-        return $this->json($data, Response::HTTP_OK);
+        return $this->json($normalizedData, Response::HTTP_OK);
     }
 
     #[Route('/domains/confirmation', name: 'domain_confirmation_statistics', methods: ['GET'])]

@@ -42,7 +42,7 @@ class AnalyticsControllerTest extends AbstractTestController
     public function testGetCampaignStatisticsWithValidSessionReturnsOkay(): void
     {
         $this->loadFixtures([AdministratorFixture::class, AdministratorTokenFixture::class, MessageFixture::class]);
-        
+
         $this->authenticatedJsonRequest('GET', '/api/v2/analytics/campaigns');
         $this->assertHttpOkay();
     }
@@ -68,7 +68,7 @@ class AnalyticsControllerTest extends AbstractTestController
     public function testGetViewOpensStatisticsWithValidSessionReturnsOkay(): void
     {
         $this->loadFixtures([AdministratorFixture::class, AdministratorTokenFixture::class, MessageFixture::class]);
-        
+
         $this->authenticatedJsonRequest('GET', '/api/v2/analytics/view-opens');
         $this->assertHttpOkay();
     }
@@ -96,7 +96,7 @@ class AnalyticsControllerTest extends AbstractTestController
     public function testGetTopDomainsWithValidSessionReturnsOkay(): void
     {
         $this->loadFixtures([AdministratorFixture::class, AdministratorTokenFixture::class, SubscriberFixture::class]);
-        
+
         $this->authenticatedJsonRequest('GET', '/api/v2/analytics/domains/top');
         $this->assertHttpOkay();
     }
@@ -111,6 +111,69 @@ class AnalyticsControllerTest extends AbstractTestController
         self::assertIsArray($response);
         self::assertArrayHasKey('domains', $response);
         self::assertArrayHasKey('total', $response);
+        self::assertIsArray($response['domains']);
+        self::assertIsInt($response['total']);
+    }
+
+    public function testGetTopDomainsWithLimitParameter(): void
+    {
+        $this->loadFixtures([AdministratorFixture::class, AdministratorTokenFixture::class, SubscriberFixture::class]);
+
+        $this->authenticatedJsonRequest('GET', '/api/v2/analytics/domains/top?limit=5');
+        $response = $this->getDecodedJsonResponseContent();
+
+        self::assertIsArray($response);
+        self::assertArrayHasKey('domains', $response);
+        self::assertIsArray($response['domains']);
+        self::assertLessThanOrEqual(5, count($response['domains']));
+    }
+
+    public function testGetTopDomainsWithMinSubscribersParameter(): void
+    {
+        $this->loadFixtures([AdministratorFixture::class, AdministratorTokenFixture::class, SubscriberFixture::class]);
+
+        $this->authenticatedJsonRequest('GET', '/api/v2/analytics/domains/top?min_subscribers=10');
+        $response = $this->getDecodedJsonResponseContent();
+
+        self::assertIsArray($response);
+        self::assertArrayHasKey('domains', $response);
+        self::assertIsArray($response['domains']);
+
+        // Verify all domains have at least 10 subscribers
+        foreach ($response['domains'] as $domain) {
+            self::assertArrayHasKey('subscribers', $domain);
+            self::assertGreaterThanOrEqual(10, $domain['subscribers']);
+        }
+    }
+
+    public function testGetTopDomainsWithBothParameters(): void
+    {
+        $this->loadFixtures([AdministratorFixture::class, AdministratorTokenFixture::class, SubscriberFixture::class]);
+
+        $this->authenticatedJsonRequest('GET', '/api/v2/analytics/domains/top?limit=3&min_subscribers=10');
+        $response = $this->getDecodedJsonResponseContent();
+
+        self::assertIsArray($response);
+        self::assertArrayHasKey('domains', $response);
+        self::assertIsArray($response['domains']);
+        self::assertLessThanOrEqual(3, count($response['domains']));
+
+        foreach ($response['domains'] as $domain) {
+            self::assertArrayHasKey('subscribers', $domain);
+            self::assertGreaterThanOrEqual(10, $domain['subscribers']);
+        }
+    }
+
+    public function testGetTopDomainsWithInvalidLimitParameter(): void
+    {
+        $this->loadFixtures([AdministratorFixture::class, AdministratorTokenFixture::class, SubscriberFixture::class]);
+
+        $this->authenticatedJsonRequest('GET', '/api/v2/analytics/domains/top?limit=invalid');
+        $response = $this->getDecodedJsonResponseContent();
+
+        self::assertIsArray($response);
+        self::assertArrayHasKey('domains', $response);
+        self::assertIsArray($response['domains']);
     }
 
     public function testGetDomainConfirmationStatisticsWithoutSessionKeyReturnsForbidden(): void
@@ -122,7 +185,7 @@ class AnalyticsControllerTest extends AbstractTestController
     public function testGetDomainConfirmationStatisticsWithValidSessionReturnsOkay(): void
     {
         $this->loadFixtures([AdministratorFixture::class, AdministratorTokenFixture::class, SubscriberFixture::class]);
-        
+
         $this->authenticatedJsonRequest('GET', '/api/v2/analytics/domains/confirmation');
         $this->assertHttpOkay();
     }
@@ -148,7 +211,7 @@ class AnalyticsControllerTest extends AbstractTestController
     public function testGetTopLocalPartsWithValidSessionReturnsOkay(): void
     {
         $this->loadFixtures([AdministratorFixture::class, AdministratorTokenFixture::class, SubscriberFixture::class]);
-        
+
         $this->authenticatedJsonRequest('GET', '/api/v2/analytics/local-parts/top');
         $this->assertHttpOkay();
     }
