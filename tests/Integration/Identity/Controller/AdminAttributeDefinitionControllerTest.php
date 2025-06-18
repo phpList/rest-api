@@ -31,7 +31,7 @@ class AdminAttributeDefinitionControllerTest extends AbstractTestController
     {
         $this->authenticatedJsonRequest('post', '/api/v2/administrators/attributes', [], [], [], json_encode([
             'name' => 'Test Attribute',
-            'type' => 'text',
+            'type' => 'textarea',
             'order' => 1,
             'defaultValue' => 'default',
             'required' => true,
@@ -41,7 +41,7 @@ class AdminAttributeDefinitionControllerTest extends AbstractTestController
         $this->assertHttpCreated();
         $data = $this->getDecodedJsonResponseContent();
         self::assertSame('Test Attribute', $data['name']);
-        self::assertSame('text', $data['type']);
+        self::assertSame('textarea', $data['type']);
         self::assertSame(1, $data['list_order']);
         self::assertSame('default', $data['default_value']);
         self::assertTrue($data['required']);

@@ -39,3 +39,16 @@ services:
   PhpList\Core\Domain\Subscription\Service\SubscriberCsvExporter:
     autowire: true
     autoconfigure: true
+
+  PhpList\Core\Domain\Analytics\Service\Manager\LinkTrackManager:
+    autowire: true
+    autoconfigure: true
+
+  PhpList\Core\Domain\Analytics\Service\Manager\UserMessageViewManager:
+    autowire: true
+    autoconfigure: true
+
+  PhpList\Core\Domain\Analytics\Service\AnalyticsService:
+    autowire: true
+    autoconfigure: true
+

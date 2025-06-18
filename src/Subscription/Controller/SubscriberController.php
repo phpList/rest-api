@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Subscription\Controller;
 
 use OpenApi\Attributes as OA;
+use PhpList\Core\Domain\Identity\Model\PrivilegeFlag;
 use PhpList\Core\Domain\Subscription\Model\Subscriber;
 use PhpList\Core\Domain\Subscription\Service\Manager\SubscriberManager;
 use PhpList\Core\Security\Authentication;
@@ -89,7 +90,10 @@ class SubscriberController extends BaseController
     )]
     public function createSubscriber(Request $request): JsonResponse
     {
-        $this->requireAuthentication($request);
+        $admin = $this->requireAuthentication($request);
+        if (!$admin->getPrivileges()->has(PrivilegeFlag::Subscribers)) {
+            throw $this->createAccessDeniedException('You are not allowed to create subscribers.');
+        }
 
         /** @var CreateSubscriberRequest $subscriberRequest */
         $subscriberRequest = $this->validator->validate($request, CreateSubscriberRequest::class);
@@ -156,7 +160,10 @@ class SubscriberController extends BaseController
         Request $request,
         #[MapEntity(mapping: ['subscriberId' => 'id'])] ?Subscriber $subscriber = null,
     ): JsonResponse {
-        $this->requireAuthentication($request);
+        $admin = $this->requireAuthentication($request);
+        if (!$admin->getPrivileges()->has(PrivilegeFlag::Subscribers)) {
+            throw $this->createAccessDeniedException('You are not allowed to update subscribers.');
+        }
 
         if (!$subscriber) {
             throw $this->createNotFoundException('Subscriber not found.');
@@ -262,7 +269,10 @@ class SubscriberController extends BaseController
         Request $request,
         #[MapEntity(mapping: ['subscriberId' => 'id'])] ?Subscriber $subscriber = null,
     ): JsonResponse {
-        $this->requireAuthentication($request);
+        $admin = $this->requireAuthentication($request);
+        if (!$admin->getPrivileges()->has(PrivilegeFlag::Subscribers)) {
+            throw $this->createAccessDeniedException('You are not allowed to delete subscribers.');
+        }
 
         if (!$subscriber) {
             throw $this->createNotFoundException('Subscriber not found.');

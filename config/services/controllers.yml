@@ -24,3 +24,10 @@ services:
     autowire: true
     autoconfigure: true
     public: true
+
+  PhpList\RestBundle\Statistics\Controller\:
+    resource: '../src/Statistics/Controller'
+    tags: [ 'controller.service_arguments' ]
+    autowire: true
+    autoconfigure: true
+    public: true

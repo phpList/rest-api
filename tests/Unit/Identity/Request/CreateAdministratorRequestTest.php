@@ -16,6 +16,12 @@ class CreateAdministratorRequestTest extends TestCase
         $request->password = 'password123';
         $request->email = 'test@example.com';
         $request->superUser = true;
+        $request->privileges = [
+            'subscribers' => true,
+            'campaigns' => false,
+            'statistics' => true,
+            'settings' => false,
+        ];
 
         $dto = $request->getDto();
 
@@ -23,6 +29,12 @@ class CreateAdministratorRequestTest extends TestCase
         $this->assertEquals('password123', $dto->password);
         $this->assertEquals('test@example.com', $dto->email);
         $this->assertTrue($dto->isSuperUser);
+        $this->assertEquals([
+            'subscribers' => true,
+            'campaigns' => false,
+            'statistics' => true,
+            'settings' => false,
+        ], $dto->privileges);
     }
 
     public function testGetDtoWithDefaultSuperUserValue(): void
@@ -38,5 +50,6 @@ class CreateAdministratorRequestTest extends TestCase
         $this->assertEquals('password123', $dto->password);
         $this->assertEquals('test@example.com', $dto->email);
         $this->assertFalse($dto->isSuperUser);
+        $this->assertEquals([], $dto->privileges);
     }
 }
