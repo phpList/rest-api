@@ -17,6 +17,7 @@ use PhpList\RestBundle\Messaging\Request\CreateMessageRequest;
 use PhpList\RestBundle\Messaging\Request\UpdateMessageRequest;
 use PhpList\RestBundle\Messaging\Serializer\MessageNormalizer;
 use PhpList\RestBundle\Messaging\Service\CampaignService;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -24,9 +25,9 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CampaignServiceTest extends TestCase
 {
-    private MessageManager $messageManager;
-    private PaginatedDataProvider $paginatedProvider;
-    private MessageNormalizer $normalizer;
+    private MessageManager|MockObject $messageManager;
+    private PaginatedDataProvider|MockObject $paginatedProvider;
+    private MessageNormalizer|MockObject $normalizer;
     private CampaignService $campaignService;
 
     protected function setUp(): void
