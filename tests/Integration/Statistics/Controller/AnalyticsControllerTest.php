@@ -224,7 +224,34 @@ class AnalyticsControllerTest extends AbstractTestController
         $response = $this->getDecodedJsonResponseContent();
 
         self::assertIsArray($response);
-        self::assertArrayHasKey('localParts', $response);
+        self::assertArrayHasKey('local_parts', $response);
         self::assertArrayHasKey('total', $response);
+        self::assertIsArray($response['local_parts']);
+        self::assertIsInt($response['total']);
+    }
+
+    public function testGetTopLocalPartsWithLimitParameter(): void
+    {
+        $this->loadFixtures([AdministratorFixture::class, AdministratorTokenFixture::class, SubscriberFixture::class]);
+
+        $this->authenticatedJsonRequest('GET', '/api/v2/analytics/local-parts/top?limit=5');
+        $response = $this->getDecodedJsonResponseContent();
+
+        self::assertIsArray($response);
+        self::assertArrayHasKey('local_parts', $response);
+        self::assertIsArray($response['local_parts']);
+        self::assertLessThanOrEqual(5, count($response['local_parts']));
+    }
+
+    public function testGetTopLocalPartsWithInvalidLimitParameter(): void
+    {
+        $this->loadFixtures([AdministratorFixture::class, AdministratorTokenFixture::class, SubscriberFixture::class]);
+
+        $this->authenticatedJsonRequest('GET', '/api/v2/analytics/local-parts/top?limit=invalid');
+        $response = $this->getDecodedJsonResponseContent();
+
+        self::assertIsArray($response);
+        self::assertArrayHasKey('local_parts', $response);
+        self::assertIsArray($response['local_parts']);
     }
 }

@@ -12,6 +12,7 @@ use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
 use PhpList\RestBundle\Statistics\Serializer\CampaignStatisticsNormalizer;
 use PhpList\RestBundle\Statistics\Serializer\TopDomainsNormalizer;
+use PhpList\RestBundle\Statistics\Serializer\TopLocalPartsNormalizer;
 use PhpList\RestBundle\Statistics\Serializer\ViewOpensStatisticsNormalizer;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,6 +30,7 @@ class AnalyticsController extends BaseController
     private CampaignStatisticsNormalizer $campaignStatsNormalizer;
     private ViewOpensStatisticsNormalizer $viewOpensStatsNormalizer;
     private TopDomainsNormalizer $topDomainsNormalizer;
+    private TopLocalPartsNormalizer $topLocalPartsNormalizer;
 
     public function __construct(
         Authentication $authentication,
@@ -36,13 +38,15 @@ class AnalyticsController extends BaseController
         AnalyticsService $analyticsService,
         CampaignStatisticsNormalizer $campaignStatsNormalizer,
         ViewOpensStatisticsNormalizer $viewOpensStatsNormalizer,
-        TopDomainsNormalizer $topDomainsNormalizer
+        TopDomainsNormalizer $topDomainsNormalizer,
+        TopLocalPartsNormalizer $topLocalPartsNormalizer
     ) {
         parent::__construct($authentication, $validator);
         $this->analyticsService = $analyticsService;
         $this->campaignStatsNormalizer = $campaignStatsNormalizer;
         $this->viewOpensStatsNormalizer = $viewOpensStatsNormalizer;
         $this->topDomainsNormalizer = $topDomainsNormalizer;
+        $this->topLocalPartsNormalizer = $topLocalPartsNormalizer;
     }
 
     #[Route('/campaigns', name: 'campaign_statistics', methods: ['GET'])]
@@ -337,24 +341,7 @@ class AnalyticsController extends BaseController
             new OA\Response(
                 response: 200,
                 description: 'Success',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(
-                            property: 'local_parts',
-                            type: 'array',
-                            items: new OA\Items(
-                                properties: [
-                                    new OA\Property(property: 'local_part', type: 'string'),
-                                    new OA\Property(property: 'count', type: 'integer'),
-                                    new OA\Property(property: 'percentage', type: 'number', format: 'float'),
-                                ],
-                                type: 'object'
-                            )
-                        ),
-                        new OA\Property(property: 'total', type: 'integer'),
-                    ],
-                    type: 'object'
-                )
+                content: new OA\JsonContent(ref: '#/components/schemas/LocalPartsStats')
             ),
             new OA\Response(
                 response: 403,
@@ -373,7 +360,10 @@ class AnalyticsController extends BaseController
         $limit = (int) $request->query->get('limit', 25);
 
         $data = $this->analyticsService->getTopLocalParts($limit);
+        $normalizedData = $this->topLocalPartsNormalizer->normalize($data, null, [
+            'top_local_parts' => true,
+        ]);
 
-        return $this->json($data, Response::HTTP_OK);
+        return $this->json($normalizedData, Response::HTTP_OK);
     }
 }

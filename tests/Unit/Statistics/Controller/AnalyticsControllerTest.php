@@ -12,6 +12,8 @@ use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
 use PhpList\RestBundle\Statistics\Controller\AnalyticsController;
 use PhpList\RestBundle\Statistics\Serializer\CampaignStatisticsNormalizer;
+use PhpList\RestBundle\Statistics\Serializer\TopDomainsNormalizer;
+use PhpList\RestBundle\Statistics\Serializer\TopLocalPartsNormalizer;
 use PhpList\RestBundle\Statistics\Serializer\ViewOpensStatisticsNormalizer;
 use PhpList\RestBundle\Tests\Helpers\DummyAnalyticsController;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -36,12 +38,15 @@ class AnalyticsControllerTest extends TestCase
         $this->analyticsService = $this->createMock(AnalyticsService::class);
         $campaignStatisticsNormalizer = new CampaignStatisticsNormalizer();
         $viewOpensStatisticsNormalizer = new ViewOpensStatisticsNormalizer();
+        $topDomainsNormalizer = new TopDomainsNormalizer();
         $this->controller = new DummyAnalyticsController(
             $this->authentication,
             $validator,
             $this->analyticsService,
             $campaignStatisticsNormalizer,
             $viewOpensStatisticsNormalizer,
+            $topDomainsNormalizer,
+            new TopLocalPartsNormalizer()
         );
 
         $this->privileges = $this->createMock(Privileges::class);
@@ -425,8 +430,16 @@ class AnalyticsControllerTest extends TestCase
 
         $response = $this->controller->getTopLocalParts($request);
 
-        self::assertInstanceOf(JsonResponse::class, $response);
         self::assertEquals(Response::HTTP_OK, $response->getStatusCode());
-        self::assertEquals($expectedData, json_decode($response->getContent(), true));
+        self::assertEquals([
+            'local_parts' => [
+                [
+                    'local_part' => 'info',
+                    'count' => 30,
+                    'percentage' => 60.0,
+                ]
+            ],
+            'total' => 1,
+        ], json_decode($response->getContent(), true));
     }
 }

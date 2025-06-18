@@ -81,3 +81,7 @@ services:
   PhpList\RestBundle\Statistics\Serializer\TopDomainsNormalizer:
     tags: [ 'serializer.normalizer' ]
     autowire: true
+
+  PhpList\RestBundle\Statistics\Serializer\TopLocalPartsNormalizer:
+    tags: [ 'serializer.normalizer' ]
+    autowire: true
