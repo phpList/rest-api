@@ -225,23 +225,7 @@ class AnalyticsController extends BaseController
             new OA\Response(
                 response: 200,
                 description: 'Success',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(
-                            property: 'domains',
-                            type: 'array',
-                            items: new OA\Items(
-                                properties: [
-                                    new OA\Property(property: 'domain', type: 'string'),
-                                    new OA\Property(property: 'subscribers', type: 'integer'),
-                                ],
-                                type: 'object'
-                            )
-                        ),
-                        new OA\Property(property: 'total', type: 'integer'),
-                    ],
-                    type: 'object'
-                )
+                content: new OA\JsonContent(ref: '#/components/schemas/TopDomainStats')
             ),
             new OA\Response(
                 response: 403,
@@ -294,54 +278,7 @@ class AnalyticsController extends BaseController
             new OA\Response(
                 response: 200,
                 description: 'Success',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(
-                            property: 'domains',
-                            type: 'array',
-                            items: new OA\Items(
-                                properties: [
-                                    new OA\Property(property: 'domain', type: 'string'),
-                                    new OA\Property(
-                                        property: 'confirmed',
-                                        properties: [
-                                            new OA\Property(property: 'count', type: 'integer'),
-                                            new OA\Property(property: 'percentage', type: 'number', format: 'float'),
-                                        ],
-                                        type: 'object'
-                                    ),
-                                    new OA\Property(
-                                        property: 'unconfirmed',
-                                        properties: [
-                                            new OA\Property(property: 'count', type: 'integer'),
-                                            new OA\Property(property: 'percentage', type: 'number', format: 'float'),
-                                        ],
-                                        type: 'object'
-                                    ),
-                                    new OA\Property(
-                                        property: 'blacklisted',
-                                        properties: [
-                                            new OA\Property(property: 'count', type: 'integer'),
-                                            new OA\Property(property: 'percentage', type: 'number', format: 'float'),
-                                        ],
-                                        type: 'object'
-                                    ),
-                                    new OA\Property(
-                                        property: 'total',
-                                        properties: [
-                                            new OA\Property(property: 'count', type: 'integer'),
-                                            new OA\Property(property: 'percentage', type: 'number', format: 'float'),
-                                        ],
-                                        type: 'object'
-                                    ),
-                                ],
-                                type: 'object'
-                            )
-                        ),
-                        new OA\Property(property: 'total', type: 'integer'),
-                    ],
-                    type: 'object'
-                )
+                content: new OA\JsonContent(ref: '#/components/schemas/DetailedDomainStats')
             ),
             new OA\Response(
                 response: 403,
@@ -396,11 +333,11 @@ class AnalyticsController extends BaseController
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(
-                            property: 'localParts',
+                            property: 'local_parts',
                             type: 'array',
                             items: new OA\Items(
                                 properties: [
-                                    new OA\Property(property: 'localPart', type: 'string'),
+                                    new OA\Property(property: 'local_part', type: 'string'),
                                     new OA\Property(property: 'count', type: 'integer'),
                                     new OA\Property(property: 'percentage', type: 'number', format: 'float'),
                                 ],

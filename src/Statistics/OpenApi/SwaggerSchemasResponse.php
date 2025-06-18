@@ -34,6 +34,75 @@ use OpenApi\Attributes as OA;
     type: 'object',
     nullable: true
 )]
+#[OA\Schema(
+    schema: 'TopDomainStats',
+    properties: [
+        new OA\Property(
+            property: 'domains',
+            type: 'array',
+            items: new OA\Items(
+                properties: [
+                    new OA\Property(property: 'domain', type: 'string'),
+                    new OA\Property(property: 'subscribers', type: 'integer'),
+                ],
+                type: 'object'
+            )
+        ),
+        new OA\Property(property: 'total', type: 'integer'),
+    ],
+    type: 'object',
+    nullable: true
+)]
+#[OA\Schema(
+    schema: 'DetailedDomainStats',
+    properties: [
+        new OA\Property(
+            property: 'domains',
+            type: 'array',
+            items: new OA\Items(
+                properties: [
+                    new OA\Property(property: 'domain', type: 'string'),
+                    new OA\Property(
+                        property: 'confirmed',
+                        properties: [
+                            new OA\Property(property: 'count', type: 'integer'),
+                            new OA\Property(property: 'percentage', type: 'number', format: 'float'),
+                        ],
+                        type: 'object'
+                    ),
+                    new OA\Property(
+                        property: 'unconfirmed',
+                        properties: [
+                            new OA\Property(property: 'count', type: 'integer'),
+                            new OA\Property(property: 'percentage', type: 'number', format: 'float'),
+                        ],
+                        type: 'object'
+                    ),
+                    new OA\Property(
+                        property: 'blacklisted',
+                        properties: [
+                            new OA\Property(property: 'count', type: 'integer'),
+                            new OA\Property(property: 'percentage', type: 'number', format: 'float'),
+                        ],
+                        type: 'object'
+                    ),
+                    new OA\Property(
+                        property: 'total',
+                        properties: [
+                            new OA\Property(property: 'count', type: 'integer'),
+                            new OA\Property(property: 'percentage', type: 'number', format: 'float'),
+                        ],
+                        type: 'object'
+                    ),
+                ],
+                type: 'object'
+            )
+        ),
+        new OA\Property(property: 'total', type: 'integer'),
+    ],
+    type: 'object',
+    nullable: true
+)]
 class SwaggerSchemasResponse
 {
 }
