@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Validator\Exception\ValidatorException;
 
 class ExceptionListener
@@ -45,6 +46,11 @@ class ExceptionListener
             $response = new JsonResponse([
                 'message' => $exception->getMessage(),
             ], 400);
+            $event->setResponse($response);
+        } elseif ($exception instanceof AccessDeniedException) {
+            $response = new JsonResponse([
+                'message' => $exception->getMessage(),
+            ], 403);
             $event->setResponse($response);
         } elseif ($exception instanceof Exception) {
             $response = new JsonResponse([
