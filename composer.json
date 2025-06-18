@@ -98,7 +98,6 @@
         "symfony-tests-dir": "tests",
         "phplist/core": {
             "bundles": [
-                "FOS\\RestBundle\\FOSRestBundle",
                 "PhpList\\RestBundle\\PhpListRestBundle"
             ],
             "routes": {
