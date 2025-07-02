@@ -6,6 +6,7 @@ namespace PhpList\RestBundle\Identity\Request;
 
 use PhpList\Core\Domain\Identity\Model\Administrator;
 use PhpList\Core\Domain\Identity\Model\Dto\UpdateAdministratorDto;
+use PhpList\Core\Domain\Identity\Model\PrivilegeFlag;
 use PhpList\RestBundle\Common\Request\RequestInterface;
 use PhpList\RestBundle\Identity\Validator\Constraint\UniqueEmail;
 use PhpList\RestBundle\Identity\Validator\Constraint\UniqueLoginName;
@@ -29,6 +30,18 @@ class UpdateAdministratorRequest implements RequestInterface
     #[Assert\Type('bool')]
     public ?bool $superAdmin = null;
 
+    /**
+     * Array of privileges where keys are privilege names (from PrivilegeFlag enum) and values are booleans.
+     * Example: ['subscribers' => true, 'campaigns' => false, 'statistics' => true, 'settings' => false]
+     */
+    #[Assert\Type('array')]
+    #[Assert\All([
+        'constraints' => [
+            new Assert\Type(['type' => 'bool']),
+        ],
+    ])]
+    public array $privileges = [];
+
     public function getDto(): UpdateAdministratorDto
     {
         return new UpdateAdministratorDto(
@@ -37,6 +50,7 @@ class UpdateAdministratorRequest implements RequestInterface
             password: $this->password,
             email: $this->email,
             superAdmin: $this->superAdmin,
+            privileges: $this->privileges
         );
     }
 }

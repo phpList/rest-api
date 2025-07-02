@@ -6,6 +6,7 @@ namespace PhpList\RestBundle\Subscription\Controller;
 
 use Exception;
 use OpenApi\Attributes as OA;
+use PhpList\Core\Domain\Identity\Model\PrivilegeFlag;
 use PhpList\Core\Domain\Subscription\Model\Dto\SubscriberImportOptions;
 use PhpList\Core\Domain\Subscription\Service\SubscriberCsvImporter;
 use PhpList\Core\Security\Authentication;
@@ -106,7 +107,10 @@ class SubscriberImportController extends BaseController
     )]
     public function importSubscribers(Request $request): JsonResponse
     {
-        $this->requireAuthentication($request);
+        $admin = $this->requireAuthentication($request);
+        if (!$admin->getPrivileges()->has(PrivilegeFlag::Subscribers)) {
+            throw $this->createAccessDeniedException('You are not allowed to create subscribers.');
+        }
 
         /** @var UploadedFile|null $file */
         $file = $request->files->get('file');

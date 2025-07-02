@@ -43,6 +43,10 @@ class AdministratorFixture extends Fixture
             $admin->setPasswordHash($row['password']);
             $admin->setDisabled((bool) $row['disabled']);
             $admin->setSuperUser((bool) $row['superuser']);
+            $privileges = unserialize($row['privileges']);
+            if ($privileges) {
+                $admin->setPrivilegesFromArray(unserialize($row['privileges']));
+            }
 
             $manager->persist($admin);
 

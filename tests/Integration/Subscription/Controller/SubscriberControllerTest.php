@@ -149,7 +149,7 @@ class SubscriberControllerTest extends AbstractTestController
         $email = 'subscriber@example.com';
         $jsonData = [
             'email' => $email,
-            'requestConfirmation' => true,
+            'requestConfirmation' => false,
             'blacklisted' => true,
             'htmlEmail' => true,
             'disabled' => true,
@@ -160,7 +160,7 @@ class SubscriberControllerTest extends AbstractTestController
         $responseContent = $this->getDecodedJsonResponseContent();
 
         static::assertSame($email, $responseContent['email']);
-        static::assertFalse($responseContent['confirmed']);
+        static::assertTrue($responseContent['confirmed']);
         static::assertFalse($responseContent['blacklisted']);
         static::assertTrue($responseContent['html_email']);
         static::assertFalse($responseContent['disabled']);

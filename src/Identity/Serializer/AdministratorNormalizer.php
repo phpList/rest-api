@@ -26,6 +26,7 @@ class AdministratorNormalizer implements NormalizerInterface
             'login_name' => $object->getLoginName(),
             'email' => $object->getEmail(),
             'super_admin' => $object->isSuperUser(),
+            'privileges' => $object->getPrivileges()->all(),
             'created_at' => $object->getCreatedAt()?->format(DateTimeInterface::ATOM),
         ];
     }
