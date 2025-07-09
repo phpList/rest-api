@@ -1,8 +1,8 @@
 services:
   PhpList\RestBundle\Common\Validator\RequestValidator:
-    autowire: true
-    autoconfigure: true
-    public: false
+    arguments:
+      $serializer: '@Symfony\Component\Serializer\Normalizer\ObjectNormalizer'
+      $validator: '@validator'
 
   PhpList\RestBundle\Identity\Validator\Constraint\UniqueEmailValidator:
     autowire: true

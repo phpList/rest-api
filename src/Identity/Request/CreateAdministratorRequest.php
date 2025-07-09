@@ -6,7 +6,6 @@ namespace PhpList\RestBundle\Identity\Request;
 
 use PhpList\Core\Domain\Identity\Model\Administrator;
 use PhpList\Core\Domain\Identity\Model\Dto\CreateAdministratorDto;
-use PhpList\Core\Domain\Identity\Model\PrivilegeFlag;
 use PhpList\RestBundle\Common\Request\RequestInterface;
 use PhpList\RestBundle\Identity\Validator\Constraint\UniqueEmail;
 use PhpList\RestBundle\Identity\Validator\Constraint\UniqueLoginName;
