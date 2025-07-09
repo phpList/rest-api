@@ -70,11 +70,12 @@ use OpenApi\Attributes as OA;
             properties: [
                 new OA\Property(property: 'html_formated', type: 'boolean'),
                 new OA\Property(property: 'send_format', type: 'string', example: 'text', nullable: true),
-                new OA\Property(property: 'as_text', type: 'boolean', example: true),
-                new OA\Property(property: 'as_html', type: 'boolean'),
-                new OA\Property(property: 'as_pdf', type: 'boolean'),
-                new OA\Property(property: 'as_text_and_html', type: 'boolean'),
-                new OA\Property(property: 'as_text_and_pdf', type: 'boolean'),
+                new OA\Property(
+                    property: 'format_options',
+                    type: 'array',
+                    items: new OA\Items(type: 'string'),
+                    example: ['as_html', 'as_text'],
+                ),
             ],
             type: 'object'
         ),

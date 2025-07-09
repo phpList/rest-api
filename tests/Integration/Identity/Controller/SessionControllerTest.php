@@ -102,7 +102,7 @@ class SessionControllerTest extends AbstractTestController
 
         $loginName = 'john.doe';
         $password = 'a sandwich and a cup of coffee';
-        $jsonData = ['loginName' => $loginName, 'password' => $password];
+        $jsonData = ['login_name' => $loginName, 'password' => $password];
 
         $this->jsonRequest('post', '/api/v2/sessions', [], [], [], json_encode($jsonData));
 
