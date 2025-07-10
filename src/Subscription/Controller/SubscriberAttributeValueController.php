@@ -48,7 +48,7 @@ class SubscriberAttributeValueController extends BaseController
         methods: ['POST', 'PUT']
     )]
     #[OA\Post(
-        path: '/subscriber/attribute-values/{subscriberId}/{definitionId}',
+        path: '/subscribers/attribute-values/{subscriberId}/{definitionId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Returns created/updated subscriber attribute.',
         summary: 'Create/update a subscriber attribute.',
@@ -134,7 +134,7 @@ class SubscriberAttributeValueController extends BaseController
         methods: ['DELETE']
     )]
     #[OA\Delete(
-        path: '/subscriber/attribute-values/{subscriberId}/{definitionId}',
+        path: '/subscribers/attribute-values/{subscriberId}/{definitionId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Deletes a single subscriber attribute.',
         summary: 'Deletes an attribute.',
