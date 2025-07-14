@@ -87,4 +87,27 @@ class CampaignControllerTest extends AbstractTestController
         $this->authenticatedJsonRequest('DELETE', '/api/v2/campaigns/1');
         $this->assertHttpNoContent();
     }
+    public function testSendMessageWithoutSessionReturnsForbidden(): void
+    {
+        $this->loadFixtures([MessageFixture::class]);
+        self::getClient()->request('POST', '/api/v2/campaigns/1/send');
+        $this->assertHttpForbidden();
+    }
+
+    public function testSendMessageWithValidSessionReturnsOkay(): void
+    {
+        $this->loadFixtures([AdministratorFixture::class, MessageFixture::class]);
+
+        $this->authenticatedJsonRequest('POST', '/api/v2/campaigns/1/send');
+        $this->assertHttpOkay();
+
+        $response = $this->getDecodedJsonResponseContent();
+        self::assertSame(1, $response['id']);
+    }
+
+    public function testSendMessageWithInvalidIdReturnsNotFound(): void
+    {
+        $this->authenticatedJsonRequest('POST', '/api/v2/campaigns/999/send');
+        $this->assertHttpNotFound();
+    }
 }

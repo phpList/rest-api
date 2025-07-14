@@ -6,6 +6,7 @@ namespace PhpList\RestBundle\Messaging\Controller;
 
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Messaging\Model\Message;
+use PhpList\Core\Domain\Messaging\Service\CampaignProcessor;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
@@ -27,14 +28,17 @@ use Symfony\Component\Routing\Attribute\Route;
 class CampaignController extends BaseController
 {
     private CampaignService $campaignService;
+    private CampaignProcessor $campaignProcessor;
 
     public function __construct(
         Authentication $authentication,
         RequestValidator $validator,
         CampaignService $campaignService,
+        CampaignProcessor $campaignProcessor,
     ) {
         parent::__construct($authentication, $validator);
         $this->campaignService = $campaignService;
+        $this->campaignProcessor = $campaignProcessor;
     }
 
     #[Route('', name: 'get_list', methods: ['GET'])]
@@ -339,5 +343,54 @@ class CampaignController extends BaseController
         $this->campaignService->deleteMessage($authUser, $message);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
+    }
+
+    #[Route('/{messageId}/send', name: 'send_campaign', requirements: ['messageId' => '\d+'], methods: ['POST'])]
+    #[OA\Post(
+        path: '/campaigns/{messageId}/send',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
+        'Processes/sends campaign/message by id.',
+        summary: 'Processes/sends campaign/message by id.',
+        tags: ['campaigns'],
+        parameters: [
+            new OA\Parameter(
+                name: 'session',
+                description: 'Session ID obtained from authentication',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(
+                    type: 'string'
+                )
+            ),
+            new OA\Parameter(
+                name: 'messageId',
+                description: 'message ID',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Success',
+                content: new OA\JsonContent(ref: '#/components/schemas/Message')
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
+            )
+        ]
+    )]
+    public function sendMessage(
+        Request $request,
+        #[MapEntity(mapping: ['messageId' => 'id'])] ?Message $message = null
+    ): JsonResponse {
+        $this->requireAuthentication($request);
+
+        $this->campaignProcessor->process($message);
+
+        return $this->json($this->campaignService->getMessage($message), Response::HTTP_OK);
     }
 }
