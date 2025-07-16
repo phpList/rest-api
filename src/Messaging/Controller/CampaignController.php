@@ -43,20 +43,20 @@ class CampaignController extends BaseController
 
     #[Route('', name: 'get_list', methods: ['GET'])]
     #[OA\Get(
-        path: '/campaigns',
+        path: '/api/v2/campaigns',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Returns a JSON list of all campaigns/messages.',
         summary: 'Gets a list of all campaigns.',
         tags: ['campaigns'],
         parameters: [
             new OA\Parameter(
-                name: 'session',
-                description: 'Session ID obtained from authentication',
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
                 in: 'header',
                 required: true,
                 schema: new OA\Schema(
                     type: 'string'
-                )
+                ),
             ),
             new OA\Parameter(
                 name: 'after_id',
@@ -108,15 +108,15 @@ class CampaignController extends BaseController
 
     #[Route('/{messageId}', name: 'get_one', requirements: ['messageId' => '\d+'], methods: ['GET'])]
     #[OA\Get(
-        path: '/campaigns/{messageId}',
+        path: '/api/v2/campaigns/{messageId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Returns campaign/message by id.',
         summary: 'Gets a campaign by id.',
         tags: ['campaigns'],
         parameters: [
             new OA\Parameter(
-                name: 'session',
-                description: 'Session ID obtained from authentication',
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
                 in: 'header',
                 required: true,
                 schema: new OA\Schema(
@@ -155,7 +155,7 @@ class CampaignController extends BaseController
 
     #[Route('', name: 'create', methods: ['POST'])]
     #[OA\Post(
-        path: '/campaigns',
+        path: '/api/v2/campaigns',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Returns created message.',
         summary: 'Create a message for campaign.',
@@ -178,8 +178,8 @@ class CampaignController extends BaseController
         tags: ['campaigns'],
         parameters: [
             new OA\Parameter(
-                name: 'session',
-                description: 'Session ID obtained from authentication',
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
                 in: 'header',
                 required: true,
                 schema: new OA\Schema(
@@ -220,7 +220,7 @@ class CampaignController extends BaseController
 
     #[Route('/{messageId}', name: 'update', requirements: ['messageId' => '\d+'], methods: ['PUT'])]
     #[OA\Put(
-        path: '/campaigns/{messageId}',
+        path: '/api/v2/campaigns/{messageId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Updates campaign/message by id.',
         summary: 'Update campaign by id.',
@@ -242,8 +242,8 @@ class CampaignController extends BaseController
         tags: ['campaigns'],
         parameters: [
             new OA\Parameter(
-                name: 'session',
-                description: 'Session ID obtained from authentication',
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
                 in: 'header',
                 required: true,
                 schema: new OA\Schema(
@@ -293,20 +293,18 @@ class CampaignController extends BaseController
 
     #[Route('/{messageId}', name: 'delete', requirements: ['messageId' => '\d+'], methods: ['DELETE'])]
     #[OA\Delete(
-        path: '/campaigns/{messageId}',
+        path: '/api/v2/campaigns/{messageId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Delete campaign/message by id.',
         summary: 'Delete campaign by id.',
         tags: ['campaigns'],
         parameters: [
             new OA\Parameter(
-                name: 'session',
-                description: 'Session ID obtained from authentication',
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
                 in: 'header',
                 required: true,
-                schema: new OA\Schema(
-                    type: 'string'
-                )
+                schema: new OA\Schema(type: 'string')
             ),
             new OA\Parameter(
                 name: 'messageId',
@@ -347,20 +345,18 @@ class CampaignController extends BaseController
 
     #[Route('/{messageId}/send', name: 'send_campaign', requirements: ['messageId' => '\d+'], methods: ['POST'])]
     #[OA\Post(
-        path: '/campaigns/{messageId}/send',
+        path: '/api/v2/campaigns/{messageId}/send',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
         'Processes/sends campaign/message by id.',
         summary: 'Processes/sends campaign/message by id.',
         tags: ['campaigns'],
         parameters: [
             new OA\Parameter(
-                name: 'session',
-                description: 'Session ID obtained from authentication',
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
                 in: 'header',
                 required: true,
-                schema: new OA\Schema(
-                    type: 'string'
-                )
+                schema: new OA\Schema(type: 'string')
             ),
             new OA\Parameter(
                 name: 'messageId',
@@ -388,6 +384,9 @@ class CampaignController extends BaseController
         #[MapEntity(mapping: ['messageId' => 'id'])] ?Message $message = null
     ): JsonResponse {
         $this->requireAuthentication($request);
+        if ($message === null) {
+            throw $this->createNotFoundException('Campaign not found.');
+        }
 
         $this->campaignProcessor->process($message);
 

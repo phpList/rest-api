@@ -34,7 +34,7 @@ class SubscriberImportController extends BaseController
 
     #[Route('/import', name: 'csv', methods: ['POST'])]
     #[OA\Post(
-        path: '/subscribers/import',
+        path: '/api/v2/subscribers/import',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Import subscribers from CSV file.',
         summary: 'Import subscribers',
@@ -70,8 +70,8 @@ class SubscriberImportController extends BaseController
         tags: ['subscribers'],
         parameters: [
             new OA\Parameter(
-                name: 'session',
-                description: 'Session ID obtained from authentication',
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
                 in: 'header',
                 required: true,
                 schema: new OA\Schema(type: 'string')

@@ -46,20 +46,18 @@ class TemplateController extends BaseController
 
     #[Route('', name: 'get_list', methods: ['GET'])]
     #[OA\Get(
-        path: '/templates',
+        path: '/api/v2/templates',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Returns a JSON list of all templates.',
         summary: 'Gets a list of all templates.',
         tags: ['templates'],
         parameters: [
             new OA\Parameter(
-                name: 'session',
-                description: 'Session ID obtained from authentication',
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
                 in: 'header',
                 required: true,
-                schema: new OA\Schema(
-                    type: 'string'
-                )
+                schema: new OA\Schema(type: 'string')
             ),
             new OA\Parameter(
                 name: 'after_id',
@@ -115,20 +113,18 @@ class TemplateController extends BaseController
 
     #[Route('/{templateId}', name: 'get_one', requirements: ['templateId' => '\d+'], methods: ['GET'])]
     #[OA\Get(
-        path: '/templates/{templateId}',
+        path: '/api/v2/templates/{templateId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Returns template by id.',
         summary: 'Gets a templateI by id.',
         tags: ['templates'],
         parameters: [
             new OA\Parameter(
-                name: 'session',
-                description: 'Session ID obtained from authentication',
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
                 in: 'header',
                 required: true,
-                schema: new OA\Schema(
-                    type: 'string'
-                )
+                schema: new OA\Schema(type: 'string')
             ),
             new OA\Parameter(
                 name: 'templateId',
@@ -171,7 +167,7 @@ class TemplateController extends BaseController
 
     #[Route('', name: 'create', methods: ['POST'])]
     #[OA\Post(
-        path: '/templates',
+        path: '/api/v2/templates',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Returns a JSON response of created template.',
         summary: 'Create a new template.',
@@ -230,14 +226,12 @@ class TemplateController extends BaseController
         tags: ['templates'],
         parameters: [
             new OA\Parameter(
-                name: 'session',
-                description: 'Session ID obtained from authentication',
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
                 in: 'header',
                 required: true,
-                schema: new OA\Schema(
-                    type: 'string'
-                )
-            )
+                schema: new OA\Schema(type: 'string')
+            ),
         ],
         responses: [
             new OA\Response(
@@ -275,15 +269,15 @@ class TemplateController extends BaseController
 
     #[Route('/{templateId}', name: 'delete', requirements: ['templateId' => '\d+'], methods: ['DELETE'])]
     #[OA\Delete(
-        path: '/templates/{templateId}',
+        path: '/api/v2/templates/{templateId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Deletes template by id.',
         summary: 'Deletes a template.',
         tags: ['templates'],
         parameters: [
             new OA\Parameter(
-                name: 'session',
-                description: 'Session ID',
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
                 in: 'header',
                 required: true,
                 schema: new OA\Schema(type: 'string')

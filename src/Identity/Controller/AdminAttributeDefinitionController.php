@@ -42,7 +42,7 @@ class AdminAttributeDefinitionController extends BaseController
 
     #[Route('', name: 'create', methods: ['POST'])]
     #[OA\Post(
-        path: '/administrators/attributes',
+        path: '/api/v2/administrators/attributes',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Returns created admin attribute definition.',
         summary: 'Create an admin attribute definition.',
@@ -54,8 +54,8 @@ class AdminAttributeDefinitionController extends BaseController
         tags: ['admin-attributes'],
         parameters: [
             new OA\Parameter(
-                name: 'session',
-                description: 'Session ID obtained from authentication',
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
                 in: 'header',
                 required: true,
                 schema: new OA\Schema(
@@ -96,7 +96,7 @@ class AdminAttributeDefinitionController extends BaseController
 
     #[Route('/{definitionId}', name: 'update', requirements: ['definitionId' => '\d+'], methods: ['PUT'])]
     #[OA\Put(
-        path: '/administrators/attributes/{definitionId}',
+        path: '/api/v2/administrators/attributes/{definitionId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Returns updated admin attribute definition.',
         summary: 'Update an admin attribute definition.',
@@ -115,8 +115,8 @@ class AdminAttributeDefinitionController extends BaseController
                 schema: new OA\Schema(type: 'string')
             ),
             new OA\Parameter(
-                name: 'session',
-                description: 'Session ID obtained from authentication',
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
                 in: 'header',
                 required: true,
                 schema: new OA\Schema(type: 'string')
@@ -163,15 +163,15 @@ class AdminAttributeDefinitionController extends BaseController
 
     #[Route('/{definitionId}', name: 'delete', requirements: ['definitionId' => '\d+'], methods: ['DELETE'])]
     #[OA\Delete(
-        path: '/administrators/attributes/{definitionId}',
+        path: '/api/v2/administrators/attributes/{definitionId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Deletes a single admin attribute definition.',
         summary: 'Deletes an attribute definition.',
         tags: ['admin-attributes'],
         parameters: [
             new OA\Parameter(
-                name: 'session',
-                description: 'Session ID',
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
                 in: 'header',
                 required: true,
                 schema: new OA\Schema(type: 'string')
@@ -217,20 +217,18 @@ class AdminAttributeDefinitionController extends BaseController
 
     #[Route('', name: 'get_lists', methods: ['GET'])]
     #[OA\Get(
-        path: '/administrators/attributes',
+        path: '/api/v2/administrators/attributes',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Returns a JSON list of all admin attribute definitions.',
         summary: 'Gets a list of all admin attribute definitions.',
         tags: ['admin-attributes'],
         parameters: [
             new OA\Parameter(
-                name: 'session',
-                description: 'Session ID obtained from authentication',
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
                 in: 'header',
                 required: true,
-                schema: new OA\Schema(
-                    type: 'string'
-                )
+                schema: new OA\Schema(type: 'string')
             ),
             new OA\Parameter(
                 name: 'after_id',
@@ -286,7 +284,7 @@ class AdminAttributeDefinitionController extends BaseController
 
     #[Route('/{definitionId}', name: 'get_one', requirements: ['definitionId' => '\d+'], methods: ['GET'])]
     #[OA\Get(
-        path: '/administrators/attributes/{definitionId}',
+        path: '/api/v2/administrators/attributes/{definitionId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Returns a single attribute with specified ID.',
         summary: 'Gets attribute with specified ID.',
@@ -300,8 +298,8 @@ class AdminAttributeDefinitionController extends BaseController
                 schema: new OA\Schema(type: 'string')
             ),
             new OA\Parameter(
-                name: 'session',
-                description: 'Session ID obtained from authentication',
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
                 in: 'header',
                 required: true,
                 schema: new OA\Schema(type: 'string')

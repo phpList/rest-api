@@ -30,7 +30,7 @@ class SubscriberExportController extends BaseController
 
     #[Route('/export', name: 'csv', methods: ['POST'])]
     #[OA\Post(
-        path: '/subscribers/export',
+        path: '/api/v2/subscribers/export',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Export subscribers to CSV file.',
         summary: 'Export subscribers',
@@ -42,8 +42,8 @@ class SubscriberExportController extends BaseController
         tags: ['subscribers'],
         parameters: [
             new OA\Parameter(
-                name: 'session',
-                description: 'Session ID obtained from authentication',
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
                 in: 'header',
                 required: true,
                 schema: new OA\Schema(type: 'string')
