@@ -42,13 +42,13 @@ class SubscriberAttributeValueController extends BaseController
     }
 
     #[Route(
-        path: '/{subscriberId}/{definitionId}',
+        path: '/api/v2/{subscriberId}/{definitionId}',
         name: 'create',
         requirements: ['subscriberId' => '\d+', 'definitionId' => '\d+'],
         methods: ['POST', 'PUT']
     )]
     #[OA\Post(
-        path: '/subscribers/attribute-values/{subscriberId}/{definitionId}',
+        path: '/api/v2/subscribers/attribute-values/{subscriberId}/{definitionId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Returns created/updated subscriber attribute.',
         summary: 'Create/update a subscriber attribute.',
@@ -64,8 +64,8 @@ class SubscriberAttributeValueController extends BaseController
         tags: ['subscriber-attributes'],
         parameters: [
             new OA\Parameter(
-                name: 'session',
-                description: 'Session ID obtained from authentication',
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
                 in: 'header',
                 required: true,
                 schema: new OA\Schema(type: 'string')
@@ -128,21 +128,21 @@ class SubscriberAttributeValueController extends BaseController
     }
 
     #[Route(
-        path: '/{subscriberId}/{definitionId}',
+        path: '/api/v2/{subscriberId}/{definitionId}',
         name: 'delete',
         requirements: ['subscriberId' => '\d+', 'definitionId' => '\d+'],
         methods: ['DELETE']
     )]
     #[OA\Delete(
-        path: '/subscribers/attribute-values/{subscriberId}/{definitionId}',
+        path: '/api/v2/subscribers/attribute-values/{subscriberId}/{definitionId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Deletes a single subscriber attribute.',
         summary: 'Deletes an attribute.',
         tags: ['subscriber-attributes'],
         parameters: [
             new OA\Parameter(
-                name: 'session',
-                description: 'Session ID',
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
                 in: 'header',
                 required: true,
                 schema: new OA\Schema(type: 'string')
@@ -199,15 +199,15 @@ class SubscriberAttributeValueController extends BaseController
 
     #[Route('/{subscriberId}', name: 'get_list', requirements: ['subscriberId' => '\d+'], methods: ['GET'])]
     #[OA\Get(
-        path: '/subscribers/attribute-values/{subscriberId}',
+        path: '/api/v2/subscribers/attribute-values/{subscriberId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Returns a JSON list of all subscriber attributes.',
         summary: 'Gets a list of all subscriber attributes.',
         tags: ['subscriber-attributes'],
         parameters: [
             new OA\Parameter(
-                name: 'session',
-                description: 'Session ID obtained from authentication',
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
                 in: 'header',
                 required: true,
                 schema: new OA\Schema(type: 'string')
@@ -277,13 +277,13 @@ class SubscriberAttributeValueController extends BaseController
     }
 
     #[Route(
-        path: '/{subscriberId}/{definitionId}',
+        path: '/api/v2/{subscriberId}/{definitionId}',
         name: 'get_one',
         requirements: ['subscriberId' => '\d+', 'definitionId' => '\d+'],
         methods: ['GET']
     )]
     #[OA\Get(
-        path: '/subscribers/attribute-values/{subscriberId}/{definitionId}',
+        path: '/api/v2/subscribers/attribute-values/{subscriberId}/{definitionId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Returns a single attribute.',
         summary: 'Gets subscriber attribute.',
@@ -304,8 +304,8 @@ class SubscriberAttributeValueController extends BaseController
                 schema: new OA\Schema(type: 'integer')
             ),
             new OA\Parameter(
-                name: 'session',
-                description: 'Session ID obtained from authentication',
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
                 in: 'header',
                 required: true,
                 schema: new OA\Schema(type: 'string')

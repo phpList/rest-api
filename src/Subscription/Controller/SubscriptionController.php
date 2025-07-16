@@ -42,7 +42,7 @@ class SubscriptionController extends BaseController
 
     #[Route('/{listId}/subscribers', name: 'create', requirements: ['listId' => '\d+'], methods: ['POST'])]
     #[OA\Post(
-        path: '/lists/{listId}/subscribers',
+        path: '/api/v2/lists/{listId}/subscribers',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Subscribe subscriber to a list.',
         summary: 'Create subscription',
@@ -64,8 +64,8 @@ class SubscriptionController extends BaseController
         tags: ['subscriptions'],
         parameters: [
             new OA\Parameter(
-                name: 'session',
-                description: 'Session ID obtained from authentication',
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
                 in: 'header',
                 required: true,
                 schema: new OA\Schema(type: 'string')
@@ -134,15 +134,15 @@ class SubscriptionController extends BaseController
 
     #[Route('/{listId}/subscribers', name: 'delete', requirements: ['listId' => '\d+'], methods: ['DELETE'])]
     #[OA\Delete(
-        path: '/lists/{listId}/subscribers',
+        path: '/api/v2/lists/{listId}/subscribers',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Delete subscription.',
         summary: 'Delete subscription',
         tags: ['subscriptions'],
         parameters: [
             new OA\Parameter(
-                name: 'session',
-                description: 'Session ID obtained from authentication',
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
                 in: 'header',
                 required: true,
                 schema: new OA\Schema(type: 'string')
