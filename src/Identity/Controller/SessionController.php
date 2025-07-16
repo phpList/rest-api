@@ -42,7 +42,7 @@ class SessionController extends BaseController
 
     #[Route('', name: 'create', methods: ['POST'])]
     #[OA\Post(
-        path: '/api/v2/sessions',
+        path: '/sessions',
         description: '✅ **Status: Stable** – This method is stable and safe for production use. ' .
             'Given valid login data, this will generate a login token that will be valid for 1 hour.',
         summary: 'Log in or create new session.',
@@ -111,26 +111,19 @@ class SessionController extends BaseController
      */
     #[Route('/{sessionId}', name: 'delete', requirements: ['sessionId' => '\d+'], methods: ['DELETE'])]
     #[OA\Delete(
-        path: '/api/v2/sessions/{sessionId}',
+        path: '/sessions/{sessionId}',
         description: '✅ **Status: Stable** – This method is stable and safe for production use. ' .
             'Delete the session passed as a parameter.',
         summary: 'Delete a session.',
         tags: ['sessions'],
         parameters: [
             new OA\Parameter(
-                name: 'php-auth-pw',
-                description: 'Session key obtained from login',
-                in: 'header',
-                required: true,
-                schema: new OA\Schema(type: 'string')
-            ),
-            new OA\Parameter(
                 name: 'sessionId',
-                description: 'Session id (not key as for authentication) obtained from login',
+                description: 'Session ID',
                 in: 'path',
                 required: true,
                 schema: new OA\Schema(type: 'string')
-            ),
+            )
         ],
         responses: [
             new OA\Response(

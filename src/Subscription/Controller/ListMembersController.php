@@ -38,15 +38,15 @@ class ListMembersController extends BaseController
 
     #[Route('/{listId}/subscribers', name: 'get_list', requirements: ['listId' => '\d+'], methods: ['GET'])]
     #[OA\Get(
-        path: '/api/v2/lists/{listId}/subscribers',
+        path: '/lists/{listId}/subscribers',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Returns a JSON list of all subscribers for a subscriber list.',
         summary: 'Gets a list of all subscribers of a subscriber list.',
         tags: ['subscriptions'],
         parameters: [
             new OA\Parameter(
-                name: 'php-auth-pw',
-                description: 'Session key obtained from login',
+                name: 'session',
+                description: 'Session ID obtained from authentication',
                 in: 'header',
                 required: true,
                 schema: new OA\Schema(type: 'string')
@@ -124,15 +124,15 @@ class ListMembersController extends BaseController
 
     #[Route('/{listId}/subscribers/count', name: 'get_count', requirements: ['listId' => '\d+'], methods: ['GET'])]
     #[OA\Get(
-        path: '/api/v2/lists/{listId}/count',
+        path: '/lists/{listId}/count',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Returns a count of all subscribers in a given list.',
         summary: 'Gets the total number of subscribers of a list',
         tags: ['subscriptions'],
         parameters: [
             new OA\Parameter(
-                name: 'php-auth-pw',
-                description: 'Session key obtained from login',
+                name: 'session',
+                description: 'Session ID obtained from authentication',
                 in: 'header',
                 required: true,
                 schema: new OA\Schema(type: 'string')

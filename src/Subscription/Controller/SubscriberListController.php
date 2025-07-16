@@ -48,18 +48,20 @@ class SubscriberListController extends BaseController
 
     #[Route('', name: 'get_list', methods: ['GET'])]
     #[OA\Get(
-        path: '/api/v2/lists',
+        path: '/lists',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Returns a JSON list of all subscriber lists.',
         summary: 'Gets a list of all subscriber lists.',
         tags: ['lists'],
         parameters: [
             new OA\Parameter(
-                name: 'php-auth-pw',
-                description: 'Session key obtained from login',
+                name: 'session',
+                description: 'Session ID obtained from authentication',
                 in: 'header',
                 required: true,
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(
+                    type: 'string'
+                )
             ),
             new OA\Parameter(
                 name: 'after_id',
@@ -111,7 +113,7 @@ class SubscriberListController extends BaseController
 
     #[Route('/{listId}', name: 'get_one', requirements: ['listId' => '\d+'], methods: ['GET'])]
     #[OA\Get(
-        path: '/api/v2/lists/{listId}',
+        path: '/lists/{listId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Returns a single subscriber list with specified ID.',
         summary: 'Gets a subscriber list.',
@@ -125,8 +127,8 @@ class SubscriberListController extends BaseController
                 schema: new OA\Schema(type: 'string')
             ),
             new OA\Parameter(
-                name: 'php-auth-pw',
-                description: 'Session key obtained from login',
+                name: 'session',
+                description: 'Session ID obtained from authentication',
                 in: 'header',
                 required: true,
                 schema: new OA\Schema(type: 'string')
@@ -174,15 +176,15 @@ class SubscriberListController extends BaseController
 
     #[Route('/{listId}', name: 'delete', requirements: ['listId' => '\d+'], methods: ['DELETE'])]
     #[OA\Delete(
-        path: '/api/v2/lists/{listId}',
+        path: '/lists/{listId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Deletes a single subscriber list.',
         summary: 'Deletes a list.',
         tags: ['lists'],
         parameters: [
             new OA\Parameter(
-                name: 'php-auth-pw',
-                description: 'Session key obtained from login',
+                name: 'session',
+                description: 'Session ID',
                 in: 'header',
                 required: true,
                 schema: new OA\Schema(type: 'string')
@@ -229,7 +231,7 @@ class SubscriberListController extends BaseController
 
     #[Route('', name: 'create', methods: ['POST'])]
     #[OA\Post(
-        path: '/api/v2/lists',
+        path: '/lists',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Returns created list.',
         summary: 'Create a subscriber list.',
@@ -241,12 +243,14 @@ class SubscriberListController extends BaseController
         tags: ['lists'],
         parameters: [
             new OA\Parameter(
-                name: 'php-auth-pw',
-                description: 'Session key obtained from login',
+                name: 'session',
+                description: 'Session ID obtained from authentication',
                 in: 'header',
                 required: true,
-                schema: new OA\Schema(type: 'string')
-            ),
+                schema: new OA\Schema(
+                    type: 'string'
+                )
+            )
         ],
         responses: [
             new OA\Response(

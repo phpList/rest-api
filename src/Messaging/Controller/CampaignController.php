@@ -43,20 +43,20 @@ class CampaignController extends BaseController
 
     #[Route('', name: 'get_list', methods: ['GET'])]
     #[OA\Get(
-        path: '/api/v2/campaigns',
+        path: '/campaigns',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Returns a JSON list of all campaigns/messages.',
         summary: 'Gets a list of all campaigns.',
         tags: ['campaigns'],
         parameters: [
             new OA\Parameter(
-                name: 'php-auth-pw',
-                description: 'Session key obtained from login',
+                name: 'session',
+                description: 'Session ID obtained from authentication',
                 in: 'header',
                 required: true,
                 schema: new OA\Schema(
                     type: 'string'
-                ),
+                )
             ),
             new OA\Parameter(
                 name: 'after_id',
@@ -108,15 +108,15 @@ class CampaignController extends BaseController
 
     #[Route('/{messageId}', name: 'get_one', requirements: ['messageId' => '\d+'], methods: ['GET'])]
     #[OA\Get(
-        path: '/api/v2/campaigns/{messageId}',
+        path: '/campaigns/{messageId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Returns campaign/message by id.',
         summary: 'Gets a campaign by id.',
         tags: ['campaigns'],
         parameters: [
             new OA\Parameter(
-                name: 'php-auth-pw',
-                description: 'Session key obtained from login',
+                name: 'session',
+                description: 'Session ID obtained from authentication',
                 in: 'header',
                 required: true,
                 schema: new OA\Schema(
@@ -155,7 +155,7 @@ class CampaignController extends BaseController
 
     #[Route('', name: 'create', methods: ['POST'])]
     #[OA\Post(
-        path: '/api/v2/campaigns',
+        path: '/campaigns',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Returns created message.',
         summary: 'Create a message for campaign.',
@@ -178,8 +178,8 @@ class CampaignController extends BaseController
         tags: ['campaigns'],
         parameters: [
             new OA\Parameter(
-                name: 'php-auth-pw',
-                description: 'Session key obtained from login',
+                name: 'session',
+                description: 'Session ID obtained from authentication',
                 in: 'header',
                 required: true,
                 schema: new OA\Schema(
@@ -220,7 +220,7 @@ class CampaignController extends BaseController
 
     #[Route('/{messageId}', name: 'update', requirements: ['messageId' => '\d+'], methods: ['PUT'])]
     #[OA\Put(
-        path: '/api/v2/campaigns/{messageId}',
+        path: '/campaigns/{messageId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Updates campaign/message by id.',
         summary: 'Update campaign by id.',
@@ -242,8 +242,8 @@ class CampaignController extends BaseController
         tags: ['campaigns'],
         parameters: [
             new OA\Parameter(
-                name: 'php-auth-pw',
-                description: 'Session key obtained from login',
+                name: 'session',
+                description: 'Session ID obtained from authentication',
                 in: 'header',
                 required: true,
                 schema: new OA\Schema(
@@ -293,18 +293,20 @@ class CampaignController extends BaseController
 
     #[Route('/{messageId}', name: 'delete', requirements: ['messageId' => '\d+'], methods: ['DELETE'])]
     #[OA\Delete(
-        path: '/api/v2/campaigns/{messageId}',
+        path: '/campaigns/{messageId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Delete campaign/message by id.',
         summary: 'Delete campaign by id.',
         tags: ['campaigns'],
         parameters: [
             new OA\Parameter(
-                name: 'php-auth-pw',
-                description: 'Session key obtained from login',
+                name: 'session',
+                description: 'Session ID obtained from authentication',
                 in: 'header',
                 required: true,
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(
+                    type: 'string'
+                )
             ),
             new OA\Parameter(
                 name: 'messageId',
@@ -345,18 +347,20 @@ class CampaignController extends BaseController
 
     #[Route('/{messageId}/send', name: 'send_campaign', requirements: ['messageId' => '\d+'], methods: ['POST'])]
     #[OA\Post(
-        path: '/api/v2/campaigns/{messageId}/send',
+        path: '/campaigns/{messageId}/send',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
         'Processes/sends campaign/message by id.',
         summary: 'Processes/sends campaign/message by id.',
         tags: ['campaigns'],
         parameters: [
             new OA\Parameter(
-                name: 'php-auth-pw',
-                description: 'Session key obtained from login',
+                name: 'session',
+                description: 'Session ID obtained from authentication',
                 in: 'header',
                 required: true,
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(
+                    type: 'string'
+                )
             ),
             new OA\Parameter(
                 name: 'messageId',

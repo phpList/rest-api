@@ -51,18 +51,20 @@ class AnalyticsController extends BaseController
 
     #[Route('/campaigns', name: 'campaign_statistics', methods: ['GET'])]
     #[OA\Get(
-        path: '/api/v2/analytics/campaigns',
+        path: '/analytics/campaigns',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Returns statistics overview for campaigns.',
         summary: 'Gets campaign statistics.',
         tags: ['analytics'],
         parameters: [
             new OA\Parameter(
-                name: 'php-auth-pw',
-                description: 'Session key obtained from login',
+                name: 'session',
+                description: 'Session ID obtained from authentication',
                 in: 'header',
                 required: true,
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(
+                    type: 'string'
+                )
             ),
             new OA\Parameter(
                 name: 'limit',
@@ -123,18 +125,20 @@ class AnalyticsController extends BaseController
 
     #[Route('/view-opens', name: 'view_opens_statistics', methods: ['GET'])]
     #[OA\Get(
-        path: '/api/v2/analytics/view-opens',
+        path: '/analytics/view-opens',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Returns statistics for view opens.',
         summary: 'Gets view opens statistics.',
         tags: ['analytics'],
         parameters: [
             new OA\Parameter(
-                name: 'php-auth-pw',
-                description: 'Session key obtained from login',
+                name: 'session',
+                description: 'Session ID obtained from authentication',
                 in: 'header',
                 required: true,
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(
+                    type: 'string'
+                )
             ),
             new OA\Parameter(
                 name: 'limit',
@@ -195,18 +199,20 @@ class AnalyticsController extends BaseController
 
     #[Route('/domains/top', name: 'top_domains', methods: ['GET'])]
     #[OA\Get(
-        path: '/api/v2/analytics/domains/top',
+        path: '/analytics/domains/top',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Returns statistics for the top domains with more than 5 subscribers.',
         summary: 'Gets top domains statistics.',
         tags: ['analytics'],
         parameters: [
             new OA\Parameter(
-                name: 'php-auth-pw',
-                description: 'Session key obtained from login',
+                name: 'session',
+                description: 'Session ID obtained from authentication',
                 in: 'header',
                 required: true,
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(
+                    type: 'string'
+                )
             ),
             new OA\Parameter(
                 name: 'limit',
@@ -256,18 +262,20 @@ class AnalyticsController extends BaseController
 
     #[Route('/domains/confirmation', name: 'domain_confirmation_statistics', methods: ['GET'])]
     #[OA\Get(
-        path: '/api/v2/analytics/domains/confirmation',
+        path: '/analytics/domains/confirmation',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Returns statistics for domains showing confirmation status.',
         summary: 'Gets domain confirmation statistics.',
         tags: ['analytics'],
         parameters: [
             new OA\Parameter(
-                name: 'php-auth-pw',
-                description: 'Session key obtained from login',
+                name: 'session',
+                description: 'Session ID obtained from authentication',
                 in: 'header',
                 required: true,
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(
+                    type: 'string'
+                )
             ),
             new OA\Parameter(
                 name: 'limit',
@@ -306,18 +314,20 @@ class AnalyticsController extends BaseController
 
     #[Route('/local-parts/top', name: 'top_local_parts', methods: ['GET'])]
     #[OA\Get(
-        path: '/api/v2/analytics/local-parts/top',
+        path: '/analytics/local-parts/top',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Returns statistics for the top local-parts of email addresses.',
         summary: 'Gets top local-parts statistics.',
         tags: ['analytics'],
         parameters: [
             new OA\Parameter(
-                name: 'php-auth-pw',
-                description: 'Session key obtained from login',
+                name: 'session',
+                description: 'Session ID obtained from authentication',
                 in: 'header',
                 required: true,
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(
+                    type: 'string'
+                )
             ),
             new OA\Parameter(
                 name: 'limit',

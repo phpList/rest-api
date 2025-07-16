@@ -45,18 +45,20 @@ class AdministratorController extends BaseController
 
     #[Route('', name: 'get_list', methods: ['GET'])]
     #[OA\Get(
-        path: '/api/v2/administrators',
+        path: '/administrators',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Get list of administrators.',
         summary: 'Get Administrators',
         tags: ['administrators'],
         parameters: [
             new OA\Parameter(
-                name: 'php-auth-pw',
-                description: 'Session key obtained from login',
+                name: 'session',
+                description: 'Session ID obtained from authentication',
                 in: 'header',
                 required: true,
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(
+                    type: 'string'
+                )
             ),
             new OA\Parameter(
                 name: 'after_id',
@@ -107,7 +109,7 @@ class AdministratorController extends BaseController
 
     #[Route('', name: 'create', methods: ['POST'])]
     #[OA\Post(
-        path: '/api/v2/administrators',
+        path: '/administrators',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Create a new administrator.',
         summary: 'Create Administrator',
@@ -117,15 +119,6 @@ class AdministratorController extends BaseController
             content: new OA\JsonContent(ref: '#/components/schemas/CreateAdministratorRequest')
         ),
         tags: ['administrators'],
-        parameters: [
-            new OA\Parameter(
-                name: 'php-auth-pw',
-                description: 'Session key obtained from login',
-                in: 'header',
-                required: true,
-                schema: new OA\Schema(type: 'string')
-            ),
-        ],
         responses: [
             new OA\Response(
                 response: 201,
@@ -156,7 +149,7 @@ class AdministratorController extends BaseController
 
     #[Route('/{administratorId}', name: 'get_one', requirements: ['administratorId' => '\d+'], methods: ['GET'])]
     #[OA\Get(
-        path: '/api/v2/administrators/{administratorId}',
+        path: '/administrators/{administratorId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Get administrator by ID.',
         summary: 'Get Administrator',
@@ -168,14 +161,7 @@ class AdministratorController extends BaseController
                 in: 'path',
                 required: true,
                 schema: new OA\Schema(type: 'integer')
-            ),
-            new OA\Parameter(
-                name: 'php-auth-pw',
-                description: 'Session key obtained from login',
-                in: 'header',
-                required: true,
-                schema: new OA\Schema(type: 'string')
-            ),
+            )
         ],
         responses: [
             new OA\Response(
@@ -205,7 +191,7 @@ class AdministratorController extends BaseController
 
     #[Route('/{administratorId}', name: 'update', requirements: ['administratorId' => '\d+'], methods: ['PUT'])]
     #[OA\Put(
-        path: '/api/v2/administrators/{administratorId}',
+        path: '/administrators/{administratorId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Update an administrator.',
         summary: 'Update Administrator',
@@ -222,14 +208,7 @@ class AdministratorController extends BaseController
                 in: 'path',
                 required: true,
                 schema: new OA\Schema(type: 'integer')
-            ),
-            new OA\Parameter(
-                name: 'php-auth-pw',
-                description: 'Session key obtained from login',
-                in: 'header',
-                required: true,
-                schema: new OA\Schema(type: 'string')
-            ),
+            )
         ],
         responses: [
             new OA\Response(
@@ -260,7 +239,7 @@ class AdministratorController extends BaseController
 
     #[Route('/{administratorId}', name: 'delete', requirements: ['administratorId' => '\d+'], methods: ['DELETE'])]
     #[OA\Delete(
-        path: '/api/v2/administrators/{administratorId}',
+        path: '/administrators/{administratorId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Delete an administrator.',
         summary: 'Delete Administrator',
@@ -272,14 +251,7 @@ class AdministratorController extends BaseController
                 in: 'path',
                 required: true,
                 schema: new OA\Schema(type: 'integer')
-            ),
-            new OA\Parameter(
-                name: 'php-auth-pw',
-                description: 'Session key obtained from login',
-                in: 'header',
-                required: true,
-                schema: new OA\Schema(type: 'string')
-            ),
+            )
         ],
         responses: [
             new OA\Response(

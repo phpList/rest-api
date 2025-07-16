@@ -46,7 +46,7 @@ class SubscriberController extends BaseController
 
     #[Route('', name: 'create', methods: ['POST'])]
     #[OA\Post(
-        path: '/api/v2/subscribers',
+        path: '/subscribers',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Creates a new subscriber (if there is no subscriber with the given email address yet).',
         summary: 'Create a subscriber',
@@ -58,8 +58,8 @@ class SubscriberController extends BaseController
         tags: ['subscribers'],
         parameters: [
             new OA\Parameter(
-                name: 'php-auth-pw',
-                description: 'Session key obtained from login',
+                name: 'session',
+                description: 'Session ID obtained from authentication',
                 in: 'header',
                 required: true,
                 schema: new OA\Schema(type: 'string')
@@ -107,7 +107,7 @@ class SubscriberController extends BaseController
 
     #[Route('/{subscriberId}', name: 'update', requirements: ['subscriberId' => '\d+'], methods: ['PUT'])]
     #[OA\Put(
-        path: '/api/v2/subscribers/{subscriberId}',
+        path: '/subscribers/{subscriberId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Update subscriber data by id.',
         summary: 'Update subscriber',
@@ -119,8 +119,8 @@ class SubscriberController extends BaseController
         tags: ['subscribers'],
         parameters: [
             new OA\Parameter(
-                name: 'php-auth-pw',
-                description: 'Session key obtained from login',
+                name: 'session',
+                description: 'Session ID obtained from authentication',
                 in: 'header',
                 required: true,
                 schema: new OA\Schema(type: 'string')
@@ -177,15 +177,15 @@ class SubscriberController extends BaseController
 
     #[Route('/{subscriberId}', name: 'get_one', requirements: ['subscriberId' => '\d+'], methods: ['GET'])]
     #[OA\Get(
-        path: '/api/v2/subscribers/{subscriberId}',
+        path: '/subscribers/{subscriberId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Get subscriber data by id.',
         summary: 'Get a subscriber',
         tags: ['subscribers'],
         parameters: [
             new OA\Parameter(
-                name: 'php-auth-pw',
-                description: 'Session key obtained from login',
+                name: 'session',
+                description: 'Session ID obtained from authentication',
                 in: 'header',
                 required: true,
                 schema: new OA\Schema(type: 'string')
@@ -227,15 +227,15 @@ class SubscriberController extends BaseController
 
     #[Route('/{subscriberId}', name: 'delete', requirements: ['subscriberId' => '\d+'], methods: ['DELETE'])]
     #[OA\Delete(
-        path: '/api/v2/subscribers/{subscriberId}',
+        path: '/subscribers/{subscriberId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Delete subscriber by id.',
         summary: 'Delete subscriber',
         tags: ['subscribers'],
         parameters: [
             new OA\Parameter(
-                name: 'php-auth-pw',
-                description: 'Session key obtained from login',
+                name: 'session',
+                description: 'Session ID obtained from authentication',
                 in: 'header',
                 required: true,
                 schema: new OA\Schema(type: 'string')
