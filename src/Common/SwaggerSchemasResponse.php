@@ -23,7 +23,7 @@ use OpenApi\Attributes as OA;
         new OA\Property(
             property: 'message',
             type: 'string',
-            example: 'Some fields invalid: email, confirmed, html_email'
+            example: 'Some fields are invalid'
         )
     ],
     type: 'object'

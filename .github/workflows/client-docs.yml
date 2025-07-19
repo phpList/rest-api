@@ -1,0 +1,87 @@
+name: Update phplist-api-client OpenAPI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  generate-openapi:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout Source Repository
+        uses: actions/checkout@v3
+
+      - name: Setup PHP with Composer and Extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.1
+          extensions: mbstring, dom, fileinfo, mysql
+
+      - name: Cache Composer Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.composer/cache
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install Composer Dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Generate OpenAPI Specification JSON
+        run: vendor/bin/openapi -o docs/latest-restapi.json --format json src
+
+      - name: Upload OpenAPI Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: openapi-json
+          path: docs/latest-restapi.json
+
+  update-phplist-api-client:
+    runs-on: ubuntu-22.04
+    needs: generate-openapi
+    steps:
+      - name: Checkout phplist-api-client Repository
+        uses: actions/checkout@v3
+        with:
+          repository: TatevikGr/phplist-api-client
+          token: ${{ secrets.PUSH_API_CLIENT }}
+          fetch-depth: 0
+
+      - name: Download Generated OpenAPI JSON
+        uses: actions/download-artifact@v4
+        with:
+          name: openapi-json
+          path: ./new-openapi
+
+      - name: Compare and Check for Differences
+        id: diff
+        run: |
+          # Compare the openapi files if old exists, else always deploy
+          if [ -f openapi.json ]; then
+            diff openapi.json new-openapi/latest-restapi.json > openapi-diff.txt || true
+            if [ -s openapi-diff.txt ]; then
+              echo "diff=true" >> $GITHUB_OUTPUT
+            else
+              echo "diff=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "No previous openapi.json, will add."
+            echo "diff=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update and Commit OpenAPI File
+        if: steps.diff.outputs.diff == 'true'
+        run: |
+          cp new-openapi/latest-restapi.json openapi.json
+          git config user.name "github-actions"
+          git config user.email "github-actions@phplist-api-client.workflow"
+          git add openapi.json
+          git commit -m "Update openapi.json from REST API workflow `date`"
+          git push
+
+      - name: Skip Commit if No Changes
+        if: steps.diff.outputs.diff == 'false'
+        run: echo "No changes to openapi.json, skipping commit."
