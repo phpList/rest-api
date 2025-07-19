@@ -133,7 +133,7 @@ class AdministratorController extends BaseController
                 content: new OA\JsonContent(ref: '#/components/schemas/Administrator')
             ),
             new OA\Response(
-                response: 400,
+                response: 422,
                 description: 'Invalid input'
             )
         ]
@@ -234,7 +234,8 @@ class AdministratorController extends BaseController
         responses: [
             new OA\Response(
                 response: 200,
-                description: 'Administrator updated successfully'
+                description: 'Administrator updated successfully',
+                content: new OA\JsonContent(ref: '#/components/schemas/Administrator')
             ),
             new OA\Response(
                 response: 404,
