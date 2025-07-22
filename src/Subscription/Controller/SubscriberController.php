@@ -18,6 +18,7 @@ use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
@@ -280,5 +281,54 @@ class SubscriberController extends BaseController
         $this->subscriberManager->deleteSubscriber($subscriber);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
+    }
+
+    #[Route('/confirm', name: 'confirm', methods: ['GET'])]
+    #[OA\Get(
+        path: '/api/v2/subscribers/confirm',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production.',
+        summary: 'Confirm a subscriber by uniqueId.',
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                properties: [
+                    new OA\Property(property: 'uniqueId', type: 'string', example: 'e9d8c9b2e6')
+                ]
+            )
+        ),
+        tags: ['subscribers'],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Subscriber confirmed',
+                content: new OA\MediaType(
+                    mediaType: 'text/html'
+                )
+            ),
+            new OA\Response(
+                response: 400,
+                description: 'Missing or invalid uniqueId'
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Subscriber not found'
+            )
+        ]
+    )]
+    public function setSubscriberAsConfirmed(Request $request): Response
+    {
+        $uniqueId = $request->query->get('uniqueId');
+
+        if (!$uniqueId) {
+            return new Response('<h1>Missing confirmation code.</h1>', 400);
+        }
+
+        try {
+            $this->subscriberManager->markAsConfirmedByUniqueId($uniqueId);
+        } catch (NotFoundHttpException) {
+            return new Response('<h1>Subscriber isn\'t found or already confirmed.</h1>', 404);
+        }
+
+        return new Response('<h1>Thank you, your subscription is confirmed!</h1>');
     }
 }

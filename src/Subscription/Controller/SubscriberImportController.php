@@ -55,7 +55,7 @@ class SubscriberImportController extends BaseController
                             description: 'List id to add imported subscribers to',
                             type: 'string',
                             default: null,
-                            pattern: "^\\d+$"
+                            pattern: '^\\d+$'
                         ),
                         new OA\Property(
                             property: 'update_existing',

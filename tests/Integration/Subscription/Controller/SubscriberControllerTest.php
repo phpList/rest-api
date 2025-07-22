@@ -9,6 +9,7 @@ use PhpList\Core\Domain\Subscription\Repository\SubscriberRepository;
 use PhpList\RestBundle\Subscription\Controller\SubscriberController;
 use PhpList\RestBundle\Tests\Integration\Common\AbstractTestController;
 use PhpList\RestBundle\Tests\Integration\Subscription\Fixtures\SubscriberFixture;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Testcase.
@@ -164,5 +165,45 @@ class SubscriberControllerTest extends AbstractTestController
         static::assertFalse($responseContent['blacklisted']);
         static::assertTrue($responseContent['html_email']);
         static::assertFalse($responseContent['disabled']);
+    }
+    public function testSetSubscriberAsConfirmedWithMissingUniqueIdReturnsBadRequestStatus()
+    {
+        self::getClient()->request('get', '/api/v2/subscribers/confirm');
+
+        $response = self::getClient()->getResponse();
+        self::assertSame(Response::HTTP_BAD_REQUEST, $response->getStatusCode());
+        self::assertStringContainsString('Missing confirmation code', $response->getContent());
+    }
+
+    public function testSetSubscriberAsConfirmedWithInvalidUniqueIdReturnsNotFoundStatus()
+    {
+        self::getClient()->request('get', '/api/v2/subscribers/confirm', ['uniqueId' => 'invalid-unique-id']);
+
+        $response = self::getClient()->getResponse();
+        self::assertSame(Response::HTTP_NOT_FOUND, $response->getStatusCode());
+        self::assertStringContainsString('Subscriber isn\'t found', $response->getContent());
+    }
+
+    public function testSetSubscriberAsConfirmedWithValidUniqueIdConfirmsSubscriber()
+    {
+        $email = 'unconfirmed1@example.com';
+        $jsonData = ['email' => $email, 'requestConfirmation' => true];
+
+        $this->authenticatedJsonRequest('post', '/api/v2/subscribers', [], [], [], json_encode($jsonData));
+        $responseContent = $this->getDecodedJsonResponseContent();
+        $uniqueId = $responseContent['unique_id'];
+
+        $subscriberId = $responseContent['id'];
+        $subscriber = $this->subscriberRepository->find($subscriberId);
+        self::assertFalse($subscriber->isConfirmed());
+
+        self::getClient()->request('get', '/api/v2/subscribers/confirm', ['uniqueId' => $uniqueId]);
+
+        $response = self::getClient()->getResponse();
+        self::assertSame(Response::HTTP_OK, $response->getStatusCode());
+        self::assertStringContainsString('Thank you, your subscription is confirmed', $response->getContent());
+
+        $subscriber = $this->subscriberRepository->findOneByUniqueId($uniqueId);
+        self::assertTrue($subscriber->isConfirmed());
     }
 }
