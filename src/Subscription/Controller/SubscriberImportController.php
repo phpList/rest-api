@@ -53,14 +53,16 @@ class SubscriberImportController extends BaseController
                         new OA\Property(
                             property: 'list_id',
                             description: 'List id to add imported subscribers to',
-                            type: 'integer',
-                            default: null
+                            type: 'string',
+                            default: null,
+                            pattern: "^\\d+$"
                         ),
                         new OA\Property(
                             property: 'update_existing',
                             description: 'Weather to update existing subscribers or not',
-                            type: 'boolean',
-                            default: false
+                            type: 'string',
+                            default: '0',
+                            enum: ['0', '1']
                         )
                     ],
                     type: 'object'
