@@ -4,12 +4,17 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Subscription\Controller;
 
+use DateTimeImmutable;
+use Exception;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Identity\Model\PrivilegeFlag;
+use PhpList\Core\Domain\Subscription\Model\Filter\SubscriberHistoryFilter;
 use PhpList\Core\Domain\Subscription\Model\Subscriber;
+use PhpList\Core\Domain\Subscription\Model\SubscriberHistory;
 use PhpList\Core\Domain\Subscription\Service\Manager\SubscriberManager;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
+use PhpList\RestBundle\Common\Service\Provider\PaginatedDataProvider;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
 use PhpList\RestBundle\Subscription\Request\CreateSubscriberRequest;
 use PhpList\RestBundle\Subscription\Request\UpdateSubscriberRequest;
@@ -20,6 +25,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use Symfony\Component\Validator\Exception\ValidatorException;
 
 /**
  * This controller provides REST API access to subscribers.
@@ -32,17 +39,23 @@ class SubscriberController extends BaseController
 {
     private SubscriberManager $subscriberManager;
     private SubscriberNormalizer $subscriberNormalizer;
+    private PaginatedDataProvider $paginatedDataProvider;
+    private NormalizerInterface $serializer;
 
     public function __construct(
         Authentication $authentication,
         RequestValidator $validator,
         SubscriberManager $subscriberManager,
         SubscriberNormalizer $subscriberNormalizer,
+        PaginatedDataProvider $paginatedDataProvider,
+        NormalizerInterface $serializer,
     ) {
         parent::__construct($authentication, $validator);
         $this->authentication = $authentication;
         $this->subscriberManager = $subscriberManager;
         $this->subscriberNormalizer = $subscriberNormalizer;
+        $this->paginatedDataProvider = $paginatedDataProvider;
+        $this->serializer = $serializer;
     }
 
     #[Route('', name: 'create', methods: ['POST'])]
@@ -225,6 +238,127 @@ class SubscriberController extends BaseController
 
         return $this->json($this->subscriberNormalizer->normalize($subscriber), Response::HTTP_OK);
     }
+
+    #[Route('/{subscriberId}/history', name: 'history', requirements: ['subscriberId' => '\d+'], methods: ['GET'])]
+    #[OA\Get(
+        path: '/api/v2/subscribers/{subscriberId}/history',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ',
+        summary: 'Get subscriber event history',
+        tags: ['subscribers'],
+        parameters: [
+            new OA\Parameter(
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                name: 'subscriberId',
+                description: 'Subscriber ID',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'after_id',
+                description: 'Page number (pagination)',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'integer', default: 1)
+            ),
+            new OA\Parameter(
+                name: 'limit',
+                description: 'Max items per page',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'integer', default: 25)
+            ),
+            new OA\Parameter(
+                name: 'ip',
+                description: 'Filter by IP address',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                name: 'date_from',
+                description: 'Filter by date (format: Y-m-d)',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'string', format: 'date')
+            ),
+            new OA\Parameter(
+                name: 'summery',
+                description: 'Filter by summary text',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'string')
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Paginated list of subscriber events',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: 'items',
+                            type: 'array',
+                            items: new OA\Items(ref: '#/components/schemas/SubscriberHistory')
+                        ),
+                        new OA\Property(property: 'pagination', ref: '#/components/schemas/CursorPagination')
+                    ],
+                    type: 'object'
+                )
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Unauthorized',
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Not Found',
+                content: new OA\JsonContent(ref: '#/components/schemas/NotFoundErrorResponse')
+            )
+        ]
+    )]
+    public function getSubscriberHistory(
+        Request $request,
+        #[MapEntity(mapping: ['subscriberId' => 'id'])] ?Subscriber $subscriber = null,
+    ): JsonResponse {
+        $this->requireAuthentication($request);
+
+        if (!$subscriber) {
+            throw $this->createNotFoundException('Subscriber not found.');
+        }
+
+        try {
+            $dateFrom = $request->query->get('date_from');
+            $dateFromFormated = $dateFrom ? new DateTimeImmutable($dateFrom) : null;
+        } catch (Exception $e) {
+            throw new ValidatorException('Invalid date format. Use format: Y-m-d');
+        }
+
+        $filter = new SubscriberHistoryFilter(
+            subscriber: $subscriber,
+            ip: $request->query->get('ip'),
+            dateFrom: $dateFromFormated,
+            summery: $request->query->get('summery'),
+        );
+
+        return $this->json(
+            data: $this->paginatedDataProvider->getPaginatedList(
+                request: $request,
+                normalizer: $this->serializer,
+                className: SubscriberHistory::class,
+                filter: $filter
+            ),
+            status: Response::HTTP_OK,
+        );
+    }
+
 
     #[Route('/{subscriberId}', name: 'delete', requirements: ['subscriberId' => '\d+'], methods: ['DELETE'])]
     #[OA\Delete(
