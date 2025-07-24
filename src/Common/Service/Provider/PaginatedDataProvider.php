@@ -37,7 +37,11 @@ class PaginatedDataProvider
             throw new RuntimeException('Repository not found');
         }
 
-        $items = $repository->getFilteredAfterId($pagination->afterId, $pagination->limit, $filter);
+        $items = $repository->getFilteredAfterId(
+            lastId: $pagination->afterId,
+            limit: $pagination->limit,
+            filter: $filter,
+        );
         $total = $repository->count();
 
         $normalizedItems = array_map(
