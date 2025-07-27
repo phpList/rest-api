@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Integration\Identity\Controller;
 
-use PhpList\Core\Domain\Identity\Service\PasswordManager;
 use PhpList\RestBundle\Identity\Controller\PasswordResetController;
 use PhpList\RestBundle\Tests\Integration\Common\AbstractTestController;
 use PhpList\RestBundle\Tests\Integration\Identity\Fixtures\AdministratorFixture;
