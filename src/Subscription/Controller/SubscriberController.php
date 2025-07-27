@@ -7,18 +7,16 @@ namespace PhpList\RestBundle\Subscription\Controller;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Identity\Model\PrivilegeFlag;
 use PhpList\Core\Domain\Subscription\Model\Subscriber;
-use PhpList\Core\Domain\Subscription\Service\Manager\SubscriberManager;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
 use PhpList\RestBundle\Subscription\Request\CreateSubscriberRequest;
 use PhpList\RestBundle\Subscription\Request\UpdateSubscriberRequest;
-use PhpList\RestBundle\Subscription\Serializer\SubscriberNormalizer;
+use PhpList\RestBundle\Subscription\Service\SubscriberService;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
@@ -30,19 +28,16 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/subscribers', name: 'subscriber_')]
 class SubscriberController extends BaseController
 {
-    private SubscriberManager $subscriberManager;
-    private SubscriberNormalizer $subscriberNormalizer;
+    private SubscriberService $subscriberService;
 
     public function __construct(
         Authentication $authentication,
         RequestValidator $validator,
-        SubscriberManager $subscriberManager,
-        SubscriberNormalizer $subscriberNormalizer,
+        SubscriberService $subscriberService,
     ) {
         parent::__construct($authentication, $validator);
         $this->authentication = $authentication;
-        $this->subscriberManager = $subscriberManager;
-        $this->subscriberNormalizer = $subscriberNormalizer;
+        $this->subscriberService = $subscriberService;
     }
 
     #[Route('', name: 'create', methods: ['POST'])]
@@ -98,12 +93,9 @@ class SubscriberController extends BaseController
 
         /** @var CreateSubscriberRequest $subscriberRequest */
         $subscriberRequest = $this->validator->validate($request, CreateSubscriberRequest::class);
-        $subscriber = $this->subscriberManager->createSubscriber($subscriberRequest->getDto());
+        $subscriberData = $this->subscriberService->createSubscriber($subscriberRequest);
 
-        return $this->json(
-            $this->subscriberNormalizer->normalize($subscriber, 'json'),
-            Response::HTTP_CREATED
-        );
+        return $this->json($subscriberData, Response::HTTP_CREATED);
     }
 
     #[Route('/{subscriberId}', name: 'update', requirements: ['subscriberId' => '\d+'], methods: ['PUT'])]
@@ -171,9 +163,9 @@ class SubscriberController extends BaseController
         }
         /** @var UpdateSubscriberRequest $updateSubscriberRequest */
         $updateSubscriberRequest = $this->validator->validate($request, UpdateSubscriberRequest::class);
-        $subscriber = $this->subscriberManager->updateSubscriber($updateSubscriberRequest->getDto());
+        $subscriberData = $this->subscriberService->updateSubscriber($updateSubscriberRequest);
 
-        return $this->json($this->subscriberNormalizer->normalize($subscriber, 'json'), Response::HTTP_OK);
+        return $this->json($subscriberData, Response::HTTP_OK);
     }
 
     #[Route('/{subscriberId}', name: 'get_one', requirements: ['subscriberId' => '\d+'], methods: ['GET'])]
@@ -221,10 +213,110 @@ class SubscriberController extends BaseController
     {
         $this->requireAuthentication($request);
 
-        $subscriber = $this->subscriberManager->getSubscriber($subscriberId);
+        $subscriberData = $this->subscriberService->getSubscriber($subscriberId);
 
-        return $this->json($this->subscriberNormalizer->normalize($subscriber), Response::HTTP_OK);
+        return $this->json($subscriberData, Response::HTTP_OK);
     }
+
+    #[Route('/{subscriberId}/history', name: 'history', requirements: ['subscriberId' => '\d+'], methods: ['GET'])]
+    #[OA\Get(
+        path: '/api/v2/subscribers/{subscriberId}/history',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ',
+        summary: 'Get subscriber event history',
+        tags: ['subscribers'],
+        parameters: [
+            new OA\Parameter(
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                name: 'subscriberId',
+                description: 'Subscriber ID',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'after_id',
+                description: 'Page number (pagination)',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'integer', default: 1)
+            ),
+            new OA\Parameter(
+                name: 'limit',
+                description: 'Max items per page',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'integer', default: 25)
+            ),
+            new OA\Parameter(
+                name: 'ip',
+                description: 'Filter by IP address',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                name: 'date_from',
+                description: 'Filter by date (format: Y-m-d)',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'string', format: 'date')
+            ),
+            new OA\Parameter(
+                name: 'summery',
+                description: 'Filter by summary text',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'string')
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Paginated list of subscriber events',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: 'items',
+                            type: 'array',
+                            items: new OA\Items(ref: '#/components/schemas/SubscriberHistory')
+                        ),
+                        new OA\Property(property: 'pagination', ref: '#/components/schemas/CursorPagination')
+                    ],
+                    type: 'object'
+                )
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Unauthorized',
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Not Found',
+                content: new OA\JsonContent(ref: '#/components/schemas/NotFoundErrorResponse')
+            )
+        ]
+    )]
+    public function getSubscriberHistory(
+        Request $request,
+        #[MapEntity(mapping: ['subscriberId' => 'id'])] ?Subscriber $subscriber = null,
+    ): JsonResponse {
+        $this->requireAuthentication($request);
+
+        $historyData = $this->subscriberService->getSubscriberHistory($request, $subscriber);
+
+        return $this->json(
+            data: $historyData,
+            status: Response::HTTP_OK,
+        );
+    }
+
 
     #[Route('/{subscriberId}', name: 'delete', requirements: ['subscriberId' => '\d+'], methods: ['DELETE'])]
     #[OA\Delete(
@@ -278,7 +370,7 @@ class SubscriberController extends BaseController
         if (!$subscriber) {
             throw $this->createNotFoundException('Subscriber not found.');
         }
-        $this->subscriberManager->deleteSubscriber($subscriber);
+        $this->subscriberService->deleteSubscriber($subscriber);
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
@@ -323,9 +415,9 @@ class SubscriberController extends BaseController
             return new Response('<h1>Missing confirmation code.</h1>', 400);
         }
 
-        try {
-            $this->subscriberManager->markAsConfirmedByUniqueId($uniqueId);
-        } catch (NotFoundHttpException) {
+        $subscriber = $this->subscriberService->confirmSubscriber($uniqueId);
+
+        if (!$subscriber) {
             return new Response('<h1>Subscriber isn\'t found or already confirmed.</h1>', 404);
         }
 

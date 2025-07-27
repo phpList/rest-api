@@ -1,0 +1,8 @@
+services:
+    PhpList\RestBundle\Subscription\Service\SubscriberService:
+        autowire: true
+        autoconfigure: true
+
+    PhpList\RestBundle\Subscription\Service\SubscriberHistoryService:
+        autowire: true
+        autoconfigure: true
