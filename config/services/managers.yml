@@ -52,3 +52,6 @@ services:
     autowire: true
     autoconfigure: true
 
+  PhpList\Core\Domain\Identity\Service\PasswordManager:
+    autowire: true
+    autoconfigure: true
