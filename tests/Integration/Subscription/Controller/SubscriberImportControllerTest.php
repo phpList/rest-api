@@ -51,7 +51,7 @@ class SubscriberImportControllerTest extends AbstractTestController
     {
         $filePath = $this->tempDir . '/test.txt';
         file_put_contents($filePath, 'This is not a CSV file');
-        
+
         $file = new UploadedFile(
             $filePath,
             'test.txt',
@@ -77,7 +77,7 @@ class SubscriberImportControllerTest extends AbstractTestController
         $filePath = $this->tempDir . '/subscribers.csv';
         $csvContent = "email,name\ntest@example.com,Test User\ntest2@example.com,Test User 2";
         file_put_contents($filePath, $csvContent);
-        
+
         $file = new UploadedFile(
             $filePath,
             'subscribers.csv',
@@ -95,7 +95,7 @@ class SubscriberImportControllerTest extends AbstractTestController
 
         $response = self::getClient()->getResponse();
         self::assertSame(Response::HTTP_OK, $response->getStatusCode());
-        
+
         $responseContent = $this->getDecodedJsonResponseContent();
         self::assertArrayHasKey('imported', $responseContent);
         self::assertArrayHasKey('skipped', $responseContent);
@@ -107,7 +107,7 @@ class SubscriberImportControllerTest extends AbstractTestController
         $filePath = $this->tempDir . '/subscribers.csv';
         $csvContent = "email,name\ntest@example.com,Test User";
         file_put_contents($filePath, $csvContent);
-        
+
         $file = new UploadedFile(
             $filePath,
             'subscribers.csv',
@@ -128,7 +128,7 @@ class SubscriberImportControllerTest extends AbstractTestController
 
         $response = self::getClient()->getResponse();
         self::assertSame(Response::HTTP_OK, $response->getStatusCode());
-        
+
         $responseContent = $this->getDecodedJsonResponseContent();
         self::assertArrayHasKey('imported', $responseContent);
         self::assertArrayHasKey('skipped', $responseContent);
@@ -140,5 +140,125 @@ class SubscriberImportControllerTest extends AbstractTestController
         $this->authenticatedJsonRequest('GET', '/api/v2/subscribers/import');
 
         $this->assertHttpMethodNotAllowed();
+    }
+
+    public function testImportSubscribersWithListId(): void
+    {
+        $filePath = $this->tempDir . '/subscribers.csv';
+        $csvContent = "email,name\ntest@example.com,Test User";
+        file_put_contents($filePath, $csvContent);
+
+        $file = new UploadedFile(
+            $filePath,
+            'subscribers.csv',
+            'text/csv',
+            null,
+            true
+        );
+
+        $this->authenticatedJsonRequest(
+            'POST',
+            '/api/v2/subscribers/import',
+            [
+                'list_id' => '1'
+            ],
+            ['file' => $file]
+        );
+
+        $response = self::getClient()->getResponse();
+        self::assertSame(Response::HTTP_OK, $response->getStatusCode());
+
+        $responseContent = $this->getDecodedJsonResponseContent();
+        self::assertArrayHasKey('imported', $responseContent);
+        self::assertArrayHasKey('skipped', $responseContent);
+        self::assertArrayHasKey('errors', $responseContent);
+    }
+
+    public function testImportSubscribersWithUpdateExisting(): void
+    {
+        $filePath = $this->tempDir . '/subscribers.csv';
+        $csvContent = "email,name\ntest@example.com,Test User";
+        file_put_contents($filePath, $csvContent);
+
+        $file = new UploadedFile(
+            $filePath,
+            'subscribers.csv',
+            'text/csv',
+            null,
+            true
+        );
+
+        $this->authenticatedJsonRequest(
+            'POST',
+            '/api/v2/subscribers/import',
+            [
+                'update_existing' => 'true'
+            ],
+            ['file' => $file]
+        );
+
+        $response = self::getClient()->getResponse();
+        self::assertSame(Response::HTTP_OK, $response->getStatusCode());
+
+        $responseContent = $this->getDecodedJsonResponseContent();
+        self::assertArrayHasKey('imported', $responseContent);
+        self::assertArrayHasKey('skipped', $responseContent);
+        self::assertArrayHasKey('errors', $responseContent);
+    }
+
+    public function testImportSubscribersWithSkipInvalidEmails(): void
+    {
+        $filePath = $this->tempDir . '/subscribers.csv';
+        $csvContent = "email,name\ninvalid-email,Test User";
+        file_put_contents($filePath, $csvContent);
+
+        $file = new UploadedFile(
+            $filePath,
+            'subscribers.csv',
+            'text/csv',
+            null,
+            true
+        );
+
+        $this->authenticatedJsonRequest(
+            'POST',
+            '/api/v2/subscribers/import',
+            [
+                'skip_invalid_emails' => 'true'
+            ],
+            ['file' => $file]
+        );
+
+        $response = self::getClient()->getResponse();
+        self::assertSame(Response::HTTP_OK, $response->getStatusCode());
+
+        $responseContent = $this->getDecodedJsonResponseContent();
+        self::assertArrayHasKey('imported', $responseContent);
+        self::assertArrayHasKey('skipped', $responseContent);
+        self::assertArrayHasKey('errors', $responseContent);
+        self::assertEquals(0, $responseContent['imported']);
+        self::assertEquals(1, $responseContent['skipped']);
+        self::assertEquals([], $responseContent['errors']);
+
+        $this->authenticatedJsonRequest(
+            'POST',
+            '/api/v2/subscribers/import',
+            [
+                'skip_invalid_emails' => 'false',
+                'update_existing' => 'true'
+            ],
+            ['file' => $file],
+        );
+
+        $response = self::getClient()->getResponse();
+        self::assertSame(Response::HTTP_OK, $response->getStatusCode());
+
+        $responseContent = $this->getDecodedJsonResponseContent();
+        self::assertArrayHasKey('imported', $responseContent);
+        self::assertArrayHasKey('skipped', $responseContent);
+        self::assertArrayHasKey('errors', $responseContent);
+        self::assertEquals(1, $responseContent['imported']);
+        self::assertEquals(0, $responseContent['skipped']);
+        self::assertEquals([], $responseContent['errors']);
     }
 }

@@ -63,6 +63,10 @@ class SubscriberImportController extends BaseController
                             type: 'string',
                             default: '0',
                             enum: ['0', '1']
+                        ),
+                        new OA\Property(
+                            property: 'skip_invalid_emails',
+                            description: 'Weather to skip invalid email or add with invalid_ prefix',
                         )
                     ],
                     type: 'object'
@@ -127,8 +131,12 @@ class SubscriberImportController extends BaseController
 
         try {
             $stats = $this->importManager->importFromCsv(
-                $file,
-                new SubscriberImportOptions($request->getPayload()->getBoolean('update_existing'))
+                file: $file,
+                options: new SubscriberImportOptions(
+                    updateExisting: $request->getPayload()->getBoolean('update_existing'),
+                    listIds: $request->getPayload()->get('list_id') ? [$request->getPayload()->get('list_id')] : [],
+                    skipInvalidEmail: $request->getPayload()->getBoolean('skip_invalid_emails', true)
+                ),
             );
 
             return $this->json([
