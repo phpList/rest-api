@@ -120,7 +120,12 @@ class ListMessageController extends BaseController
         );
     }
 
-    #[Route('/list/{listId}/messages', name: 'get_messages_by_list', requirements: ['listId' => '\d+'], methods: ['GET'])]
+    #[Route(
+        '/list/{listId}/messages',
+        name: 'get_messages_by_list',
+        requirements: ['listId' => '\d+'],
+        methods: ['GET']
+    )]
     #[OA\Get(
         path: '/api/v2/list-messages/list/{listId}/messages',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production.',
@@ -179,7 +184,7 @@ class ListMessageController extends BaseController
             throw $this->createNotFoundException('Subscriber list not found.');
         }
 
-        $messages =  array_map(function (Message $message) {
+        $messages = array_map(function (Message $message) {
             return $this->messageNormalizer->normalize($message);
         }, $this->listMessageManager->getMessagesByList($subscriberList));
 
