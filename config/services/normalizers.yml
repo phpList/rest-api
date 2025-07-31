@@ -27,6 +27,10 @@ services:
     tags: [ 'serializer.normalizer' ]
     autowire: true
 
+  PhpList\RestBundle\Subscription\Serializer\SubscriberHistoryNormalizer:
+    tags: [ 'serializer.normalizer' ]
+    autowire: true
+
   PhpList\RestBundle\Subscription\Serializer\SubscriptionNormalizer:
     tags: [ 'serializer.normalizer' ]
     autowire: true
@@ -40,6 +44,10 @@ services:
     autowire: true
 
   PhpList\RestBundle\Messaging\Serializer\TemplateNormalizer:
+    tags: [ 'serializer.normalizer' ]
+    autowire: true
+
+  PhpList\RestBundle\Messaging\Serializer\ListMessageNormalizer:
     tags: [ 'serializer.normalizer' ]
     autowire: true
 

@@ -10,16 +10,16 @@ use PhpList\Core\Domain\Subscription\Model\Filter\SubscriberHistoryFilter;
 use PhpList\Core\Domain\Subscription\Model\Subscriber;
 use PhpList\Core\Domain\Subscription\Model\SubscriberHistory;
 use PhpList\RestBundle\Common\Service\Provider\PaginatedDataProvider;
+use PhpList\RestBundle\Subscription\Serializer\SubscriberHistoryNormalizer;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Component\Validator\Exception\ValidatorException;
 
 class SubscriberHistoryService
 {
     public function __construct(
         private readonly PaginatedDataProvider $paginatedDataProvider,
-        private readonly NormalizerInterface $serializer,
+        private readonly SubscriberHistoryNormalizer $serializer,
     ) {
     }
 
