@@ -380,15 +380,16 @@ class SubscriberController extends BaseController
         path: '/api/v2/subscribers/confirm',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production.',
         summary: 'Confirm a subscriber by uniqueId.',
-        requestBody: new OA\RequestBody(
-            required: true,
-            content: new OA\JsonContent(
-                properties: [
-                    new OA\Property(property: 'uniqueId', type: 'string', example: 'e9d8c9b2e6')
-                ]
-            )
-        ),
         tags: ['subscribers'],
+        parameters: [
+            new OA\Parameter(
+                name: 'uniqueId',
+                description: 'Unique identifier for the subscriber confirmation',
+                in: 'query',
+                required: true,
+                schema: new OA\Schema(type: 'string', example: 'e9d8c9b2e6')
+            )
+        ],
         responses: [
             new OA\Response(
                 response: 200,
