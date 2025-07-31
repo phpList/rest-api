@@ -11,13 +11,14 @@ use PhpList\Core\Domain\Subscription\Model\SubscriberList;
 use PhpList\RestBundle\Messaging\Serializer\ListMessageNormalizer;
 use PhpList\RestBundle\Messaging\Serializer\MessageNormalizer;
 use PhpList\RestBundle\Subscription\Serializer\SubscriberListNormalizer;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 class ListMessageNormalizerTest extends TestCase
 {
     private ListMessageNormalizer $normalizer;
-    private MessageNormalizer $messageNormalizer;
-    private SubscriberListNormalizer $subscriberListNormalizer;
+    private MessageNormalizer&MockObject $messageNormalizer;
+    private SubscriberListNormalizer&MockObject $subscriberListNormalizer;
 
     public function __construct(string $name)
     {
