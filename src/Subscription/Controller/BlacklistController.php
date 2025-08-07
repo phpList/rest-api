@@ -10,6 +10,7 @@ use PhpList\Core\Domain\Subscription\Service\Manager\SubscriberBlacklistManager;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
+use PhpList\RestBundle\Subscription\Request\AddToBlacklistRequest;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -144,20 +145,13 @@ class BlacklistController extends BaseController
             throw $this->createAccessDeniedException('You are not allowed to add emails to blacklist.');
         }
 
-        $data = json_decode($request->getContent(), true);
-        if (!isset($data['email']) || empty($data['email'])) {
-            return $this->json(['error' => 'Email is required'], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
+        /** @var AddToBlacklistRequest $definitionRequest */
+        $definitionRequest = $this->validator->validate($request, AddToBlacklistRequest::class);
 
-        $email = $data['email'];
-        $reason = $data['reason'] ?? null;
+        $userBlacklisted = $this->blacklistManager->addEmailToBlacklist($definitionRequest->email, $definitionRequest->reason);
+        $json = $this->normalizer->normalize($userBlacklisted, 'json');
 
-        $this->blacklistManager->addEmailToBlacklist($email, $reason);
-
-        return $this->json([
-            'success' => true,
-            'message' => sprintf('Email %s has been added to the blacklist', $email),
-        ], Response::HTTP_CREATED);
+        return $this->json($json, Response::HTTP_CREATED);
     }
 
     #[Route('/remove/{email}', name: 'remove', methods: ['DELETE'])]
@@ -209,10 +203,7 @@ class BlacklistController extends BaseController
 
         $this->blacklistManager->removeEmailFromBlacklist($email);
 
-        return $this->json([
-            'success' => true,
-            'message' => sprintf('Email %s has been removed from the blacklist', $email),
-        ]);
+        return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 
     #[Route('/info/{email}', name: 'info', methods: ['GET'])]
@@ -270,14 +261,16 @@ class BlacklistController extends BaseController
 
         $blacklistInfo = $this->blacklistManager->getBlacklistInfo($email);
         if (!$blacklistInfo) {
-            return $this->json(['error' => sprintf('Email %s is not blacklisted', $email)], Response::HTTP_NOT_FOUND);
+            return $this->json([
+                'error' => sprintf('Email %s is not blacklisted', $email)
+            ], Response::HTTP_NOT_FOUND);
         }
 
         $reason = $this->blacklistManager->getBlacklistReason($email);
 
         return $this->json([
             'email' => $blacklistInfo->getEmail(),
-            'added' => $blacklistInfo->getAdded() ? $blacklistInfo->getAdded()->format('c') : null,
+            'added' => $blacklistInfo->getAdded()?->format('c'),
             'reason' => $reason,
         ]);
     }
