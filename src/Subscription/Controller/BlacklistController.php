@@ -41,7 +41,7 @@ class BlacklistController extends BaseController
     #[Route('/check/{email}', name: 'check', methods: ['GET'])]
     #[OA\Get(
         path: '/api/v2/blacklist/check/{email}',
-        description: 'Checks if an email address is blacklisted.',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production.',
         summary: 'Check if email is blacklisted',
         tags: ['blacklist'],
         parameters: [
@@ -97,8 +97,8 @@ class BlacklistController extends BaseController
     #[Route('/add', name: 'add', methods: ['POST'])]
     #[OA\Post(
         path: '/api/v2/blacklist/add',
-        description: 'Adds an email address to the blacklist.',
-        summary: 'Add email to blacklist',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production.',
+        summary: 'Adds an email address to the blacklist.',
         requestBody: new OA\RequestBody(
             description: 'Email to blacklist',
             required: true,
@@ -161,8 +161,8 @@ class BlacklistController extends BaseController
     #[Route('/remove/{email}', name: 'remove', methods: ['DELETE'])]
     #[OA\Delete(
         path: '/api/v2/blacklist/remove/{email}',
-        description: 'Removes an email address from the blacklist.',
-        summary: 'Remove email from blacklist',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production.',
+        summary: 'Removes an email address from the blacklist.',
         tags: ['blacklist'],
         parameters: [
             new OA\Parameter(
@@ -213,8 +213,8 @@ class BlacklistController extends BaseController
     #[Route('/info/{email}', name: 'info', methods: ['GET'])]
     #[OA\Get(
         path: '/api/v2/blacklist/info/{email}',
-        description: 'Gets detailed information about a blacklisted email.',
-        summary: 'Get blacklist information',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production.',
+        summary: 'Gets detailed information about a blacklisted email.',
         tags: ['blacklist'],
         parameters: [
             new OA\Parameter(
