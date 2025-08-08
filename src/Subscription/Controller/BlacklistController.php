@@ -11,6 +11,7 @@ use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
 use PhpList\RestBundle\Subscription\Request\AddToBlacklistRequest;
+use PhpList\RestBundle\Subscription\Serializer\UserBlacklistNormalizer;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,15 +24,18 @@ use Symfony\Component\Routing\Attribute\Route;
 class BlacklistController extends BaseController
 {
     private SubscriberBlacklistManager $blacklistManager;
+    private UserBlacklistNormalizer $normalizer;
 
     public function __construct(
         Authentication $authentication,
         RequestValidator $validator,
         SubscriberBlacklistManager $blacklistManager,
+        UserBlacklistNormalizer $normalizer,
     ) {
         parent::__construct($authentication, $validator);
         $this->authentication = $authentication;
         $this->blacklistManager = $blacklistManager;
+        $this->normalizer = $normalizer;
     }
 
     #[Route('/check/{email}', name: 'check', methods: ['GET'])]
