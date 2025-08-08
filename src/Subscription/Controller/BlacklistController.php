@@ -152,7 +152,10 @@ class BlacklistController extends BaseController
         /** @var AddToBlacklistRequest $definitionRequest */
         $definitionRequest = $this->validator->validate($request, AddToBlacklistRequest::class);
 
-        $userBlacklisted = $this->blacklistManager->addEmailToBlacklist($definitionRequest->email, $definitionRequest->reason);
+        $userBlacklisted = $this->blacklistManager->addEmailToBlacklist(
+            email: $definitionRequest->email,
+            reasonData: $definitionRequest->reason
+        );
         $json = $this->normalizer->normalize($userBlacklisted, 'json');
 
         return $this->json($json, Response::HTTP_CREATED);
