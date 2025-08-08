@@ -255,7 +255,7 @@ class BlacklistController extends BaseController
             new OA\Response(
                 response: 404,
                 description: 'Failure',
-                content: new OA\JsonContent(ref: '#/components/schemas/NotFoundResponse')
+                content: new OA\JsonContent(ref: '#/components/schemas/BadRequestResponse')
             ),
         ]
     )]
