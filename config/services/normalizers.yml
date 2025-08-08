@@ -93,3 +93,7 @@ services:
   PhpList\RestBundle\Statistics\Serializer\TopLocalPartsNormalizer:
     tags: [ 'serializer.normalizer' ]
     autowire: true
+
+  PhpList\RestBundle\Subscription\Serializer\UserBlacklistNormalizer:
+    tags: [ 'serializer.normalizer' ]
+    autowire: true
