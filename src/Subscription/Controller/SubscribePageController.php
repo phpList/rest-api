@@ -10,6 +10,7 @@ use PhpList\Core\Domain\Subscription\Service\Manager\SubscribePageManager;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
+use PhpList\RestBundle\Subscription\Serializer\SubscribePageNormalizer;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,6 +23,7 @@ class SubscribePageController extends BaseController
         Authentication $authentication,
         RequestValidator $validator,
         private readonly SubscribePageManager $subscribePageManager,
+        private readonly SubscribePageNormalizer $normalizer,
     ) {
         parent::__construct($authentication, $validator);
     }
@@ -82,12 +84,7 @@ class SubscribePageController extends BaseController
 
         $page = $this->subscribePageManager->getPage($id);
 
-        return $this->json([
-            'id' => $page->getId(),
-            'title' => $page->getTitle(),
-            'active' => $page->isActive(),
-            'owner_id' => $page->getOwner()?->getId(),
-        ], Response::HTTP_OK);
+        return $this->json($this->normalizer->normalize($page), Response::HTTP_OK);
     }
 
     #[Route('', name: 'create', methods: ['POST'])]
@@ -160,11 +157,6 @@ class SubscribePageController extends BaseController
 
         $page = $this->subscribePageManager->createPage($title, $active, $admin);
 
-        return $this->json([
-            'id' => $page->getId(),
-            'title' => $page->getTitle(),
-            'active' => $page->isActive(),
-            'owner_id' => $page->getOwner()?->getId(),
-        ], Response::HTTP_CREATED);
+        return $this->json($this->normalizer->normalize($page), Response::HTTP_CREATED);
     }
 }
