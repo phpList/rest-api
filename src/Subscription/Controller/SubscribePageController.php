@@ -6,11 +6,14 @@ namespace PhpList\RestBundle\Subscription\Controller;
 
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Identity\Model\PrivilegeFlag;
+use PhpList\Core\Domain\Subscription\Model\SubscribePage;
 use PhpList\Core\Domain\Subscription\Service\Manager\SubscribePageManager;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
+use PhpList\RestBundle\Subscription\Request\SubscribePageRequest;
 use PhpList\RestBundle\Subscription\Serializer\SubscribePageNormalizer;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -54,14 +57,7 @@ class SubscribePageController extends BaseController
             new OA\Response(
                 response: 200,
                 description: 'Success',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: 'id', type: 'integer'),
-                        new OA\Property(property: 'title', type: 'string'),
-                        new OA\Property(property: 'active', type: 'boolean'),
-                        new OA\Property(property: 'owner_id', type: 'integer', nullable: true),
-                    ]
-                ),
+                content: new OA\JsonContent(ref: '#/components/schemas/SubscribePage'),
             ),
             new OA\Response(
                 response: 403,
@@ -75,14 +71,18 @@ class SubscribePageController extends BaseController
             ),
         ]
     )]
-    public function getPage(Request $request, int $id): JsonResponse
-    {
+    public function getPage(
+        Request $request,
+        #[MapEntity(mapping: ['id' => 'id'])] ?SubscribePage $page = null
+    ): JsonResponse {
         $admin = $this->requireAuthentication($request);
         if (!$admin->getPrivileges()->has(PrivilegeFlag::Subscribers)) {
             throw $this->createAccessDeniedException('You are not allowed to view subscribe pages.');
         }
 
-        $page = $this->subscribePageManager->getPage($id);
+        if (!$page) {
+            throw $this->createNotFoundException('Subscribe page not found');
+        }
 
         return $this->json($this->normalizer->normalize($page), Response::HTTP_OK);
     }
@@ -115,14 +115,7 @@ class SubscribePageController extends BaseController
             new OA\Response(
                 response: 201,
                 description: 'Created',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: 'id', type: 'integer'),
-                        new OA\Property(property: 'title', type: 'string'),
-                        new OA\Property(property: 'active', type: 'boolean'),
-                        new OA\Property(property: 'owner_id', type: 'integer', nullable: true),
-                    ]
-                )
+                content: new OA\JsonContent(ref: '#/components/schemas/SubscribePage')
             ),
             new OA\Response(
                 response: 403,
@@ -143,19 +136,10 @@ class SubscribePageController extends BaseController
             throw $this->createAccessDeniedException('You are not allowed to create subscribe pages.');
         }
 
-        $data = json_decode($request->getContent(), true) ?: [];
-        $title = isset($data['title']) ? trim((string)$data['title']) : '';
-        $active = isset($data['active']) ? (bool)$data['active'] : false;
+        /** @var SubscribePageRequest $createRequest */
+        $createRequest = $this->validator->validate($request, SubscribePageRequest::class);
 
-        if ($title === '') {
-            return $this->json([
-                'errors' => [
-                    ['field' => 'title', 'message' => 'This field is required.']
-                ]
-            ], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
-        $page = $this->subscribePageManager->createPage($title, $active, $admin);
+        $page = $this->subscribePageManager->createPage($createRequest->title, $createRequest->active, $admin);
 
         return $this->json($this->normalizer->normalize($page), Response::HTTP_CREATED);
     }
