@@ -11,7 +11,7 @@ use PhpList\Core\Domain\Messaging\Model\Filter\MessageFilter;
 use PhpList\Core\Domain\Messaging\Model\Message;
 use PhpList\Core\Domain\Messaging\Model\Dto\CreateMessageDto;
 use PhpList\Core\Domain\Messaging\Model\Dto\UpdateMessageDto;
-use PhpList\Core\Domain\Messaging\Service\MessageManager;
+use PhpList\Core\Domain\Messaging\Service\Manager\MessageManager;
 use PhpList\RestBundle\Common\Service\Provider\PaginatedDataProvider;
 use PhpList\RestBundle\Messaging\Request\CreateMessageRequest;
 use PhpList\RestBundle\Messaging\Request\UpdateMessageRequest;

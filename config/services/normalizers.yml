@@ -101,3 +101,7 @@ services:
   PhpList\RestBundle\Subscription\Serializer\SubscribePageNormalizer:
     tags: [ 'serializer.normalizer' ]
     autowire: true
+
+  PhpList\RestBundle\Messaging\Serializer\BounceRegexNormalizer:
+    tags: [ 'serializer.normalizer' ]
+    autowire: true

@@ -20,15 +20,19 @@ services:
     autowire: true
     autoconfigure: true
 
-  PhpList\Core\Domain\Messaging\Service\MessageManager:
+  PhpList\Core\Domain\Messaging\Service\Manager\MessageManager:
     autowire: true
     autoconfigure: true
 
-  PhpList\Core\Domain\Messaging\Service\TemplateManager:
+  PhpList\Core\Domain\Messaging\Service\Manager\TemplateManager:
     autowire: true
     autoconfigure: true
 
-  PhpList\Core\Domain\Messaging\Service\TemplateImageManager:
+  PhpList\Core\Domain\Messaging\Service\Manager\TemplateImageManager:
+    autowire: true
+    autoconfigure: true
+
+  PhpList\Core\Domain\Messaging\Service\Manager\BounceRegexManager:
     autowire: true
     autoconfigure: true
 
