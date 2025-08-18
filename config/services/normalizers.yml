@@ -97,3 +97,7 @@ services:
   PhpList\RestBundle\Subscription\Serializer\UserBlacklistNormalizer:
     tags: [ 'serializer.normalizer' ]
     autowire: true
+
+  PhpList\RestBundle\Subscription\Serializer\SubscribePageNormalizer:
+    tags: [ 'serializer.normalizer' ]
+    autowire: true
