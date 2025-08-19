@@ -120,6 +120,21 @@ use OpenApi\Attributes as OA;
     ],
     type: 'object'
 )]
+#[OA\Schema(
+    schema: 'BounceRegex',
+    properties: [
+        new OA\Property(property: 'id', type: 'integer', example: 10),
+        new OA\Property(property: 'regex', type: 'string', example: '/mailbox is full/i'),
+        new OA\Property(property: 'regex_hash', type: 'string', example: 'd41d8cd98f00b204e9800998ecf8427e'),
+        new OA\Property(property: 'action', type: 'string', example: 'delete', nullable: true),
+        new OA\Property(property: 'list_order', type: 'integer', example: 0, nullable: true),
+        new OA\Property(property: 'admin_id', type: 'integer', example: 1, nullable: true),
+        new OA\Property(property: 'comment', type: 'string', example: 'Auto-generated rule', nullable: true),
+        new OA\Property(property: 'status', type: 'string', example: 'active', nullable: true),
+        new OA\Property(property: 'count', type: 'integer', example: 5, nullable: true),
+    ],
+    type: 'object'
+)]
 class SwaggerSchemasResponse
 {
 }
