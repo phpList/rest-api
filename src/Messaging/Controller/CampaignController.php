@@ -6,7 +6,7 @@ namespace PhpList\RestBundle\Messaging\Controller;
 
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Messaging\Model\Message;
-use PhpList\Core\Domain\Messaging\Service\CampaignProcessor;
+use PhpList\Core\Domain\Messaging\Service\Processor\CampaignProcessor;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
