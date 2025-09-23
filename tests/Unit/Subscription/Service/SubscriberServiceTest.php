@@ -97,7 +97,7 @@ class SubscriberServiceTest extends TestCase
         $expectedResult = ['id' => 1, 'email' => 'test@example.com'];
 
         $this->subscriberManager->expects($this->once())
-            ->method('getSubscriber')
+            ->method('getSubscriberById')
             ->with($subscriberId)
             ->willReturn($subscriber);
 

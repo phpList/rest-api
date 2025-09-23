@@ -35,7 +35,7 @@ class SubscriberService
 
     public function getSubscriber(int $subscriberId): array
     {
-        $subscriber = $this->subscriberManager->getSubscriber($subscriberId);
+        $subscriber = $this->subscriberManager->getSubscriberById($subscriberId);
         return $this->subscriberNormalizer->normalize($subscriber);
     }
 
