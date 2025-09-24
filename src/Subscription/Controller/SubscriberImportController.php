@@ -7,6 +7,7 @@ namespace PhpList\RestBundle\Subscription\Controller;
 use Exception;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Identity\Model\PrivilegeFlag;
+use PhpList\Core\Domain\Subscription\Exception\CouldNotReadUploadedFileException;
 use PhpList\Core\Domain\Subscription\Model\Dto\SubscriberImportOptions;
 use PhpList\Core\Domain\Subscription\Service\SubscriberCsvImporter;
 use PhpList\Core\Security\Authentication;
@@ -144,6 +145,10 @@ class SubscriberImportController extends BaseController
                 'skipped' => $stats['skipped'],
                 'errors' => $stats['errors']
             ]);
+        } catch (CouldNotReadUploadedFileException $exception) {
+            return $this->json([
+                'message' => 'Could not read uploaded file.' . $exception->getMessage()
+            ], Response::HTTP_BAD_REQUEST);
         } catch (Exception $e) {
             return $this->json([
                 'message' => $e->getMessage()
