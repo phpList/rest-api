@@ -12,6 +12,11 @@ use PhpList\RestBundle\Subscription\Serializer\SubscriberNormalizer;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
+/**
+ * This encapsulates subscriber-related services
+ *
+ * @author Tatevik Grigoryan <tatevik@phplist.com>
+ */
 class SubscriberService
 {
     public function __construct(
@@ -30,6 +35,12 @@ class SubscriberService
     public function updateSubscriber(UpdateSubscriberRequest $updateSubscriberRequest): array
     {
         $subscriber = $this->subscriberManager->updateSubscriber($updateSubscriberRequest->getDto());
+        return $this->subscriberNormalizer->normalize($subscriber, 'json');
+    }
+
+    public function resetSubscriberBounceCount(Subscriber $subscriber): array
+    {
+        $subscriber = $this->subscriberManager->resetBounceCount($subscriber);
         return $this->subscriberNormalizer->normalize($subscriber, 'json');
     }
 

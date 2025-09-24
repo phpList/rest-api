@@ -375,6 +375,74 @@ class SubscriberController extends BaseController
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 
+    #[Route(
+        '/{subscriberId}/reset-bounce-count',
+        name: 'reset_bounce_count',
+        requirements: ['subscriberId' => '\d+'],
+        methods: ['POST']
+    )]
+    #[OA\Post(
+        path: '/api/v2/subscribers/{subscriberId}/reset-bounce-count',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production.',
+        summary: 'Reset bounce count for a subscriber.',
+        tags: ['subscribers'],
+        parameters: [
+            new OA\Parameter(
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                name: 'subscriberId',
+                description: 'Subscriber ID',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Success',
+                content: new OA\JsonContent(ref: '#/components/schemas/Subscriber'),
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
+            ),
+            new OA\Response(
+                response: 422,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/ValidationErrorResponse')
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/NotFoundErrorResponse')
+            )
+        ]
+    )]
+    public function resetBounceCount(
+        Request $request,
+        #[MapEntity(mapping: ['subscriberId' => 'id'])] ?Subscriber $subscriber = null,
+    ): Response {
+        $admin = $this->requireAuthentication($request);
+        if (!$admin->getPrivileges()->has(PrivilegeFlag::Subscribers)) {
+            throw $this->createAccessDeniedException('You are not allowed to manage Subscribers.');
+        }
+
+        if (!$subscriber) {
+            throw $this->createNotFoundException('Subscriber not found.');
+        }
+
+        $subscriberData = $this->subscriberService->resetSubscriberBounceCount($subscriber);
+
+        return $this->json($subscriberData, Response::HTTP_OK);
+    }
+
     #[Route('/confirm', name: 'confirm', methods: ['GET'])]
     #[OA\Get(
         path: '/api/v2/subscribers/confirm',
