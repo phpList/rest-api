@@ -6,7 +6,6 @@ namespace PhpList\RestBundle\Messaging\Controller;
 
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Messaging\Model\Message;
-use PhpList\Core\Domain\Messaging\Service\Processor\CampaignProcessor;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
@@ -17,7 +16,9 @@ use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Messenger\Stamp\TransportNamesStamp;
 
 /**
  * This controller provides REST API to manage campaigns.
@@ -28,17 +29,17 @@ use Symfony\Component\Routing\Attribute\Route;
 class CampaignController extends BaseController
 {
     private CampaignService $campaignService;
-    private CampaignProcessor $campaignProcessor;
+    private MessageBusInterface $messageBus;
 
     public function __construct(
         Authentication $authentication,
         RequestValidator $validator,
         CampaignService $campaignService,
-        CampaignProcessor $campaignProcessor,
+        MessageBusInterface $messageBus,
     ) {
         parent::__construct($authentication, $validator);
         $this->campaignService = $campaignService;
-        $this->campaignProcessor = $campaignProcessor;
+        $this->messageBus = $messageBus;
     }
 
     #[Route('', name: 'get_list', methods: ['GET'])]
@@ -388,8 +389,10 @@ class CampaignController extends BaseController
             throw $this->createNotFoundException('Campaign not found.');
         }
 
-        $this->campaignProcessor->process($message);
-
+        $this->messageBus->dispatch(
+            new CampaignProcessorMessage($message->getId()),
+            [new TransportNamesStamp(['sync'])]
+        );
         return $this->json($this->campaignService->getMessage($message), Response::HTTP_OK);
     }
 }
