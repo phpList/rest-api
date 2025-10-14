@@ -163,7 +163,7 @@ class SubscriberController extends BaseController
         }
         /** @var UpdateSubscriberRequest $updateSubscriberRequest */
         $updateSubscriberRequest = $this->validator->validate($request, UpdateSubscriberRequest::class);
-        $subscriberData = $this->subscriberService->updateSubscriber($updateSubscriberRequest);
+        $subscriberData = $this->subscriberService->updateSubscriber($updateSubscriberRequest, $admin);
 
         return $this->json($subscriberData, Response::HTTP_OK);
     }

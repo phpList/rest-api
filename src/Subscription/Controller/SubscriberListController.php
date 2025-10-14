@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Subscription\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Subscription\Model\SubscriberList;
 use PhpList\Core\Domain\Subscription\Service\Manager\SubscriberListManager;
@@ -32,6 +33,7 @@ class SubscriberListController extends BaseController
     private SubscriberListNormalizer $normalizer;
     private SubscriberListManager $subscriberListManager;
     private PaginatedDataProvider $paginatedDataProvider;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(
         Authentication $authentication,
@@ -39,11 +41,13 @@ class SubscriberListController extends BaseController
         SubscriberListNormalizer $normalizer,
         SubscriberListManager $subscriberListManager,
         PaginatedDataProvider $paginatedDataProvider,
+        EntityManagerInterface $entityManager,
     ) {
         parent::__construct($authentication, $validator);
         $this->normalizer = $normalizer;
         $this->subscriberListManager = $subscriberListManager;
         $this->paginatedDataProvider = $paginatedDataProvider;
+        $this->entityManager = $entityManager;
     }
 
     #[Route('', name: 'get_list', methods: ['GET'])]
@@ -223,6 +227,7 @@ class SubscriberListController extends BaseController
         }
 
         $this->subscriberListManager->delete($list);
+        $this->entityManager->flush();
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
@@ -273,6 +278,7 @@ class SubscriberListController extends BaseController
         /** @var CreateSubscriberListRequest $subscriberListRequest */
         $subscriberListRequest = $this->validator->validate($request, CreateSubscriberListRequest::class);
         $data = $this->subscriberListManager->createSubscriberList($subscriberListRequest->getDto(), $authUser);
+        $this->entityManager->flush();
 
         return $this->json($normalizer->normalize($data), Response::HTTP_CREATED);
     }

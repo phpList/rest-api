@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Subscription\Service;
 
+use PhpList\Core\Domain\Identity\Model\Administrator;
 use PhpList\Core\Domain\Subscription\Model\Subscriber;
 use PhpList\Core\Domain\Subscription\Service\Manager\SubscriberManager;
 use PhpList\RestBundle\Subscription\Request\CreateSubscriberRequest;
@@ -32,9 +33,9 @@ class SubscriberService
         return $this->subscriberNormalizer->normalize($subscriber, 'json');
     }
 
-    public function updateSubscriber(UpdateSubscriberRequest $updateSubscriberRequest): array
+    public function updateSubscriber(UpdateSubscriberRequest $updateSubscriberRequest, Administrator $admin): array
     {
-        $subscriber = $this->subscriberManager->updateSubscriber($updateSubscriberRequest->getDto());
+        $subscriber = $this->subscriberManager->updateSubscriber($updateSubscriberRequest->getDto(), $admin);
         return $this->subscriberNormalizer->normalize($subscriber, 'json');
     }
 

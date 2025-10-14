@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Subscription\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Subscription\Model\SubscriberAttributeDefinition;
 use PhpList\Core\Domain\Subscription\Service\Manager\AttributeDefinitionManager;
@@ -32,7 +33,8 @@ class SubscriberAttributeDefinitionController extends BaseController
         RequestValidator $validator,
         AttributeDefinitionManager $definitionManager,
         AttributeDefinitionNormalizer $normalizer,
-        PaginatedDataProvider $paginatedDataProvider
+        PaginatedDataProvider $paginatedDataProvider,
+        private readonly EntityManagerInterface $entityManager,
     ) {
         parent::__construct($authentication, $validator);
         $this->definitionManager = $definitionManager;
@@ -209,6 +211,7 @@ class SubscriberAttributeDefinitionController extends BaseController
         }
 
         $this->definitionManager->delete($attributeDefinition);
+        $this->entityManager->flush();
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }

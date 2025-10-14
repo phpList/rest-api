@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Messaging\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
+use PhpList\Core\Domain\Messaging\Message\CampaignProcessorMessage;
 use PhpList\Core\Domain\Messaging\Model\Message;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
@@ -36,6 +38,7 @@ class CampaignController extends BaseController
         RequestValidator $validator,
         CampaignService $campaignService,
         MessageBusInterface $messageBus,
+        private readonly EntityManagerInterface $entityManager,
     ) {
         parent::__construct($authentication, $validator);
         $this->campaignService = $campaignService;
@@ -340,6 +343,7 @@ class CampaignController extends BaseController
         $authUser = $this->requireAuthentication($request);
 
         $this->campaignService->deleteMessage($authUser, $message);
+        $this->entityManager->flush();
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }

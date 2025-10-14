@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Messaging\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Messaging\Model\Template;
 use PhpList\Core\Domain\Messaging\Service\Manager\TemplateManager;
@@ -37,6 +38,7 @@ class TemplateController extends BaseController
         TemplateNormalizer $normalizer,
         TemplateManager $templateManager,
         PaginatedDataProvider $paginatedDataProvider,
+        private readonly EntityManagerInterface $entityManager,
     ) {
         parent::__construct($authentication, $validator);
         $this->normalizer = $normalizer;
@@ -318,6 +320,7 @@ class TemplateController extends BaseController
         }
 
         $this->templateManager->delete($template);
+        $this->entityManager->flush();
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }

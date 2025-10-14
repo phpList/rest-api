@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Unit\Subscription\Service;
 
+use PhpList\Core\Domain\Identity\Model\Administrator;
 use PhpList\Core\Domain\Subscription\Model\Dto\CreateSubscriberDto;
 use PhpList\Core\Domain\Subscription\Model\Dto\UpdateSubscriberDto;
 use PhpList\Core\Domain\Subscription\Model\Subscriber;
@@ -70,6 +71,7 @@ class SubscriberServiceTest extends TestCase
         $updateSubscriberRequest = $this->createMock(UpdateSubscriberRequest::class);
         $subscriber = $this->createMock(Subscriber::class);
         $expectedResult = ['id' => 1, 'email' => 'updated@example.com'];
+        $admin = $this->createMock(Administrator::class);
 
         $updateSubscriberRequest->expects($this->once())
             ->method('getDto')
@@ -85,7 +87,7 @@ class SubscriberServiceTest extends TestCase
             ->with($this->identicalTo($subscriber), 'json')
             ->willReturn($expectedResult);
 
-        $result = $this->subscriberService->updateSubscriber($updateSubscriberRequest);
+        $result = $this->subscriberService->updateSubscriber($updateSubscriberRequest, $admin);
 
         $this->assertSame($expectedResult, $result);
     }
