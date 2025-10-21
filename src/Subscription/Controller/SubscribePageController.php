@@ -426,6 +426,7 @@ class SubscribePageController extends BaseController
         $createRequest = $this->validator->validate($request, SubscribePageDataRequest::class);
 
         $item = $this->subscribePageManager->setPageData($page, $createRequest->name, $createRequest->value);
+        $this->entityManager->flush();
 
         return $this->json([
             'id' => $item->getId(),

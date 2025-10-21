@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Subscription\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Identity\Model\PrivilegeFlag;
 use PhpList\Core\Domain\Subscription\Model\Subscriber;
@@ -34,6 +35,7 @@ class SubscriberController extends BaseController
         Authentication $authentication,
         RequestValidator $validator,
         SubscriberService $subscriberService,
+        private readonly EntityManagerInterface $entityManager,
     ) {
         parent::__construct($authentication, $validator);
         $this->authentication = $authentication;
@@ -439,6 +441,7 @@ class SubscriberController extends BaseController
         }
 
         $subscriberData = $this->subscriberService->resetSubscriberBounceCount($subscriber);
+        $this->entityManager->flush();
 
         return $this->json($subscriberData, Response::HTTP_OK);
     }
@@ -485,6 +488,7 @@ class SubscriberController extends BaseController
         }
 
         $subscriber = $this->subscriberService->confirmSubscriber($uniqueId);
+        $this->entityManager->flush();
 
         if (!$subscriber) {
             return new Response('<h1>Subscriber isn\'t found or already confirmed.</h1>', 404);
