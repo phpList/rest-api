@@ -262,9 +262,11 @@ class TemplateController extends BaseController
 
         /** @var CreateTemplateRequest $createTemplateRequest */
         $createTemplateRequest = $this->validator->validate($request, CreateTemplateRequest::class);
+        $template = $this->templateManager->create($createTemplateRequest->getDto());
+        $this->entityManager->flush();
 
         return $this->json(
-            $this->normalizer->normalize($this->templateManager->create($createTemplateRequest->getDto())),
+            $this->normalizer->normalize($template),
             Response::HTTP_CREATED
         );
     }
