@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Unit\Messaging\Service;
 
+use Doctrine\ORM\EntityManagerInterface;
 use PhpList\Core\Domain\Identity\Model\Administrator;
 use PhpList\Core\Domain\Identity\Model\PrivilegeFlag;
 use PhpList\Core\Domain\Identity\Model\Privileges;
@@ -37,9 +38,10 @@ class CampaignServiceTest extends TestCase
         $this->normalizer = $this->createMock(MessageNormalizer::class);
 
         $this->campaignService = new CampaignService(
-            $this->messageManager,
-            $this->paginatedProvider,
-            $this->normalizer
+            messageManager: $this->messageManager,
+            paginatedProvider: $this->paginatedProvider,
+            normalizer: $this->normalizer,
+            entityManager: $this->createMock(EntityManagerInterface::class),
         );
     }
 

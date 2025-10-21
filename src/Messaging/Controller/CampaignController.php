@@ -6,7 +6,7 @@ namespace PhpList\RestBundle\Messaging\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
-use PhpList\Core\Domain\Messaging\Message\CampaignProcessorMessage;
+use PhpList\Core\Domain\Messaging\Message\SyncCampaignProcessorMessage;
 use PhpList\Core\Domain\Messaging\Model\Message;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
@@ -20,7 +20,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Messenger\Stamp\TransportNamesStamp;
 
 /**
  * This controller provides REST API to manage campaigns.
@@ -393,10 +392,8 @@ class CampaignController extends BaseController
             throw $this->createNotFoundException('Campaign not found.');
         }
 
-        $this->messageBus->dispatch(
-            new CampaignProcessorMessage($message->getId()),
-            [new TransportNamesStamp(['sync'])]
-        );
+        $this->messageBus->dispatch(new SyncCampaignProcessorMessage($message->getId()));
+
         return $this->json($this->campaignService->getMessage($message), Response::HTTP_OK);
     }
 }
