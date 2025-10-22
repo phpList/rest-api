@@ -91,6 +91,8 @@ class AdminAttributeDefinitionController extends BaseController
         $definitionRequest = $this->validator->validate($request, CreateAttributeDefinitionRequest::class);
 
         $attributeDefinition = $this->definitionManager->create($definitionRequest->getDto());
+        $this->entityManager->flush();
+
         $json = $this->normalizer->normalize($attributeDefinition, 'json');
 
         return $this->json($json, Response::HTTP_CREATED);
@@ -158,6 +160,7 @@ class AdminAttributeDefinitionController extends BaseController
             attributeDefinition: $attributeDefinition,
             attributeDefinitionDto: $definitionRequest->getDto(),
         );
+        $this->entityManager->flush();
         $json = $this->normalizer->normalize($attributeDefinition, 'json');
 
         return $this->json($json, Response::HTTP_OK);

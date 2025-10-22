@@ -214,11 +214,10 @@ class CampaignController extends BaseController
 
         /** @var CreateMessageRequest $createMessageRequest */
         $createMessageRequest = $this->validator->validate($request, CreateMessageRequest::class);
+        $message = $this->campaignService->createMessage($createMessageRequest, $authUser);
+        $this->entityManager->flush();
 
-        return $this->json(
-            $this->campaignService->createMessage($createMessageRequest, $authUser),
-            Response::HTTP_CREATED
-        );
+        return $this->json(data: $message, status: Response::HTTP_CREATED);
     }
 
     #[Route('/{messageId}', name: 'update', requirements: ['messageId' => '\d+'], methods: ['PUT'])]
@@ -287,11 +286,10 @@ class CampaignController extends BaseController
 
         /** @var UpdateMessageRequest $updateMessageRequest */
         $updateMessageRequest = $this->validator->validate($request, UpdateMessageRequest::class);
+        $message = $this->campaignService->updateMessage($updateMessageRequest, $authUser, $message);
+        $this->entityManager->flush();
 
-        return $this->json(
-            $this->campaignService->updateMessage($updateMessageRequest, $authUser, $message),
-            Response::HTTP_OK
-        );
+        return $this->json(data:$message, status: Response::HTTP_OK);
     }
 
     #[Route('/{messageId}', name: 'delete', requirements: ['messageId' => '\d+'], methods: ['DELETE'])]

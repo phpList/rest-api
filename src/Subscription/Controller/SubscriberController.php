@@ -96,6 +96,7 @@ class SubscriberController extends BaseController
         /** @var CreateSubscriberRequest $subscriberRequest */
         $subscriberRequest = $this->validator->validate($request, CreateSubscriberRequest::class);
         $subscriberData = $this->subscriberService->createSubscriber($subscriberRequest);
+        $this->entityManager->flush();
 
         return $this->json($subscriberData, Response::HTTP_CREATED);
     }
@@ -166,6 +167,7 @@ class SubscriberController extends BaseController
         /** @var UpdateSubscriberRequest $updateSubscriberRequest */
         $updateSubscriberRequest = $this->validator->validate($request, UpdateSubscriberRequest::class);
         $subscriberData = $this->subscriberService->updateSubscriber($updateSubscriberRequest, $admin);
+        $this->entityManager->flush();
 
         return $this->json($subscriberData, Response::HTTP_OK);
     }
@@ -373,6 +375,7 @@ class SubscriberController extends BaseController
             throw $this->createNotFoundException('Subscriber not found.');
         }
         $this->subscriberService->deleteSubscriber($subscriber);
+        $this->entityManager->flush();
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }

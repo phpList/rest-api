@@ -190,6 +190,7 @@ class BounceRegexController extends BaseController
             comment: $dto->comment,
             status: $dto->status
         );
+        $this->entityManager->flush();
 
         return $this->json($this->normalizer->normalize($entity), Response::HTTP_CREATED);
     }

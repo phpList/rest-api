@@ -89,6 +89,7 @@ class SubscriberAttributeDefinitionController extends BaseController
         $definitionRequest = $this->validator->validate($request, CreateAttributeDefinitionRequest::class);
 
         $attributeDefinition = $this->definitionManager->create($definitionRequest->getDto());
+        $this->entityManager->flush();
         $json = $this->normalizer->normalize($attributeDefinition, 'json');
 
         return $this->json($json, Response::HTTP_CREATED);
@@ -156,6 +157,7 @@ class SubscriberAttributeDefinitionController extends BaseController
             attributeDefinition: $attributeDefinition,
             attributeDefinitionDto: $definitionRequest->getDto(),
         );
+        $this->entityManager->flush();
         $json = $this->normalizer->normalize($attributeDefinition, 'json');
 
         return $this->json($json, Response::HTTP_OK);
