@@ -72,6 +72,8 @@ class SubscriberControllerTest extends AbstractTestController
         self::assertMatchesRegularExpression('/^[0-9a-f]{32}$/', $responseContent['unique_id']);
     }
 
+
+
     public function testPostSubscribersWithValidSessionKeyAndValidDataCreatesSubscriber()
     {
         $email = 'subscriber@example.com';

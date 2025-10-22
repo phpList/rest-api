@@ -8,16 +8,19 @@ use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Identity\Model\PrivilegeFlag;
 use PhpList\Core\Domain\Subscription\Model\Subscriber;
+use PhpList\Core\Domain\Subscription\Service\Manager\SubscriberManager;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
 use PhpList\RestBundle\Subscription\Request\CreateSubscriberRequest;
 use PhpList\RestBundle\Subscription\Request\UpdateSubscriberRequest;
-use PhpList\RestBundle\Subscription\Service\SubscriberService;
+use PhpList\RestBundle\Subscription\Serializer\SubscriberNormalizer;
+use PhpList\RestBundle\Subscription\Service\SubscriberHistoryService;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
@@ -29,17 +32,16 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/subscribers', name: 'subscriber_')]
 class SubscriberController extends BaseController
 {
-    private SubscriberService $subscriberService;
-
     public function __construct(
         Authentication $authentication,
         RequestValidator $validator,
-        SubscriberService $subscriberService,
+        private readonly SubscriberManager $subscriberManager,
+        private readonly SubscriberNormalizer $subscriberNormalizer,
+        private readonly SubscriberHistoryService $subscriberHistoryService,
         private readonly EntityManagerInterface $entityManager,
     ) {
         parent::__construct($authentication, $validator);
         $this->authentication = $authentication;
-        $this->subscriberService = $subscriberService;
     }
 
     #[Route('', name: 'create', methods: ['POST'])]
@@ -95,8 +97,9 @@ class SubscriberController extends BaseController
 
         /** @var CreateSubscriberRequest $subscriberRequest */
         $subscriberRequest = $this->validator->validate($request, CreateSubscriberRequest::class);
-        $subscriberData = $this->subscriberService->createSubscriber($subscriberRequest);
+        $subscriber = $this->subscriberManager->createSubscriber($subscriberRequest->getDto());
         $this->entityManager->flush();
+        $subscriberData = $this->subscriberNormalizer->normalize($subscriber, 'json');
 
         return $this->json($subscriberData, Response::HTTP_CREATED);
     }
@@ -166,8 +169,9 @@ class SubscriberController extends BaseController
         }
         /** @var UpdateSubscriberRequest $updateSubscriberRequest */
         $updateSubscriberRequest = $this->validator->validate($request, UpdateSubscriberRequest::class);
-        $subscriberData = $this->subscriberService->updateSubscriber($updateSubscriberRequest, $admin);
+        $subscriber = $this->subscriberManager->updateSubscriber($updateSubscriberRequest->getDto(), $admin);
         $this->entityManager->flush();
+        $subscriberData = $this->subscriberNormalizer->normalize($subscriber, 'json');
 
         return $this->json($subscriberData, Response::HTTP_OK);
     }
@@ -217,7 +221,8 @@ class SubscriberController extends BaseController
     {
         $this->requireAuthentication($request);
 
-        $subscriberData = $this->subscriberService->getSubscriber($subscriberId);
+        $subscriber = $this->subscriberManager->getSubscriberById($subscriberId);
+        $subscriberData = $this->subscriberNormalizer->normalize($subscriber);
 
         return $this->json($subscriberData, Response::HTTP_OK);
     }
@@ -313,7 +318,7 @@ class SubscriberController extends BaseController
     ): JsonResponse {
         $this->requireAuthentication($request);
 
-        $historyData = $this->subscriberService->getSubscriberHistory($request, $subscriber);
+        $historyData = $this->subscriberHistoryService->getSubscriberHistory($request, $subscriber);
 
         return $this->json(
             data: $historyData,
@@ -374,7 +379,7 @@ class SubscriberController extends BaseController
         if (!$subscriber) {
             throw $this->createNotFoundException('Subscriber not found.');
         }
-        $this->subscriberService->deleteSubscriber($subscriber);
+        $this->subscriberManager->deleteSubscriber($subscriber);
         $this->entityManager->flush();
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
@@ -443,8 +448,9 @@ class SubscriberController extends BaseController
             throw $this->createNotFoundException('Subscriber not found.');
         }
 
-        $subscriberData = $this->subscriberService->resetSubscriberBounceCount($subscriber);
+        $subscriber = $this->subscriberManager->resetBounceCount($subscriber);
         $this->entityManager->flush();
+        $subscriberData = $this->subscriberNormalizer->normalize($subscriber, 'json');
 
         return $this->json($subscriberData, Response::HTTP_OK);
     }
@@ -490,10 +496,10 @@ class SubscriberController extends BaseController
             return new Response('<h1>Missing confirmation code.</h1>', 400);
         }
 
-        $subscriber = $this->subscriberService->confirmSubscriber($uniqueId);
-        $this->entityManager->flush();
-
-        if (!$subscriber) {
+        try {
+            $this->subscriberManager->markAsConfirmedByUniqueId($uniqueId);
+            $this->entityManager->flush();
+        } catch (NotFoundHttpException) {
             return new Response('<h1>Subscriber isn\'t found or already confirmed.</h1>', 404);
         }
 
