@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Messaging\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Messaging\Service\Manager\BounceRegexManager;
 use PhpList\Core\Security\Authentication;
@@ -27,6 +28,7 @@ class BounceRegexController extends BaseController
         RequestValidator $validator,
         private readonly BounceRegexManager $manager,
         private readonly BounceRegexNormalizer $normalizer,
+        private readonly EntityManagerInterface $entityManager,
     ) {
         parent::__construct($authentication, $validator);
     }
@@ -188,6 +190,7 @@ class BounceRegexController extends BaseController
             comment: $dto->comment,
             status: $dto->status
         );
+        $this->entityManager->flush();
 
         return $this->json($this->normalizer->normalize($entity), Response::HTTP_CREATED);
     }
@@ -240,6 +243,7 @@ class BounceRegexController extends BaseController
             throw $this->createNotFoundException('Bounce regex not found.');
         }
         $this->manager->delete($entity);
+        $this->entityManager->flush();
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }

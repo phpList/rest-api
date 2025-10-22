@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Identity\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Identity\Model\AdminAttributeDefinition;
 use PhpList\Core\Domain\Identity\Service\AdminAttributeDefinitionManager;
@@ -32,7 +33,8 @@ class AdminAttributeDefinitionController extends BaseController
         RequestValidator $validator,
         AdminAttributeDefinitionManager $definitionManager,
         AdminAttributeDefinitionNormalizer $normalizer,
-        PaginatedDataProvider $paginatedDataProvider
+        PaginatedDataProvider $paginatedDataProvider,
+        private readonly EntityManagerInterface $entityManager,
     ) {
         parent::__construct($authentication, $validator);
         $this->definitionManager = $definitionManager;
@@ -89,6 +91,8 @@ class AdminAttributeDefinitionController extends BaseController
         $definitionRequest = $this->validator->validate($request, CreateAttributeDefinitionRequest::class);
 
         $attributeDefinition = $this->definitionManager->create($definitionRequest->getDto());
+        $this->entityManager->flush();
+
         $json = $this->normalizer->normalize($attributeDefinition, 'json');
 
         return $this->json($json, Response::HTTP_CREATED);
@@ -156,6 +160,7 @@ class AdminAttributeDefinitionController extends BaseController
             attributeDefinition: $attributeDefinition,
             attributeDefinitionDto: $definitionRequest->getDto(),
         );
+        $this->entityManager->flush();
         $json = $this->normalizer->normalize($attributeDefinition, 'json');
 
         return $this->json($json, Response::HTTP_OK);
@@ -211,6 +216,7 @@ class AdminAttributeDefinitionController extends BaseController
         }
 
         $this->definitionManager->delete($attributeDefinition);
+        $this->entityManager->flush();
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }

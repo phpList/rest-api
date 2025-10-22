@@ -198,6 +198,7 @@ class AdminAttributeValueController extends BaseController
             throw $this->createNotFoundException('Administrator attribute not found.');
         }
         $this->attributeManager->delete($attribute);
+        $this->entityManager->flush();
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
@@ -355,6 +356,7 @@ class AdminAttributeValueController extends BaseController
             attributeDefinitionId: $definition->getId()
         );
         $this->attributeManager->delete($attribute);
+        $this->entityManager->flush();
 
         return $this->json(
             $this->normalizer->normalize($attribute),

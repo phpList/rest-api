@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Subscription\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Identity\Model\PrivilegeFlag;
 use PhpList\Core\Domain\Subscription\Service\Manager\SubscriberBlacklistManager;
@@ -31,6 +32,7 @@ class BlacklistController extends BaseController
         RequestValidator $validator,
         SubscriberBlacklistManager $blacklistManager,
         UserBlacklistNormalizer $normalizer,
+        private readonly EntityManagerInterface $entityManager,
     ) {
         parent::__construct($authentication, $validator);
         $this->authentication = $authentication;
@@ -156,6 +158,7 @@ class BlacklistController extends BaseController
             email: $definitionRequest->email,
             reasonData: $definitionRequest->reason
         );
+        $this->entityManager->flush();
         $json = $this->normalizer->normalize($userBlacklisted, 'json');
 
         return $this->json($json, Response::HTTP_CREATED);
@@ -209,6 +212,7 @@ class BlacklistController extends BaseController
         }
 
         $this->blacklistManager->removeEmailFromBlacklist($email);
+        $this->entityManager->flush();
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Subscription\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Identity\Model\PrivilegeFlag;
 use PhpList\Core\Domain\Subscription\Model\SubscribePage;
@@ -28,6 +29,7 @@ class SubscribePageController extends BaseController
         RequestValidator $validator,
         private readonly SubscribePageManager $subscribePageManager,
         private readonly SubscribePageNormalizer $normalizer,
+        private readonly EntityManagerInterface $entityManager,
     ) {
         parent::__construct($authentication, $validator);
     }
@@ -141,6 +143,7 @@ class SubscribePageController extends BaseController
         $createRequest = $this->validator->validate($request, SubscribePageRequest::class);
 
         $page = $this->subscribePageManager->createPage($createRequest->title, $createRequest->active, $admin);
+        $this->entityManager->flush();
 
         return $this->json($this->normalizer->normalize($page), Response::HTTP_CREATED);
     }
@@ -423,6 +426,7 @@ class SubscribePageController extends BaseController
         $createRequest = $this->validator->validate($request, SubscribePageDataRequest::class);
 
         $item = $this->subscribePageManager->setPageData($page, $createRequest->name, $createRequest->value);
+        $this->entityManager->flush();
 
         return $this->json([
             'id' => $item->getId(),
