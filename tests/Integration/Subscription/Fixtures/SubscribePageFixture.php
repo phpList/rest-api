@@ -38,9 +38,6 @@ class SubscribePageFixture extends Fixture
                 break;
             }
             $row = array_combine($headers, $data);
-            if ($row === false) {
-                throw new RuntimeException('Malformed CSV data: header/data length mismatch.');
-            }
 
             $owner = $adminRepository->find($row['owner']);
             if ($owner === null) {

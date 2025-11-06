@@ -41,9 +41,6 @@ class SubscriberListFixture extends Fixture implements DependentFixtureInterface
                 break;
             }
             $row = array_combine($headers, $data);
-            if ($row === false) {
-                throw new RuntimeException('Malformed CSV data: header/data length mismatch.');
-            }
 
             $ownerId = (int)$row['owner'];
             $admin = $adminsById[$ownerId] ?? $adminRepository->find($ownerId);

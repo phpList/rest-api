@@ -40,9 +40,6 @@ class AdminAttributeValueFixture extends Fixture implements DependentFixtureInte
                 break;
             }
             $row = array_combine($headers, $data);
-            if ($row === false) {
-                throw new RuntimeException('Malformed CSV data: header/data length mismatch.');
-            }
 
             $admin = $adminRepository->find($row['admin_id']);
             if ($admin === null) {

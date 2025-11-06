@@ -6,20 +6,21 @@ namespace PhpList\RestBundle\Messaging\Request;
 
 use PhpList\Core\Domain\Messaging\Model\Dto\CreateTemplateDto;
 use PhpList\RestBundle\Common\Request\RequestInterface;
+use PhpList\RestBundle\Messaging\Validator\Constraint\ContainsPlaceholder;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class CreateTemplateRequest implements RequestInterface
 {
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(normalizer: 'trim')]
     #[Assert\NotNull]
     public string $title;
 
     #[Assert\NotBlank]
-    #[\PhpList\RestBundle\Messaging\Validator\Constraint\ContainsPlaceholder]
+    #[ContainsPlaceholder]
     public string $content;
 
-    #[\PhpList\RestBundle\Messaging\Validator\Constraint\ContainsPlaceholder]
+    #[ContainsPlaceholder]
     public ?string $text = null;
 
     public ?UploadedFile $file = null;

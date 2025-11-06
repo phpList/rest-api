@@ -147,7 +147,7 @@ class SubscriberImportController extends BaseController
             ]);
         } catch (CouldNotReadUploadedFileException $exception) {
             return $this->json([
-                'message' => 'Could not read uploaded file.' . $exception->getMessage()
+                'message' => 'Could not read uploaded file. ' . $exception->getMessage()
             ], Response::HTTP_BAD_REQUEST);
         } catch (Exception $e) {
             return $this->json([
