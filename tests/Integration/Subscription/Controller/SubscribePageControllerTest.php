@@ -79,6 +79,7 @@ class SubscribePageControllerTest extends AbstractTestController
 
     public function testCreateSubscribePageWithSessionCreatesPage(): void
     {
+        $this->loadFixtures([AdministratorFixture::class, SubscribePageFixture::class]);
         $payload = json_encode([
             'title' => 'new-page@example.org',
             'active' => true,

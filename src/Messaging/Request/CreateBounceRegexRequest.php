@@ -17,7 +17,7 @@ class CreateBounceRegexRequest implements RequestInterface
     public ?string $action = null;
 
     #[Assert\Type('integer')]
-    public ?int $listOrder = 0;
+    public int $listOrder = 0;
 
     #[Assert\Type('integer')]
     public ?int $admin = null;

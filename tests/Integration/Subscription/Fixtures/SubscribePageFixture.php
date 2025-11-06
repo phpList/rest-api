@@ -38,6 +38,9 @@ class SubscribePageFixture extends Fixture
                 break;
             }
             $row = array_combine($headers, $data);
+            if ($row === false) {
+                throw new RuntimeException('Malformed CSV data: header/data length mismatch.');
+            }
 
             $owner = $adminRepository->find($row['owner']);
             if ($owner === null) {
@@ -51,7 +54,7 @@ class SubscribePageFixture extends Fixture
             $page = new SubscribePage();
             $this->setSubjectId($page, (int)$row['id']);
             $page->setTitle($row['title']);
-            $page->setActive((bool)$row['active']);
+            $page->setActive(filter_var($row['active'], FILTER_VALIDATE_BOOLEAN));
             $page->setOwner($owner);
 
             $manager->persist($page);

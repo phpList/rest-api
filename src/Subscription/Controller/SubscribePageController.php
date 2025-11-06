@@ -219,6 +219,7 @@ class SubscribePageController extends BaseController
             active: $updateRequest->active,
             owner: $admin,
         );
+        $this->entityManager->flush();
 
         return $this->json($this->normalizer->normalize($updated), Response::HTTP_OK);
     }
@@ -273,6 +274,7 @@ class SubscribePageController extends BaseController
         }
 
         $this->subscribePageManager->deletePage($page);
+        $this->entityManager->flush();
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
