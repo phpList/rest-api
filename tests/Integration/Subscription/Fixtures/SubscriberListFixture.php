@@ -31,6 +31,7 @@ class SubscriberListFixture extends Fixture
         $headers = fgetcsv($handle);
 
         $adminRepository = $manager->getRepository(Administrator::class);
+        $adminsById = [];
 
         do {
             $data = fgetcsv($handle);
@@ -39,13 +40,24 @@ class SubscriberListFixture extends Fixture
             }
             $row = array_combine($headers, $data);
 
-            $admin = $adminRepository->find($row['owner']);
+            $ownerId = (int)$row['owner'];
+            $admin = $adminsById[$ownerId] ?? $adminRepository->find($ownerId);
             if ($admin === null) {
-                $admin = new Administrator();
-                $this->setSubjectId($admin, (int)$row['owner']);
-                $admin->setSuperUser(true);
-                $admin->setDisabled(false);
-                $manager->persist($admin);
+                // Try to reuse an existing admin with our deterministic login name
+                $existingByLogin = $adminRepository->findOneBy(['loginName' => 'owner_' . $ownerId]);
+                if ($existingByLogin instanceof Administrator) {
+                    $admin = $existingByLogin;
+                    $adminsById[$ownerId] = $admin;
+                } else {
+                    $admin = new Administrator();
+                    $this->setSubjectId($admin, $ownerId);
+                    // Use a deterministic, non-conflicting login name to avoid clashes with other fixtures
+                    $admin->setLoginName('owner_' . $ownerId);
+                    $admin->setSuperUser(true);
+                    $admin->setDisabled(false);
+                    $manager->persist($admin);
+                    $adminsById[$ownerId] = $admin;
+                }
             }
 
             $subscriberList = new SubscriberList();

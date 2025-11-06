@@ -100,7 +100,7 @@ class SessionControllerTest extends AbstractTestController
     {
         $this->loadFixtures([AdministratorFixture::class]);
 
-        $loginName = 'john.doe';
+        $loginName = 'john.doe.1';
         $password = 'a sandwich and a cup of coffee';
         $jsonData = ['login_name' => $loginName, 'password' => $password];
 
