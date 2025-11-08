@@ -6,6 +6,8 @@ namespace PhpList\RestBundle\Tests\Unit\Messaging\Request;
 
 use PhpList\RestBundle\Messaging\Request\CreateBounceRegexRequest;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Symfony\Component\Validator\Violation\ConstraintViolationBuilderInterface;
 
 class CreateBounceRegexRequestTest extends TestCase
 {
@@ -42,5 +44,37 @@ class CreateBounceRegexRequestTest extends TestCase
         $this->assertNull($dto['admin']);
         $this->assertNull($dto['comment']);
         $this->assertNull($dto['status']);
+    }
+
+    public function testValidateRegexPatternWithValidRegexDoesNotAddViolation(): void
+    {
+        $req = new CreateBounceRegexRequest();
+        $req->regex = '/valid.*/i';
+
+        $context = $this->createMock(ExecutionContextInterface::class);
+        $context->expects($this->never())->method('buildViolation');
+
+        $req->validateRegexPattern($context);
+
+        // if no exception and no violation calls, the test passes
+        $this->assertTrue(true);
+    }
+
+    public function testValidateRegexPatternWithInvalidRegexAddsViolation(): void
+    {
+        $req = new CreateBounceRegexRequest();
+        $req->regex = '/[invalid';
+
+        $builder = $this->createMock(ConstraintViolationBuilderInterface::class);
+        $builder->expects($this->once())->method('atPath')->with('regex')->willReturnSelf();
+        $builder->expects($this->once())->method('addViolation');
+
+        $context = $this->createMock(ExecutionContextInterface::class);
+        $context->expects($this->once())
+            ->method('buildViolation')
+            ->with('Invalid regular expression pattern.')
+            ->willReturn($builder);
+
+        $req->validateRegexPattern($context);
     }
 }

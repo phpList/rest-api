@@ -6,6 +6,7 @@ namespace PhpList\RestBundle\Messaging\Request;
 
 use PhpList\RestBundle\Common\Request\RequestInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class CreateBounceRegexRequest implements RequestInterface
 {
@@ -38,5 +39,25 @@ class CreateBounceRegexRequest implements RequestInterface
             'comment' => $this->comment,
             'status' => $this->status,
         ];
+    }
+
+    #[Assert\Callback('validateRegexPattern')]
+    public function validateRegexPattern(ExecutionContextInterface $context): void
+    {
+        if (!isset($this->regex)) {
+            return;
+        }
+        set_error_handler(static function () {
+            return true;
+        });
+        // phpcs:ignore Generic.PHP.NoSilencedErrors
+        $allGood = @preg_match($this->regex, '');
+        restore_error_handler();
+
+        if ($allGood === false) {
+            $context->buildViolation('Invalid regular expression pattern.')
+                ->atPath('regex')
+                ->addViolation();
+        }
     }
 }
