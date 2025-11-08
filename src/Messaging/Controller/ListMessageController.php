@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Messaging\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Messaging\Model\Message;
 use PhpList\Core\Domain\Messaging\Service\Manager\ListMessageManager;
@@ -37,7 +38,8 @@ class ListMessageController extends BaseController
         ListMessageManager $listMessageManager,
         ListMessageNormalizer $listMessageNormalizer,
         SubscriberListNormalizer $subscriberListNormalizer,
-        MessageNormalizer $messageNormalizer
+        MessageNormalizer $messageNormalizer,
+        private readonly EntityManagerInterface $entityManager,
     ) {
         parent::__construct($authentication, $validator);
         $this->listMessageManager = $listMessageManager;
@@ -262,6 +264,7 @@ class ListMessageController extends BaseController
         }
 
         $listMessage = $this->listMessageManager->associateMessageWithList($message, $subscriberList);
+        $this->entityManager->flush();
 
         return $this->json(
             data: $this->listMessageNormalizer->normalize($listMessage),

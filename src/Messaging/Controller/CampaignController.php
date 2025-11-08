@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Messaging\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
+use PhpList\Core\Domain\Messaging\Message\SyncCampaignProcessorMessage;
 use PhpList\Core\Domain\Messaging\Model\Message;
-use PhpList\Core\Domain\Messaging\Service\CampaignProcessor;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
@@ -17,6 +18,7 @@ use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
@@ -28,17 +30,18 @@ use Symfony\Component\Routing\Attribute\Route;
 class CampaignController extends BaseController
 {
     private CampaignService $campaignService;
-    private CampaignProcessor $campaignProcessor;
+    private MessageBusInterface $messageBus;
 
     public function __construct(
         Authentication $authentication,
         RequestValidator $validator,
         CampaignService $campaignService,
-        CampaignProcessor $campaignProcessor,
+        MessageBusInterface $messageBus,
+        private readonly EntityManagerInterface $entityManager,
     ) {
         parent::__construct($authentication, $validator);
         $this->campaignService = $campaignService;
-        $this->campaignProcessor = $campaignProcessor;
+        $this->messageBus = $messageBus;
     }
 
     #[Route('', name: 'get_list', methods: ['GET'])]
@@ -211,11 +214,10 @@ class CampaignController extends BaseController
 
         /** @var CreateMessageRequest $createMessageRequest */
         $createMessageRequest = $this->validator->validate($request, CreateMessageRequest::class);
+        $message = $this->campaignService->createMessage($createMessageRequest, $authUser);
+        $this->entityManager->flush();
 
-        return $this->json(
-            $this->campaignService->createMessage($createMessageRequest, $authUser),
-            Response::HTTP_CREATED
-        );
+        return $this->json(data: $message, status: Response::HTTP_CREATED);
     }
 
     #[Route('/{messageId}', name: 'update', requirements: ['messageId' => '\d+'], methods: ['PUT'])]
@@ -284,11 +286,10 @@ class CampaignController extends BaseController
 
         /** @var UpdateMessageRequest $updateMessageRequest */
         $updateMessageRequest = $this->validator->validate($request, UpdateMessageRequest::class);
+        $message = $this->campaignService->updateMessage($updateMessageRequest, $authUser, $message);
+        $this->entityManager->flush();
 
-        return $this->json(
-            $this->campaignService->updateMessage($updateMessageRequest, $authUser, $message),
-            Response::HTTP_OK
-        );
+        return $this->json(data:$message, status: Response::HTTP_OK);
     }
 
     #[Route('/{messageId}', name: 'delete', requirements: ['messageId' => '\d+'], methods: ['DELETE'])]
@@ -339,6 +340,7 @@ class CampaignController extends BaseController
         $authUser = $this->requireAuthentication($request);
 
         $this->campaignService->deleteMessage($authUser, $message);
+        $this->entityManager->flush();
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
@@ -388,7 +390,7 @@ class CampaignController extends BaseController
             throw $this->createNotFoundException('Campaign not found.');
         }
 
-        $this->campaignProcessor->process($message);
+        $this->messageBus->dispatch(new SyncCampaignProcessorMessage($message->getId()));
 
         return $this->json($this->campaignService->getMessage($message), Response::HTTP_OK);
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Identity\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Identity\Model\AdministratorToken;
 use PhpList\Core\Domain\Identity\Service\SessionManager;
@@ -34,6 +35,7 @@ class SessionController extends BaseController
         Authentication $authentication,
         RequestValidator $validator,
         SessionManager $sessionManager,
+        private readonly EntityManagerInterface $entityManager,
     ) {
         parent::__construct($authentication, $validator);
 
@@ -96,6 +98,7 @@ class SessionController extends BaseController
             loginName:$createSessionRequest->loginName,
             password: $createSessionRequest->password
         );
+        $this->entityManager->flush();
 
         $json = $normalizer->normalize($token, 'json');
 
@@ -163,6 +166,7 @@ class SessionController extends BaseController
         }
 
         $this->sessionManager->deleteSession($token);
+        $this->entityManager->flush();
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }

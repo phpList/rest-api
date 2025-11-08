@@ -6,13 +6,15 @@ namespace PhpList\RestBundle\Tests\Integration\Subscription\Fixtures;
 
 use DateTime;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use PhpList\Core\Domain\Identity\Model\Administrator;
 use PhpList\Core\Domain\Subscription\Model\SubscriberList;
 use PhpList\Core\TestingSupport\Traits\ModelTestTrait;
+use PhpList\RestBundle\Tests\Integration\Identity\Fixtures\AdministratorFixture;
 use RuntimeException;
 
-class SubscriberListFixture extends Fixture
+class SubscriberListFixture extends Fixture implements DependentFixtureInterface
 {
     use ModelTestTrait;
     public function load(ObjectManager $manager): void
@@ -31,6 +33,7 @@ class SubscriberListFixture extends Fixture
         $headers = fgetcsv($handle);
 
         $adminRepository = $manager->getRepository(Administrator::class);
+        $adminsById = [];
 
         do {
             $data = fgetcsv($handle);
@@ -39,13 +42,17 @@ class SubscriberListFixture extends Fixture
             }
             $row = array_combine($headers, $data);
 
-            $admin = $adminRepository->find($row['owner']);
+            $ownerId = (int)$row['owner'];
+            $admin = $adminsById[$ownerId] ?? $adminRepository->find($ownerId);
             if ($admin === null) {
                 $admin = new Administrator();
-                $this->setSubjectId($admin, (int)$row['owner']);
+                $this->setSubjectId($admin, $ownerId);
+                // Use a deterministic, non-conflicting login name to avoid clashes with other fixtures
+                $admin->setLoginName('owner_' . $ownerId);
                 $admin->setSuperUser(true);
                 $admin->setDisabled(false);
                 $manager->persist($admin);
+                $adminsById[$ownerId] = $admin;
             }
 
             $subscriberList = new SubscriberList();
@@ -65,5 +72,12 @@ class SubscriberListFixture extends Fixture
         } while (true);
 
         fclose($handle);
+    }
+
+    public function getDependencies(): array
+    {
+        return [
+            AdministratorFixture::class,
+        ];
     }
 }

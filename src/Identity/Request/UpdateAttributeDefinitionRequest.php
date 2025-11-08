@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class UpdateAttributeDefinitionRequest implements RequestInterface
 {
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(normalizer: 'trim')]
     public string $name;
 
     public ?string $type = null;

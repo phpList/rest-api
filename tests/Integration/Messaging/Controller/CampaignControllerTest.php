@@ -98,11 +98,11 @@ class CampaignControllerTest extends AbstractTestController
     {
         $this->loadFixtures([AdministratorFixture::class, MessageFixture::class]);
 
-        $this->authenticatedJsonRequest('POST', '/api/v2/campaigns/1/send');
+        $this->authenticatedJsonRequest('POST', '/api/v2/campaigns/2/send');
         $this->assertHttpOkay();
 
         $response = $this->getDecodedJsonResponseContent();
-        self::assertSame(1, $response['id']);
+        self::assertSame(2, $response['id']);
     }
 
     public function testSendMessageWithInvalidIdReturnsNotFound(): void

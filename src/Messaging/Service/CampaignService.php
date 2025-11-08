@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Messaging\Service;
 
+use Doctrine\ORM\EntityManagerInterface;
 use PhpList\Core\Domain\Identity\Model\Administrator;
 use PhpList\Core\Domain\Identity\Model\PrivilegeFlag;
 use PhpList\Core\Domain\Messaging\Model\Filter\MessageFilter;
 use PhpList\Core\Domain\Messaging\Model\Message;
-use PhpList\Core\Domain\Messaging\Service\MessageManager;
+use PhpList\Core\Domain\Messaging\Service\Manager\MessageManager;
 use PhpList\RestBundle\Common\Service\Provider\PaginatedDataProvider;
 use PhpList\RestBundle\Messaging\Request\CreateMessageRequest;
 use PhpList\RestBundle\Messaging\Request\UpdateMessageRequest;
@@ -23,6 +24,7 @@ class CampaignService
         private readonly MessageManager $messageManager,
         private readonly PaginatedDataProvider $paginatedProvider,
         private readonly MessageNormalizer $normalizer,
+        private readonly EntityManagerInterface $entityManager,
     ) {
     }
 
@@ -86,5 +88,6 @@ class CampaignService
         }
 
         $this->messageManager->delete($message);
+        $this->entityManager->flush();
     }
 }

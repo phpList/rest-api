@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Subscription\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Subscription\Model\Filter\SubscriberAttributeValueFilter;
 use PhpList\Core\Domain\Subscription\Model\Subscriber;
@@ -33,7 +34,8 @@ class SubscriberAttributeValueController extends BaseController
         RequestValidator $validator,
         SubscriberAttributeManager $attributeManager,
         SubscriberAttributeValueNormalizer $normalizer,
-        PaginatedDataProvider $paginatedDataProvider
+        PaginatedDataProvider $paginatedDataProvider,
+        private readonly EntityManagerInterface $entityManager,
     ) {
         parent::__construct($authentication, $validator);
         $this->attributeManager = $attributeManager;
@@ -193,6 +195,7 @@ class SubscriberAttributeValueController extends BaseController
             throw $this->createNotFoundException('Subscriber attribute not found.');
         }
         $this->attributeManager->delete($attribute);
+        $this->entityManager->flush();
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
@@ -349,6 +352,7 @@ class SubscriberAttributeValueController extends BaseController
         }
         $attribute = $this->attributeManager->getSubscriberAttribute($subscriber->getId(), $definition->getId());
         $this->attributeManager->delete($attribute);
+        $this->entityManager->flush();
 
         return $this->json(
             $this->normalizer->normalize($attribute),

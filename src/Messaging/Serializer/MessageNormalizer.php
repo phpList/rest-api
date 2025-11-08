@@ -39,7 +39,7 @@ class MessageNormalizer implements NormalizerInterface
                 'format_options' => $object->getFormat()->getFormatOptions()
             ],
             'message_metadata' => [
-                'status' => $object->getMetadata()->getStatus(),
+                'status' => $object->getMetadata()->getStatus()->value,
                 'processed' => $object->getMetadata()->isProcessed(),
                 'views' => $object->getMetadata()->getViews(),
                 'bounce_count' => $object->getMetadata()->getBounceCount(),

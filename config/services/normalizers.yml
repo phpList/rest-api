@@ -93,3 +93,15 @@ services:
   PhpList\RestBundle\Statistics\Serializer\TopLocalPartsNormalizer:
     tags: [ 'serializer.normalizer' ]
     autowire: true
+
+  PhpList\RestBundle\Subscription\Serializer\UserBlacklistNormalizer:
+    tags: [ 'serializer.normalizer' ]
+    autowire: true
+
+  PhpList\RestBundle\Subscription\Serializer\SubscribePageNormalizer:
+    tags: [ 'serializer.normalizer' ]
+    autowire: true
+
+  PhpList\RestBundle\Messaging\Serializer\BounceRegexNormalizer:
+    tags: [ 'serializer.normalizer' ]
+    autowire: true

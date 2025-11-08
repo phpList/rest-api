@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Subscription\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Subscription\Model\SubscriberList;
 use PhpList\Core\Domain\Subscription\Service\Manager\SubscriptionManager;
@@ -28,16 +29,19 @@ class SubscriptionController extends BaseController
 {
     private SubscriptionManager $subscriptionManager;
     private SubscriptionNormalizer $subscriptionNormalizer;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(
         Authentication $authentication,
         RequestValidator $validator,
         SubscriptionManager $subscriptionManager,
         SubscriptionNormalizer $subscriptionNormalizer,
+        EntityManagerInterface $entityManager,
     ) {
         parent::__construct($authentication, $validator);
         $this->subscriptionManager = $subscriptionManager;
         $this->subscriptionNormalizer = $subscriptionNormalizer;
+        $this->entityManager = $entityManager;
     }
 
     #[Route('/{listId}/subscribers', name: 'create', requirements: ['listId' => '\d+'], methods: ['POST'])]
@@ -127,6 +131,7 @@ class SubscriptionController extends BaseController
         /** @var SubscriptionRequest $subscriptionRequest */
         $subscriptionRequest = $this->validator->validate($request, SubscriptionRequest::class);
         $subscriptions = $this->subscriptionManager->createSubscriptions($list, $subscriptionRequest->emails);
+        $this->entityManager->flush();
         $normalized = array_map(fn($item) => $this->subscriptionNormalizer->normalize($item), $subscriptions);
 
         return $this->json($normalized, Response::HTTP_CREATED);
@@ -193,6 +198,7 @@ class SubscriptionController extends BaseController
         /** @var SubscriptionRequest $subscriptionRequest */
         $subscriptionRequest = $this->validator->validateDto($subscriptionRequest);
         $this->subscriptionManager->deleteSubscriptions($list, $subscriptionRequest->emails);
+        $this->entityManager->flush();
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }

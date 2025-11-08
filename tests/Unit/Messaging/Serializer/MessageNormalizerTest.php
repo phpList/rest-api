@@ -46,7 +46,7 @@ class MessageNormalizerTest extends TestCase
         $entered = new DateTime('2025-01-01T10:00:00+00:00');
         $sent = new DateTime('2025-01-02T10:00:00+00:00');
 
-        $metadata = new Message\MessageMetadata('draft');
+        $metadata = new Message\MessageMetadata(Message\MessageStatus::Draft);
         $metadata->setProcessed(true);
         $metadata->setViews(10);
         $metadata->setBounceCount(3);
@@ -80,7 +80,7 @@ class MessageNormalizerTest extends TestCase
         $this->assertSame('Test Template', $result['template']['title']);
         $this->assertSame('Subject', $result['message_content']['subject']);
         $this->assertSame(['text', 'html'], $result['message_format']['format_options']);
-        $this->assertSame('draft', $result['message_metadata']['status']);
+        $this->assertSame(Message\MessageStatus::Draft->value, $result['message_metadata']['status']);
         $this->assertSame('from@example.com', $result['message_options']['from_field']);
     }
 

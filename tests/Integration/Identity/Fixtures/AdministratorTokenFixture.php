@@ -42,14 +42,15 @@ class AdministratorTokenFixture extends Fixture
             if ($admin === null) {
                 $admin = new Administrator();
                 $this->setSubjectId($admin, (int)$row['adminid']);
+                // Use a deterministic, non-conflicting login name to avoid clashes with other fixtures
+                $admin->setLoginName('admin_' . $row['adminid']);
                 $admin->setSuperUser(true);
                 $manager->persist($admin);
             }
 
-            $adminToken = new AdministratorToken();
+            $adminToken = new AdministratorToken($admin);
             $this->setSubjectId($adminToken, (int)$row['id']);
             $adminToken->setKey($row['value']);
-            $adminToken->setAdministrator($admin);
             $manager->persist($adminToken);
 
             $this->setSubjectProperty($adminToken, 'expiry', new DateTime($row['expires']));

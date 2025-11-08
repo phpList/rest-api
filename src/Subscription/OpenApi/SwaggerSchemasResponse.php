@@ -142,6 +142,15 @@ use OpenApi\Attributes as OA;
         ),
     ],
 )]
+#[OA\Schema(
+    schema: 'SubscribePage',
+    properties: [
+        new OA\Property(property: 'id', type: 'integer', example: 1),
+        new OA\Property(property: 'title', type: 'string', example: 'Subscribe to our newsletter'),
+        new OA\Property(property: 'active', type: 'boolean', example: true),
+        new OA\Property(property: 'owner', ref: '#/components/schemas/Administrator'),
+    ],
+)]
 class SwaggerSchemasResponse
 {
 }

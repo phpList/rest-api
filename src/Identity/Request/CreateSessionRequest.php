@@ -9,11 +9,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class CreateSessionRequest implements RequestInterface
 {
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(normalizer: 'trim')]
     #[Assert\Type(type: 'string')]
     public string $loginName;
 
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(normalizer: 'trim')]
     #[Assert\Type(type: 'string')]
     public string $password;
 

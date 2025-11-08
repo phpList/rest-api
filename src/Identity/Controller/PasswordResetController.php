@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Identity\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Identity\Service\PasswordManager;
 use PhpList\Core\Security\Authentication;
@@ -29,6 +30,7 @@ class PasswordResetController extends BaseController
         Authentication $authentication,
         RequestValidator $validator,
         PasswordManager $passwordManager,
+        private readonly EntityManagerInterface $entityManager,
     ) {
         parent::__construct($authentication, $validator);
 
@@ -74,6 +76,7 @@ class PasswordResetController extends BaseController
         $resetRequest = $this->validator->validate($request, RequestPasswordResetRequest::class);
         
         $this->passwordManager->generatePasswordResetToken($resetRequest->email);
+        $this->entityManager->flush();
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
@@ -117,6 +120,7 @@ class PasswordResetController extends BaseController
         $validateRequest = $this->validator->validate($request, ValidateTokenRequest::class);
         
         $administrator = $this->passwordManager->validatePasswordResetToken($validateRequest->token);
+        $this->entityManager->flush();
 
         return $this->json([ 'valid' => $administrator !== null]);
     }
@@ -169,6 +173,7 @@ class PasswordResetController extends BaseController
             $resetRequest->token,
             $resetRequest->newPassword
         );
+        $this->entityManager->flush();
         
         if ($success) {
             return $this->json([ 'message' => 'Password updated successfully']);

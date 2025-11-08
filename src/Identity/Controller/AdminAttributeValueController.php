@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Identity\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Identity\Model\Filter\AdminAttributeValueFilter;
 use PhpList\Core\Domain\Identity\Model\Administrator;
@@ -27,18 +28,21 @@ class AdminAttributeValueController extends BaseController
     private AdminAttributeManager $attributeManager;
     private AdminAttributeValueNormalizer $normalizer;
     private PaginatedDataProvider $paginatedDataProvider;
+    private EntityManagerInterface $entityManager;
 
     public function __construct(
         Authentication $authentication,
         RequestValidator $validator,
         AdminAttributeManager $attributeManager,
         AdminAttributeValueNormalizer $normalizer,
-        PaginatedDataProvider $paginatedDataProvider
+        PaginatedDataProvider $paginatedDataProvider,
+        EntityManagerInterface $entityManager,
     ) {
         parent::__construct($authentication, $validator);
         $this->attributeManager = $attributeManager;
         $this->normalizer = $normalizer;
         $this->paginatedDataProvider = $paginatedDataProvider;
+        $this->entityManager = $entityManager;
     }
 
     #[Route(
@@ -122,6 +126,7 @@ class AdminAttributeValueController extends BaseController
             definition: $definition,
             value: $request->toArray()['value'] ?? null
         );
+        $this->entityManager->flush();
         $json = $this->normalizer->normalize($attributeDefinition, 'json');
 
         return $this->json($json, Response::HTTP_CREATED);
@@ -193,6 +198,7 @@ class AdminAttributeValueController extends BaseController
             throw $this->createNotFoundException('Administrator attribute not found.');
         }
         $this->attributeManager->delete($attribute);
+        $this->entityManager->flush();
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
@@ -350,6 +356,7 @@ class AdminAttributeValueController extends BaseController
             attributeDefinitionId: $definition->getId()
         );
         $this->attributeManager->delete($attribute);
+        $this->entityManager->flush();
 
         return $this->json(
             $this->normalizer->normalize($attribute),

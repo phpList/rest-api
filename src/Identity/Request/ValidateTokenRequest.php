@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class ValidateTokenRequest implements RequestInterface
 {
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(normalizer: 'trim')]
     #[Assert\Type(type: 'string')]
     public string $token;
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Identity\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Identity\Model\Administrator;
 use PhpList\Core\Domain\Identity\Service\AdministratorManager;
@@ -35,7 +36,8 @@ class AdministratorController extends BaseController
         RequestValidator $validator,
         AdministratorManager $administratorManager,
         AdministratorNormalizer $normalizer,
-        PaginatedDataProvider $paginatedProvider
+        PaginatedDataProvider $paginatedProvider,
+        private readonly EntityManagerInterface $entityManager,
     ) {
         parent::__construct($authentication, $validator);
         $this->administratorManager = $administratorManager;
@@ -149,6 +151,7 @@ class AdministratorController extends BaseController
         $createRequest = $validator->validate($request, CreateAdministratorRequest::class);
 
         $administrator = $this->administratorManager->createAdministrator($createRequest->getDto());
+        $this->entityManager->flush();
         $json = $normalizer->normalize($administrator, 'json');
 
         return $this->json($json, Response::HTTP_CREATED);
@@ -255,6 +258,7 @@ class AdministratorController extends BaseController
         /** @var UpdateAdministratorRequest $updateRequest */
         $updateRequest = $this->validator->validate($request, UpdateAdministratorRequest::class);
         $this->administratorManager->updateAdministrator($administrator, $updateRequest->getDto());
+        $this->entityManager->flush();
 
         return $this->json($this->normalizer->normalize($administrator), Response::HTTP_OK);
     }
@@ -303,6 +307,7 @@ class AdministratorController extends BaseController
             throw $this->createNotFoundException('Administrator not found.');
         }
         $this->administratorManager->deleteAdministrator($administrator);
+        $this->entityManager->flush();
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }

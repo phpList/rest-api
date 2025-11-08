@@ -29,12 +29,20 @@ class AdministratorFixture extends Fixture
 
         $headers = fgetcsv($handle);
 
+        $adminRepository = $manager->getRepository(Administrator::class);
+
         do {
             $data = fgetcsv($handle);
             if ($data === false) {
                 break;
             }
             $row = array_combine($headers, $data);
+
+            // Make fixture idempotent: skip if admin with this ID already exists
+            $existing = $adminRepository->find($row['id']);
+            if ($existing instanceof Administrator) {
+                continue;
+            }
 
             $admin = new Administrator();
             $this->setSubjectId($admin, (int)$row['id']);
