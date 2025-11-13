@@ -51,7 +51,6 @@ class SubscriberAttributeDefinitionControllerTest extends AbstractTestController
             'order' => 12,
             'default_value' => 'United States',
             'required' => true,
-            'table_name' => 'list_attributes',
         ]);
 
         $this->authenticatedJsonRequest('POST', '/api/v2/subscribers/attributes', [], [], [], $payload);
@@ -76,7 +75,6 @@ class SubscriberAttributeDefinitionControllerTest extends AbstractTestController
             'order' => 10,
             'default_value' => 'Canada',
             'required' => false,
-            'table_name' => 'list_attributes',
         ]);
 
         $this->authenticatedJsonRequest('PUT', '/api/v2/subscribers/attributes/1', [], [], [], $payload);

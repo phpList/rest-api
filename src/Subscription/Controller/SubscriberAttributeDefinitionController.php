@@ -12,8 +12,7 @@ use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Service\Provider\PaginatedDataProvider;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
-use PhpList\RestBundle\Subscription\Request\CreateAttributeDefinitionRequest;
-use PhpList\RestBundle\Subscription\Request\UpdateAttributeDefinitionRequest;
+use PhpList\RestBundle\Subscription\Request\SubscriberAttributeDefinitionRequest;
 use PhpList\RestBundle\Subscription\Serializer\AttributeDefinitionNormalizer;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -51,7 +50,7 @@ class SubscriberAttributeDefinitionController extends BaseController
         requestBody: new OA\RequestBody(
             description: 'Pass parameters to create subscriber attribute.',
             required: true,
-            content: new OA\JsonContent(ref: '#/components/schemas/CreateSubscriberAttributeDefinitionRequest')
+            content: new OA\JsonContent(ref: '#/components/schemas/SubscriberAttributeDefinitionRequest')
         ),
         tags: ['subscriber-attributes'],
         parameters: [
@@ -85,8 +84,8 @@ class SubscriberAttributeDefinitionController extends BaseController
     {
         $this->requireAuthentication($request);
 
-        /** @var CreateAttributeDefinitionRequest $definitionRequest */
-        $definitionRequest = $this->validator->validate($request, CreateAttributeDefinitionRequest::class);
+        /** @var SubscriberAttributeDefinitionRequest $definitionRequest */
+        $definitionRequest = $this->validator->validate($request, SubscriberAttributeDefinitionRequest::class);
 
         $attributeDefinition = $this->definitionManager->create($definitionRequest->getDto());
         $this->entityManager->flush();
@@ -104,7 +103,7 @@ class SubscriberAttributeDefinitionController extends BaseController
         requestBody: new OA\RequestBody(
             description: 'Pass parameters to update subscriber attribute.',
             required: true,
-            content: new OA\JsonContent(ref: '#/components/schemas/CreateSubscriberAttributeDefinitionRequest')
+            content: new OA\JsonContent(ref: '#/components/schemas/SubscriberAttributeDefinitionRequest')
         ),
         tags: ['subscriber-attributes'],
         parameters: [
@@ -150,8 +149,8 @@ class SubscriberAttributeDefinitionController extends BaseController
             throw $this->createNotFoundException('Attribute definition not found.');
         }
 
-        /** @var UpdateAttributeDefinitionRequest $definitionRequest */
-        $definitionRequest = $this->validator->validate($request, UpdateAttributeDefinitionRequest::class);
+        /** @var SubscriberAttributeDefinitionRequest $definitionRequest */
+        $definitionRequest = $this->validator->validate($request, SubscriberAttributeDefinitionRequest::class);
 
         $attributeDefinition = $this->definitionManager->update(
             attributeDefinition: $attributeDefinition,

@@ -18,17 +18,32 @@ use OpenApi\Attributes as OA;
     type: 'object'
 )]
 #[OA\Schema(
-    schema: 'CreateSubscriberAttributeDefinitionRequest',
+    schema: 'SubscriberAttributeDefinitionRequest',
     required: ['name'],
     properties: [
-        new OA\Property(property: 'name', type: 'string', format: 'string', example: 'Country'),
-        new OA\Property(property: 'type', type: 'string', example: 'checkbox'),
-        new OA\Property(property: 'order', type: 'number', example: 12),
-        new OA\Property(property: 'default_value', type: 'string', example: 'United States'),
+        new OA\Property(property: 'name', type: 'string', example: 'Country'),
+        new OA\Property(property: 'type', type: 'string', example: 'checkbox', nullable: true),
+        new OA\Property(property: 'order', type: 'integer', example: 12, nullable: true),
+        new OA\Property(property: 'default_value', type: 'string', example: 'United States', nullable: true),
         new OA\Property(property: 'required', type: 'boolean', example: true),
-        new OA\Property(property: 'table_name', type: 'string', example: 'list_attributes'),
+        new OA\Property(
+            property: 'options',
+            type: 'array',
+            items: new OA\Items(ref: '#/components/schemas/DynamicListAttr'),
+            nullable: true,
+        ),
     ],
-    type: 'object'
+    type: 'object',
+)]
+#[OA\Schema(
+    schema: 'DynamicListAttr',
+    required: ['name'],
+    properties: [
+        new OA\Property(property: 'id', type: 'integer', example: 1, nullable: true),
+        new OA\Property(property: 'name', type: 'string', example: 'United States'),
+        new OA\Property(property: 'listorder', type: 'integer', example: 10, nullable: true),
+    ],
+    type: 'object',
 )]
 #[OA\Schema(
     schema: 'CreateSubscriberRequest',

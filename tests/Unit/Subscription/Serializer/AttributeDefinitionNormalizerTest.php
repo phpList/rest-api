@@ -30,7 +30,6 @@ class AttributeDefinitionNormalizerTest extends TestCase
         $definition->method('getListOrder')->willReturn(12);
         $definition->method('getDefaultValue')->willReturn('US');
         $definition->method('isRequired')->willReturn(true);
-        $definition->method('getTableName')->willReturn('user_attribute');
 
         $normalizer = new AttributeDefinitionNormalizer();
         $result = $normalizer->normalize($definition);
@@ -43,7 +42,6 @@ class AttributeDefinitionNormalizerTest extends TestCase
             'list_order' => 12,
             'default_value' => 'US',
             'required' => true,
-            'table_name' => 'user_attribute',
         ], $result);
     }
 

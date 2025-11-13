@@ -14,7 +14,7 @@ class SubscribePageRequest implements RequestInterface
     public string $title;
 
     #[Assert\Type(type: 'bool')]
-    public ?bool $active = false;
+    public bool $active = false;
 
     public function getDto(): SubscribePageRequest
     {

@@ -21,11 +21,10 @@ class AttributeDefinitionNormalizer implements NormalizerInterface
         return [
             'id' => $object->getId(),
             'name' => $object->getName(),
-            'type' => $object->getType(),
+            'type' => $object->getType() ? $object->getType()->value : null,
             'list_order' => $object->getListOrder(),
             'default_value' => $object->getDefaultValue(),
             'required' => $object->isRequired(),
-            'table_name' => $object->getTableName(),
         ];
     }
 
