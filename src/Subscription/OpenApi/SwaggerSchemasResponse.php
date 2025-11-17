@@ -94,8 +94,23 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: 'default_value', type: 'string', example: 'United States'),
         new OA\Property(property: 'required', type: 'boolean', example: true),
         new OA\Property(property: 'table_name', type: 'string', example: 'list_attributes'),
+        new OA\Property(
+            property: 'options',
+            type: 'array',
+            items: new OA\Items(ref: '#/components/schemas/DynamicListAttrOption'),
+            nullable: true,
+        ),
     ],
     type: 'object'
+)]
+#[OA\Schema(
+    schema: 'DynamicListAttrOption',
+    properties: [
+        new OA\Property(property: 'id', type: 'integer', example: 1, nullable: false),
+        new OA\Property(property: 'name', type: 'string', example: 'United States'),
+        new OA\Property(property: 'listorder', type: 'integer', example: 1, nullable: false),
+    ],
+    type: 'object',
 )]
 #[OA\Schema(
     schema: 'SubscriberAttributeValue',

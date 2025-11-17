@@ -5,39 +5,39 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Tests\Unit\Identity\Request;
 
 use PhpList\Core\Domain\Identity\Model\Dto\AdminAttributeDefinitionDto;
-use PhpList\RestBundle\Identity\Request\UpdateAttributeDefinitionRequest;
+use PhpList\RestBundle\Identity\Request\AdminAttributeDefinitionRequest;
 use PHPUnit\Framework\TestCase;
 
-class UpdateAttributeDefinitionRequestTest extends TestCase
+class AdminAttributeDefinitionRequestTest extends TestCase
 {
     public function testGetDtoReturnsCorrectDto(): void
     {
-        $request = new UpdateAttributeDefinitionRequest();
-        $request->name = 'Updated Attribute';
-        $request->type = 'checkbox';
-        $request->order = 10;
-        $request->defaultValue = 'updated_default';
+        $request = new AdminAttributeDefinitionRequest();
+        $request->name = 'Test Attribute';
+        $request->type = 'text';
+        $request->order = 5;
+        $request->defaultValue = 'default';
         $request->required = true;
 
         $dto = $request->getDto();
 
         $this->assertInstanceOf(AdminAttributeDefinitionDto::class, $dto);
-        $this->assertEquals('Updated Attribute', $dto->name);
-        $this->assertEquals('checkbox', $dto->type);
-        $this->assertEquals(10, $dto->listOrder);
-        $this->assertEquals('updated_default', $dto->defaultValue);
+        $this->assertEquals('Test Attribute', $dto->name);
+        $this->assertEquals('text', $dto->type);
+        $this->assertEquals(5, $dto->listOrder);
+        $this->assertEquals('default', $dto->defaultValue);
         $this->assertTrue($dto->required);
     }
 
     public function testGetDtoWithDefaultValues(): void
     {
-        $request = new UpdateAttributeDefinitionRequest();
-        $request->name = 'Updated Attribute';
+        $request = new AdminAttributeDefinitionRequest();
+        $request->name = 'Test Attribute';
 
         $dto = $request->getDto();
 
         $this->assertInstanceOf(AdminAttributeDefinitionDto::class, $dto);
-        $this->assertEquals('Updated Attribute', $dto->name);
+        $this->assertEquals('Test Attribute', $dto->name);
         $this->assertNull($dto->type);
         $this->assertNull($dto->listOrder);
         $this->assertNull($dto->defaultValue);

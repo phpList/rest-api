@@ -8,7 +8,7 @@ use PhpList\Core\Domain\Identity\Model\Dto\AdminAttributeDefinitionDto;
 use PhpList\RestBundle\Common\Request\RequestInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class CreateAttributeDefinitionRequest implements RequestInterface
+class AdminAttributeDefinitionRequest implements RequestInterface
 {
     #[Assert\NotBlank]
     public string $name;

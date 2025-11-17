@@ -4,12 +4,26 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Subscription\Request;
 
+use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Subscription\Model\Dto\UpdateSubscriberDto;
 use PhpList\Core\Domain\Subscription\Model\Subscriber;
 use PhpList\RestBundle\Common\Request\RequestInterface;
 use PhpList\RestBundle\Identity\Validator\Constraint\UniqueEmail;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[OA\Schema(
+    schema: 'UpdateSubscriberRequest',
+    required: ['email'],
+    properties: [
+        new OA\Property(property: 'email', type: 'string', format: 'string', example: 'admin@example.com'),
+        new OA\Property(property: 'confirmed', type: 'boolean', example: false),
+        new OA\Property(property: 'blacklisted', type: 'boolean', example: false),
+        new OA\Property(property: 'html_email', type: 'boolean', example: false),
+        new OA\Property(property: 'disabled', type: 'boolean', example: false),
+        new OA\Property(property: 'additional_data', type: 'string', example: 'asdf'),
+    ],
+    type: 'object'
+)]
 class UpdateSubscriberRequest implements RequestInterface
 {
     public int $subscriberId;
