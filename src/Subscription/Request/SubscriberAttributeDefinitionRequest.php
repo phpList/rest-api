@@ -55,7 +55,7 @@ use Symfony\Component\Validator\Exception\ValidatorException;
     properties: [
         new OA\Property(property: 'id', type: 'integer', example: 1, nullable: true),
         new OA\Property(property: 'name', type: 'string', example: 'United States'),
-        new OA\Property(property: 'listorder', type: 'integer', example: 10, nullable: true),
+        new OA\Property(property: 'list_order', type: 'integer', example: 10, nullable: true),
     ],
     type: 'object',
 )]

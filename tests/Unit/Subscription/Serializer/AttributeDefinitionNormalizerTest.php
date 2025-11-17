@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Tests\Unit\Subscription\Serializer;
 
 use PhpList\Core\Domain\Common\Model\AttributeTypeEnum;
+use PhpList\Core\Domain\Subscription\Model\Dto\DynamicListAttrDto;
 use PhpList\Core\Domain\Subscription\Model\SubscriberAttributeDefinition;
 use PhpList\RestBundle\Subscription\Serializer\AttributeDefinitionNormalizer;
 use PHPUnit\Framework\TestCase;
@@ -43,6 +44,7 @@ class AttributeDefinitionNormalizerTest extends TestCase
             'list_order' => 12,
             'default_value' => 'US',
             'required' => true,
+            'options' => [],
         ], $result);
     }
 
@@ -53,4 +55,56 @@ class AttributeDefinitionNormalizerTest extends TestCase
 
         self::assertSame([], $result);
     }
+
+    public function testNormalizeWithOptions(): void
+    {
+        $options = [
+            new DynamicListAttrDto(
+                id: 10,
+                name: 'USA',
+                listOrder: 1
+            ),
+            new DynamicListAttrDto(
+                id: 20,
+                name: 'Canada',
+                listOrder: 2
+            ),
+        ];
+
+        $definition = $this->createMock(SubscriberAttributeDefinition::class);
+        $definition->method('getId')->willReturn(5);
+        $definition->method('getName')->willReturn('Country');
+        $definition->method('getType')->willReturn(AttributeTypeEnum::Select);
+        $definition->method('getListOrder')->willReturn(3);
+        $definition->method('getDefaultValue')->willReturn(null);
+        $definition->method('isRequired')->willReturn(false);
+        $definition->method('getOptions')->willReturn($options);
+
+        $normalizer = new AttributeDefinitionNormalizer();
+        $result = $normalizer->normalize($definition);
+
+        self::assertIsArray($result);
+
+        self::assertSame([
+            'id' => 5,
+            'name' => 'Country',
+            'type' => 'select',
+            'list_order' => 3,
+            'default_value' => null,
+            'required' => false,
+            'options' => [
+                [
+                    'id' => 10,
+                    'name' => 'USA',
+                    'list_order' => 1,
+                ],
+                [
+                    'id' => 20,
+                    'name' => 'Canada',
+                    'list_order' => 2,
+                ],
+            ],
+        ], $result);
+    }
+
 }

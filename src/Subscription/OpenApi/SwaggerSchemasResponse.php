@@ -108,7 +108,7 @@ use OpenApi\Attributes as OA;
     properties: [
         new OA\Property(property: 'id', type: 'integer', example: 1, nullable: false),
         new OA\Property(property: 'name', type: 'string', example: 'United States'),
-        new OA\Property(property: 'listorder', type: 'integer', example: 1, nullable: false),
+        new OA\Property(property: 'list_order', type: 'integer', example: 1, nullable: false),
     ],
     type: 'object',
 )]
