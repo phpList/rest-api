@@ -36,3 +36,8 @@ services:
     autowire: true
     autoconfigure: true
     tags: [ 'validator.constraint_validator' ]
+
+  PhpList\Core\Domain\Identity\Validator\AttributeTypeValidator:
+    autowire: true
+    autoconfigure: true
+

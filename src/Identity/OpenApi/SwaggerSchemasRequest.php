@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Identity\OpenApi;
 
 use OpenApi\Attributes as OA;
+use PhpList\Core\Domain\Common\Model\AttributeTypeEnum;
 
 #[OA\Schema(
     schema: 'CreateAdministratorRequest',
@@ -96,15 +97,23 @@ use OpenApi\Attributes as OA;
     type: 'object'
 )]
 #[OA\Schema(
-    schema: 'CreateAdminAttributeDefinitionRequest',
+    schema: 'AdminAttributeDefinitionRequest',
     required: ['name'],
     properties: [
         new OA\Property(property: 'name', type: 'string', format: 'string', example: 'Country'),
-        new OA\Property(property: 'type', type: 'string', example: 'checkbox'),
+        new OA\Property(
+            property: 'type',
+            type: 'string',
+            enum: [
+                AttributeTypeEnum::TextLine,
+                AttributeTypeEnum::Hidden,
+            ],
+            example: 'hidden',
+            nullable: true
+        ),
         new OA\Property(property: 'order', type: 'number', example: 12),
         new OA\Property(property: 'default_value', type: 'string', example: 'United States'),
         new OA\Property(property: 'required', type: 'boolean', example: true),
-        new OA\Property(property: 'table_name', type: 'string', example: 'list_attributes'),
     ],
     type: 'object'
 )]

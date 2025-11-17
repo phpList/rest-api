@@ -12,8 +12,7 @@ use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Service\Provider\PaginatedDataProvider;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
-use PhpList\RestBundle\Identity\Request\CreateAttributeDefinitionRequest;
-use PhpList\RestBundle\Identity\Request\UpdateAttributeDefinitionRequest;
+use PhpList\RestBundle\Identity\Request\AdminAttributeDefinitionRequest;
 use PhpList\RestBundle\Identity\Serializer\AdminAttributeDefinitionNormalizer;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -51,7 +50,7 @@ class AdminAttributeDefinitionController extends BaseController
         requestBody: new OA\RequestBody(
             description: 'Pass parameters to create admin attribute.',
             required: true,
-            content: new OA\JsonContent(ref: '#/components/schemas/CreateAdminAttributeDefinitionRequest')
+            content: new OA\JsonContent(ref: '#/components/schemas/AdminAttributeDefinitionRequest')
         ),
         tags: ['admin-attributes'],
         parameters: [
@@ -87,8 +86,8 @@ class AdminAttributeDefinitionController extends BaseController
     {
         $this->requireAuthentication($request);
 
-        /** @var CreateAttributeDefinitionRequest $definitionRequest */
-        $definitionRequest = $this->validator->validate($request, CreateAttributeDefinitionRequest::class);
+        /** @var AdminAttributeDefinitionRequest $definitionRequest */
+        $definitionRequest = $this->validator->validate($request, AdminAttributeDefinitionRequest::class);
 
         $attributeDefinition = $this->definitionManager->create($definitionRequest->getDto());
         $this->entityManager->flush();
@@ -107,7 +106,7 @@ class AdminAttributeDefinitionController extends BaseController
         requestBody: new OA\RequestBody(
             description: 'Pass parameters to update admin attribute.',
             required: true,
-            content: new OA\JsonContent(ref: '#/components/schemas/CreateAdminAttributeDefinitionRequest')
+            content: new OA\JsonContent(ref: '#/components/schemas/AdminAttributeDefinitionRequest')
         ),
         tags: ['admin-attributes'],
         parameters: [
@@ -153,8 +152,8 @@ class AdminAttributeDefinitionController extends BaseController
             throw $this->createNotFoundException('Attribute definition not found.');
         }
 
-        /** @var UpdateAttributeDefinitionRequest $definitionRequest */
-        $definitionRequest = $this->validator->validate($request, UpdateAttributeDefinitionRequest::class);
+        /** @var AdminAttributeDefinitionRequest $definitionRequest */
+        $definitionRequest = $this->validator->validate($request, AdminAttributeDefinitionRequest::class);
 
         $attributeDefinition = $this->definitionManager->update(
             attributeDefinition: $attributeDefinition,

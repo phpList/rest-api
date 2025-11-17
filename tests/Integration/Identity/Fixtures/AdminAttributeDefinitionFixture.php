@@ -42,7 +42,6 @@ class AdminAttributeDefinitionFixture extends Fixture
             $definition->setListOrder((int)$row['list_order']);
             $definition->setDefaultValue($row['default_value']);
             $definition->setRequired((bool)$row['required']);
-            $definition->setTableName($row['table_name']);
 
             $manager->persist($definition);
         } while (true);

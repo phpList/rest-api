@@ -23,21 +23,21 @@ class SubscriberAttributeDefinitionControllerTest extends AbstractTestController
 
     public function testGetAttributesWithoutSessionKeyReturnsForbidden()
     {
-        self::getClient()->request('GET', '/api/v2/subscribers/attributes');
+        self::getClient()->request('GET', '/api/v2/attributes');
         $this->assertHttpForbidden();
     }
 
     public function testGetAttributesWithSessionKeyReturnsOk()
     {
         $this->loadFixtures([AdministratorFixture::class, AdministratorTokenFixture::class]);
-        $this->authenticatedJsonRequest('GET', '/api/v2/subscribers/attributes');
+        $this->authenticatedJsonRequest('GET', '/api/v2/attributes');
         $this->assertHttpOkay();
     }
 
     public function testGetAttributeWithInvalidIdReturnsNotFound()
     {
         $this->loadFixtures([AdministratorFixture::class, AdministratorTokenFixture::class]);
-        $this->authenticatedJsonRequest('GET', '/api/v2/subscribers/attributes/999');
+        $this->authenticatedJsonRequest('GET', '/api/v2/attributes/999');
         $this->assertHttpNotFound();
     }
 
@@ -51,10 +51,9 @@ class SubscriberAttributeDefinitionControllerTest extends AbstractTestController
             'order' => 12,
             'default_value' => 'United States',
             'required' => true,
-            'table_name' => 'list_attributes',
         ]);
 
-        $this->authenticatedJsonRequest('POST', '/api/v2/subscribers/attributes', [], [], [], $payload);
+        $this->authenticatedJsonRequest('POST', '/api/v2/attributes', [], [], [], $payload);
 
         $this->assertHttpCreated();
 
@@ -76,10 +75,9 @@ class SubscriberAttributeDefinitionControllerTest extends AbstractTestController
             'order' => 10,
             'default_value' => 'Canada',
             'required' => false,
-            'table_name' => 'list_attributes',
         ]);
 
-        $this->authenticatedJsonRequest('PUT', '/api/v2/subscribers/attributes/1', [], [], [], $payload);
+        $this->authenticatedJsonRequest('PUT', '/api/v2/attributes/1', [], [], [], $payload);
         $this->assertHttpOkay();
         $response = $this->getDecodedJsonResponseContent();
         self::assertSame('Updated Country', $response['name']);
@@ -93,7 +91,7 @@ class SubscriberAttributeDefinitionControllerTest extends AbstractTestController
             SubscriberAttributeDefinitionFixture::class,
         ]);
 
-        $this->authenticatedJsonRequest('DELETE', '/api/v2/subscribers/attributes/1');
+        $this->authenticatedJsonRequest('DELETE', '/api/v2/attributes/1');
         $this->assertHttpNoContent();
 
         $repo = self::getContainer()->get(SubscriberAttributeDefinitionRepository::class);
@@ -110,7 +108,7 @@ class SubscriberAttributeDefinitionControllerTest extends AbstractTestController
             'required' => false
         ]);
 
-        $this->authenticatedJsonRequest('POST', '/api/v2/subscribers/attributes', [], [], [], $payload);
+        $this->authenticatedJsonRequest('POST', '/api/v2/attributes', [], [], [], $payload);
         $this->assertHttpUnprocessableEntity();
     }
 }

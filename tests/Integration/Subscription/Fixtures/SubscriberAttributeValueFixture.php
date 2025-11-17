@@ -7,6 +7,7 @@ namespace PhpList\RestBundle\Tests\Integration\Subscription\Fixtures;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Persistence\ObjectManager;
+use PhpList\Core\Domain\Common\Model\AttributeTypeEnum;
 use PhpList\Core\Domain\Subscription\Model\Subscriber;
 use PhpList\Core\Domain\Subscription\Model\SubscriberAttributeDefinition;
 use PhpList\Core\Domain\Subscription\Model\SubscriberAttributeValue;
@@ -17,7 +18,7 @@ class SubscriberAttributeValueFixture extends Fixture implements FixtureInterfac
     {
         $definition = new SubscriberAttributeDefinition();
         $definition->setName('Country');
-        $definition->setType('checkbox');
+        $definition->setType(AttributeTypeEnum::Checkbox);
         $definition->setListOrder(1);
         $definition->setDefaultValue('US');
         $definition->setRequired(true);

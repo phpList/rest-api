@@ -351,8 +351,6 @@ class SubscriberAttributeValueController extends BaseController
             throw $this->createNotFoundException('Subscriber attribute not found.');
         }
         $attribute = $this->attributeManager->getSubscriberAttribute($subscriber->getId(), $definition->getId());
-        $this->attributeManager->delete($attribute);
-        $this->entityManager->flush();
 
         return $this->json(
             $this->normalizer->normalize($attribute),

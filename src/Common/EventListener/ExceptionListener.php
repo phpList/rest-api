@@ -6,6 +6,7 @@ namespace PhpList\RestBundle\Common\EventListener;
 
 use Exception;
 use PhpList\Core\Domain\Identity\Exception\AdminAttributeCreationException;
+use PhpList\Core\Domain\Subscription\Exception\AttributeDefinitionCreationException;
 use PhpList\Core\Domain\Subscription\Exception\SubscriptionCreationException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
@@ -38,6 +39,11 @@ class ExceptionListener
             ], $exception->getStatusCode());
             $event->setResponse($response);
         } elseif ($exception instanceof AdminAttributeCreationException) {
+            $response = new JsonResponse([
+                'message' => $exception->getMessage(),
+            ], $exception->getStatusCode());
+            $event->setResponse($response);
+        } elseif ($exception instanceof AttributeDefinitionCreationException) {
             $response = new JsonResponse([
                 'message' => $exception->getMessage(),
             ], $exception->getStatusCode());

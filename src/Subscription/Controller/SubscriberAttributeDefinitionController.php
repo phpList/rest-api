@@ -7,13 +7,13 @@ namespace PhpList\RestBundle\Subscription\Controller;
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Subscription\Model\SubscriberAttributeDefinition;
+use PhpList\Core\Domain\Subscription\Repository\SubscriberAttributeDefinitionRepository;
 use PhpList\Core\Domain\Subscription\Service\Manager\AttributeDefinitionManager;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Service\Provider\PaginatedDataProvider;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
-use PhpList\RestBundle\Subscription\Request\CreateAttributeDefinitionRequest;
-use PhpList\RestBundle\Subscription\Request\UpdateAttributeDefinitionRequest;
+use PhpList\RestBundle\Subscription\Request\SubscriberAttributeDefinitionRequest;
 use PhpList\RestBundle\Subscription\Serializer\AttributeDefinitionNormalizer;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/subscribers/attributes', name: 'subscriber_attribute_definition_')]
+#[Route('/attributes', name: 'subscriber_attribute_definition_')]
 class SubscriberAttributeDefinitionController extends BaseController
 {
     private AttributeDefinitionManager $definitionManager;
@@ -44,14 +44,14 @@ class SubscriberAttributeDefinitionController extends BaseController
 
     #[Route('', name: 'create', methods: ['POST'])]
     #[OA\Post(
-        path: '/api/v2/subscribers/attributes',
+        path: '/api/v2/attributes',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Returns created subscriber attribute definition.',
         summary: 'Create a subscriber attribute definition.',
         requestBody: new OA\RequestBody(
             description: 'Pass parameters to create subscriber attribute.',
             required: true,
-            content: new OA\JsonContent(ref: '#/components/schemas/CreateSubscriberAttributeDefinitionRequest')
+            content: new OA\JsonContent(ref: '#/components/schemas/SubscriberAttributeDefinitionRequest')
         ),
         tags: ['subscriber-attributes'],
         parameters: [
@@ -75,6 +75,11 @@ class SubscriberAttributeDefinitionController extends BaseController
                 content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
             ),
             new OA\Response(
+                response: 409,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/AlreadyExistsResponse')
+            ),
+            new OA\Response(
                 response: 422,
                 description: 'Failure',
                 content: new OA\JsonContent(ref: '#/components/schemas/ValidationErrorResponse')
@@ -85,8 +90,8 @@ class SubscriberAttributeDefinitionController extends BaseController
     {
         $this->requireAuthentication($request);
 
-        /** @var CreateAttributeDefinitionRequest $definitionRequest */
-        $definitionRequest = $this->validator->validate($request, CreateAttributeDefinitionRequest::class);
+        /** @var SubscriberAttributeDefinitionRequest $definitionRequest */
+        $definitionRequest = $this->validator->validate($request, SubscriberAttributeDefinitionRequest::class);
 
         $attributeDefinition = $this->definitionManager->create($definitionRequest->getDto());
         $this->entityManager->flush();
@@ -97,14 +102,14 @@ class SubscriberAttributeDefinitionController extends BaseController
 
     #[Route('/{definitionId}', name: 'update', requirements: ['definitionId' => '\d+'], methods: ['PUT'])]
     #[OA\Put(
-        path: '/api/v2/subscribers/attributes/{definitionId}',
+        path: '/api/v2/attributes/{definitionId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Returns updated subscriber attribute definition.',
         summary: 'Update a subscriber attribute definition.',
         requestBody: new OA\RequestBody(
             description: 'Pass parameters to update subscriber attribute.',
             required: true,
-            content: new OA\JsonContent(ref: '#/components/schemas/CreateSubscriberAttributeDefinitionRequest')
+            content: new OA\JsonContent(ref: '#/components/schemas/SubscriberAttributeDefinitionRequest')
         ),
         tags: ['subscriber-attributes'],
         parameters: [
@@ -150,8 +155,8 @@ class SubscriberAttributeDefinitionController extends BaseController
             throw $this->createNotFoundException('Attribute definition not found.');
         }
 
-        /** @var UpdateAttributeDefinitionRequest $definitionRequest */
-        $definitionRequest = $this->validator->validate($request, UpdateAttributeDefinitionRequest::class);
+        /** @var SubscriberAttributeDefinitionRequest $definitionRequest */
+        $definitionRequest = $this->validator->validate($request, SubscriberAttributeDefinitionRequest::class);
 
         $attributeDefinition = $this->definitionManager->update(
             attributeDefinition: $attributeDefinition,
@@ -165,7 +170,7 @@ class SubscriberAttributeDefinitionController extends BaseController
 
     #[Route('/{definitionId}', name: 'delete', requirements: ['definitionId' => '\d+'], methods: ['DELETE'])]
     #[OA\Delete(
-        path: '/api/v2/subscribers/attributes/{definitionId}',
+        path: '/api/v2/attributes/{definitionId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Deletes a single subscriber attribute definition.',
         summary: 'Deletes an attribute definition.',
@@ -220,7 +225,7 @@ class SubscriberAttributeDefinitionController extends BaseController
 
     #[Route('', name: 'get_list', methods: ['GET'])]
     #[OA\Get(
-        path: '/api/v2/subscribers/attributes',
+        path: '/api/v2/attributes',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Returns a JSON list of all subscriber attribute definitions.',
         summary: 'Gets a list of all subscriber attribute definitions.',
@@ -287,7 +292,7 @@ class SubscriberAttributeDefinitionController extends BaseController
 
     #[Route('/{definitionId}', name: 'get_one', requirements: ['definitionId' => '\d+'], methods: ['GET'])]
     #[OA\Get(
-        path: '/api/v2/subscribers/attributes/{definitionId}',
+        path: '/api/v2/attributes/{definitionId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Returns a single attribute with specified ID.',
         summary: 'Gets attribute with specified ID.',
@@ -342,6 +347,13 @@ class SubscriberAttributeDefinitionController extends BaseController
         $this->requireAuthentication($request);
         if (!$attributeDefinition) {
             throw $this->createNotFoundException('Attribute definition not found.');
+        }
+
+        /** @var SubscriberAttributeDefinitionRepository $repo */
+        $repo = $this->entityManager->getRepository(SubscriberAttributeDefinition::class);
+        $hydrated = $repo->findOneByName($attributeDefinition->getName());
+        if ($hydrated instanceof SubscriberAttributeDefinition) {
+            $attributeDefinition = $hydrated;
         }
 
         return $this->json(

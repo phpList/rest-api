@@ -5,11 +5,60 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Subscription\Request;
 
 use DateTimeImmutable;
+use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Subscription\Model\Filter\SubscriberFilter;
 use PhpList\RestBundle\Common\Request\RequestInterface;
 use PhpList\RestBundle\Subscription\Validator\Constraint\ListExists;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[OA\Schema(
+    schema: 'ExportSubscriberRequest',
+    properties: [
+        new OA\Property(
+            property: 'date_type',
+            description: 'What date needs to be used for filtering (any, signup, changed, changelog, subscribed)',
+            default: 'any',
+            enum: ['any', 'signup', 'changed', 'changelog', 'subscribed']
+        ),
+        new OA\Property(
+            property: 'list_id',
+            description: 'List ID from where to export',
+            type: 'integer'
+        ),
+        new OA\Property(
+            property: 'date_from',
+            description: 'Start date for filtering (format: Y-m-d)',
+            type: 'string',
+            format: 'date'
+        ),
+        new OA\Property(
+            property: 'date_to',
+            description: 'End date for filtering (format: Y-m-d)',
+            type: 'string',
+            format: 'date'
+        ),
+        new OA\Property(
+            property: 'columns',
+            description: 'Columns to include in the export',
+            type: 'array',
+            items: new OA\Items(type: 'string'),
+            default: [
+                'id',
+                'email',
+                'confirmed',
+                'blacklisted',
+                'bounceCount',
+                'createdAt',
+                'updatedAt',
+                'uniqueId',
+                'htmlEmail',
+                'disabled',
+                'extraData',
+            ],
+        ),
+    ],
+    type: 'object'
+)]
 class SubscribersExportRequest implements RequestInterface
 {
     /**
@@ -69,14 +118,14 @@ class SubscribersExportRequest implements RequestInterface
         [$subscribedFrom, $subscribedTo, $signupFrom, $signupTo, $changedFrom, $changedTo] = $this->resolveDates();
 
         return new SubscriberFilter(
-            $this->listId ?? null,
-            $subscribedFrom,
-            $subscribedTo,
-            $signupFrom,
-            $signupTo,
-            $changedFrom,
-            $changedTo,
-            $this->columns
+            listId: $this->listId ?? null,
+            subscribedDateFrom: $subscribedFrom,
+            subscribedDateTo: $subscribedTo,
+            createdDateFrom: $signupFrom,
+            createdDateTo: $signupTo,
+            updatedDateFrom: $changedFrom,
+            updatedDateTo: $changedTo,
+            columns: $this->columns
         );
     }
 }
