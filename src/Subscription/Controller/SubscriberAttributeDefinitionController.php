@@ -75,6 +75,11 @@ class SubscriberAttributeDefinitionController extends BaseController
                 content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
             ),
             new OA\Response(
+                response: 409,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/AlreadyExistsResponse')
+            ),
+            new OA\Response(
                 response: 422,
                 description: 'Failure',
                 content: new OA\JsonContent(ref: '#/components/schemas/ValidationErrorResponse')
