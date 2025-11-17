@@ -7,6 +7,7 @@ namespace PhpList\RestBundle\Subscription\Controller;
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Subscription\Model\SubscriberAttributeDefinition;
+use PhpList\Core\Domain\Subscription\Repository\SubscriberAttributeDefinitionRepository;
 use PhpList\Core\Domain\Subscription\Service\Manager\AttributeDefinitionManager;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
@@ -341,6 +342,13 @@ class SubscriberAttributeDefinitionController extends BaseController
         $this->requireAuthentication($request);
         if (!$attributeDefinition) {
             throw $this->createNotFoundException('Attribute definition not found.');
+        }
+
+        /** @var SubscriberAttributeDefinitionRepository $repo */
+        $repo = $this->entityManager->getRepository(SubscriberAttributeDefinition::class);
+        $hydrated = $repo->findOneByName($attributeDefinition->getName());
+        if ($hydrated instanceof SubscriberAttributeDefinition) {
+            $attributeDefinition = $hydrated;
         }
 
         return $this->json(
