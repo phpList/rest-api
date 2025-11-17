@@ -22,14 +22,11 @@ class AttributeDefinitionNormalizer implements NormalizerInterface
         $options = $object->getOptions();
         if (!empty($options)) {
             $options = array_map(function ($option) {
-                if ($option instanceof DynamicListAttrDto) {
-                    return [
-                        'id' => $option->id,
-                        'name' => $option->name,
-                        'list_order' => $option->listOrder,
-                    ];
-                }
-                return $option;
+                return [
+                    'id' => $option->id,
+                    'name' => $option->name,
+                    'list_order' => $option->listOrder,
+                ];
             }, $options);
         }
 

@@ -97,8 +97,7 @@ class AttributeDefinitionNormalizerTest extends TestCase
                     'id' => 10,
                     'name' => 'USA',
                     'list_order' => 1,
-                ],
-                [
+                ], [
                     'id' => 20,
                     'name' => 'Canada',
                     'list_order' => 2,
@@ -106,5 +105,4 @@ class AttributeDefinitionNormalizerTest extends TestCase
             ],
         ], $result);
     }
-
 }
