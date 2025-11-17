@@ -82,7 +82,10 @@ class SubscriberAttributeDefinitionRequest implements RequestInterface
 
     public function getDto(): AttributeDefinitionDto
     {
-        $type = $this->type === null ? null : AttributeTypeEnum::from($this->type);
+        $type = null;
+        if ($this->type !== null) {
+            $type = AttributeTypeEnum::tryFrom($this->type);
+        }
         return new AttributeDefinitionDto(
             name: $this->name,
             type: $type,
