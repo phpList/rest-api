@@ -17,7 +17,6 @@ class UpdateAttributeDefinitionRequest implements RequestInterface
     public ?int $order = null;
     public ?string $defaultValue = null;
     public bool $required = false;
-    public ?string $tableName = null;
 
     public function getDto(): AdminAttributeDefinitionDto
     {
@@ -27,7 +26,6 @@ class UpdateAttributeDefinitionRequest implements RequestInterface
             listOrder: $this->order,
             defaultValue: $this->defaultValue,
             required: $this->required,
-            tableName: $this->tableName,
         );
     }
 }

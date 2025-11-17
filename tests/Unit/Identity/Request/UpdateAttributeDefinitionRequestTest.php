@@ -18,7 +18,6 @@ class UpdateAttributeDefinitionRequestTest extends TestCase
         $request->order = 10;
         $request->defaultValue = 'updated_default';
         $request->required = true;
-        $request->tableName = 'updated_table';
 
         $dto = $request->getDto();
 
@@ -28,7 +27,6 @@ class UpdateAttributeDefinitionRequestTest extends TestCase
         $this->assertEquals(10, $dto->listOrder);
         $this->assertEquals('updated_default', $dto->defaultValue);
         $this->assertTrue($dto->required);
-        $this->assertEquals('updated_table', $dto->tableName);
     }
 
     public function testGetDtoWithDefaultValues(): void
@@ -44,6 +42,5 @@ class UpdateAttributeDefinitionRequestTest extends TestCase
         $this->assertNull($dto->listOrder);
         $this->assertNull($dto->defaultValue);
         $this->assertFalse($dto->required);
-        $this->assertNull($dto->tableName);
     }
 }

@@ -238,7 +238,7 @@ class SubscriberImportControllerTest extends AbstractTestController
         self::assertArrayHasKey('errors', $responseContent);
         self::assertEquals(0, $responseContent['imported']);
         self::assertEquals(1, $responseContent['skipped']);
-        self::assertEquals([], $responseContent['errors']);
+        self::assertEquals(['__Invalid email: invalid-email'], $responseContent['errors']);
 
         $this->authenticatedJsonRequest(
             'POST',

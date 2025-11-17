@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Unit\Subscription\Serializer;
 
+use PhpList\Core\Domain\Common\Model\AttributeTypeEnum;
 use PhpList\Core\Domain\Subscription\Model\SubscriberAttributeDefinition;
 use PhpList\RestBundle\Subscription\Serializer\AttributeDefinitionNormalizer;
 use PHPUnit\Framework\TestCase;
@@ -26,7 +27,7 @@ class AttributeDefinitionNormalizerTest extends TestCase
         $definition = $this->createMock(SubscriberAttributeDefinition::class);
         $definition->method('getId')->willReturn(1);
         $definition->method('getName')->willReturn('Country');
-        $definition->method('getType')->willReturn('text');
+        $definition->method('getType')->willReturn(AttributeTypeEnum::Text);
         $definition->method('getListOrder')->willReturn(12);
         $definition->method('getDefaultValue')->willReturn('US');
         $definition->method('isRequired')->willReturn(true);

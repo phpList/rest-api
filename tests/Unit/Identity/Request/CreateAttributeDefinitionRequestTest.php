@@ -18,7 +18,6 @@ class CreateAttributeDefinitionRequestTest extends TestCase
         $request->order = 5;
         $request->defaultValue = 'default';
         $request->required = true;
-        $request->tableName = 'test_table';
 
         $dto = $request->getDto();
 
@@ -28,7 +27,6 @@ class CreateAttributeDefinitionRequestTest extends TestCase
         $this->assertEquals(5, $dto->listOrder);
         $this->assertEquals('default', $dto->defaultValue);
         $this->assertTrue($dto->required);
-        $this->assertEquals('test_table', $dto->tableName);
     }
 
     public function testGetDtoWithDefaultValues(): void
@@ -44,6 +42,5 @@ class CreateAttributeDefinitionRequestTest extends TestCase
         $this->assertNull($dto->listOrder);
         $this->assertNull($dto->defaultValue);
         $this->assertFalse($dto->required);
-        $this->assertNull($dto->tableName);
     }
 }
