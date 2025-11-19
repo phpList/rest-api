@@ -14,3 +14,7 @@ reviews:
     base_branches:
       - ".*"
     drafts: false
+
+checks:
+  docstring_coverage:
+    enabled: false
