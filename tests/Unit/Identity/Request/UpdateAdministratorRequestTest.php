@@ -17,7 +17,7 @@ class UpdateAdministratorRequestTest extends TestCase
         $request->loginName = 'testuser';
         $request->password = 'password123';
         $request->email = 'test@example.com';
-        $request->superAdmin = true;
+        $request->superUser = true;
         $request->privileges = [
             'subscribers' => true,
             'campaigns' => false,

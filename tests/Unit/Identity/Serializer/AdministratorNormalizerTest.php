@@ -36,7 +36,7 @@ class AdministratorNormalizerTest extends TestCase
             'id' => 123,
             'login_name' => 'admin',
             'email' => 'admin@example.com',
-            'super_admin' => true,
+            'super_user' => true,
             'privileges' => [
                 'subscribers' => true,
                 'campaigns' => false,

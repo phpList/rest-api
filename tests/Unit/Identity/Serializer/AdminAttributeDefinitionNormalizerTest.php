@@ -32,7 +32,6 @@ class AdminAttributeDefinitionNormalizerTest extends TestCase
             'list_order' => 5,
             'default_value' => 'default',
             'required' => true,
-            'table_name' => 'test_table',
         ], $data);
     }
 
