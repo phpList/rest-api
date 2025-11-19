@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Identity\Request;
 
+use OpenApi\Attributes as OA;
+use PhpList\Core\Domain\Common\Model\AttributeTypeEnum;
 use PhpList\Core\Domain\Identity\Model\Dto\AdminAttributeDefinitionDto;
 use PhpList\Core\Domain\Subscription\Validator\AttributeTypeValidator;
 use PhpList\RestBundle\Common\Request\RequestInterface;
@@ -12,6 +14,27 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\Validator\Exception\ValidatorException;
 
+#[OA\Schema(
+    schema: 'AdminAttributeDefinitionRequest',
+    required: ['name'],
+    properties: [
+        new OA\Property(property: 'name', type: 'string', format: 'string', example: 'Country'),
+        new OA\Property(
+            property: 'type',
+            type: 'string',
+            enum: [
+                AttributeTypeEnum::TextLine,
+                AttributeTypeEnum::Hidden,
+            ],
+            example: 'hidden',
+            nullable: true
+        ),
+        new OA\Property(property: 'order', type: 'number', example: 12),
+        new OA\Property(property: 'default_value', type: 'string', example: 'United States'),
+        new OA\Property(property: 'required', type: 'boolean', example: true),
+    ],
+    type: 'object'
+)]
 #[Assert\Callback('validateType')]
 class AdminAttributeDefinitionRequest implements RequestInterface
 {

@@ -4,9 +4,22 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Statistics\Serializer;
 
+use OpenApi\Attributes as OA;
 use PhpList\RestBundle\Statistics\Controller\AnalyticsController;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
+#[OA\Schema(
+    schema: 'ViewOpensStatistics',
+    properties: [
+        new OA\Property(property: 'campaign_id', type: 'integer'),
+        new OA\Property(property: 'subject', type: 'string'),
+        new OA\Property(property: 'sent', type: 'integer'),
+        new OA\Property(property: 'unique_views', type: 'integer'),
+        new OA\Property(property: 'rate', type: 'number', format: 'float'),
+    ],
+    type: 'object',
+    nullable: true
+)]
 class ViewOpensStatisticsNormalizer implements NormalizerInterface
 {
     /**

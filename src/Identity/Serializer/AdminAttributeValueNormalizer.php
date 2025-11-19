@@ -4,9 +4,19 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Identity\Serializer;
 
+use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Identity\Model\AdminAttributeValue;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
+#[OA\Schema(
+    schema: 'AdminAttributeValue',
+    properties: [
+        new OA\Property(property: 'administrator', ref: '#/components/schemas/Administrator'),
+        new OA\Property(property: 'definition', ref: '#/components/schemas/AttributeDefinition'),
+        new OA\Property(property: 'value', type: 'string', example: 'United States'),
+    ],
+    type: 'object'
+)]
 class AdminAttributeValueNormalizer implements NormalizerInterface
 {
     public function __construct(

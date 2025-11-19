@@ -4,9 +4,18 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Subscription\Serializer;
 
+use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Subscription\Model\SubscriberAttributeValue;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
+#[OA\Schema(
+    schema: 'SubscriberAttributeValue',
+    properties: [
+        new OA\Property(property: 'subscriber', ref: '#/components/schemas/Subscriber'),
+        new OA\Property(property: 'definition', ref: '#/components/schemas/AttributeDefinition'),
+        new OA\Property(property: 'value', type: 'string', example: 'United States'),
+    ],
+)]
 class SubscriberAttributeValueNormalizer implements NormalizerInterface
 {
     public function __construct(
