@@ -22,7 +22,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/subscribers/attribute-values', name: 'subscriber_attribute_value_')]
+#[Route('/subscribers', name: 'subscriber_attribute_value_')]
 class SubscriberAttributeValueController extends BaseController
 {
     private SubscriberAttributeManager $attributeManager;
@@ -44,16 +44,16 @@ class SubscriberAttributeValueController extends BaseController
     }
 
     #[Route(
-        path: '/{subscriberId}/{definitionId}',
+        path: '/{subscriberId}/attributes/{definitionId}',
         name: 'create',
         requirements: ['subscriberId' => '\d+', 'definitionId' => '\d+'],
         methods: ['POST', 'PUT']
     )]
     #[OA\Post(
-        path: '/api/v2/subscribers/attribute-values/{subscriberId}/{definitionId}',
+        path: '/api/v2/subscribers/{subscriberId}/attributes/{definitionId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Returns created/updated subscriber attribute.',
-        summary: 'Create/update a subscriber attribute.',
+        summary: 'Create/update a subscriber attribute value.',
         requestBody: new OA\RequestBody(
             description: 'Pass parameters to create subscriber attribute.',
             required: true,
@@ -130,13 +130,13 @@ class SubscriberAttributeValueController extends BaseController
     }
 
     #[Route(
-        path: '/{subscriberId}/{definitionId}',
+        path: '/{subscriberId}/attributes/{definitionId}',
         name: 'delete',
         requirements: ['subscriberId' => '\d+', 'definitionId' => '\d+'],
         methods: ['DELETE']
     )]
     #[OA\Delete(
-        path: '/api/v2/subscribers/attribute-values/{subscriberId}/{definitionId}',
+        path: '/api/v2/subscribers/{subscriberId}/attributes/{definitionId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Deletes a single subscriber attribute.',
         summary: 'Deletes an attribute.',
@@ -200,9 +200,9 @@ class SubscriberAttributeValueController extends BaseController
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 
-    #[Route('/{subscriberId}', name: 'get_list', requirements: ['subscriberId' => '\d+'], methods: ['GET'])]
+    #[Route('/{subscriberId}/attributes', name: 'get_list', requirements: ['subscriberId' => '\d+'], methods: ['GET'])]
     #[OA\Get(
-        path: '/api/v2/subscribers/attribute-values/{subscriberId}',
+        path: '/api/v2/subscribers/{subscriberId}/attributes',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Returns a JSON list of all subscriber attributes.',
         summary: 'Gets a list of all subscriber attributes.',
@@ -270,23 +270,23 @@ class SubscriberAttributeValueController extends BaseController
 
         return $this->json(
             $this->paginatedDataProvider->getPaginatedList(
-                $request,
-                $this->normalizer,
-                SubscriberAttributeValue::class,
-                $filter
+                request: $request,
+                normalizer: $this->normalizer,
+                className: SubscriberAttributeValue::class,
+                filter: $filter
             ),
             Response::HTTP_OK
         );
     }
 
     #[Route(
-        path: '/{subscriberId}/{definitionId}',
+        path: '/{subscriberId}/attributes/{definitionId}',
         name: 'get_one',
         requirements: ['subscriberId' => '\d+', 'definitionId' => '\d+'],
         methods: ['GET']
     )]
     #[OA\Get(
-        path: '/api/v2/subscribers/attribute-values/{subscriberId}/{definitionId}',
+        path: '/api/v2/subscribers/{subscriberId}/attributes/{definitionId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Returns a single attribute.',
         summary: 'Gets subscriber attribute.',
