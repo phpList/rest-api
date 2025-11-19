@@ -4,9 +4,31 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Messaging\Serializer;
 
+use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Messaging\Model\TemplateImage;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
+#[OA\Schema(
+    schema: 'TemplateImage',
+    properties: [
+        new OA\Property(property: 'id', type: 'integer', example: 12),
+        new OA\Property(property: 'template_id', type: 'integer', example: 1),
+        new OA\Property(property: 'mimetype', type: 'string', example: 'image/png', nullable: true),
+        new OA\Property(property: 'filename', type: 'string', example: 'header.png', nullable: true),
+        new OA\Property(
+            property: 'data',
+            description: 'Base64-encoded image data',
+            type: 'string',
+            format: 'byte',
+            example: 'iVBORw0KGgoAAAANSUhEUgAAA...',
+            nullable: true
+        ),
+        new OA\Property(property: 'width', type: 'integer', example: 600, nullable: true),
+        new OA\Property(property: 'height', type: 'integer', example: 200, nullable: true),
+    ],
+    type: 'object',
+    nullable: true
+)]
 class TemplateImageNormalizer implements NormalizerInterface
 {
     /**

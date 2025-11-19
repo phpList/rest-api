@@ -12,7 +12,6 @@ use PhpList\RestBundle\Tests\Integration\Subscription\Fixtures\SubscriberFixture
 
 class SubscriberAttributeValueControllerTest extends AbstractTestController
 {
-
     public function testControllerIsAvailableViaContainer(): void
     {
         self::assertInstanceOf(
@@ -34,7 +33,7 @@ class SubscriberAttributeValueControllerTest extends AbstractTestController
 
         $this->authenticatedJsonRequest(
             'post',
-            '/api/v2/subscribers/attribute-values/' . $subscriberId . '/' . $definitionId,
+            '/api/v2/subscribers/' . $subscriberId . '/attributes/' . $definitionId,
             [],
             [],
             [],
@@ -55,7 +54,7 @@ class SubscriberAttributeValueControllerTest extends AbstractTestController
 
         $this->authenticatedJsonRequest(
             'delete',
-            '/api/v2/subscribers/attribute-values/1/1'
+            '/api/v2/subscribers/1/attributes/1'
         );
 
         $this->assertHttpNoContent();
@@ -70,7 +69,7 @@ class SubscriberAttributeValueControllerTest extends AbstractTestController
 
         $this->authenticatedJsonRequest(
             'get',
-            '/api/v2/subscribers/attribute-values/1'
+            '/api/v2/subscribers/1/attributes'
         );
 
         $this->assertHttpOkay();
@@ -83,7 +82,7 @@ class SubscriberAttributeValueControllerTest extends AbstractTestController
     {
         $this->authenticatedJsonRequest(
             'get',
-            '/api/v2/subscribers/attribute-values/999/999'
+            '/api/v2/subscribers/999/attributes/999'
         );
 
         $this->assertHttpNotFound();
