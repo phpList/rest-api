@@ -17,6 +17,7 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
         new OA\Property(property: 'login_name', type: 'string', example: 'admin'),
         new OA\Property(property: 'email', type: 'string', format: 'email', example: 'admin@example.com'),
         new OA\Property(property: 'super_user', type: 'boolean', example: true),
+        new OA\Property(property: 'privileges', type: 'array', items: new OA\Items(type: 'string')),
         new OA\Property(
             property: 'created_at',
             type: 'string',
@@ -42,7 +43,7 @@ class AdministratorNormalizer implements NormalizerInterface
             'id' => $object->getId(),
             'login_name' => $object->getLoginName(),
             'email' => $object->getEmail(),
-            'super_admin' => $object->isSuperUser(),
+            'super_user' => $object->isSuperUser(),
             'privileges' => $object->getPrivileges()->all(),
             'created_at' => $object->getCreatedAt()?->format(DateTimeInterface::ATOM),
         ];

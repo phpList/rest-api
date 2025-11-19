@@ -13,11 +13,10 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
     properties: [
         new OA\Property(property: 'id', type: 'integer', example: 1),
         new OA\Property(property: 'name', type: 'string', example: 'Country'),
-        new OA\Property(property: 'type', type: 'string', example: 'checkbox'),
+        new OA\Property(property: 'type', type: 'string', example: 'checkbox', nullable: true),
         new OA\Property(property: 'list_order', type: 'integer', example: 12),
         new OA\Property(property: 'default_value', type: 'string', example: 'United States'),
         new OA\Property(property: 'required', type: 'boolean', example: true),
-        new OA\Property(property: 'table_name', type: 'string', example: 'list_attributes'),
         new OA\Property(
             property: 'options',
             type: 'array',

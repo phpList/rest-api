@@ -72,7 +72,7 @@ class UpdateAdministratorRequest implements RequestInterface
     public ?string $email = null;
 
     #[Assert\Type('bool')]
-    public ?bool $superAdmin = null;
+    public ?bool $superUser = null;
 
     /**
      * Array of privileges where keys are privilege names (from PrivilegeFlag enum) and values are booleans.
@@ -93,7 +93,7 @@ class UpdateAdministratorRequest implements RequestInterface
             loginName: $this->loginName,
             password: $this->password,
             email: $this->email,
-            superAdmin: $this->superAdmin,
+            superAdmin: $this->superUser,
             privileges: $this->privileges
         );
     }

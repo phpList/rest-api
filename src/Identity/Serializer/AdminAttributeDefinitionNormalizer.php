@@ -38,7 +38,6 @@ class AdminAttributeDefinitionNormalizer implements NormalizerInterface
             'list_order' => $object->getListOrder(),
             'default_value' => $object->getDefaultValue(),
             'required' => $object->isRequired(),
-            'table_name' => $object->getTableName(),
         ];
     }
 

@@ -19,7 +19,7 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
             format: 'date-time',
             example: '2022-12-01T10:00:00Z'
         ),
-        new OA\Property(property: 'summery', type: 'string', example: 'Added by admin'),
+        new OA\Property(property: 'summary', type: 'string', example: 'Added by admin'),
         new OA\Property(property: 'detail', type: 'string', example: 'Added with add-email on test'),
         new OA\Property(property: 'system_info', type: 'string', example: 'HTTP_USER_AGENT = Mozilla/5.0'),
     ],
@@ -40,7 +40,7 @@ class SubscriberHistoryNormalizer implements NormalizerInterface
             'id' => $object->getId(),
             'ip' => $object->getIp(),
             'created_at' => $object->getCreatedAt()->format('Y-m-d\TH:i:sP'),
-            'summery' => $object->getSummary(),
+            'summary' => $object->getSummary(),
             'detail' => $object->getDetail(),
             'system_info' => $object->getSystemInfo(),
         ];

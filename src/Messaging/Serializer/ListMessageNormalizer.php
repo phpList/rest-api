@@ -28,6 +28,7 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
             example: '2022-12-01T10:00:00Z'
         ),
     ],
+    type: 'object'
 )]
 class ListMessageNormalizer implements NormalizerInterface
 {

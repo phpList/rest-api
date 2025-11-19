@@ -13,14 +13,14 @@ use Symfony\Component\Validator\Constraints as Assert;
     required: ['embargo'],
     properties: [
         new OA\Property(property: 'embargo', type: 'string', format: 'date-time', example: '2025-04-17 09:00:00'),
-        new OA\Property(property: 'repeat_interval', type: 'string', example: '24 hours'),
+        new OA\Property(property: 'repeat_interval', type: 'integer', example: '24 hours'),
         new OA\Property(
             property: 'repeat_until',
             type: 'string',
             format: 'date-time',
             example: '2025-04-30T00:00:00+04:00'
         ),
-        new OA\Property(property: 'requeue_interval', type: 'string', example: '12 hours'),
+        new OA\Property(property: 'requeue_interval', type: 'integer', example: '12 hours'),
         new OA\Property(
             property: 'requeue_until',
             type: 'string',

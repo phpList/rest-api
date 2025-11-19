@@ -12,7 +12,7 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
     schema: 'AdminAttributeValue',
     properties: [
         new OA\Property(property: 'administrator', ref: '#/components/schemas/Administrator'),
-        new OA\Property(property: 'definition', ref: '#/components/schemas/AttributeDefinition'),
+        new OA\Property(property: 'definition', ref: '#/components/schemas/AdminAttributeDefinition'),
         new OA\Property(property: 'value', type: 'string', example: 'United States'),
     ],
     type: 'object'
