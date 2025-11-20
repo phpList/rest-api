@@ -22,7 +22,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/administrators/attribute-values', name: 'admin_attribute_value_')]
+#[Route('/administrators', name: 'admin_attribute_value_')]
 class AdminAttributeValueController extends BaseController
 {
     private AdminAttributeManager $attributeManager;
@@ -46,13 +46,13 @@ class AdminAttributeValueController extends BaseController
     }
 
     #[Route(
-        path: '/{adminId}/{definitionId}',
+        path: '/{adminId}/attributes/{definitionId}',
         name: 'create',
         requirements: ['adminId' => '\d+', 'definitionId' => '\d+'],
         methods: ['POST', 'PUT'],
     )]
     #[OA\Post(
-        path: '/api/v2/administrators/attribute-values/{adminId}/{definitionId}',
+        path: '/api/v2/administrators/{adminId}/attributes/{definitionId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Returns created/updated admin attribute.',
         summary: 'Create/update an admin attribute.',
@@ -133,13 +133,13 @@ class AdminAttributeValueController extends BaseController
     }
 
     #[Route(
-        path: '/{adminId}/{definitionId}',
+        path: '/{adminId}/attributes/{definitionId}',
         name: 'delete',
         requirements: ['adminId' => '\d+', 'definitionId' => '\d+'],
         methods: ['DELETE'],
     )]
     #[OA\Delete(
-        path: '/api/v2/administrators/attribute-values/{adminId}/{definitionId}',
+        path: '/api/v2/administrators/{adminId}/attributes/{definitionId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Deletes a single admin attribute.',
         summary: 'Deletes an attribute.',
@@ -203,9 +203,9 @@ class AdminAttributeValueController extends BaseController
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 
-    #[Route('/{adminId}', name: 'get__list', requirements: ['adminId' => '\d+'], methods: ['GET'])]
+    #[Route('/{adminId}/attributes', name: 'get_list', requirements: ['adminId' => '\d+'], methods: ['GET'])]
     #[OA\Get(
-        path: '/api/v2/administrators/attribute-values/{adminId}',
+        path: '/api/v2/administrators/{adminId}/attributes',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Returns a JSON list of all admin attributes.',
         summary: 'Gets a list of all admin attributes.',
@@ -260,6 +260,11 @@ class AdminAttributeValueController extends BaseController
                 response: 403,
                 description: 'Failure',
                 content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/NotFoundErrorResponse')
             )
         ]
     )]
@@ -276,18 +281,18 @@ class AdminAttributeValueController extends BaseController
 
         return $this->json(
             $this->paginatedDataProvider->getPaginatedList(
-                $request,
-                $this->normalizer,
-                AdminAttributeValue::class,
-                $filter
+                request: $request,
+                normalizer:$this->normalizer,
+                className: AdminAttributeValue::class,
+                filter: $filter
             ),
             Response::HTTP_OK
         );
     }
 
-    #[Route('/{adminId}/{definitionId}', name: 'get_one', methods: ['GET'])]
+    #[Route('/{adminId}/attributes/{definitionId}', name: 'get_one', methods: ['GET'])]
     #[OA\Get(
-        path: '/api/v2/administrators/attribute-values/{adminId}/{definitionId}',
+        path: '/api/v2/administrators/{adminId}/attributes/{definitionId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Returns a single attribute.',
         summary: 'Gets admin attribute.',
@@ -355,8 +360,6 @@ class AdminAttributeValueController extends BaseController
             adminId: $admin->getId(),
             attributeDefinitionId: $definition->getId()
         );
-        $this->attributeManager->delete($attribute);
-        $this->entityManager->flush();
 
         return $this->json(
             $this->normalizer->normalize($attribute),

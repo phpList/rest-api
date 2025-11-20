@@ -28,7 +28,7 @@ class AdminAttributeValueControllerTest extends AbstractTestController
 
         $this->authenticatedJsonRequest(
             'post',
-            '/api/v2/administrators/attribute-values/' . $adminId . '/' . $definitionId,
+            '/api/v2/administrators/' . $adminId . '/attributes/' . $definitionId,
             [],
             [],
             [],
@@ -54,7 +54,7 @@ class AdminAttributeValueControllerTest extends AbstractTestController
 
         $this->authenticatedJsonRequest(
             'post',
-            '/api/v2/administrators/attribute-values/' . $adminId . '/' . $definitionId,
+            '/api/v2/administrators/' . $adminId . '/attributes/' . $definitionId,
             [],
             [],
             [],
@@ -78,7 +78,7 @@ class AdminAttributeValueControllerTest extends AbstractTestController
 
         $this->authenticatedJsonRequest(
             'delete',
-            '/api/v2/administrators/attribute-values/' . $adminId . '/' . $definitionId
+            '/api/v2/administrators/' . $adminId . '/attributes/' . $definitionId
         );
         $this->assertHttpNoContent();
     }
@@ -92,7 +92,7 @@ class AdminAttributeValueControllerTest extends AbstractTestController
         ]);
         $adminId = 1;
 
-        $this->authenticatedJsonRequest('get', '/api/v2/administrators/attribute-values/' . $adminId);
+        $this->authenticatedJsonRequest('get', '/api/v2/administrators/' . $adminId . '/attributes');
         $this->assertHttpOkay();
         $data = $this->getDecodedJsonResponseContent();
         self::assertArrayHasKey('items', $data);
@@ -112,7 +112,7 @@ class AdminAttributeValueControllerTest extends AbstractTestController
 
         $this->authenticatedJsonRequest(
             'get',
-            '/api/v2/administrators/attribute-values/' . $adminId . '/' . $definitionId
+            '/api/v2/administrators/' . $adminId . '/attributes/' . $definitionId
         );
         $this->assertHttpOkay();
         $data = $this->getDecodedJsonResponseContent();
@@ -126,7 +126,7 @@ class AdminAttributeValueControllerTest extends AbstractTestController
 
         $this->authenticatedJsonRequest(
             'get',
-            '/api/v2/administrators/attribute-values/' . $adminId . '/999999'
+            '/api/v2/administrators/' . $adminId . '/attributes/999999'
         );
         $this->assertHttpNotFound();
     }
@@ -142,7 +142,7 @@ class AdminAttributeValueControllerTest extends AbstractTestController
 
         $this->authenticatedJsonRequest(
             'post',
-            '/api/v2/administrators/attribute-values/' . $adminId . '/' . $definitionId,
+            '/api/v2/administrators/' . $adminId . '/attributes/' . $definitionId,
             [],
             [],
             [],
@@ -158,7 +158,7 @@ class AdminAttributeValueControllerTest extends AbstractTestController
 
         $this->authenticatedJsonRequest(
             'post',
-            '/api/v2/administrators/attribute-values/' . $adminId . '/999999',
+            '/api/v2/administrators/' . $adminId . '/attributes/999999',
             [],
             [],
             [],
@@ -174,7 +174,7 @@ class AdminAttributeValueControllerTest extends AbstractTestController
 
         $this->authenticatedJsonRequest(
             'post',
-            '/api/v2/administrators/attribute-values/999999/' . $definitionId,
+            '/api/v2/administrators/999999/attributes/' . $definitionId,
             [],
             [],
             [],
