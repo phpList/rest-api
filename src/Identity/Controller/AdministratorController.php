@@ -157,16 +157,16 @@ class AdministratorController extends BaseController
         return $this->json($json, Response::HTTP_CREATED);
     }
 
-    #[Route('/{administratorId}', name: 'get_one', requirements: ['administratorId' => '\d+'], methods: ['GET'])]
+    #[Route('/{adminId}', name: 'get_one', requirements: ['adminId' => '\d+'], methods: ['GET'])]
     #[OA\Get(
-        path: '/api/v2/administrators/{administratorId}',
+        path: '/api/v2/administrators/{adminId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Get administrator by ID.',
         summary: 'Get Administrator',
         tags: ['administrators'],
         parameters: [
             new OA\Parameter(
-                name: 'administratorId',
+                name: 'adminId',
                 description: 'Administrator ID',
                 in: 'path',
                 required: true,
@@ -194,7 +194,7 @@ class AdministratorController extends BaseController
     )]
     public function getAdministrator(
         Request $request,
-        #[MapEntity(mapping: ['administratorId' => 'id'])] ?Administrator $administrator,
+        #[MapEntity(mapping: ['adminId' => 'id'])] ?Administrator $administrator,
     ): JsonResponse {
         $this->requireAuthentication($request);
 
@@ -206,9 +206,9 @@ class AdministratorController extends BaseController
         return $this->json($json, Response::HTTP_OK);
     }
 
-    #[Route('/{administratorId}', name: 'update', requirements: ['administratorId' => '\d+'], methods: ['PUT'])]
+    #[Route('/{adminId}', name: 'update', requirements: ['adminId' => '\d+'], methods: ['PUT'])]
     #[OA\Put(
-        path: '/api/v2/administrators/{administratorId}',
+        path: '/api/v2/administrators/{adminId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Update an administrator.',
         summary: 'Update Administrator',
@@ -220,7 +220,7 @@ class AdministratorController extends BaseController
         tags: ['administrators'],
         parameters: [
             new OA\Parameter(
-                name: 'administratorId',
+                name: 'adminId',
                 description: 'Administrator ID',
                 in: 'path',
                 required: true,
@@ -248,7 +248,7 @@ class AdministratorController extends BaseController
     )]
     public function updateAdministrator(
         Request $request,
-        #[MapEntity(mapping: ['administratorId' => 'id'])] ?Administrator $administrator,
+        #[MapEntity(mapping: ['adminId' => 'id'])] ?Administrator $administrator,
     ): JsonResponse {
         $this->requireAuthentication($request);
 
@@ -263,16 +263,16 @@ class AdministratorController extends BaseController
         return $this->json($this->normalizer->normalize($administrator), Response::HTTP_OK);
     }
 
-    #[Route('/{administratorId}', name: 'delete', requirements: ['administratorId' => '\d+'], methods: ['DELETE'])]
+    #[Route('/{adminId}', name: 'delete', requirements: ['adminId' => '\d+'], methods: ['DELETE'])]
     #[OA\Delete(
-        path: '/api/v2/administrators/{administratorId}',
+        path: '/api/v2/administrators/{adminId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Delete an administrator.',
         summary: 'Delete Administrator',
         tags: ['administrators'],
         parameters: [
             new OA\Parameter(
-                name: 'administratorId',
+                name: 'adminId',
                 description: 'Administrator ID',
                 in: 'path',
                 required: true,
@@ -299,7 +299,7 @@ class AdministratorController extends BaseController
     )]
     public function deleteAdministrator(
         Request $request,
-        #[MapEntity(mapping: ['administratorId' => 'id'])] ?Administrator $administrator
+        #[MapEntity(mapping: ['adminId' => 'id'])] ?Administrator $administrator
     ): JsonResponse {
         $this->requireAuthentication($request);
 

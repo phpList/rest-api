@@ -58,8 +58,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 )]
 class UpdateAdministratorRequest implements RequestInterface
 {
-    public int $administratorId;
-
     #[Assert\Length(min: 3, max: 255)]
     #[UniqueLoginName]
     public ?string $loginName = null;
@@ -89,7 +87,6 @@ class UpdateAdministratorRequest implements RequestInterface
     public function getDto(): UpdateAdministratorDto
     {
         return new UpdateAdministratorDto(
-            administratorId: $this->administratorId,
             loginName: $this->loginName,
             password: $this->password,
             email: $this->email,
