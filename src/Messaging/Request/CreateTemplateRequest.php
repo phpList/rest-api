@@ -16,7 +16,12 @@ use Symfony\Component\Validator\Constraints as Assert;
     required: ['title'],
     properties: [
         new OA\Property(property: 'title', type: 'string', example: 'Newsletter Template'),
-        new OA\Property(property: 'content', type: 'string', example: '<html><body>[CONTENT]</body></html>'),
+        new OA\Property(
+            property: 'content',
+            type: 'string',
+            example: '<html><body>[CONTENT]</body></html>',
+            nullable: true
+        ),
         new OA\Property(property: 'text', type: 'string', example: '[CONTENT]'),
         new OA\Property(
             property: 'file',
@@ -52,7 +57,7 @@ class CreateTemplateRequest implements RequestInterface
     public string $title;
 
     #[ContainsPlaceholder]
-    public string $content;
+    public ?string $content = null;
 
     #[ContainsPlaceholder]
     public ?string $text = null;
