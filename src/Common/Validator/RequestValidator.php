@@ -29,17 +29,8 @@ class RequestValidator
         }
         $routeParams = $request->attributes->get('_route_params') ?? [];
 
-        if (isset($routeParams['subscriberId'])) {
-            $routeParams['subscriberId'] = (int) $routeParams['subscriberId'];
-        }
-        if (isset($routeParams['messageId'])) {
-            $routeParams['messageId'] = (int) $routeParams['messageId'];
-        }
         if (isset($routeParams['listId'])) {
             $routeParams['listId'] = (int) $routeParams['listId'];
-        }
-        if (isset($routeParams['administratorId'])) {
-            $routeParams['administratorId'] = (int) $routeParams['administratorId'];
         }
 
         $data = array_merge($routeParams, $body ?? []);

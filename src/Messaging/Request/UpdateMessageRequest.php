@@ -9,12 +9,9 @@ use PhpList\Core\Domain\Messaging\Model\Dto\UpdateMessageDto;
 
 class UpdateMessageRequest extends CreateMessageRequest
 {
-    public int $messageId;
-
     public function getDto(): MessageDtoInterface
     {
         return new UpdateMessageDto(
-            messageId: $this->messageId,
             content: $this->content->getDto(),
             format: $this->format->getDto(),
             metadata: $this->metadata->getDto(),

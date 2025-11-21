@@ -144,6 +144,11 @@ class CampaignController extends BaseController
                 response: 403,
                 description: 'Failure',
                 content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/NotFoundErrorResponse')
             )
         ]
     )]
@@ -151,6 +156,9 @@ class CampaignController extends BaseController
         Request $request,
         #[MapEntity(mapping: ['messageId' => 'id'])] ?Message $message = null
     ): JsonResponse {
+        if ($message === null) {
+            throw $this->createNotFoundException('Campaign not found.');
+        }
         $this->requireAuthentication($request);
 
         return $this->json($this->campaignService->getMessage($message), Response::HTTP_OK);
@@ -272,6 +280,11 @@ class CampaignController extends BaseController
                 content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
             ),
             new OA\Response(
+                response: 404,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/NotFoundErrorResponse')
+            ),
+            new OA\Response(
                 response: 422,
                 description: 'Failure',
                 content: new OA\JsonContent(ref: '#/components/schemas/ValidationErrorResponse')
@@ -282,6 +295,9 @@ class CampaignController extends BaseController
         Request $request,
         #[MapEntity(mapping: ['messageId' => 'id'])] ?Message $message = null,
     ): JsonResponse {
+        if ($message === null) {
+            throw $this->createNotFoundException('Campaign not found.');
+        }
         $authUser = $this->requireAuthentication($request);
 
         /** @var UpdateMessageRequest $updateMessageRequest */

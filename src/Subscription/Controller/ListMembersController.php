@@ -113,10 +113,10 @@ class ListMembersController extends BaseController
 
         return $this->json(
             $this->paginatedProvider->getPaginatedList(
-                $request,
-                $this->subscriberNormalizer,
-                Subscriber::class,
-                new SubscriberFilter($list->getId())
+                request: $request,
+                normalizer: $this->subscriberNormalizer,
+                className: Subscriber::class,
+                filter: new SubscriberFilter($list->getId())
             ),
             Response::HTTP_OK
         );
@@ -164,6 +164,11 @@ class ListMembersController extends BaseController
                 response: 403,
                 description: 'Failure',
                 content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/NotFoundErrorResponse')
             )
         ]
     )]

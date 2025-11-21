@@ -105,9 +105,9 @@ class TemplateController extends BaseController
 
         return $this->json(
             $this->paginatedDataProvider->getPaginatedList(
-                $request,
-                $this->normalizer,
-                Template::class,
+                request: $request,
+                normalizer: $this->normalizer,
+                className: Template::class,
             ),
             Response::HTTP_OK
         );
@@ -178,51 +178,7 @@ class TemplateController extends BaseController
             required: true,
             content: new OA\MediaType(
                 mediaType: 'multipart/form-data',
-                schema: new OA\Schema(
-                    required: ['title'],
-                    properties: [
-                        new OA\Property(
-                            property: 'title',
-                            type: 'string',
-                            example: 'Newsletter Template'
-                        ),
-                        new OA\Property(
-                            property: 'content',
-                            type: 'string',
-                            example: '<html><body>[CONTENT]</body></html>'
-                        ),
-                        new OA\Property(
-                            property: 'text',
-                            type: 'string',
-                            example: '[CONTENT]'
-                        ),
-                        new OA\Property(
-                            property: 'file',
-                            description: 'Optional file upload for HTML content',
-                            type: 'string',
-                            format: 'binary'
-                        ),
-                        new OA\Property(
-                            property: 'check_links',
-                            description: 'Check that all links have full URLs',
-                            type: 'boolean',
-                            example: true
-                        ),
-                        new OA\Property(
-                            property: 'check_images',
-                            description: 'Check that all images have full URLs',
-                            type: 'boolean',
-                            example: false
-                        ),
-                        new OA\Property(
-                            property: 'check_external_images',
-                            description: 'Check that all external images exist',
-                            type: 'boolean',
-                            example: true
-                        ),
-                    ],
-                    type: 'object'
-                )
+                schema: new OA\Schema(ref: '#/components/schemas/CreateTemplateRequest')
             )
         ),
         tags: ['templates'],

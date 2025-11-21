@@ -26,8 +26,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 )]
 class UpdateSubscriberRequest implements RequestInterface
 {
-    public int $subscriberId;
-
     #[Assert\NotBlank]
     #[Assert\Email]
     #[UniqueEmail(entityClass: Subscriber::class)]
@@ -51,7 +49,6 @@ class UpdateSubscriberRequest implements RequestInterface
     public function getDto(): UpdateSubscriberDto
     {
         return new UpdateSubscriberDto(
-            subscriberId: $this->subscriberId,
             email: $this->email,
             confirmed: $this->confirmed,
             blacklisted: $this->blacklisted,
