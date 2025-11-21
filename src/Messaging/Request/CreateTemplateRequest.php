@@ -51,7 +51,6 @@ class CreateTemplateRequest implements RequestInterface
     #[Assert\NotNull]
     public string $title;
 
-    #[Assert\NotBlank]
     #[ContainsPlaceholder]
     public string $content;
 
