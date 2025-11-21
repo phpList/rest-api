@@ -13,7 +13,6 @@ class UpdateSubscriberRequestTest extends TestCase
     public function testGetDtoReturnsCorrectDto(): void
     {
         $request = new UpdateSubscriberRequest();
-        $request->subscriberId = 123;
         $request->email = 'subscriber@example.com';
         $request->confirmed = true;
         $request->blacklisted = false;
@@ -24,7 +23,6 @@ class UpdateSubscriberRequestTest extends TestCase
         $dto = $request->getDto();
 
         $this->assertInstanceOf(UpdateSubscriberDto::class, $dto);
-        $this->assertEquals(123, $dto->subscriberId);
         $this->assertEquals('subscriber@example.com', $dto->email);
         $this->assertTrue($dto->confirmed);
         $this->assertFalse($dto->blacklisted);

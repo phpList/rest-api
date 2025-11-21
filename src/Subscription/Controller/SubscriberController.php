@@ -169,7 +169,11 @@ class SubscriberController extends BaseController
         }
         /** @var UpdateSubscriberRequest $updateSubscriberRequest */
         $updateSubscriberRequest = $this->validator->validate($request, UpdateSubscriberRequest::class);
-        $subscriber = $this->subscriberManager->updateSubscriber($subscriber, $updateSubscriberRequest->getDto(), $admin);
+        $subscriber = $this->subscriberManager->updateSubscriber(
+            subscriber: $subscriber,
+            subscriberDto: $updateSubscriberRequest->getDto(),
+            admin: $admin
+        );
         $this->entityManager->flush();
         $subscriberData = $this->subscriberNormalizer->normalize($subscriber, 'json');
 

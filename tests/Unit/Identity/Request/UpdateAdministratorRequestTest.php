@@ -13,7 +13,6 @@ class UpdateAdministratorRequestTest extends TestCase
     public function testGetDtoReturnsCorrectDto(): void
     {
         $request = new UpdateAdministratorRequest();
-        $request->administratorId = 123;
         $request->loginName = 'testuser';
         $request->password = 'password123';
         $request->email = 'test@example.com';
@@ -27,7 +26,6 @@ class UpdateAdministratorRequestTest extends TestCase
 
         $dto = $request->getDto();
 
-        $this->assertEquals(123, $dto->administratorId);
         $this->assertEquals('testuser', $dto->loginName);
         $this->assertEquals('password123', $dto->password);
         $this->assertEquals('test@example.com', $dto->email);
@@ -43,11 +41,9 @@ class UpdateAdministratorRequestTest extends TestCase
     public function testGetDtoWithNullValues(): void
     {
         $request = new UpdateAdministratorRequest();
-        $request->administratorId = 456;
 
         $dto = $request->getDto();
 
-        $this->assertEquals(456, $dto->administratorId);
         $this->assertNull($dto->loginName);
         $this->assertNull($dto->password);
         $this->assertNull($dto->email);

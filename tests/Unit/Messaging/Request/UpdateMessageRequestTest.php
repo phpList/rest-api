@@ -53,7 +53,6 @@ class UpdateMessageRequestTest extends TestCase
         $scheduleRequest->method('getDto')->willReturn($this->scheduleDto);
 
         $this->request = new UpdateMessageRequest();
-        $this->request->messageId = 123;
         $this->request->content = $contentRequest;
         $this->request->format = $formatRequest;
         $this->request->metadata = $metadataRequest;
@@ -68,7 +67,6 @@ class UpdateMessageRequestTest extends TestCase
         $dto = $this->request->getDto();
 
         $this->assertInstanceOf(UpdateMessageDto::class, $dto);
-        $this->assertEquals(123, $dto->messageId);
         $this->assertSame($this->contentDto, $dto->content);
         $this->assertSame($this->formatDto, $dto->format);
         $this->assertSame($this->metadataDto, $dto->metadata);
@@ -84,7 +82,6 @@ class UpdateMessageRequestTest extends TestCase
         $dto = $this->request->getDto();
 
         $this->assertInstanceOf(UpdateMessageDto::class, $dto);
-        $this->assertEquals(123, $dto->messageId);
         $this->assertSame($this->contentDto, $dto->content);
         $this->assertSame($this->formatDto, $dto->format);
         $this->assertSame($this->metadataDto, $dto->metadata);
