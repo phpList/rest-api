@@ -33,12 +33,6 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
             properties: [
                 new OA\Property(property: 'html_formated', type: 'boolean'),
                 new OA\Property(property: 'send_format', type: 'string', example: 'text', nullable: true),
-                new OA\Property(
-                    property: 'format_options',
-                    type: 'array',
-                    items: new OA\Items(type: 'string'),
-                    example: ['as_html', 'as_text'],
-                ),
             ],
             type: 'object'
         ),
@@ -112,7 +106,6 @@ class MessageNormalizer implements NormalizerInterface
             'message_format' => [
                 'html_formated' => $object->getFormat()->isHtmlFormatted(),
                 'send_format' => $object->getFormat()->getSendFormat(),
-                'format_options' => $object->getFormat()->getFormatOptions()
             ],
             'message_metadata' => [
                 'status' => $object->getMetadata()->getStatus()->value,

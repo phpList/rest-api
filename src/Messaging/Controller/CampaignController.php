@@ -29,19 +29,14 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/campaigns', name: 'campaign_')]
 class CampaignController extends BaseController
 {
-    private CampaignService $campaignService;
-    private MessageBusInterface $messageBus;
-
     public function __construct(
         Authentication $authentication,
         RequestValidator $validator,
-        CampaignService $campaignService,
-        MessageBusInterface $messageBus,
+        private readonly CampaignService $campaignService,
+        private readonly MessageBusInterface $messageBus,
         private readonly EntityManagerInterface $entityManager,
     ) {
         parent::__construct($authentication, $validator);
-        $this->campaignService = $campaignService;
-        $this->messageBus = $messageBus;
     }
 
     #[Route('', name: 'get_list', methods: ['GET'])]
