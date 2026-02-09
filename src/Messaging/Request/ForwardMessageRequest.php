@@ -24,7 +24,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             property: 'uid',
             type: 'string',
             example: 'fwd-123e4567-e89b-12d3-a456-426614174000',
-            nullable: true
+            nullable: false
         ),
         new OA\Property(
             property: 'note',
@@ -36,14 +36,14 @@ use Symfony\Component\Validator\Constraints as Assert;
             property: 'from_name',
             type: 'string',
             example: 'Alice',
-            nullable: true
+            nullable: false
         ),
         new OA\Property(
             property: 'from_email',
             type: 'string',
             format: 'email',
             example: 'alice@example.com',
-            nullable: true
+            nullable: false
         ),
     ],
     type: 'object'
@@ -66,18 +66,24 @@ class ForwardMessageRequest implements RequestInterface
     ])]
     public array $recipients = [];
 
+    #[Assert\NotNull]
+    #[Assert\NotBlank]
     #[Assert\Length(max: 255)]
-    public ?string $uid = null;
+    public string $uid;
 
     #[MaxPersonalNoteSize]
     public ?string $note = null;
 
+    #[Assert\NotNull]
+    #[Assert\NotBlank]
     #[Assert\Length(max: 255)]
-    public ?string $fromName = null;
+    public string $fromName;
 
+    #[Assert\NotNull]
+    #[Assert\NotBlank]
     #[Assert\Email]
     #[Assert\Length(max: 255)]
-    public ?string $fromEmail = null;
+    public string $fromEmail;
 
     public function getDto(): array
     {

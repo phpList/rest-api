@@ -21,7 +21,7 @@ class MaxPersonalNoteSizeValidator extends ConstraintValidator
             return;
         }
 
-        if ($value === null || $value === '' || $this->maxSize === null || $this->maxSize < 0) {
+        if ($value === null || $value === '' || $this->maxSize === null || $this->maxSize <= 0) {
             return;
         }
 

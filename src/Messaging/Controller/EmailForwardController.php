@@ -96,7 +96,7 @@ class EmailForwardController extends BaseController
         if ($message === null) {
             throw $this->createNotFoundException('Campaign not found.');
         }
-
+        // todo: per-subscriber forwarding limits
         /** @var ForwardMessageRequest $forwardRequest */
         $forwardRequest = $this->validator->validate($request, ForwardMessageRequest::class);
 

@@ -6,6 +6,7 @@ namespace PhpList\RestBundle\Common\EventListener;
 
 use Exception;
 use PhpList\Core\Domain\Identity\Exception\AdminAttributeCreationException;
+use PhpList\Core\Domain\Messaging\Exception\MessageNotReceivedException;
 use PhpList\Core\Domain\Subscription\Exception\AttributeDefinitionCreationException;
 use PhpList\Core\Domain\Subscription\Exception\SubscriptionCreationException;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,6 +18,9 @@ use Symfony\Component\Validator\Exception\ValidatorException;
 
 class ExceptionListener
 {
+    /**
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
+     */
     public function onKernelException(ExceptionEvent $event): void
     {
         $exception = $event->getThrowable();
@@ -57,6 +61,11 @@ class ExceptionListener
             $response = new JsonResponse([
                 'message' => $exception->getMessage(),
             ], 403);
+            $event->setResponse($response);
+        } elseif ($exception instanceof MessageNotReceivedException) {
+            $response = new JsonResponse([
+                'message' => $exception->getMessage(),
+            ], 422);
             $event->setResponse($response);
         } elseif ($exception instanceof Exception) {
             $response = new JsonResponse([
