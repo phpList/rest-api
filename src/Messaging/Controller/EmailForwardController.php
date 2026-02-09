@@ -40,7 +40,7 @@ class EmailForwardController extends BaseController
 
     #[Route('/{messageId}', name: 'forward', requirements: ['messageId' => '\\d+'], methods: ['POST'])]
     #[OA\Post(
-        path: '/api/v2/campaigns/{messageId}/forward',
+        path: '/api/v2/email-forward/{messageId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
         'Queues forwarding of a campaign/message to provided recipient emails.',
         summary: 'Forward a message to recipients.',

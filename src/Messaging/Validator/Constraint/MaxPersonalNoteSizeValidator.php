@@ -34,7 +34,7 @@ class MaxPersonalNoteSizeValidator extends ConstraintValidator
 
         if ($length > $sizeLimit) {
             $this->context->buildViolation($constraint->message)
-                ->setParameter('{{ limit }}', (string) $this->maxSize)
+                ->setParameter('{{ limit }}', (string) $sizeLimit)
                 ->addViolation();
         }
     }

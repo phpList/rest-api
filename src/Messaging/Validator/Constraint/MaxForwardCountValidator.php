@@ -11,7 +11,7 @@ use Symfony\Component\Validator\ConstraintValidator;
 class MaxForwardCountValidator extends ConstraintValidator
 {
     public function __construct(
-        #[Autowire('%phplist.forward_email_count%')] private readonly string $maxForward
+        #[Autowire('%phplist.forward_email_count%')] private readonly int $maxForward
     ) {
     }
 
@@ -41,7 +41,7 @@ class MaxForwardCountValidator extends ConstraintValidator
 
         if ($uniqueCount > $this->maxForward) {
             $this->context->buildViolation($constraint->message)
-                ->setParameter('{{ limit }}', $this->maxForward)
+                ->setParameter('{{ limit }}', (string) $this->maxForward)
                 ->addViolation();
         }
     }
