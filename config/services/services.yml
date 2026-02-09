@@ -1,8 +1,19 @@
 services:
-    PhpList\RestBundle\Subscription\Service\SubscriberService:
-        autowire: true
-        autoconfigure: true
-
     PhpList\RestBundle\Subscription\Service\SubscriberHistoryService:
         autowire: true
         autoconfigure: true
+
+    PhpList\Core\Domain\Messaging\Service\ForwardingGuard:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    PhpList\Core\Domain\Messaging\Service\ForwardDeliveryService:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    PhpList\Core\Domain\Messaging\Service\ForwardContentService:
+        autowire: true
+        autoconfigure: true
+        public: false

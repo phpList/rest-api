@@ -7,7 +7,7 @@ namespace PhpList\RestBundle\Identity\Controller;
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Identity\Model\AdminAttributeDefinition;
-use PhpList\Core\Domain\Identity\Service\AdminAttributeDefinitionManager;
+use PhpList\Core\Domain\Identity\Service\Manager\AdminAttributeDefinitionManager;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Service\Provider\PaginatedDataProvider;

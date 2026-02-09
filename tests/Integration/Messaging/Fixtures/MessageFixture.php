@@ -50,13 +50,8 @@ class MessageFixture extends Fixture
             $template = $templateRepository->find($row['template']);
 
             $format = new MessageFormat(
-                (bool)$row['htmlformatted'],
-                $row['sendformat'],
-                array_keys(array_filter([
-                    MessageFormat::FORMAT_TEXT => $row['astext'],
-                    MessageFormat::FORMAT_HTML => $row['ashtml'],
-                    MessageFormat::FORMAT_PDF => $row['aspdf'],
-                ]))
+                htmlFormatted: (bool)$row['htmlformatted'],
+                sendFormat: $row['sendformat'],
             );
 
             $schedule = new MessageSchedule(

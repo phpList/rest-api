@@ -32,7 +32,12 @@ class CampaignService
     {
         $filter = (new MessageFilter())->setOwner($administrator);
 
-        return $this->paginatedProvider->getPaginatedList($request, $this->normalizer, Message::class, $filter);
+        return $this->paginatedProvider->getPaginatedList(
+            request: $request,
+            normalizer: $this->normalizer,
+            className: Message::class,
+            filter: $filter
+        );
     }
 
     public function getMessage(Message $message = null): array
@@ -50,7 +55,10 @@ class CampaignService
             throw new AccessDeniedHttpException('You are not allowed to create campaigns.');
         }
 
-        $data = $this->messageManager->createMessage($createMessageRequest->getDto(), $administrator);
+        $data = $this->messageManager->createMessage(
+            createMessageDto: $createMessageRequest->getDto(),
+            authUser: $administrator
+        );
 
         return $this->normalizer->normalize($data);
     }
@@ -69,9 +77,9 @@ class CampaignService
         }
 
         $data = $this->messageManager->updateMessage(
-            $updateMessageRequest->getDto(),
-            $message,
-            $administrator
+            updateMessageDto: $updateMessageRequest->getDto(),
+            message: $message,
+            authUser: $administrator
         );
 
         return $this->normalizer->normalize($data);

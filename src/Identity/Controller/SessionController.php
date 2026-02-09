@@ -7,7 +7,7 @@ namespace PhpList\RestBundle\Identity\Controller;
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Identity\Model\AdministratorToken;
-use PhpList\Core\Domain\Identity\Service\SessionManager;
+use PhpList\Core\Domain\Identity\Service\Manager\SessionManager;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
