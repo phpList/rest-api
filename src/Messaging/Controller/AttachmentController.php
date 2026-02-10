@@ -11,6 +11,7 @@ use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\HttpFoundation\HeaderUtils;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
@@ -63,9 +64,9 @@ class AttachmentController extends BaseController
 
         $headers = [
             'Content-Type' => $downloadable->mimeType,
-            'Content-Disposition' => ResponseHeaderBag::makeDisposition(
+            'Content-Disposition' => HeaderUtils::makeDisposition(
                 disposition: ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-                fileName: $downloadable->filename
+                filename: $downloadable->filename
             ),
         ];
 

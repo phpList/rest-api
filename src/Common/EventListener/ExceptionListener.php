@@ -79,7 +79,7 @@ class ExceptionListener
                 'message' => $exception->getMessage(),
             ], 404);
             $event->setResponse($response);
-        }  elseif ($exception instanceof Exception) {
+        } elseif ($exception instanceof Exception) {
             $response = new JsonResponse([
                 'message' => $exception->getMessage(),
             ], 500);
