@@ -20,71 +20,49 @@ use Symfony\Component\Validator\Exception\ValidatorException;
 
 class ExceptionListener
 {
-    /**
-     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
-     */
+    private const EXCEPTION_STATUS_MAP = [
+        SubscriptionCreationException::class => null,
+        AttributeDefinitionCreationException::class => null,
+        AdminAttributeCreationException::class => null,
+        ValidatorException::class => 400,
+        AccessDeniedException::class => 403,
+        AccessDeniedHttpException::class => 403,
+        AttachmentFileNotFoundException::class => 404,
+        SubscriberNotFoundException::class => 404,
+        MessageNotReceivedException::class => 422,
+    ];
+
     public function onKernelException(ExceptionEvent $event): void
     {
         $exception = $event->getThrowable();
 
-        if ($exception instanceof AccessDeniedHttpException) {
-            $response = new JsonResponse([
-                'message' => $exception->getMessage(),
-            ], 403);
+        foreach (self::EXCEPTION_STATUS_MAP as $class => $statusCode) {
+            if ($exception instanceof $class) {
+                $status = $statusCode ?? $exception->getStatusCode();
+                $event->setResponse(
+                    new JsonResponse([
+                        'message' => $exception->getMessage()
+                    ], $status)
+                );
+                return;
+            }
+        }
 
-            $event->setResponse($response);
-        } elseif ($exception instanceof HttpExceptionInterface) {
-            $response = new JsonResponse([
-                'message' => $exception->getMessage(),
-            ], $exception->getStatusCode());
+        if ($exception instanceof HttpExceptionInterface) {
+            $event->setResponse(
+                new JsonResponse([
+                    'message' => $exception->getMessage()
+                ], $exception->getStatusCode())
+            );
+            return;
+        }
 
-            $event->setResponse($response);
-        } elseif ($exception instanceof SubscriptionCreationException) {
-            $response = new JsonResponse([
-                'message' => $exception->getMessage(),
-            ], $exception->getStatusCode());
-            $event->setResponse($response);
-        } elseif ($exception instanceof AdminAttributeCreationException) {
-            $response = new JsonResponse([
-                'message' => $exception->getMessage(),
-            ], $exception->getStatusCode());
-            $event->setResponse($response);
-        } elseif ($exception instanceof AttributeDefinitionCreationException) {
-            $response = new JsonResponse([
-                'message' => $exception->getMessage(),
-            ], $exception->getStatusCode());
-            $event->setResponse($response);
-        } elseif ($exception instanceof ValidatorException) {
-            $response = new JsonResponse([
-                'message' => $exception->getMessage(),
-            ], 400);
-            $event->setResponse($response);
-        } elseif ($exception instanceof AccessDeniedException) {
-            $response = new JsonResponse([
-                'message' => $exception->getMessage(),
-            ], 403);
-            $event->setResponse($response);
-        } elseif ($exception instanceof MessageNotReceivedException) {
-            $response = new JsonResponse([
-                'message' => $exception->getMessage(),
-            ], 422);
-            $event->setResponse($response);
-        } elseif ($exception instanceof AttachmentFileNotFoundException) {
-            $response = new JsonResponse([
-                'message' => $exception->getMessage(),
-            ], 404);
-            $event->setResponse($response);
-        } elseif ($exception instanceof SubscriberNotFoundException) {
-            $response = new JsonResponse([
-                'message' => $exception->getMessage(),
-            ], 404);
-            $event->setResponse($response);
-        } elseif ($exception instanceof Exception) {
-            $response = new JsonResponse([
-                'message' => $exception->getMessage(),
-            ], 500);
-
-            $event->setResponse($response);
+        if ($exception instanceof Exception) {
+            $event->setResponse(
+                new JsonResponse([
+                    'message' => $exception->getMessage()
+                ], 500)
+            );
         }
     }
 }
