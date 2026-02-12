@@ -22,13 +22,15 @@ class UserMessageFixture extends Fixture
 
     public function load(ObjectManager $manager): void
     {
-        /** @var Subscriber $subscriber */
+        /** @var Subscriber|null $subscriber */
         $subscriber = $manager->getRepository(Subscriber::class)->find(self::SUBSCRIBER_ID);
-        /** @var Message $message */
+        /** @var Message|null $message */
         $message = $manager->getRepository(Message::class)->find(self::MESSAGE_ID);
 
+        // Doctrine may return null here when prerequisite fixtures are not loaded.
+        // PHPStan infers non-null from PHPDoc in some environments; suppress that false positive.
         if ($subscriber === null || $message === null) {
-            // Pre-requisite fixtures not loaded; nothing to do.
+            // Pre-requisite fixtures aren't loaded; nothing to do.
             return;
         }
 
