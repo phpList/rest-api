@@ -4,15 +4,18 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Statistics\Controller;
 
+use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\Core\Domain\Analytics\Service\UserMessageService;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\Routing\Attribute\Route;
+use Throwable;
 
 #[Route('/t', name: 'tracks_')]
 class MessageOpenTrackController extends BaseController
@@ -21,6 +24,8 @@ class MessageOpenTrackController extends BaseController
         Authentication $authentication,
         RequestValidator $validator,
         private readonly UserMessageService $userMessageService,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly LoggerInterface $logger,
     ) {
         parent::__construct($authentication, $validator);
     }
@@ -50,27 +55,45 @@ class MessageOpenTrackController extends BaseController
         ],
         responses: [
             new OA\Response(response: 200, description: 'Transparent 1x1 GIF'),
-            new OA\Response(response: 400, description: 'Bad request'),
-            new OA\Response(response: 500, description: 'Server error'),
         ]
     )]
     public function trackUserMessageView(
         Request $request,
-        #[MapQueryParameter(name: 'u')] string $uid,
-        #[MapQueryParameter(name: 'm')] int $messageId,
+        #[MapQueryParameter(name: 'u')] ?string $uid = null,
+        #[MapQueryParameter(name: 'm')] ?int $messageId = null,
     ): Response {
+        if (!$uid || !$messageId) {
+            return $this->returnPixelResponse();
+        }
+
         $metadata = [
             'HTTP_USER_AGENT' => $request->server->get('HTTP_USER_AGENT'),
             'HTTP_REFERER' => $request->server->get('HTTP_REFERER'),
             'client_ip' => $request->getClientIp(),
         ];
 
-        $this->userMessageService->trackUserMessageView($uid, $messageId, $metadata);
+        try {
+            $this->userMessageService->trackUserMessageView($uid, $messageId, $metadata);
+            $this->entityManager->flush();
+        } catch (Throwable $e) {
+            $this->logger->error(
+                'Failed to track user message view',
+                [
+                    'exception' => $e,
+                    'message_id' => $messageId,
+                    'subscriber_uid' => $uid,
+                    'metadata' => $metadata
+                ]
+            );
+        }
 
-        $gifData = base64_decode('R0lGODlhAQABAPAAAAAAAAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==');
+        return $this->returnPixelResponse();
+    }
 
+    private function returnPixelResponse(): Response
+    {
         return new Response(
-            content: $gifData,
+            content: base64_decode('R0lGODlhAQABAPAAAAAAAAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw=='),
             status: 200,
             headers: [
                 'Content-Type' => 'image/gif',
