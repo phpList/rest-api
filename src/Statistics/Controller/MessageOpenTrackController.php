@@ -62,7 +62,7 @@ class MessageOpenTrackController extends BaseController
         #[MapQueryParameter(name: 'u')] ?string $uid = null,
         #[MapQueryParameter(name: 'm')] ?int $messageId = null,
     ): Response {
-        if (!$uid || !$messageId) {
+        if ($uid === null || $messageId === null || $messageId <= 0) {
             return $this->returnPixelResponse();
         }
 
