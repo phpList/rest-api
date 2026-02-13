@@ -69,7 +69,6 @@ class MessageOpenTrackControllerTest extends AbstractTestController
         self::getClient()->request('GET', '/api/v2/t/open.gif');
         $status = self::getClient()->getResponse()->getStatusCode();
 
-        // MapQueryParameter with the required non-nullable argument should yield 400 Bad Request
         self::assertSame(200, $status);
     }
 }
