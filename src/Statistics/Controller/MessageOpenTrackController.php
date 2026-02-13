@@ -81,7 +81,6 @@ class MessageOpenTrackController extends BaseController
                 [
                     'exception' => $e,
                     'message_id' => $messageId,
-                    'subscriber_uid' => $uid,
                 ]
             );
         }
