@@ -9,12 +9,11 @@ reviews:
   high_level_summary_in_walkthrough: false
   changed_files_summary: false
   poem: false
+  finishing_touches:
+    docstrings:
+      enabled: false
   auto_review:
     enabled: true
     base_branches:
       - ".*"
     drafts: false
-
-checks:
-  docstring_coverage:
-    enabled: false
