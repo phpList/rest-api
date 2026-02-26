@@ -35,13 +35,6 @@ class SubscriberControllerTest extends AbstractTestController
         );
     }
 
-    public function testGetSubscribersIsNotAllowed()
-    {
-        self::getClient()->request('get', '/api/v2/subscribers');
-
-        $this->assertHttpMethodNotAllowed();
-    }
-
     public function testPostSubscribersWithoutSessionKeyReturnsForbiddenStatus()
     {
         $this->jsonRequest('post', '/api/v2/subscribers');

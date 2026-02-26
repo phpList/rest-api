@@ -12,6 +12,7 @@ use PhpList\Core\Domain\Subscription\Service\Manager\SubscriberManager;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
+use PhpList\RestBundle\Common\Service\Provider\PaginatedDataProvider;
 use PhpList\RestBundle\Subscription\Request\CreateSubscriberRequest;
 use PhpList\RestBundle\Subscription\Request\UpdateSubscriberRequest;
 use PhpList\RestBundle\Subscription\Serializer\SubscriberNormalizer;
@@ -39,9 +40,77 @@ class SubscriberController extends BaseController
         private readonly SubscriberNormalizer $subscriberNormalizer,
         private readonly SubscriberHistoryService $subscriberHistoryService,
         private readonly EntityManagerInterface $entityManager,
+        private readonly PaginatedDataProvider $paginatedDataProvider,
     ) {
         parent::__construct($authentication, $validator);
         $this->authentication = $authentication;
+    }
+
+    #[Route('', name: 'get_list', methods: ['GET'])]
+    #[OA\Get(
+        path: '/api/v2/subscribers',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
+            'Returns a JSON list of all subscribers.',
+        summary: 'Gets a list of all subscribers.',
+        tags: ['subscribers'],
+        parameters: [
+            new OA\Parameter(
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                name: 'after_id',
+                description: 'Last id (starting from 0)',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'integer', default: 1, minimum: 1)
+            ),
+            new OA\Parameter(
+                name: 'limit',
+                description: 'Number of results per page',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'integer', default: 25, maximum: 100, minimum: 1)
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Success',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: 'items',
+                            type: 'array',
+                            items: new OA\Items(ref: '#/components/schemas/Subscriber')
+                        ),
+                        new OA\Property(property: 'pagination', ref: '#/components/schemas/CursorPagination')
+                    ],
+                    type: 'object'
+                )
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
+            )
+        ]
+    )]
+    public function getSubscribers(Request $request): JsonResponse
+    {
+        $this->requireAuthentication($request);
+
+        return $this->json(
+            $this->paginatedDataProvider->getPaginatedList(
+                $request,
+                $this->subscriberNormalizer,
+                Subscriber::class
+            ),
+            Response::HTTP_OK
+        );
     }
 
     #[Route('', name: 'create', methods: ['POST'])]
