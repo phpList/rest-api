@@ -7,6 +7,7 @@ namespace PhpList\RestBundle\Subscription\Controller;
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Identity\Model\PrivilegeFlag;
+use PhpList\Core\Domain\Subscription\Model\Filter\SubscriberFilter;
 use PhpList\Core\Domain\Subscription\Model\Subscriber;
 use PhpList\Core\Domain\Subscription\Service\Manager\SubscriberManager;
 use PhpList\Core\Security\Authentication;
@@ -107,7 +108,8 @@ class SubscriberController extends BaseController
             $this->paginatedDataProvider->getPaginatedList(
                 $request,
                 $this->subscriberNormalizer,
-                Subscriber::class
+                Subscriber::class,
+                new SubscriberFilter(),
             ),
             Response::HTTP_OK
         );
