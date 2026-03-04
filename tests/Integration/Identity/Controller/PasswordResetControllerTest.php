@@ -18,13 +18,11 @@ class PasswordResetControllerTest extends AbstractTestController
         );
     }
 
-    public function testRequestPasswordResetWithNoJsonReturnsError400(): void
+    public function testRequestPasswordResetWithNoJsonReturnsError422(): void
     {
         $this->jsonRequest('post', '/api/v2/password-reset/request');
 
-        $this->assertHttpBadRequest();
-        $data = $this->getDecodedJsonResponseContent();
-        $this->assertStringContainsString('Invalid JSON:', $data['message']);
+        $this->assertHttpUnprocessableEntity();
     }
 
     public function testRequestPasswordResetWithInvalidEmailReturnsError422(): void
@@ -55,13 +53,11 @@ class PasswordResetControllerTest extends AbstractTestController
         $this->assertHttpNoContent();
     }
 
-    public function testValidateTokenWithNoJsonReturnsError400(): void
+    public function testValidateTokenWithNoJsonReturnsError422(): void
     {
         $this->jsonRequest('post', '/api/v2/password-reset/validate');
 
-        $this->assertHttpBadRequest();
-        $data = $this->getDecodedJsonResponseContent();
-        $this->assertStringContainsString('Invalid JSON:', $data['message']);
+        $this->assertHttpUnprocessableEntity();
     }
 
     public function testValidateTokenWithInvalidTokenReturnsInvalidResult(): void
@@ -75,13 +71,11 @@ class PasswordResetControllerTest extends AbstractTestController
         $this->assertFalse($data['valid']);
     }
 
-    public function testResetPasswordWithNoJsonReturnsError400(): void
+    public function testResetPasswordWithNoJsonReturnsError422(): void
     {
         $this->jsonRequest('post', '/api/v2/password-reset/reset');
 
-        $this->assertHttpBadRequest();
-        $data = $this->getDecodedJsonResponseContent();
-        $this->assertStringContainsString('Invalid JSON:', $data['message']);
+        $this->assertHttpUnprocessableEntity();
     }
 
     public function testResetPasswordWithInvalidTokenReturnsBadRequest(): void

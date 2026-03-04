@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
  * Testcase.
  *
  * @author Oliver Klee <oliver@phplist.com>
+ * @author Tatevik Grigoryan <tatevik@phplist.com>
  */
 class SubscriberControllerTest extends AbstractTestController
 {

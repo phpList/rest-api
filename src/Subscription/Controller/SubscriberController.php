@@ -7,7 +7,6 @@ namespace PhpList\RestBundle\Subscription\Controller;
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Identity\Model\PrivilegeFlag;
-use PhpList\Core\Domain\Subscription\Model\Filter\SubscriberFilter;
 use PhpList\Core\Domain\Subscription\Model\Subscriber;
 use PhpList\Core\Domain\Subscription\Service\Manager\SubscriberManager;
 use PhpList\Core\Security\Authentication;
@@ -15,6 +14,7 @@ use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
 use PhpList\RestBundle\Common\Service\Provider\PaginatedDataProvider;
 use PhpList\RestBundle\Subscription\Request\CreateSubscriberRequest;
+use PhpList\RestBundle\Subscription\Request\SubscribersFilterRequest;
 use PhpList\RestBundle\Subscription\Request\UpdateSubscriberRequest;
 use PhpList\RestBundle\Subscription\Serializer\SubscriberNormalizer;
 use PhpList\RestBundle\Subscription\Service\SubscriberHistoryService;
@@ -75,7 +75,65 @@ class SubscriberController extends BaseController
                 in: 'query',
                 required: false,
                 schema: new OA\Schema(type: 'integer', default: 25, maximum: 100, minimum: 1)
-            )
+            ),
+            new OA\Parameter(
+                name: 'is_confirmed',
+                description: 'Filter by confirmed status',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(
+                    type: 'string',
+                    enum: ['true', 'false', '0', '1'],
+                    example: '1'
+                )
+            ),
+            new OA\Parameter(
+                name: 'is_blacklisted',
+                description: 'Filter by blacklisted status',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(
+                    type: 'string',
+                    enum: ['true', 'false', '0', '1'],
+                    example: '1'
+                )
+            ),
+            new OA\Parameter(
+                name: 'sort_by',
+                description: 'Column to sort by',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'string', example: 'id')
+            ),
+            new OA\Parameter(
+                name: 'sort_direction',
+                description: 'Sort direction',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(
+                    type: 'string',
+                    enum: ['asc', 'desc'],
+                    example: 'desc'
+                )
+            ),
+            new OA\Parameter(
+                name: 'find_column',
+                description: 'Column to search in (requires find_value)',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(
+                    type: 'string',
+                    enum: ['email', 'foreignKey', 'uniqueId'],
+                    example: 'email'
+                )
+            ),
+            new OA\Parameter(
+                name: 'find_value',
+                description: 'Value to search for (requires find_column)',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'string', example: 'email@example.com')
+            ),
         ],
         responses: [
             new OA\Response(
@@ -104,14 +162,17 @@ class SubscriberController extends BaseController
     {
         $this->requireAuthentication($request);
 
+        /** @var SubscribersFilterRequest $subscriberRequest */
+        $subscriberRequest = $this->validator->validate($request, SubscribersFilterRequest::class);
+
         return $this->json(
-            $this->paginatedDataProvider->getPaginatedList(
-                $request,
-                $this->subscriberNormalizer,
-                Subscriber::class,
-                new SubscriberFilter(),
+            data: $this->paginatedDataProvider->getPaginatedList(
+                request: $request,
+                normalizer: $this->subscriberNormalizer,
+                className: Subscriber::class,
+                filter: $subscriberRequest->getDto(),
             ),
-            Response::HTTP_OK
+            status: Response::HTTP_OK
         );
     }
 

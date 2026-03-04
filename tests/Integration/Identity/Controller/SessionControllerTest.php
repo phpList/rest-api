@@ -42,13 +42,11 @@ class SessionControllerTest extends AbstractTestController
         $this->assertHttpMethodNotAllowed();
     }
 
-    public function testPostSessionsWithNoJsonReturnsError400()
+    public function testPostSessionsWithNoJsonReturnsError422()
     {
         $this->jsonRequest('post', '/api/v2/sessions');
 
-        $this->assertHttpBadRequest();
-        $data = $this->getDecodedJsonResponseContent();
-        $this->assertStringContainsString('Invalid JSON:', $data['message']);
+        $this->assertHttpUnprocessableEntity();
     }
 
     public function testPostSessionsWithInvalidJsonWithJsonContentTypeReturnsError400()

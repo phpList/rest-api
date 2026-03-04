@@ -60,3 +60,11 @@ contribute and how to run the unit tests and style checks locally.
 This project adheres to a [Contributor Code of Conduct](CODE_OF_CONDUCT.md).
 By participating in this project and its community, you are expected to uphold
 this code.
+
+
+### Code style checks
+```bash
+vendor/bin/phpstan analyse -l 5 src/ tests/
+vendor/bin/phpmd src/ text vendor/phplist/core/config/PHPMD/rules.xml
+vendor/bin/phpcs --standard=vendor/phplist/core/config/PhpCodeSniffer/ src/ tests/
+```
