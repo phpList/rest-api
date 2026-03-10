@@ -313,7 +313,7 @@ class SubscriberListControllerTest extends AbstractTestController
                     ],
                 ],
                 'pagination' => [
-                    'total' => 3,
+                    'total' => 2,
                     'limit' => 25,
                     'has_more' => false,
                     'next_cursor' => 2,

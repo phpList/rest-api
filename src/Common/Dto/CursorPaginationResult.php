@@ -7,9 +7,24 @@ namespace PhpList\RestBundle\Common\Dto;
 class CursorPaginationResult
 {
     public function __construct(
-        public readonly array $items,
-        public readonly int $limit,
-        public readonly int $total,
+        private readonly array $items,
+        private readonly int $limit,
+        private readonly int $total,
     ) {
+    }
+
+    public function getItems(): array
+    {
+        return $this->items;
+    }
+
+    public function getLimit(): int
+    {
+        return $this->limit;
+    }
+
+    public function getTotal(): int
+    {
+        return $this->total;
     }
 }

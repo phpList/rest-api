@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Tests\Unit\Common\Service\Provider;
 
 use Doctrine\ORM\EntityManagerInterface;
+use PhpList\Core\Domain\Common\Model\PaginatedResult;
 use PhpList\RestBundle\Common\Dto\CursorPaginationResult;
 use PhpList\RestBundle\Common\Request\PaginationCursorRequest;
 use PhpList\RestBundle\Common\Serializer\CursorPaginationNormalizer;
@@ -37,14 +38,16 @@ class PaginatedDataProviderTest extends TestCase
         $repository->expects($this->once())
             ->method('getFilteredAfterId')
             ->with(0, 2)
-            ->willReturn([
-                (object)['id' => 1, 'name' => 'Item 1'],
-                (object)['id' => 2, 'name' => 'Item 2'],
-            ]);
-
-        $repository->expects($this->once())
-            ->method('count')
-            ->willReturn(10);
+            ->willReturn(
+                new PaginatedResult([
+                        (object)['id' => 1, 'name' => 'Item 1'],
+                        (object)['id' => 2, 'name' => 'Item 2'],
+                    ],
+                    2,
+                    10,
+                    2,
+                )
+            );
 
         $entityManager->method('getRepository')
             ->willReturn($repository);
