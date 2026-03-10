@@ -15,8 +15,8 @@ class DummyPaginatableRepository extends EntityRepository implements Paginatable
     {
         return new PaginatedResult(
             [
-                (object)['id' => 1, 'name' => 'Item 1'],
-                (object)['id' => 2, 'name' => 'Item 2'],
+                new DummyDomainModel(1, 'Item 1'),
+                new DummyDomainModel(2, 'Item 2'),
             ],
             2,
             10,

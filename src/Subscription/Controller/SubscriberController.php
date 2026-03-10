@@ -99,24 +99,6 @@ class SubscriberController extends BaseController
                 )
             ),
             new OA\Parameter(
-                name: 'sort_by',
-                description: 'Column to sort by',
-                in: 'query',
-                required: false,
-                schema: new OA\Schema(type: 'string', example: 'id')
-            ),
-            new OA\Parameter(
-                name: 'sort_direction',
-                description: 'Sort direction',
-                in: 'query',
-                required: false,
-                schema: new OA\Schema(
-                    type: 'string',
-                    enum: ['asc', 'desc'],
-                    example: 'desc'
-                )
-            ),
-            new OA\Parameter(
                 name: 'find_column',
                 description: 'Column to search in (requires find_value)',
                 in: 'query',

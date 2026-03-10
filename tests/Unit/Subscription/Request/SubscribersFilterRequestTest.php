@@ -15,8 +15,6 @@ class SubscribersFilterRequestTest extends TestCase
         $request = new SubscribersFilterRequest();
         $request->isConfirmed = 'true';
         $request->isBlacklisted = 'false';
-        $request->sortBy = 'email';
-        $request->sortDirection = 'desc';
         $request->findColumn = 'email';
         $request->findValue = 'test@example.com';
 
@@ -25,8 +23,6 @@ class SubscribersFilterRequestTest extends TestCase
         $this->assertInstanceOf(SubscriberFilter::class, $dto);
         $this->assertTrue($dto->getIsConfirmed());
         $this->assertFalse($dto->getIsBlacklisted());
-        $this->assertEquals('email', $dto->getSortBy());
-        $this->assertEquals('desc', $dto->getSortDirection());
         $this->assertEquals('email', $dto->getFindColumn());
         $this->assertEquals('test@example.com', $dto->getFindValue());
     }
@@ -64,8 +60,6 @@ class SubscribersFilterRequestTest extends TestCase
         $this->assertInstanceOf(SubscriberFilter::class, $dto);
         $this->assertNull($dto->getIsConfirmed());
         $this->assertNull($dto->getIsBlacklisted());
-        $this->assertNull($dto->getSortBy());
-        $this->assertNull($dto->getSortDirection());
         $this->assertNull($dto->getFindColumn());
         $this->assertNull($dto->getFindValue());
     }

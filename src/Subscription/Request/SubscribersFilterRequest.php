@@ -23,18 +23,6 @@ class SubscribersFilterRequest implements RequestInterface
     public mixed $isBlacklisted = null;
 
     #[Assert\Choice(
-        choices: ['email', 'confirmedAt', 'createdAt'],
-        message: 'Invalid sortBy value'
-    )]
-    public ?string $sortBy = null;
-
-    #[Assert\Choice(
-        choices: ['asc', 'desc'],
-        message: 'sortDirection must be asc or desc'
-    )]
-    public ?string $sortDirection = null;
-
-    #[Assert\Choice(
         choices: ['email', 'foreignKey', 'uniqueId'],
         message: 'Invalid findColumn value'
     )]
@@ -48,8 +36,6 @@ class SubscribersFilterRequest implements RequestInterface
         return new SubscriberFilter(
             isConfirmed: $this->normalizeBoolean($this->isConfirmed),
             isBlacklisted: $this->normalizeBoolean($this->isBlacklisted),
-            sortBy: $this->sortBy,
-            sortDirection: $this->sortDirection,
             findColumn: $this->findColumn,
             findValue: $this->findColumn ? $this->findValue : null,
         );
