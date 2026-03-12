@@ -12,6 +12,7 @@ use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
 use PhpList\RestBundle\Identity\Request\CreateSessionRequest;
+use PhpList\RestBundle\Identity\Serializer\AdministratorNormalizer;
 use PhpList\RestBundle\Identity\Serializer\AdministratorTokenNormalizer;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -36,6 +37,7 @@ class SessionController extends BaseController
         RequestValidator $validator,
         SessionManager $sessionManager,
         private readonly EntityManagerInterface $entityManager,
+        private readonly AdministratorNormalizer $normalizer,
     ) {
         parent::__construct($authentication, $validator);
 
@@ -169,5 +171,47 @@ class SessionController extends BaseController
         $this->entityManager->flush();
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
+    }
+
+    #[Route('/me', name: 'me', methods: ['GET'])]
+    #[OA\Get(
+        path: '/api/v2/sessions/me',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
+        'Get auth user data.',
+        summary: 'Get auth user data.',
+        tags: ['sessions'],
+        parameters: [
+            new OA\Parameter(
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Administrator found',
+                content: new OA\JsonContent(ref: '#/components/schemas/Administrator')
+            ),
+            new OA\Response(
+                response: 401,
+                description: 'Failure',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'message', type: 'string', example: 'Not authorized.')
+                    ]
+                )
+            )
+        ]
+    )]
+    public function getSessionUser(Request $request): JsonResponse
+    {
+        $administrator = $this->requireAuthentication($request);
+
+        $json = $this->normalizer->normalize($administrator, 'json');
+
+        return $this->json($json, Response::HTTP_OK);
     }
 }
