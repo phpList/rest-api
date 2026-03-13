@@ -339,7 +339,7 @@ class SubscriberController extends BaseController
     {
         $this->requireAuthentication($request);
 
-        $subscriber = $this->subscriberManager->getSubscriberById($subscriberId);
+        $subscriber = $this->subscriberManager->getSubscriberDetails($subscriberId);
         $subscriberData = $this->subscriberNormalizer->normalize($subscriber);
 
         return $this->json($subscriberData, Response::HTTP_OK);

@@ -18,6 +18,7 @@ use PhpList\RestBundle\Tests\Integration\Subscription\Fixtures\SubscriptionFixtu
  *
  * @author Oliver Klee <oliver@phplist.com>
  * @author Xheni Myrtaj <xheni@phplist.com>
+ * @author Tatevik Grigoryan <tatevik@phplist.com>
  */
 class SubscriberListControllerTest extends AbstractTestController
 {
@@ -260,10 +261,12 @@ class SubscriberListControllerTest extends AbstractTestController
                         'id' => 1,
                         'email' => 'oliver@example.com',
                         'created_at' => '2016-07-22T15:01:17+00:00',
+                        'updated_at' => '2016-08-23T19:50:43+00:00',
                         'confirmed' => true,
                         'blacklisted' => true,
                         'bounce_count' => 17,
                         'unique_id' => '95feb7fe7e06e6c11ca8d0c48cb46e89',
+                        'uuid' => '',
                         'html_email' => true,
                         'disabled' => true,
                         'subscribed_lists' => [
@@ -278,14 +281,17 @@ class SubscriberListControllerTest extends AbstractTestController
                                 'category' => '',
                             ],
                         ],
+                        'history' => [],
                     ], [
                         'id' => 2,
                         'email' => 'oliver1@example.com',
                         'created_at' => '2016-07-22T15:01:17+00:00',
+                        'updated_at' => '2016-08-23T19:50:43+00:00',
                         'confirmed' => true,
                         'blacklisted' => true,
                         'bounce_count' => 17,
                         'unique_id' => '95feb7fe7e06e6c11ca8d0c48cb46e87',
+                        'uuid' => '',
                         'html_email' => true,
                         'disabled' => true,
                         'subscribed_lists' => [
@@ -310,6 +316,7 @@ class SubscriberListControllerTest extends AbstractTestController
                                 'category' => 'news',
                             ],
                         ],
+                        'history' => [],
                     ],
                 ],
                 'pagination' => [
