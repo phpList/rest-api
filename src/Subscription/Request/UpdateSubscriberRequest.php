@@ -20,7 +20,6 @@ use Symfony\Component\Validator\Constraints as Assert;
         new OA\Property(property: 'blacklisted', type: 'boolean', example: false),
         new OA\Property(property: 'html_email', type: 'boolean', example: false),
         new OA\Property(property: 'disabled', type: 'boolean', example: false),
-        new OA\Property(property: 'additional_data', type: 'string', example: 'asdf'),
     ],
     type: 'object'
 )]
@@ -43,9 +42,6 @@ class UpdateSubscriberRequest implements RequestInterface
     #[Assert\Type(type: 'bool')]
     public bool $disabled;
 
-    #[Assert\Type(type: 'string')]
-    public string $additionalData;
-
     public function getDto(): UpdateSubscriberDto
     {
         return new UpdateSubscriberDto(
@@ -54,7 +50,6 @@ class UpdateSubscriberRequest implements RequestInterface
             blacklisted: $this->blacklisted,
             htmlEmail: $this->htmlEmail,
             disabled: $this->disabled,
-            additionalData: $this->additionalData,
         );
     }
 }
