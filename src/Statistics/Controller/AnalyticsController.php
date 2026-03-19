@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Throwable;
 
 /**
  * This controller provides REST API to access analytics data.
@@ -355,5 +356,102 @@ class AnalyticsController extends BaseController
         ]);
 
         return $this->json($normalizedData, Response::HTTP_OK);
+    }
+
+    #[Route('/dashboard', name: 'dashboard_statistics', methods: ['GET'])]
+    #[OA\Get(
+        path: '/api/v2/analytics/dashboard',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
+            'Returns dashboard cards with aggregate analytics metrics.',
+        summary: 'Gets dashboard analytics statistics.',
+        tags: ['analytics'],
+        parameters: [
+            new OA\Parameter(
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Success',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: 'total_subscribers',
+                            properties: [
+                                new OA\Property(property: 'value', type: 'integer', example: 48294),
+                                new OA\Property(
+                                    property: 'change_vs_last_month',
+                                    type: 'number',
+                                    format: 'float',
+                                    example: 12.5
+                                ),
+                            ],
+                            type: 'object'
+                        ),
+                        new OA\Property(
+                            property: 'active_campaigns',
+                            properties: [
+                                new OA\Property(property: 'value', type: 'integer', example: 12),
+                                new OA\Property(
+                                    property: 'change_vs_last_month',
+                                    type: 'number',
+                                    format: 'float',
+                                    example: 0
+                                ),
+                            ],
+                            type: 'object'
+                        ),
+                        new OA\Property(
+                            property: 'open_rate',
+                            properties: [
+                                new OA\Property(property: 'value', type: 'number', format: 'float', example: 12),
+                                new OA\Property(
+                                    property: 'change_vs_last_month',
+                                    type: 'number',
+                                    format: 'float',
+                                    example: 0
+                                ),
+                            ],
+                            type: 'object'
+                        ),
+                        new OA\Property(
+                            property: 'bounce_rate',
+                            properties: [
+                                new OA\Property(property: 'value', type: 'number', format: 'float', example: 12),
+                                new OA\Property(
+                                    property: 'change_vs_last_month',
+                                    type: 'number',
+                                    format: 'float',
+                                    example: 0
+                                ),
+                            ],
+                            type: 'object'
+                        ),
+                    ],
+                    type: 'object'
+                )
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Unauthorized',
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
+            )
+        ]
+    )]
+    public function getDashboardStatistics(Request $request): JsonResponse
+    {
+        $authUser = $this->requireAuthentication($request);
+        if (!$authUser->getPrivileges()->has(PrivilegeFlag::Statistics)) {
+            throw $this->createAccessDeniedException('You are not allowed to access statistics.');
+        }
+
+        $response = $this->analyticsService->getSummaryStatistics();
+
+        return $this->json($response, Response::HTTP_OK);
     }
 }

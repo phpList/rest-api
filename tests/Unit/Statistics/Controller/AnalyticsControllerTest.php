@@ -442,4 +442,87 @@ class AnalyticsControllerTest extends TestCase
             'total' => 1,
         ], json_decode($response->getContent(), true));
     }
+
+    public function testGetDashboardStatisticsWithoutStatisticsPrivilegeThrowsException(): void
+    {
+        $request = new Request();
+
+        $this->authentication
+            ->expects(self::once())
+            ->method('authenticateByApiKey')
+            ->with($request)
+            ->willReturn($this->administrator);
+
+        $this->privileges
+            ->expects(self::once())
+            ->method('has')
+            ->with(PrivilegeFlag::Statistics)
+            ->willReturn(false);
+
+        $this->expectException(AccessDeniedException::class);
+        $this->expectExceptionMessage('You are not allowed to access statistics.');
+
+        $this->controller->getDashboardStatistics($request);
+    }
+
+    public function testGetDashboardStatisticsReturnsJsonResponse(): void
+    {
+        $request = new Request();
+
+        $this->authentication
+            ->expects(self::once())
+            ->method('authenticateByApiKey')
+            ->with($request)
+            ->willReturn($this->administrator);
+
+        $this->privileges
+            ->expects(self::once())
+            ->method('has')
+            ->with(PrivilegeFlag::Statistics)
+            ->willReturn(true);
+
+        $this->analyticsService
+            ->expects(self::once())
+            ->method('getSummaryStatistics')
+            ->willReturn([
+                'total_subscribers' => [
+                    'value' => 80,
+                    'change_vs_last_month' => 10.5,
+                ],
+                'active_campaigns' => [
+                    'value' => 12,
+                    'change_vs_last_month' => -4.25,
+                ],
+                'open_rate' => [
+                    'value' => 40.0,
+                    'change_vs_last_month' => 3.3,
+                ],
+                'bounce_rate' => [
+                    'value' => 6.67,
+                    'change_vs_last_month' => -1.1,
+                ],
+            ]);
+
+        $response = $this->controller->getDashboardStatistics($request);
+
+        self::assertEquals(Response::HTTP_OK, $response->getStatusCode());
+        self::assertEquals([
+            'total_subscribers' => [
+                'value' => 80,
+                'change_vs_last_month' => 10.5,
+            ],
+            'active_campaigns' => [
+                'value' => 12,
+                'change_vs_last_month' => -4.25,
+            ],
+            'open_rate' => [
+                'value' => 40.0,
+                'change_vs_last_month' => 3.3,
+            ],
+            'bounce_rate' => [
+                'value' => 6.67,
+                'change_vs_last_month' => -1.1,
+            ],
+        ], json_decode($response->getContent(), true));
+    }
 }
