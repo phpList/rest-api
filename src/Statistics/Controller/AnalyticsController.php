@@ -381,56 +381,114 @@ class AnalyticsController extends BaseController
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(
-                            property: 'total_subscribers',
+                            property: 'summary_statistics',
                             properties: [
-                                new OA\Property(property: 'value', type: 'integer', example: 48294),
                                 new OA\Property(
-                                    property: 'change_vs_last_month',
-                                    type: 'number',
-                                    format: 'float',
-                                    example: 12.5
+                                    property: 'total_subscribers',
+                                    properties: [
+                                        new OA\Property(property: 'value', type: 'integer', example: 48294),
+                                        new OA\Property(
+                                            property: 'change_vs_last_month',
+                                            type: 'number',
+                                            format: 'float',
+                                            example: 12.5
+                                        ),
+                                    ],
+                                    type: 'object'
+                                ),
+                                new OA\Property(
+                                    property: 'active_campaigns',
+                                    properties: [
+                                        new OA\Property(property: 'value', type: 'integer', example: 12),
+                                        new OA\Property(
+                                            property: 'change_vs_last_month',
+                                            type: 'number',
+                                            format: 'float',
+                                            example: 0
+                                        ),
+                                    ],
+                                    type: 'object'
+                                ),
+                                new OA\Property(
+                                    property: 'open_rate',
+                                    properties: [
+                                        new OA\Property(
+                                            property: 'value',
+                                            type: 'number',
+                                            format: 'float',
+                                            example: 12
+                                        ),
+                                        new OA\Property(
+                                            property: 'change_vs_last_month',
+                                            type: 'number',
+                                            format: 'float',
+                                            example: 0
+                                        ),
+                                    ],
+                                    type: 'object'
+                                ),
+                                new OA\Property(
+                                    property: 'bounce_rate',
+                                    properties: [
+                                        new OA\Property(
+                                            property: 'value',
+                                            type: 'number',
+                                            format: 'float',
+                                            example: 12
+                                        ),
+                                        new OA\Property(
+                                            property: 'change_vs_last_month',
+                                            type: 'number',
+                                            format: 'float',
+                                            example: 0
+                                        ),
+                                    ],
+                                    type: 'object'
                                 ),
                             ],
                             type: 'object'
                         ),
                         new OA\Property(
-                            property: 'active_campaigns',
-                            properties: [
-                                new OA\Property(property: 'value', type: 'integer', example: 12),
-                                new OA\Property(
-                                    property: 'change_vs_last_month',
-                                    type: 'number',
-                                    format: 'float',
-                                    example: 0
-                                ),
-                            ],
-                            type: 'object'
+                            property: 'recent_campaigns',
+                            type: 'array',
+                            items: new OA\Items(
+                                properties: [
+                                    new OA\Property(property: 'name', type: 'string', example: 'March Newsletter'),
+                                    new OA\Property(
+                                        property: 'status',
+                                        type: 'string',
+                                        example: 'sent',
+                                        nullable: true
+                                    ),
+                                    new OA\Property(
+                                        property: 'date',
+                                        type: 'string',
+                                        format: 'date',
+                                        example: '2026-03-15',
+                                        nullable: true
+                                    ),
+                                    new OA\Property(property: 'open_rate', type: 'string', example: '42.50%'),
+                                    new OA\Property(property: 'click_rate', type: 'string', example: '8.10%'),
+                                ],
+                                type: 'object'
+                            )
                         ),
                         new OA\Property(
-                            property: 'open_rate',
-                            properties: [
-                                new OA\Property(property: 'value', type: 'number', format: 'float', example: 12),
-                                new OA\Property(
-                                    property: 'change_vs_last_month',
-                                    type: 'number',
-                                    format: 'float',
-                                    example: 0
-                                ),
-                            ],
-                            type: 'object'
-                        ),
-                        new OA\Property(
-                            property: 'bounce_rate',
-                            properties: [
-                                new OA\Property(property: 'value', type: 'number', format: 'float', example: 12),
-                                new OA\Property(
-                                    property: 'change_vs_last_month',
-                                    type: 'number',
-                                    format: 'float',
-                                    example: 0
-                                ),
-                            ],
-                            type: 'object'
+                            property: 'campaign_performance',
+                            type: 'array',
+                            items: new OA\Items(
+                                properties: [
+                                    new OA\Property(
+                                        property: 'date',
+                                        type: 'string',
+                                        format: 'date',
+                                        example: '2026-03-19'
+                                    ),
+                                    new OA\Property(property: 'opens', type: 'integer', example: 234),
+                                    new OA\Property(property: 'clicks', type: 'integer', example: 57),
+                                ],
+                                type: 'object'
+                            )
                         ),
                     ],
                     type: 'object'
@@ -450,7 +508,11 @@ class AnalyticsController extends BaseController
             throw $this->createAccessDeniedException('You are not allowed to access statistics.');
         }
 
-        $response = $this->analyticsService->getSummaryStatistics();
+        $response = [
+            'summary_statistics' => $this->analyticsService->getSummaryStatistics(),
+            'recent_campaigns' => $this->analyticsService->getRecentCampaigns(),
+            'campaign_performance' => $this->analyticsService->getCampaignPerformance(),
+        ];
 
         return $this->json($response, Response::HTTP_OK);
     }

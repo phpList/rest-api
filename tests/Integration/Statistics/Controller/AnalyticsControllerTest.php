@@ -275,17 +275,16 @@ class AnalyticsControllerTest extends AbstractTestController
         $response = $this->getDecodedJsonResponseContent();
 
         self::assertIsArray($response);
-        self::assertArrayHasKey('total_subscribers', $response);
-        self::assertArrayHasKey('active_campaigns', $response);
-        self::assertArrayHasKey('open_rate', $response);
-        self::assertArrayHasKey('bounce_rate', $response);
+        self::assertArrayHasKey('summary_statistics', $response);
+        self::assertArrayHasKey('recent_campaigns', $response);
+        self::assertArrayHasKey('campaign_performance', $response);
 
         foreach (['total_subscribers', 'active_campaigns', 'open_rate', 'bounce_rate'] as $metric) {
-            self::assertIsArray($response[$metric]);
-            self::assertArrayHasKey('value', $response[$metric]);
-            self::assertArrayHasKey('change_vs_last_month', $response[$metric]);
-            self::assertIsNumeric($response[$metric]['value']);
-            self::assertIsNumeric($response[$metric]['change_vs_last_month']);
+            self::assertIsArray($response['summary_statistics'][$metric]);
+            self::assertArrayHasKey('value', $response['summary_statistics'][$metric]);
+            self::assertArrayHasKey('change_vs_last_month', $response['summary_statistics'][$metric]);
+            self::assertIsNumeric($response['summary_statistics'][$metric]['value']);
+            self::assertIsNumeric($response['summary_statistics'][$metric]['change_vs_last_month']);
         }
     }
 }

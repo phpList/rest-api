@@ -507,22 +507,26 @@ class AnalyticsControllerTest extends TestCase
 
         self::assertEquals(Response::HTTP_OK, $response->getStatusCode());
         self::assertEquals([
-            'total_subscribers' => [
-                'value' => 80,
-                'change_vs_last_month' => 10.5,
+            'summary_statistics' => [
+                'total_subscribers' => [
+                    'value' => 80,
+                    'change_vs_last_month' => 10.5,
+                ],
+                'active_campaigns' => [
+                    'value' => 12,
+                    'change_vs_last_month' => -4.25,
+                ],
+                'open_rate' => [
+                    'value' => 40.0,
+                    'change_vs_last_month' => 3.3,
+                ],
+                'bounce_rate' => [
+                    'value' => 6.67,
+                    'change_vs_last_month' => -1.1,
+                ],
             ],
-            'active_campaigns' => [
-                'value' => 12,
-                'change_vs_last_month' => -4.25,
-            ],
-            'open_rate' => [
-                'value' => 40.0,
-                'change_vs_last_month' => 3.3,
-            ],
-            'bounce_rate' => [
-                'value' => 6.67,
-                'change_vs_last_month' => -1.1,
-            ],
+            'recent_campaigns' => [],
+            'campaign_performance' => [],
         ], json_decode($response->getContent(), true));
     }
 }
