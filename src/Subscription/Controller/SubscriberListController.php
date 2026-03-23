@@ -176,7 +176,7 @@ class SubscriberListController extends BaseController
             throw $this->createNotFoundException('Subscriber list not found.');
         }
 
-        $this->denyAccessUnlessOwnerOrPublic($list, $authUser);
+        $this->denyAccessUnlessOwner($list, $authUser);
 
         return $this->json($this->normalizer->normalize($list), Response::HTTP_OK);
     }
@@ -236,7 +236,7 @@ class SubscriberListController extends BaseController
             throw $this->createNotFoundException('Subscriber list not found.');
         }
 
-        $this->denyAccessUnlessOwnerOrPublic($list, $authUser);
+        $this->denyAccessUnlessOwner($list, $authUser);
 
         $this->subscriberListManager->delete($list);
         $this->entityManager->flush();
@@ -356,7 +356,7 @@ class SubscriberListController extends BaseController
             throw $this->createNotFoundException('Subscriber list not found.');
         }
 
-        $this->denyAccessUnlessOwnerOrPublic($list, $authUser);
+        $this->denyAccessUnlessOwner($list, $authUser);
 
         /** @var CreateSubscriberListRequest $subscriberListRequest */
         $subscriberListRequest = $this->validator->validate($request, CreateSubscriberListRequest::class);
@@ -370,7 +370,7 @@ class SubscriberListController extends BaseController
         return $this->json($this->normalizer->normalize($data), Response::HTTP_OK);
     }
 
-    private function denyAccessUnlessOwnerOrPublic(SubscriberList $list, Administrator $user): void
+    private function denyAccessUnlessOwner(SubscriberList $list, Administrator $user): void
     {
         if ($list->getOwner() === null) {
             return;

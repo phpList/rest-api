@@ -6,6 +6,7 @@ namespace PhpList\RestBundle\Subscription\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
+use PhpList\Core\Domain\Identity\Model\Administrator;
 use PhpList\Core\Domain\Subscription\Model\SubscriberList;
 use PhpList\Core\Domain\Subscription\Service\Manager\SubscriptionManager;
 use PhpList\Core\Security\Authentication;
@@ -122,11 +123,13 @@ class SubscriptionController extends BaseController
         Request $request,
         #[MapEntity(mapping: ['listId' => 'id'])] ?SubscriberList $list = null,
     ): JsonResponse {
-        $this->requireAuthentication($request);
+        $authUser = $this->requireAuthentication($request);
 
         if (!$list) {
             throw $this->createNotFoundException('Subscriber list not found.');
         }
+
+        $this->denyAccessUnlessOwner($list, $authUser);
 
         /** @var SubscriptionRequest $subscriptionRequest */
         $subscriptionRequest = $this->validator->validate($request, SubscriptionRequest::class);
@@ -188,10 +191,13 @@ class SubscriptionController extends BaseController
         Request $request,
         #[MapEntity(mapping: ['listId' => 'id'])] ?SubscriberList $list = null,
     ): JsonResponse {
-        $this->requireAuthentication($request);
+        $authUser = $this->requireAuthentication($request);
         if (!$list) {
             throw $this->createNotFoundException('Subscriber list not found.');
         }
+
+        $this->denyAccessUnlessOwner($list, $authUser);
+
         $subscriptionRequest = new SubscriptionRequest();
         $subscriptionRequest->emails = $request->query->all('emails');
 
@@ -201,5 +207,18 @@ class SubscriptionController extends BaseController
         $this->entityManager->flush();
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
+    }
+
+    private function denyAccessUnlessOwner(SubscriberList $list, Administrator $user): void
+    {
+        if ($list->getOwner() === null) {
+            return;
+        }
+
+        if ($list->getOwner()->getId() === $user->getId()) {
+            return;
+        }
+
+        throw $this->createAccessDeniedException('Access denied.');
     }
 }
