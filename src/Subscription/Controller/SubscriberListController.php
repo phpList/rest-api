@@ -7,6 +7,7 @@ namespace PhpList\RestBundle\Subscription\Controller;
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Common\Model\Filter\PaginatedFilter;
+use PhpList\Core\Domain\Messaging\Model\Filter\SubscriberListFilter;
 use PhpList\Core\Domain\Subscription\Model\SubscriberList;
 use PhpList\Core\Domain\Subscription\Service\Manager\SubscriberListManager;
 use PhpList\Core\Security\Authentication;
@@ -106,14 +107,14 @@ class SubscriberListController extends BaseController
     )]
     public function getLists(Request $request): JsonResponse
     {
-        $this->requireAuthentication($request);
+        $admin = $this->requireAuthentication($request);
 
         return $this->json(
             $this->paginatedDataProvider->getPaginatedList(
                 request: $request,
                 normalizer: $this->normalizer,
                 className: SubscriberList::class,
-                filter: new PaginatedFilter(),
+                filter: (new SubscriberListFilter())->setOwner($admin),
             ),
             Response::HTTP_OK
         );

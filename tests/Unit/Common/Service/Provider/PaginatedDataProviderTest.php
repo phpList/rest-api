@@ -37,7 +37,7 @@ class PaginatedDataProviderTest extends TestCase
         $entityManager->method('getRepository')->willReturn($repository);
         $repository->expects($this->once())
             ->method('getFilteredAfterId')
-            ->with(0, 2);
+            ->with($this->isInstanceOf(PaginatedFilter::class));
 
         $entityManager->method('getRepository')
             ->willReturn($repository);
