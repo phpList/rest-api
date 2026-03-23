@@ -6,6 +6,7 @@ namespace PhpList\RestBundle\Identity\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
+use PhpList\Core\Domain\Common\Model\Filter\PaginatedFilter;
 use PhpList\Core\Domain\Identity\Model\AdminAttributeDefinition;
 use PhpList\Core\Domain\Identity\Service\Manager\AdminAttributeDefinitionManager;
 use PhpList\Core\Security\Authentication;
@@ -279,9 +280,10 @@ class AdminAttributeDefinitionController extends BaseController
 
         return $this->json(
             $this->paginatedDataProvider->getPaginatedList(
-                $request,
-                $this->normalizer,
-                AdminAttributeDefinition::class,
+                request: $request,
+                normalizer: $this->normalizer,
+                className: AdminAttributeDefinition::class,
+                filter: new PaginatedFilter(),
             ),
             Response::HTTP_OK
         );

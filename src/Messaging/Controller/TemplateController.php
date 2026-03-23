@@ -6,6 +6,7 @@ namespace PhpList\RestBundle\Messaging\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
+use PhpList\Core\Domain\Common\Model\Filter\PaginatedFilter;
 use PhpList\Core\Domain\Messaging\Model\Template;
 use PhpList\Core\Domain\Messaging\Service\Manager\TemplateManager;
 use PhpList\Core\Security\Authentication;
@@ -108,6 +109,7 @@ class TemplateController extends BaseController
                 request: $request,
                 normalizer: $this->normalizer,
                 className: Template::class,
+                filter: new PaginatedFilter(),
             ),
             Response::HTTP_OK
         );

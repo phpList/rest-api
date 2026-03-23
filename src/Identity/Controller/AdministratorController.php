@@ -6,6 +6,7 @@ namespace PhpList\RestBundle\Identity\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
+use PhpList\Core\Domain\Common\Model\Filter\PaginatedFilter;
 use PhpList\Core\Domain\Identity\Model\Administrator;
 use PhpList\Core\Domain\Identity\Service\Manager\AdministratorManager;
 use PhpList\Core\Security\Authentication;
@@ -102,7 +103,12 @@ class AdministratorController extends BaseController
         $this->requireAuthentication($request);
 
         return $this->json(
-            $this->paginatedProvider->getPaginatedList($request, $this->normalizer, Administrator::class),
+            $this->paginatedProvider->getPaginatedList(
+                request: $request,
+                normalizer: $this->normalizer,
+                className: Administrator::class,
+                filter: new PaginatedFilter(),
+            ),
             Response::HTTP_OK
         );
     }

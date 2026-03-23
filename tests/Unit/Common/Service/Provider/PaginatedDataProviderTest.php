@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Tests\Unit\Common\Service\Provider;
 
 use Doctrine\ORM\EntityManagerInterface;
+use PhpList\Core\Domain\Common\Model\Filter\PaginatedFilter;
 use PhpList\RestBundle\Common\Dto\CursorPaginationResult;
 use PhpList\RestBundle\Common\Request\PaginationCursorRequest;
 use PhpList\RestBundle\Common\Serializer\CursorPaginationNormalizer;
@@ -53,7 +54,12 @@ class PaginatedDataProviderTest extends TestCase
 
         $provider = new PaginatedDataProvider($paginationNormalizer, $paginationFactory, $entityManager);
 
-        $result = $provider->getPaginatedList($request, $normalizer, 'Some\\Entity\\Class');
+        $result = $provider->getPaginatedList(
+            request: $request,
+            normalizer: $normalizer,
+            className: 'Some\\Entity\\Class',
+            filter: new PaginatedFilter(),
+        );
 
         $this->assertIsArray($result);
         $this->assertArrayHasKey('items', $result);
@@ -80,6 +86,11 @@ class PaginatedDataProviderTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Repository not found');
 
-        $provider->getPaginatedList($request, $normalizer, 'NonPaginatableClass');
+        $provider->getPaginatedList(
+            request: $request,
+            normalizer: $normalizer,
+            className: 'NonPaginatableClass',
+            filter: new PaginatedFilter(),
+        );
     }
 }

@@ -11,7 +11,7 @@ use PhpList\Core\Domain\Common\Repository\Interfaces\PaginatableRepositoryInterf
 
 class DummyPaginatableRepository extends EntityRepository implements PaginatableRepositoryInterface
 {
-    public function getFilteredAfterId(int $lastId, int $limit, ?FilterRequestInterface $filter = null): PaginatedResult
+    public function getFilteredAfterId(FilterRequestInterface $filter): PaginatedResult
     {
         return new PaginatedResult(
             [
