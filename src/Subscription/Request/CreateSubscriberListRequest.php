@@ -17,6 +17,9 @@ use Symfony\Component\Validator\Constraints as Assert;
         new OA\Property(property: 'description', type: 'string', example: 'News (and some fun stuff)'),
         new OA\Property(property: 'list_position', type: 'number', example: 12),
         new OA\Property(property: 'public', type: 'boolean', example: true),
+        new OA\Property(property: 'category', type: 'string', example: 'Marketing'),
+        new OA\Property(property: 'subject_prefix', type: 'string', example: '[News]'),
+        new OA\Property(property: 'rss_feed', type: 'string', example: 'https://example.com/blog/rss'),
     ],
     type: 'object'
 )]
@@ -31,6 +34,9 @@ class CreateSubscriberListRequest implements RequestInterface
     public ?int $listPosition = null;
 
     public ?string $description = null;
+    public ?string $category = null;
+    public ?string $subjectPrefix = null;
+    public ?string $rssFeed = null;
 
     public function getDto(): CreateSubscriberListDto
     {
@@ -39,6 +45,9 @@ class CreateSubscriberListRequest implements RequestInterface
             isPublic: $this->public,
             listPosition: $this->listPosition,
             description: $this->description,
+            category: $this->category,
+            subjectPrefix: $this->subjectPrefix,
+            rssFeed: $this->rssFeed,
         );
     }
 }

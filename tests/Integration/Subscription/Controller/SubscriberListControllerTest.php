@@ -76,6 +76,7 @@ class SubscriberListControllerTest extends AbstractTestController
                     'subject_prefix' => 'phpList',
                     'public' => true,
                     'category' => 'news',
+                    'rss_feed' => null,
                 ],
                 [
                     'id' => 2,
@@ -86,6 +87,7 @@ class SubscriberListControllerTest extends AbstractTestController
                     'subject_prefix' => '',
                     'public' => true,
                     'category' => '',
+                    'rss_feed' => null,
                 ],
                 [
                     'id' => 3,
@@ -96,6 +98,7 @@ class SubscriberListControllerTest extends AbstractTestController
                     'subject_prefix' => '',
                     'public' => true,
                     'category' => '',
+                    'rss_feed' => null,
                 ],
             ],
             'pagination' => [
@@ -148,6 +151,7 @@ class SubscriberListControllerTest extends AbstractTestController
                 'subject_prefix' => 'phpList',
                 'public' => true,
                 'category' => 'news',
+                'rss_feed' => null,
             ]
         );
     }
@@ -279,6 +283,7 @@ class SubscriberListControllerTest extends AbstractTestController
                                 'subject_prefix' => '',
                                 'public' => true,
                                 'category' => '',
+                                'rss_feed' => null,
                             ],
                         ],
                         'history' => [],
@@ -304,6 +309,7 @@ class SubscriberListControllerTest extends AbstractTestController
                                 'subject_prefix' => '',
                                 'public' => true,
                                 'category' => '',
+                                'rss_feed' => null,
                             ],
                             [
                                 'id' => 1,
@@ -314,6 +320,7 @@ class SubscriberListControllerTest extends AbstractTestController
                                 'subject_prefix' => 'phpList',
                                 'public' => true,
                                 'category' => 'news',
+                                'rss_feed' => null,
                             ],
                         ],
                         'history' => [],
@@ -365,5 +372,34 @@ class SubscriberListControllerTest extends AbstractTestController
         self::getClient()->request('POST', '/api/v2/lists', [], [], [], json_encode([ 'name' => 'UnauthorizedList']));
 
         $this->assertHttpForbidden();
+    }
+
+    public function testUpdateListWithValidPayloadReturnsUpdatedListData(): void
+    {
+        $this->loadFixtures([SubscriberListFixture::class]);
+
+        $payload = json_encode([
+            'name' => 'Updated News',
+            'description' => 'Updated description',
+            'listPosition' => 7,
+            'public' => false,
+            'category' => 'announcements',
+            'subjectPrefix' => '[Upd]',
+            'rssFeed' => 'https://example.com/rss.xml',
+        ]);
+
+        $this->authenticatedJsonRequest('PUT', '/api/v2/lists/1', [], [], [], $payload);
+
+        $this->assertHttpOkay();
+        $response = $this->getDecodedJsonResponseContent();
+
+        self::assertSame(1, $response['id']);
+        self::assertSame('Updated News', $response['name']);
+        self::assertSame('Updated description', $response['description']);
+        self::assertSame(7, $response['list_position']);
+        self::assertFalse($response['public']);
+        self::assertSame('announcements', $response['category']);
+        self::assertSame('[Upd]', $response['subject_prefix']);
+        self::assertSame('https://example.com/rss.xml', $response['rss_feed']);
     }
 }

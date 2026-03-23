@@ -76,6 +76,7 @@ class SubscriberNormalizerTest extends TestCase
                     'subject_prefix' => null,
                     'public' => true,
                     'category' => '',
+                    'rss_feed' => null,
                 ]
             ],
             'history' => [],
