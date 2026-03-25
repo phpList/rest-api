@@ -58,13 +58,16 @@ class SubscribersExportRequestNormalizerTest extends TestCase
                 'email',
                 'confirmed',
                 'blacklisted',
+//                'manualConfirm',
                 'bounceCount',
                 'createdAt',
                 'updatedAt',
                 'uniqueId',
                 'htmlEmail',
+                'rssFrequency',
                 'disabled',
-                'extraData'
+                'extraData',
+                'foreignKey',
             ],
         ];
 

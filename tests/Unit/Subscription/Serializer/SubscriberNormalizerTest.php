@@ -58,7 +58,7 @@ class SubscriberNormalizerTest extends TestCase
             'id' => 101,
             'email' => 'test@example.com',
             'created_at' => '2024-12-31T12:00:00+00:00',
-            'updated_at' => '',
+            'updated_at' => null,
             'confirmed' => true,
             'blacklisted' => false,
             'bounce_count' => 0,

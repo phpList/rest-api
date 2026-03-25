@@ -52,8 +52,10 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'updatedAt',
                 'uniqueId',
                 'htmlEmail',
+                'rssFrequency',
                 'disabled',
                 'extraData',
+                'foreignKey',
             ],
         ),
     ],
@@ -90,13 +92,16 @@ class SubscribersExportRequest implements RequestInterface
         'email',
         'confirmed',
         'blacklisted',
+//        'manualConfirm',
         'bounceCount',
         'createdAt',
         'updatedAt',
         'uniqueId',
         'htmlEmail',
+        'rssFrequency',
         'disabled',
-        'extraData'
+        'extraData',
+        'foreignKey',
     ];
 
     private function resolveDates(): array
