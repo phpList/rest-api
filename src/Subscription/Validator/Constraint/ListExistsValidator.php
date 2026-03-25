@@ -30,11 +30,7 @@ class ListExistsValidator extends ConstraintValidator
             return;
         }
 
-        if (!is_string($value)) {
-            throw new UnexpectedValueException($value, 'string');
-        }
-
-        $existingList = $this->subscriberListRepository->find($value);
+        $existingList = $this->subscriberListRepository->find((int)$value);
 
         if (!$existingList) {
             throw new NotFoundHttpException('Subscriber list does not exists.');
