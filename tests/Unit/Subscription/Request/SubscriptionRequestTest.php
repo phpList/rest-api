@@ -18,6 +18,7 @@ class SubscriptionRequestTest extends TestCase
 
         $this->assertSame($request, $dto);
         $this->assertEquals(['test1@example.com', 'test2@example.com'], $dto->emails);
+        $this->assertFalse($dto->autoConfirm);
     }
 
     public function testGetDtoWithEmptyEmails(): void

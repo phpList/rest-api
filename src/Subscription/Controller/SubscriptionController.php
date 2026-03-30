@@ -54,17 +54,7 @@ class SubscriptionController extends BaseController
         requestBody: new OA\RequestBody(
             description: 'Pass session credentials',
             required: true,
-            content: new OA\JsonContent(
-                required: ['emails'],
-                properties: [
-                    new OA\Property(
-                        property: 'emails',
-                        type: 'array',
-                        items: new OA\Items(type: 'string', format: 'email'),
-                        example: ['test1@example.com', 'test2@example.com']
-                    ),
-                ]
-            )
+            content: new OA\JsonContent(ref: '#/components/schemas/SubscriptionRequest')
         ),
         tags: ['subscriptions'],
         parameters: [
@@ -133,7 +123,11 @@ class SubscriptionController extends BaseController
 
         /** @var SubscriptionRequest $subscriptionRequest */
         $subscriptionRequest = $this->validator->validate($request, SubscriptionRequest::class);
-        $subscriptions = $this->subscriptionManager->createSubscriptions($list, $subscriptionRequest->emails);
+        $subscriptions = $this->subscriptionManager->createSubscriptions(
+            subscriberList: $list,
+            emails: $subscriptionRequest->emails,
+            autoConfirm: $subscriptionRequest->autoConfirm,
+        );
         $this->entityManager->flush();
         $normalized = array_map(fn($item) => $this->subscriptionNormalizer->normalize($item), $subscriptions);
 

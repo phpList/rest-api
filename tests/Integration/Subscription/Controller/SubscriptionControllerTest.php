@@ -45,14 +45,13 @@ class SubscriptionControllerTest extends AbstractTestController
         $this->assertHttpNoContent();
     }
 
-    public function testDeleteSubscriptionForUnknownEmailReturnsValidationError(): void
+    public function testDeleteSubscriptionForUnknownEmailReturnsNoContent(): void
     {
         $this->loadFixtures([SubscriberListFixture::class]);
 
         $this->authenticatedJsonRequest('DELETE', '/api/v2/lists/1/subscribers?emails[]=unknown@example.com');
-        $this->assertHttpNotFound();
+        $this->assertHttpNoContent();
     }
-
 
     public function testGetListSubscribersCountWithCurrentSessionKeyForExistingListReturnsOkayStatus()
     {
