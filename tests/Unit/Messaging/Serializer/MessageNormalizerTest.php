@@ -50,7 +50,7 @@ class MessageNormalizerTest extends TestCase
         $sent = new DateTime('2025-01-02T10:00:00+00:00');
 
         $metadata = new Message\MessageMetadata(Message\MessageStatus::Draft);
-        $metadata->setProcessed(true);
+        $metadata->setProcessed(0);
         $metadata->setViews(10);
         $metadata->setBounceCount(3);
         $metadata->setEntered($entered);
