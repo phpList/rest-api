@@ -45,6 +45,7 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
                 new OA\Property(property: 'bounce_count', type: 'integer'),
                 new OA\Property(property: 'entered', type: 'string', format: 'date-time', nullable: true),
                 new OA\Property(property: 'sent', type: 'string', format: 'date-time', nullable: true),
+                new OA\Property(property: 'send_start', type: 'string', format: 'date-time', nullable: true),
             ],
             type: 'object'
         ),
@@ -114,6 +115,7 @@ class MessageNormalizer implements NormalizerInterface
                 'bounce_count' => $object->getMetadata()->getBounceCount(),
                 'entered' => $object->getMetadata()->getEntered()?->format('Y-m-d\TH:i:sP'),
                 'sent' => $object->getMetadata()->getSent()?->format('Y-m-d\TH:i:sP'),
+                'send_start' => $object->getMetadata()->getSendStart()?->format('Y-m-d\TH:i:sP'),
             ],
             'message_schedule' => [
                 'repeat_interval' => $object->getSchedule()->getRepeatInterval(),
