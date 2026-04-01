@@ -44,6 +44,7 @@ class SubscriberListNormalizerTest extends TestCase
             'subject_prefix' => 'tech',
             'public' => true,
             'category' => 'technology',
+            'rss_feed' => null,
         ], $result);
     }
 

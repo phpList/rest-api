@@ -6,6 +6,7 @@ namespace PhpList\RestBundle\Subscription\Serializer;
 
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Subscription\Model\Subscriber;
+use PhpList\Core\Domain\Subscription\Model\SubscriberHistory;
 use PhpList\Core\Domain\Subscription\Model\Subscription;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
@@ -20,10 +21,17 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
             format: 'date-time',
             example: '2023-01-01T12:00:00Z',
         ),
+        new OA\Property(
+            property: 'updated_at',
+            type: 'string',
+            format: 'date-time',
+            example: '2026-01-01T12:00:00Z',
+        ),
         new OA\Property(property: 'confirmed', type: 'boolean', example: true),
         new OA\Property(property: 'blacklisted', type: 'boolean', example: false),
         new OA\Property(property: 'bounce_count', type: 'integer', example: 0),
         new OA\Property(property: 'unique_id', type: 'string', example: '69f4e92cf50eafca9627f35704f030f4'),
+        new OA\Property(property: 'uuid', type: 'string', example: '69f4e92-cf50eaf-ca9627f-35704f-030f4'),
         new OA\Property(property: 'html_email', type: 'boolean', example: true),
         new OA\Property(property: 'disabled', type: 'boolean', example: false),
         new OA\Property(
@@ -31,13 +39,20 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
             type: 'array',
             items: new OA\Items(ref: '#/components/schemas/SubscriberList')
         ),
+        new OA\Property(
+            property: 'history',
+            type: 'array',
+            items: new OA\Items(ref: '#/components/schemas/SubscriberHistory')
+        ),
     ],
     type: 'object'
 )]
 class SubscriberNormalizer implements NormalizerInterface
 {
-    public function __construct(private readonly SubscriberListNormalizer $subscriberListNormalizer)
-    {
+    public function __construct(
+        private readonly SubscriberListNormalizer $subscriberListNormalizer,
+        private readonly SubscriberHistoryNormalizer $subscriberHistoryNormalizer,
+    ) {
     }
 
     /**
@@ -52,16 +67,21 @@ class SubscriberNormalizer implements NormalizerInterface
         return [
             'id' => $object->getId(),
             'email' => $object->getEmail(),
-            'created_at' => $object->getCreatedAt()->format('Y-m-d\TH:i:sP'),
+            'created_at' => $object->getCreatedAt()?->format('Y-m-d\TH:i:sP'),
+            'updated_at' => $object->getUpdatedAt()?->format('Y-m-d\TH:i:sP'),
             'confirmed' => $object->isConfirmed(),
             'blacklisted' => $object->isBlacklisted(),
             'bounce_count' => $object->getBounceCount(),
             'unique_id' => $object->getUniqueId(),
+            'uuid' => $object->getUuid(),
             'html_email' => $object->hasHtmlEmail(),
             'disabled' => $object->isDisabled(),
             'subscribed_lists' => array_map(function (Subscription $subscription) {
                 return $this->subscriberListNormalizer->normalize($subscription->getSubscriberList());
             }, $object->getSubscriptions()->toArray()),
+            'history' => array_map(function (SubscriberHistory $history) {
+                return  $this->subscriberHistoryNormalizer->normalize($history);
+            }, $object->getHistory()),
         ];
     }
 

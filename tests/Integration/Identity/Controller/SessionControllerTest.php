@@ -42,13 +42,11 @@ class SessionControllerTest extends AbstractTestController
         $this->assertHttpMethodNotAllowed();
     }
 
-    public function testPostSessionsWithNoJsonReturnsError400()
+    public function testPostSessionsWithNoJsonReturnsError422()
     {
         $this->jsonRequest('post', '/api/v2/sessions');
 
-        $this->assertHttpBadRequest();
-        $data = $this->getDecodedJsonResponseContent();
-        $this->assertStringContainsString('Invalid JSON:', $data['message']);
+        $this->assertHttpUnprocessableEntity();
     }
 
     public function testPostSessionsWithInvalidJsonWithJsonContentTypeReturnsError400()
@@ -228,5 +226,33 @@ class SessionControllerTest extends AbstractTestController
     {
         $this->authenticatedJsonRequest('DELETE', '/api/v2/sessions/999999');
         $this->assertHttpNotFound();
+    }
+
+    public function testGetSessionUserWithoutAuthenticationReturnsForbiddenStatus(): void
+    {
+        self::getClient()->request('GET', '/api/v2/sessions/me');
+
+        $this->assertHttpForbidden();
+    }
+
+    public function testGetSessionUserWithAuthenticationReturnsOkayStatus(): void
+    {
+        $this->loadFixtures([AdministratorFixture::class, AdministratorTokenFixture::class]);
+        $this->authenticatedJsonRequest('GET', '/api/v2/sessions/me');
+
+        $this->assertHttpOkay();
+    }
+
+    public function testGetSessionUserWithAuthenticationReturnsAdministratorData(): void
+    {
+        $this->loadFixtures([AdministratorFixture::class, AdministratorTokenFixture::class]);
+        $this->authenticatedJsonRequest('GET', '/api/v2/sessions/me');
+
+        $data = $this->getDecodedJsonResponseContent();
+
+        self::assertSame(1, $data['id']);
+        self::assertSame('john.doe', $data['login_name']);
+        self::assertSame('john@example.com', $data['email']);
+        self::assertTrue($data['super_user']);
     }
 }

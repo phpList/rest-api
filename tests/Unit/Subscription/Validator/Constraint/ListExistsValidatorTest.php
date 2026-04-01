@@ -50,12 +50,6 @@ class ListExistsValidatorTest extends TestCase
         $this->validator->validate('123', $this->createMock(Constraint::class));
     }
 
-    public function testValidateThrowsUnexpectedValueException(): void
-    {
-        $this->expectException(UnexpectedValueException::class);
-        $this->validator->validate(123, new ListExists());
-    }
-
     public function testValidateThrowsNotFoundExceptionIfListDoesNotExist(): void
     {
         $this->subscriberListRepository

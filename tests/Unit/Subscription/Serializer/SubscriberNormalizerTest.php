@@ -9,6 +9,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use PhpList\Core\Domain\Subscription\Model\Subscriber;
 use PhpList\Core\Domain\Subscription\Model\SubscriberList;
 use PhpList\Core\Domain\Subscription\Model\Subscription;
+use PhpList\RestBundle\Subscription\Serializer\SubscriberHistoryNormalizer;
 use PhpList\RestBundle\Subscription\Serializer\SubscriberListNormalizer;
 use PhpList\RestBundle\Subscription\Serializer\SubscriberNormalizer;
 use PHPUnit\Framework\TestCase;
@@ -18,7 +19,7 @@ class SubscriberNormalizerTest extends TestCase
 {
     public function testSupportsNormalization(): void
     {
-        $normalizer = new SubscriberNormalizer(new SubscriberListNormalizer());
+        $normalizer = new SubscriberNormalizer(new SubscriberListNormalizer(), new SubscriberHistoryNormalizer());
         $subscriber = $this->createMock(Subscriber::class);
 
         $this->assertTrue($normalizer->supportsNormalization($subscriber));
@@ -46,20 +47,23 @@ class SubscriberNormalizerTest extends TestCase
         $subscriber->method('isBlacklisted')->willReturn(false);
         $subscriber->method('getBounceCount')->willReturn(0);
         $subscriber->method('getUniqueId')->willReturn('abc123');
+        $subscriber->method('getUuid')->willReturn('abc-123-abc-123');
         $subscriber->method('hasHtmlEmail')->willReturn(true);
         $subscriber->method('isDisabled')->willReturn(false);
         $subscriber->method('getSubscriptions')->willReturn(new ArrayCollection([$subscription]));
 
-        $normalizer = new SubscriberNormalizer(new SubscriberListNormalizer());
+        $normalizer = new SubscriberNormalizer(new SubscriberListNormalizer(), new SubscriberHistoryNormalizer());
 
         $expected = [
             'id' => 101,
             'email' => 'test@example.com',
             'created_at' => '2024-12-31T12:00:00+00:00',
+            'updated_at' => null,
             'confirmed' => true,
             'blacklisted' => false,
             'bounce_count' => 0,
             'unique_id' => 'abc123',
+            'uuid' => 'abc-123-abc-123',
             'html_email' => true,
             'disabled' => false,
             'subscribed_lists' => [
@@ -71,9 +75,11 @@ class SubscriberNormalizerTest extends TestCase
                     'list_position' => null,
                     'subject_prefix' => null,
                     'public' => true,
-                    'category' => '',
+                    'category' => null,
+                    'rss_feed' => null,
                 ]
-            ]
+            ],
+            'history' => [],
         ];
 
         $this->assertSame($expected, $normalizer->normalize($subscriber));
@@ -81,7 +87,7 @@ class SubscriberNormalizerTest extends TestCase
 
     public function testNormalizeWithInvalidObject(): void
     {
-        $normalizer = new SubscriberNormalizer(new SubscriberListNormalizer());
+        $normalizer = new SubscriberNormalizer(new SubscriberListNormalizer(), new SubscriberHistoryNormalizer());
         $this->assertSame([], $normalizer->normalize(new stdClass()));
     }
 }

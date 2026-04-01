@@ -19,7 +19,11 @@ class MessageNormalizerTest extends TestCase
     public function __construct(string $name)
     {
         parent::__construct($name);
-        $this->normalizer = new MessageNormalizer(new TemplateNormalizer(new TemplateImageNormalizer()));
+        $this->normalizer = new MessageNormalizer(
+            new TemplateNormalizer(
+                new TemplateImageNormalizer()
+            )
+        );
     }
 
     public function testSupportsNormalization(): void
@@ -41,13 +45,12 @@ class MessageNormalizerTest extends TestCase
 
         $content = new Message\MessageContent('Subject', 'Text', 'TextMsg', 'Footer');
         $format = new Message\MessageFormat(true, 'html');
-        $format->setFormatOptions(['text', 'html']);
 
         $entered = new DateTime('2025-01-01T10:00:00+00:00');
         $sent = new DateTime('2025-01-02T10:00:00+00:00');
 
         $metadata = new Message\MessageMetadata(Message\MessageStatus::Draft);
-        $metadata->setProcessed(true);
+        $metadata->setProcessed(0);
         $metadata->setViews(10);
         $metadata->setBounceCount(3);
         $metadata->setEntered($entered);
@@ -61,7 +64,12 @@ class MessageNormalizerTest extends TestCase
             new DateTime('2025-01-01T00:00:00+00:00')
         );
 
-        $options = new Message\MessageOptions('from@example.com', 'to@example.com', 'reply@example.com', 'group');
+        $options = new Message\MessageOptions(
+            'from@example.com',
+            'to@example.com',
+            'reply@example.com',
+            'group'
+        );
 
         $message = $this->createMock(Message::class);
         $message->method('getId')->willReturn(1);
@@ -79,7 +87,6 @@ class MessageNormalizerTest extends TestCase
         $this->assertSame('uuid-123', $result['unique_id']);
         $this->assertSame('Test Template', $result['template']['title']);
         $this->assertSame('Subject', $result['message_content']['subject']);
-        $this->assertSame(['text', 'html'], $result['message_format']['format_options']);
         $this->assertSame(Message\MessageStatus::Draft->value, $result['message_metadata']['status']);
         $this->assertSame('from@example.com', $result['message_options']['from_field']);
     }

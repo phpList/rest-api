@@ -21,9 +21,10 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
             example: '2022-12-01T10:00:00Z'
         ),
         new OA\Property(property: 'list_position', type: 'integer', example: 1),
-        new OA\Property(property: 'subject_prefix', type: 'string', example: 'Newsletter: '),
+        new OA\Property(property: 'subject_prefix', type: 'string', example: '[News]'),
         new OA\Property(property: 'public', type: 'boolean', example: true),
-        new OA\Property(property: 'category', type: 'string', example: 'News'),
+        new OA\Property(property: 'category', type: 'string', example: 'Marketing'),
+        new OA\Property(property: 'rss_feed', type: 'string', example: 'https://example.com/blog/rss'),
     ],
     type: 'object'
 )]
@@ -47,6 +48,7 @@ class SubscriberListNormalizer implements NormalizerInterface
             'subject_prefix' => $object->getSubjectPrefix(),
             'public' => $object->isPublic(),
             'category' => $object->getCategory(),
+            'rss_feed' => $object->getRssFeed(),
         ];
     }
 

@@ -15,9 +15,9 @@ class CursorPaginationNormalizer implements NormalizerInterface
      */
     public function normalize($object, string $format = null, array $context = []): array
     {
-        $items = $object->items;
-        $limit = $object->limit;
-        $total = $object->total;
+        $items = $object->getItems();
+        $limit = $object->getLimit();
+        $total = $object->getTotal();
         $hasNext = !empty($items) && isset($items[array_key_last($items)]['id']);
 
         return [

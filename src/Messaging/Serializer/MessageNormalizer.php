@@ -33,12 +33,8 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
             properties: [
                 new OA\Property(property: 'html_formated', type: 'boolean'),
                 new OA\Property(property: 'send_format', type: 'string', example: 'text', nullable: true),
-                new OA\Property(
-                    property: 'format_options',
-                    type: 'array',
-                    items: new OA\Items(type: 'string'),
-                    example: ['as_html', 'as_text'],
-                ),
+                new OA\Property(property: 'as_text', type: 'integer', example: 12),
+                new OA\Property(property: 'as_html', type: 'integer', example: 12),
             ],
             type: 'object'
         ),
@@ -46,11 +42,12 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
             property: 'message_metadata',
             properties: [
                 new OA\Property(property: 'status', type: 'string', example: 'sent'),
-                new OA\Property(property: 'processed', type: 'bool', example: true),
+                new OA\Property(property: 'processed', type: 'integer', example: 12),
                 new OA\Property(property: 'views', type: 'integer', example: 12),
                 new OA\Property(property: 'bounce_count', type: 'integer'),
                 new OA\Property(property: 'entered', type: 'string', format: 'date-time', nullable: true),
                 new OA\Property(property: 'sent', type: 'string', format: 'date-time', nullable: true),
+                new OA\Property(property: 'send_start', type: 'string', format: 'date-time', nullable: true),
             ],
             type: 'object'
         ),
@@ -112,15 +109,17 @@ class MessageNormalizer implements NormalizerInterface
             'message_format' => [
                 'html_formated' => $object->getFormat()->isHtmlFormatted(),
                 'send_format' => $object->getFormat()->getSendFormat(),
-                'format_options' => $object->getFormat()->getFormatOptions()
+                'as_text' => $object->getFormat()->getAsText(),
+                'as_html' => $object->getFormat()->getAsHtml(),
             ],
             'message_metadata' => [
                 'status' => $object->getMetadata()->getStatus()->value,
-                'processed' => $object->getMetadata()->isProcessed(),
+                'processed' => $object->getMetadata()->getProcessed(),
                 'views' => $object->getMetadata()->getViews(),
                 'bounce_count' => $object->getMetadata()->getBounceCount(),
                 'entered' => $object->getMetadata()->getEntered()?->format('Y-m-d\TH:i:sP'),
                 'sent' => $object->getMetadata()->getSent()?->format('Y-m-d\TH:i:sP'),
+                'send_start' => $object->getMetadata()->getSendStart()?->format('Y-m-d\TH:i:sP'),
             ],
             'message_schedule' => [
                 'repeat_interval' => $object->getSchedule()->getRepeatInterval(),

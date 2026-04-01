@@ -18,7 +18,6 @@ class UpdateSubscriberRequestTest extends TestCase
         $request->blacklisted = false;
         $request->htmlEmail = true;
         $request->disabled = false;
-        $request->additionalData = 'Some additional data';
 
         $dto = $request->getDto();
 
@@ -28,6 +27,5 @@ class UpdateSubscriberRequestTest extends TestCase
         $this->assertFalse($dto->blacklisted);
         $this->assertTrue($dto->htmlEmail);
         $this->assertFalse($dto->disabled);
-        $this->assertEquals('Some additional data', $dto->additionalData);
     }
 }

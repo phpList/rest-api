@@ -6,6 +6,7 @@ namespace PhpList\RestBundle\Subscription\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
+use PhpList\Core\Domain\Identity\Model\Administrator;
 use PhpList\Core\Domain\Subscription\Model\SubscriberList;
 use PhpList\Core\Domain\Subscription\Service\Manager\SubscriptionManager;
 use PhpList\Core\Security\Authentication;
@@ -53,17 +54,7 @@ class SubscriptionController extends BaseController
         requestBody: new OA\RequestBody(
             description: 'Pass session credentials',
             required: true,
-            content: new OA\JsonContent(
-                required: ['emails'],
-                properties: [
-                    new OA\Property(
-                        property: 'emails',
-                        type: 'array',
-                        items: new OA\Items(type: 'string', format: 'email'),
-                        example: ['test1@example.com', 'test2@example.com']
-                    ),
-                ]
-            )
+            content: new OA\JsonContent(ref: '#/components/schemas/SubscriptionRequest')
         ),
         tags: ['subscriptions'],
         parameters: [
@@ -122,15 +113,21 @@ class SubscriptionController extends BaseController
         Request $request,
         #[MapEntity(mapping: ['listId' => 'id'])] ?SubscriberList $list = null,
     ): JsonResponse {
-        $this->requireAuthentication($request);
+        $authUser = $this->requireAuthentication($request);
 
         if (!$list) {
             throw $this->createNotFoundException('Subscriber list not found.');
         }
 
+        $this->denyAccessUnlessOwner($list, $authUser);
+
         /** @var SubscriptionRequest $subscriptionRequest */
         $subscriptionRequest = $this->validator->validate($request, SubscriptionRequest::class);
-        $subscriptions = $this->subscriptionManager->createSubscriptions($list, $subscriptionRequest->emails);
+        $subscriptions = $this->subscriptionManager->createSubscriptions(
+            subscriberList: $list,
+            emails: $subscriptionRequest->emails,
+            autoConfirm: $subscriptionRequest->autoConfirm,
+        );
         $this->entityManager->flush();
         $normalized = array_map(fn($item) => $this->subscriptionNormalizer->normalize($item), $subscriptions);
 
@@ -188,10 +185,13 @@ class SubscriptionController extends BaseController
         Request $request,
         #[MapEntity(mapping: ['listId' => 'id'])] ?SubscriberList $list = null,
     ): JsonResponse {
-        $this->requireAuthentication($request);
+        $authUser = $this->requireAuthentication($request);
         if (!$list) {
             throw $this->createNotFoundException('Subscriber list not found.');
         }
+
+        $this->denyAccessUnlessOwner($list, $authUser);
+
         $subscriptionRequest = new SubscriptionRequest();
         $subscriptionRequest->emails = $request->query->all('emails');
 
@@ -201,5 +201,18 @@ class SubscriptionController extends BaseController
         $this->entityManager->flush();
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
+    }
+
+    private function denyAccessUnlessOwner(SubscriberList $list, Administrator $user): void
+    {
+        if ($list->getOwner() === null) {
+            return;
+        }
+
+        if ($list->getOwner()->getId() === $user->getId()) {
+            return;
+        }
+
+        throw $this->createAccessDeniedException('Access denied.');
     }
 }

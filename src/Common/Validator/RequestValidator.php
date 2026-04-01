@@ -23,7 +23,8 @@ class RequestValidator
     public function validate(Request $request, string $dtoClass): RequestInterface
     {
         try {
-            $body = json_decode($request->getContent(), true, 512, JSON_THROW_ON_ERROR);
+            $content = $request->getContent();
+            $body = ($content !== '' && $content !== '0') ? json_decode($content, true, 512, JSON_THROW_ON_ERROR) : [];
         } catch (Throwable $e) {
             throw new BadRequestHttpException('Invalid JSON: ' . $e->getMessage());
         }
@@ -33,7 +34,7 @@ class RequestValidator
             $routeParams['listId'] = (int) $routeParams['listId'];
         }
 
-        $data = array_merge($routeParams, $body ?? []);
+        $data = array_merge($routeParams, $request->query->all(), $body ?? []);
 
         try {
             /** @var RequestInterface $dto */
@@ -44,7 +45,9 @@ class RequestValidator
                 ['allow_extra_attributes' => true]
             );
         } catch (Throwable $e) {
-            throw new BadRequestHttpException('Invalid request data: ' . $e->getMessage());
+            throw new BadRequestHttpException(
+                'Invalid request data: ' . $e->getMessage() . ' Data: ' . json_encode($data)
+            );
         }
 
         return $this->validateDto($dto);

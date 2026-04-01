@@ -12,7 +12,9 @@ use PhpList\Core\Domain\Subscription\Service\Manager\SubscriberManager;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
+use PhpList\RestBundle\Common\Service\Provider\PaginatedDataProvider;
 use PhpList\RestBundle\Subscription\Request\CreateSubscriberRequest;
+use PhpList\RestBundle\Subscription\Request\SubscribersFilterRequest;
 use PhpList\RestBundle\Subscription\Request\UpdateSubscriberRequest;
 use PhpList\RestBundle\Subscription\Serializer\SubscriberNormalizer;
 use PhpList\RestBundle\Subscription\Service\SubscriberHistoryService;
@@ -39,9 +41,121 @@ class SubscriberController extends BaseController
         private readonly SubscriberNormalizer $subscriberNormalizer,
         private readonly SubscriberHistoryService $subscriberHistoryService,
         private readonly EntityManagerInterface $entityManager,
+        private readonly PaginatedDataProvider $paginatedDataProvider,
     ) {
         parent::__construct($authentication, $validator);
         $this->authentication = $authentication;
+    }
+
+    #[Route('', name: 'get_list', methods: ['GET'])]
+    #[OA\Get(
+        path: '/api/v2/subscribers',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
+            'Returns a JSON list of all subscribers.',
+        summary: 'Gets a list of all subscribers.',
+        tags: ['subscribers'],
+        parameters: [
+            new OA\Parameter(
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                name: 'after_id',
+                description: 'Last id (starting from 0)',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'integer', default: 1, minimum: 1)
+            ),
+            new OA\Parameter(
+                name: 'limit',
+                description: 'Number of results per page',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'integer', default: 25, maximum: 100, minimum: 1)
+            ),
+            new OA\Parameter(
+                name: 'is_confirmed',
+                description: 'Filter by confirmed status',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(
+                    type: 'string',
+                    enum: ['true', 'false', '0', '1'],
+                    example: '1'
+                )
+            ),
+            new OA\Parameter(
+                name: 'is_blacklisted',
+                description: 'Filter by blacklisted status',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(
+                    type: 'string',
+                    enum: ['true', 'false', '0', '1'],
+                    example: '1'
+                )
+            ),
+            new OA\Parameter(
+                name: 'find_column',
+                description: 'Column to search in (requires find_value)',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(
+                    type: 'string',
+                    enum: ['email', 'foreignKey', 'uniqueId'],
+                    example: 'email'
+                )
+            ),
+            new OA\Parameter(
+                name: 'find_value',
+                description: 'Value to search for (requires find_column)',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'string', example: 'email@example.com')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Success',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: 'items',
+                            type: 'array',
+                            items: new OA\Items(ref: '#/components/schemas/Subscriber')
+                        ),
+                        new OA\Property(property: 'pagination', ref: '#/components/schemas/CursorPagination')
+                    ],
+                    type: 'object'
+                )
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
+            )
+        ]
+    )]
+    public function getSubscribers(Request $request): JsonResponse
+    {
+        $this->requireAuthentication($request);
+
+        /** @var SubscribersFilterRequest $subscriberRequest */
+        $subscriberRequest = $this->validator->validate($request, SubscribersFilterRequest::class);
+
+        return $this->json(
+            data: $this->paginatedDataProvider->getPaginatedList(
+                request: $request,
+                normalizer: $this->subscriberNormalizer,
+                className: Subscriber::class,
+                filter: $subscriberRequest->getDto(),
+            ),
+            status: Response::HTTP_OK
+        );
     }
 
     #[Route('', name: 'create', methods: ['POST'])]
@@ -225,7 +339,7 @@ class SubscriberController extends BaseController
     {
         $this->requireAuthentication($request);
 
-        $subscriber = $this->subscriberManager->getSubscriberById($subscriberId);
+        $subscriber = $this->subscriberManager->getSubscriberDetails($subscriberId);
         $subscriberData = $this->subscriberNormalizer->normalize($subscriber);
 
         return $this->json($subscriberData, Response::HTTP_OK);

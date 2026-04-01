@@ -254,4 +254,37 @@ class AnalyticsControllerTest extends AbstractTestController
         self::assertArrayHasKey('local_parts', $response);
         self::assertIsArray($response['local_parts']);
     }
+
+    public function testGetDashboardStatisticsWithoutSessionKeyReturnsForbidden(): void
+    {
+        self::getClient()->request('GET', '/api/v2/analytics/dashboard');
+        $this->assertHttpForbidden();
+    }
+
+    public function testGetDashboardStatisticsWithValidSessionReturnsCardsData(): void
+    {
+        $this->loadFixtures([
+            AdministratorFixture::class,
+            AdministratorTokenFixture::class,
+            SubscriberFixture::class,
+            MessageFixture::class,
+        ]);
+
+        $this->authenticatedJsonRequest('GET', '/api/v2/analytics/dashboard');
+        $this->assertHttpOkay();
+        $response = $this->getDecodedJsonResponseContent();
+
+        self::assertIsArray($response);
+        self::assertArrayHasKey('summary_statistics', $response);
+        self::assertArrayHasKey('recent_campaigns', $response);
+        self::assertArrayHasKey('campaign_performance', $response);
+
+        foreach (['total_subscribers', 'active_campaigns', 'open_rate', 'bounce_rate'] as $metric) {
+            self::assertIsArray($response['summary_statistics'][$metric]);
+            self::assertArrayHasKey('value', $response['summary_statistics'][$metric]);
+            self::assertArrayHasKey('change_vs_last_month', $response['summary_statistics'][$metric]);
+            self::assertIsNumeric($response['summary_statistics'][$metric]['value']);
+            self::assertIsNumeric($response['summary_statistics'][$metric]['change_vs_last_month']);
+        }
+    }
 }

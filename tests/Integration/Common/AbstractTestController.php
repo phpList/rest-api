@@ -60,6 +60,10 @@ abstract class AbstractTestController extends WebTestCase
     ): Crawler {
         $serverWithContentType = $server;
         $serverWithContentType['CONTENT_TYPE'] = 'application/json';
+        // Ensure the server knows the client expects JSON back as well
+        $serverWithContentType['HTTP_ACCEPT'] = 'application/json';
+        // Mark as AJAX-style request to help some handlers choose JSON rendering
+        $serverWithContentType['HTTP_X_REQUESTED_WITH'] = 'XMLHttpRequest';
 
         return self::getClient()->request(
             $method,

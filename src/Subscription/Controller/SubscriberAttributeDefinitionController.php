@@ -6,6 +6,7 @@ namespace PhpList\RestBundle\Subscription\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
+use PhpList\Core\Domain\Common\Model\Filter\PaginatedFilter;
 use PhpList\Core\Domain\Subscription\Model\SubscriberAttributeDefinition;
 use PhpList\Core\Domain\Subscription\Repository\SubscriberAttributeDefinitionRepository;
 use PhpList\Core\Domain\Subscription\Service\Manager\AttributeDefinitionManager;
@@ -282,9 +283,10 @@ class SubscriberAttributeDefinitionController extends BaseController
 
         return $this->json(
             $this->paginatedDataProvider->getPaginatedList(
-                $request,
-                $this->normalizer,
-                SubscriberAttributeDefinition::class,
+                request: $request,
+                normalizer: $this->normalizer,
+                className: SubscriberAttributeDefinition::class,
+                filter: new PaginatedFilter(),
             ),
             Response::HTTP_OK
         );

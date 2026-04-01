@@ -27,7 +27,7 @@ class PaginatedDataProvider
         Request $request,
         NormalizerInterface $normalizer,
         string $className,
-        FilterRequestInterface $filter = null
+        FilterRequestInterface $filter
     ): array {
         $pagination = $this->paginationFactory->fromRequest($request);
 
@@ -37,20 +37,22 @@ class PaginatedDataProvider
             throw new RuntimeException('Repository not found');
         }
 
-        $items = $repository->getFilteredAfterId(
-            lastId: $pagination->afterId,
-            limit: $pagination->limit,
-            filter: $filter,
-        );
-        $total = $repository->count();
+        $filter->setLimit($pagination->limit);
+        $filter->setLastId($pagination->afterId);
+
+        $result = $repository->getFilteredAfterId(filter: $filter);
 
         $normalizedItems = array_map(
             fn($item) => $normalizer->normalize($item, 'json'),
-            $items
+            $result->getItems()
         );
 
         return $this->paginationNormalizer->normalize(
-            new CursorPaginationResult($normalizedItems, $pagination->limit, $total)
+            new CursorPaginationResult(
+                items: $normalizedItems,
+                limit: $result->getLimit(),
+                total: $result->getTotal(),
+            )
         );
     }
 }

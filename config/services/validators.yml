@@ -41,3 +41,13 @@ services:
     autowire: true
     autoconfigure: true
 
+  PhpList\RestBundle\Messaging\Validator\Constraint\MaxForwardCountValidator:
+    autowire: true
+    autoconfigure: true
+    tags: [ 'validator.constraint_validator' ]
+
+  PhpList\RestBundle\Messaging\Validator\Constraint\MaxPersonalNoteSizeValidator:
+    autowire: true
+    autoconfigure: true
+    tags: [ 'validator.constraint_validator' ]
+

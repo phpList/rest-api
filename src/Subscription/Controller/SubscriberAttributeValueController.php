@@ -125,6 +125,7 @@ class SubscriberAttributeValueController extends BaseController
             value: $request->toArray()['value'] ?? null
         );
         $json = $this->normalizer->normalize($attributeDefinition, 'json');
+        $this->entityManager->flush();
 
         return $this->json($json, Response::HTTP_CREATED);
     }

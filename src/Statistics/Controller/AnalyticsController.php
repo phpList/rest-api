@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Throwable;
 
 /**
  * This controller provides REST API to access analytics data.
@@ -355,5 +356,164 @@ class AnalyticsController extends BaseController
         ]);
 
         return $this->json($normalizedData, Response::HTTP_OK);
+    }
+
+    #[Route('/dashboard', name: 'dashboard_statistics', methods: ['GET'])]
+    #[OA\Get(
+        path: '/api/v2/analytics/dashboard',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
+            'Returns dashboard cards with aggregate analytics metrics.',
+        summary: 'Gets dashboard analytics statistics.',
+        tags: ['analytics'],
+        parameters: [
+            new OA\Parameter(
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Success',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: 'summary_statistics',
+                            properties: [
+                                new OA\Property(
+                                    property: 'total_subscribers',
+                                    properties: [
+                                        new OA\Property(property: 'value', type: 'integer', example: 48294),
+                                        new OA\Property(
+                                            property: 'change_vs_last_month',
+                                            type: 'number',
+                                            format: 'float',
+                                            example: 12.5
+                                        ),
+                                    ],
+                                    type: 'object'
+                                ),
+                                new OA\Property(
+                                    property: 'active_campaigns',
+                                    properties: [
+                                        new OA\Property(property: 'value', type: 'integer', example: 12),
+                                        new OA\Property(
+                                            property: 'change_vs_last_month',
+                                            type: 'number',
+                                            format: 'float',
+                                            example: 0
+                                        ),
+                                    ],
+                                    type: 'object'
+                                ),
+                                new OA\Property(
+                                    property: 'open_rate',
+                                    properties: [
+                                        new OA\Property(
+                                            property: 'value',
+                                            type: 'number',
+                                            format: 'float',
+                                            example: 12
+                                        ),
+                                        new OA\Property(
+                                            property: 'change_vs_last_month',
+                                            type: 'number',
+                                            format: 'float',
+                                            example: 0
+                                        ),
+                                    ],
+                                    type: 'object'
+                                ),
+                                new OA\Property(
+                                    property: 'bounce_rate',
+                                    properties: [
+                                        new OA\Property(
+                                            property: 'value',
+                                            type: 'number',
+                                            format: 'float',
+                                            example: 12
+                                        ),
+                                        new OA\Property(
+                                            property: 'change_vs_last_month',
+                                            type: 'number',
+                                            format: 'float',
+                                            example: 0
+                                        ),
+                                    ],
+                                    type: 'object'
+                                ),
+                            ],
+                            type: 'object'
+                        ),
+                        new OA\Property(
+                            property: 'recent_campaigns',
+                            type: 'array',
+                            items: new OA\Items(
+                                properties: [
+                                    new OA\Property(property: 'name', type: 'string', example: 'March Newsletter'),
+                                    new OA\Property(
+                                        property: 'status',
+                                        type: 'string',
+                                        example: 'sent',
+                                        nullable: true
+                                    ),
+                                    new OA\Property(
+                                        property: 'date',
+                                        type: 'string',
+                                        format: 'date',
+                                        example: '2026-03-15',
+                                        nullable: true
+                                    ),
+                                    new OA\Property(property: 'open_rate', type: 'string', example: '42.50%'),
+                                    new OA\Property(property: 'click_rate', type: 'string', example: '8.10%'),
+                                ],
+                                type: 'object'
+                            )
+                        ),
+                        new OA\Property(
+                            property: 'campaign_performance',
+                            type: 'array',
+                            items: new OA\Items(
+                                properties: [
+                                    new OA\Property(
+                                        property: 'date',
+                                        type: 'string',
+                                        format: 'date',
+                                        example: '2026-03-19'
+                                    ),
+                                    new OA\Property(property: 'opens', type: 'integer', example: 234),
+                                    new OA\Property(property: 'clicks', type: 'integer', example: 57),
+                                ],
+                                type: 'object'
+                            )
+                        ),
+                    ],
+                    type: 'object'
+                )
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Unauthorized',
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
+            )
+        ]
+    )]
+    public function getDashboardStatistics(Request $request): JsonResponse
+    {
+        $authUser = $this->requireAuthentication($request);
+        if (!$authUser->getPrivileges()->has(PrivilegeFlag::Statistics)) {
+            throw $this->createAccessDeniedException('You are not allowed to access statistics.');
+        }
+
+        $response = [
+            'summary_statistics' => $this->analyticsService->getSummaryStatistics(),
+            'recent_campaigns' => $this->analyticsService->getRecentCampaigns(),
+            'campaign_performance' => $this->analyticsService->getCampaignPerformance(),
+        ];
+
+        return $this->json($response, Response::HTTP_OK);
     }
 }

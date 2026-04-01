@@ -18,6 +18,7 @@ use PhpList\RestBundle\Tests\Integration\Subscription\Fixtures\SubscriptionFixtu
  *
  * @author Oliver Klee <oliver@phplist.com>
  * @author Xheni Myrtaj <xheni@phplist.com>
+ * @author Tatevik Grigoryan <tatevik@phplist.com>
  */
 class SubscriberListControllerTest extends AbstractTestController
 {
@@ -75,6 +76,7 @@ class SubscriberListControllerTest extends AbstractTestController
                     'subject_prefix' => 'phpList',
                     'public' => true,
                     'category' => 'news',
+                    'rss_feed' => null,
                 ],
                 [
                     'id' => 2,
@@ -85,6 +87,7 @@ class SubscriberListControllerTest extends AbstractTestController
                     'subject_prefix' => '',
                     'public' => true,
                     'category' => '',
+                    'rss_feed' => null,
                 ],
                 [
                     'id' => 3,
@@ -95,6 +98,7 @@ class SubscriberListControllerTest extends AbstractTestController
                     'subject_prefix' => '',
                     'public' => true,
                     'category' => '',
+                    'rss_feed' => null,
                 ],
             ],
             'pagination' => [
@@ -147,6 +151,7 @@ class SubscriberListControllerTest extends AbstractTestController
                 'subject_prefix' => 'phpList',
                 'public' => true,
                 'category' => 'news',
+                'rss_feed' => null,
             ]
         );
     }
@@ -260,10 +265,12 @@ class SubscriberListControllerTest extends AbstractTestController
                         'id' => 1,
                         'email' => 'oliver@example.com',
                         'created_at' => '2016-07-22T15:01:17+00:00',
+                        'updated_at' => '2016-08-23T19:50:43+00:00',
                         'confirmed' => true,
                         'blacklisted' => true,
                         'bounce_count' => 17,
                         'unique_id' => '95feb7fe7e06e6c11ca8d0c48cb46e89',
+                        'uuid' => '',
                         'html_email' => true,
                         'disabled' => true,
                         'subscribed_lists' => [
@@ -276,16 +283,20 @@ class SubscriberListControllerTest extends AbstractTestController
                                 'subject_prefix' => '',
                                 'public' => true,
                                 'category' => '',
+                                'rss_feed' => null,
                             ],
                         ],
+                        'history' => [],
                     ], [
                         'id' => 2,
                         'email' => 'oliver1@example.com',
                         'created_at' => '2016-07-22T15:01:17+00:00',
+                        'updated_at' => '2016-08-23T19:50:43+00:00',
                         'confirmed' => true,
                         'blacklisted' => true,
                         'bounce_count' => 17,
                         'unique_id' => '95feb7fe7e06e6c11ca8d0c48cb46e87',
+                        'uuid' => '',
                         'html_email' => true,
                         'disabled' => true,
                         'subscribed_lists' => [
@@ -298,6 +309,7 @@ class SubscriberListControllerTest extends AbstractTestController
                                 'subject_prefix' => '',
                                 'public' => true,
                                 'category' => '',
+                                'rss_feed' => null,
                             ],
                             [
                                 'id' => 1,
@@ -308,12 +320,14 @@ class SubscriberListControllerTest extends AbstractTestController
                                 'subject_prefix' => 'phpList',
                                 'public' => true,
                                 'category' => 'news',
+                                'rss_feed' => null,
                             ],
                         ],
+                        'history' => [],
                     ],
                 ],
                 'pagination' => [
-                    'total' => 3,
+                    'total' => 2,
                     'limit' => 25,
                     'has_more' => false,
                     'next_cursor' => 2,
@@ -358,5 +372,34 @@ class SubscriberListControllerTest extends AbstractTestController
         self::getClient()->request('POST', '/api/v2/lists', [], [], [], json_encode([ 'name' => 'UnauthorizedList']));
 
         $this->assertHttpForbidden();
+    }
+
+    public function testUpdateListWithValidPayloadReturnsUpdatedListData(): void
+    {
+        $this->loadFixtures([SubscriberListFixture::class]);
+
+        $payload = json_encode([
+            'name' => 'Updated News',
+            'description' => 'Updated description',
+            'listPosition' => 7,
+            'public' => false,
+            'category' => 'announcements',
+            'subjectPrefix' => '[Upd]',
+            'rssFeed' => 'https://example.com/rss.xml',
+        ]);
+
+        $this->authenticatedJsonRequest('PUT', '/api/v2/lists/1', [], [], [], $payload);
+
+        $this->assertHttpOkay();
+        $response = $this->getDecodedJsonResponseContent();
+
+        self::assertSame(1, $response['id']);
+        self::assertSame('Updated News', $response['name']);
+        self::assertSame('Updated description', $response['description']);
+        self::assertSame(7, $response['list_position']);
+        self::assertFalse($response['public']);
+        self::assertSame('announcements', $response['category']);
+        self::assertSame('[Upd]', $response['subject_prefix']);
+        self::assertSame('https://example.com/rss.xml', $response['rss_feed']);
     }
 }

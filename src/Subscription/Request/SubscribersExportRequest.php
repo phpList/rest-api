@@ -38,6 +38,18 @@ use Symfony\Component\Validator\Constraints as Assert;
             format: 'date'
         ),
         new OA\Property(
+            property: 'is_confirmed',
+            description: 'Whether subscriber is confirmed (true, false, 1, 0)',
+            type: 'boolean',
+            enum: ['true', 'false', '1', '0', true, false, 1, 0]
+        ),
+        new OA\Property(
+            property: 'is_blacklisted',
+            description: 'Whether subscriber is blacklisted (true, false, 1, 0)',
+            type: 'boolean',
+            enum: ['true', 'false', '1', '0', true, false, 1, 0]
+        ),
+        new OA\Property(
             property: 'columns',
             description: 'Columns to include in the export',
             type: 'array',
@@ -52,8 +64,10 @@ use Symfony\Component\Validator\Constraints as Assert;
                 'updatedAt',
                 'uniqueId',
                 'htmlEmail',
+                'rssFrequency',
                 'disabled',
                 'extraData',
+                'foreignKey',
             ],
         ),
     ],
@@ -90,14 +104,29 @@ class SubscribersExportRequest implements RequestInterface
         'email',
         'confirmed',
         'blacklisted',
+//        'manualConfirm',
         'bounceCount',
         'createdAt',
         'updatedAt',
         'uniqueId',
         'htmlEmail',
+        'rssFrequency',
         'disabled',
-        'extraData'
+        'extraData',
+        'foreignKey',
     ];
+
+    #[Assert\Choice(
+        choices: ['true', 'false', '1', '0', true, false, 1, 0],
+        message: 'isConfirmed must be one of: true, false, 1, 0'
+    )]
+    public mixed $isConfirmed = null;
+
+    #[Assert\Choice(
+        choices: ['true', 'false', '1', '0', true, false, 1, 0],
+        message: 'isBlacklisted must be one of: true, false, 1, 0'
+    )]
+    public mixed $isBlacklisted = null;
 
     private function resolveDates(): array
     {
@@ -125,7 +154,22 @@ class SubscribersExportRequest implements RequestInterface
             createdDateTo: $signupTo,
             updatedDateFrom: $changedFrom,
             updatedDateTo: $changedTo,
-            columns: $this->columns
+            isConfirmed: $this->normalizeBoolean($this->isConfirmed),
+            isBlacklisted: $this->normalizeBoolean($this->isBlacklisted),
+            columns: $this->columns,
         );
+    }
+
+    private function normalizeBoolean(mixed $value): ?bool
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        if (is_bool($value)) {
+            return $value;
+        }
+
+        return (bool) filter_var($value, FILTER_VALIDATE_BOOLEAN);
     }
 }
