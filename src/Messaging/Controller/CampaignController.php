@@ -12,6 +12,7 @@ use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
 use PhpList\RestBundle\Messaging\Request\CreateMessageRequest;
+use PhpList\RestBundle\Messaging\Request\ResendMessageToListsRequest;
 use PhpList\RestBundle\Messaging\Request\UpdateMessageRequest;
 use PhpList\RestBundle\Messaging\Service\CampaignService;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -402,6 +403,66 @@ class CampaignController extends BaseController
         }
 
         $this->messageBus->dispatch(new SyncCampaignProcessorMessage($message->getId()));
+
+        return $this->json($this->campaignService->getMessage($message), Response::HTTP_OK);
+    }
+
+    #[Route('/{messageId}/resend', name: 'resend_campaign', requirements: ['messageId' => '\d+'], methods: ['POST'])]
+    #[OA\Post(
+        path: '/api/v2/campaigns/{messageId}/resend',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
+        'Processes/sends campaign/message by id to specified mailing lists.',
+        summary: 'Processes/sends campaign/message by id to lists.',
+        requestBody: new OA\RequestBody(
+            description: 'List ids to send this campaign to.',
+            required: true,
+            content: new OA\JsonContent(ref: '#/components/schemas/AdminAttributeDefinitionRequest')
+        ),
+        tags: ['campaigns'],
+        parameters: [
+            new OA\Parameter(
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                name: 'messageId',
+                description: 'message ID',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Success',
+                content: new OA\JsonContent(ref: '#/components/schemas/Message')
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
+            )
+        ]
+    )]
+    public function resendMessageToLists(
+        Request $request,
+        #[MapEntity(mapping: ['messageId' => 'id'])] ?Message $message = null
+    ): JsonResponse {
+        $this->requireAuthentication($request);
+        if ($message === null) {
+            throw $this->createNotFoundException('Campaign not found.');
+        }
+
+        /** @var ResendMessageToListsRequest $resendToListsRequest */
+        $resendToListsRequest = $this->validator->validate($request, ResendMessageToListsRequest::class);
+
+        $this->messageBus->dispatch(
+            new SyncCampaignProcessorMessage($message->getId(), $resendToListsRequest->listIds)
+        );
 
         return $this->json($this->campaignService->getMessage($message), Response::HTTP_OK);
     }
