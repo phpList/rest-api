@@ -38,7 +38,7 @@ class CreateMessageRequest implements RequestInterface
     public MessageOptionsRequest $options;
 
     #[TemplateExists]
-    public ?int $templateId;
+    public ?int $templateId = null;
 
     public function getDto(): MessageDtoInterface
     {

@@ -1,7 +1,7 @@
 services:
   PhpList\RestBundle\Common\Validator\RequestValidator:
     arguments:
-      $serializer: '@Symfony\Component\Serializer\Normalizer\ObjectNormalizer'
+      $serializer: '@phplist.request_serializer'
       $validator: '@validator'
 
   PhpList\RestBundle\Identity\Validator\Constraint\UniqueEmailValidator:
@@ -50,4 +50,3 @@ services:
     autowire: true
     autoconfigure: true
     tags: [ 'validator.constraint_validator' ]
-
