@@ -14,13 +14,19 @@ use Symfony\Component\Validator\Constraints as Assert;
     schema: 'MessageMetadataRequest',
     required: ['status'],
     properties: [
-        new OA\Property(property: 'status', type: 'string', example: 'draft'),
+        new OA\Property(
+            property: 'status',
+            type: 'string',
+            enum: ['draft', 'sent', 'prepared', 'submitted', 'suspended', 'requeued'],
+            example: 'draft'
+        ),
     ],
     type: 'object'
 )]
 class MessageMetadataRequest implements RequestDtoInterface, RequestInterface
 {
     #[Assert\NotBlank]
+    #[Assert\Choice(['draft', 'sent', 'prepared', 'submitted', 'suspended', 'requeued'])]
     public string $status;
 
     /**
