@@ -36,6 +36,9 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
                 new OA\Property(property: 'send_format', type: 'string', example: 'text', nullable: true),
                 new OA\Property(property: 'as_text', type: 'integer', example: 12),
                 new OA\Property(property: 'as_html', type: 'integer', example: 12),
+                new OA\Property(property: 'as_text_and_html', type: 'integer', example: 12),
+                new OA\Property(property: 'as_pdf', type: 'integer', example: 12),
+                new OA\Property(property: 'as_text_and_pdf', type: 'integer', example: 12),
             ],
             type: 'object'
         ),
@@ -112,6 +115,9 @@ class MessageNormalizer implements NormalizerInterface
                 'send_format' => $object->getFormat()->getSendFormat(),
                 'as_text' => $object->getFormat()->getAsText(),
                 'as_html' => $object->getFormat()->getAsHtml(),
+                'as_text_and_html' => $object->getFormat()->getAsTextAndHtml(),
+                'as_pdf' => $object->getFormat()->getAsPdf(),
+                'as_text_and_pdf' => $object->getFormat()->getAsTextAndHtml(),
             ],
             'message_metadata' => [
                 'status' => $object->getMetadata()->getStatus()->value,
