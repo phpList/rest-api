@@ -34,7 +34,10 @@ class ExceptionListenerTest extends TestCase
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(403, $response->getStatusCode());
-        $this->assertEquals(['message' => 'Forbidden'], json_decode($response->getContent(), true));
+        $this->assertEquals(
+            ['message' => 'Forbidden'],
+            json_decode($response->getContent(), true)
+        );
     }
 
     public function testHttpExceptionHandled(): void
@@ -47,7 +50,11 @@ class ExceptionListenerTest extends TestCase
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(404, $response->getStatusCode());
-        $this->assertEquals(['message' => 'Not found'], json_decode($response->getContent(), true));
+        $this->assertEquals(
+            ['message' => 'Not found'],
+
+            json_decode($response->getContent(), true)
+        );
     }
 
     public function testSubscriptionCreationExceptionHandled(): void
@@ -61,7 +68,10 @@ class ExceptionListenerTest extends TestCase
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(409, $response->getStatusCode());
-        $this->assertEquals(['message' => 'Subscription error'], json_decode($response->getContent(), true));
+        $this->assertEquals(
+            ['message' => 'Subscription error'],
+            json_decode($response->getContent(), true)
+        );
     }
 
     public function testGenericExceptionHandled(): void
@@ -74,6 +84,8 @@ class ExceptionListenerTest extends TestCase
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertEquals(500, $response->getStatusCode());
-        $this->assertEquals(['message' => 'Something went wrong'], json_decode($response->getContent(), true));
+        $this->assertEquals(
+            ['message' => 'Something went wrong'],
+            json_decode($response->getContent(), true));
     }
 }
