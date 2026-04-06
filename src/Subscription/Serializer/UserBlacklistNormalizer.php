@@ -27,7 +27,7 @@ class UserBlacklistNormalizer implements NormalizerInterface
 
         return [
             'email' => $object->getEmail(),
-            'added' => $object->getAdded()?->format('Y-m-d\TH:i:sP'),
+            'added' => $object->getAdded()?->format(\DateTimeInterface::ATOM),
             'reason' => $reason,
         ];
     }

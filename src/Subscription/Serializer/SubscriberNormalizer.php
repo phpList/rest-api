@@ -67,8 +67,8 @@ class SubscriberNormalizer implements NormalizerInterface
         return [
             'id' => $object->getId(),
             'email' => $object->getEmail(),
-            'created_at' => $object->getCreatedAt()?->format('Y-m-d\TH:i:sP'),
-            'updated_at' => $object->getUpdatedAt()?->format('Y-m-d\TH:i:sP'),
+            'created_at' => $object->getCreatedAt()?->format(\DateTimeInterface::ATOM),
+            'updated_at' => $object->getUpdatedAt()?->format(\DateTimeInterface::ATOM),
             'confirmed' => $object->isConfirmed(),
             'blacklisted' => $object->isBlacklisted(),
             'bounce_count' => $object->getBounceCount(),
