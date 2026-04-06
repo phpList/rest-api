@@ -15,5 +15,11 @@ services:
       $classMetadataFactory: '@?serializer.mapping.class_metadata_factory'
       $nameConverter: '@Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter'
 
+  phplist.request_serializer:
+    class: Symfony\Component\Serializer\Serializer
+    arguments:
+      $normalizers:
+        - '@Symfony\Component\Serializer\Normalizer\ObjectNormalizer'
+
   PhpList\RestBundle\:
     resource: '../../src/*/Serializer/*'
