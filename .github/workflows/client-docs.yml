@@ -99,11 +99,18 @@ jobs:
       - name: Update and Commit OpenAPI File
         if: steps.diff.outputs.diff == 'true'
         run: |
+          set -euo pipefail
           cp new-openapi/latest-restapi.json openapi.json
           git config user.name "github-actions"
           git config user.email "github-actions@phplist-api-client.workflow"
           git add openapi.json
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
           git commit -m "Update openapi.json from REST API workflow $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+          git fetch origin "$TARGET_BRANCH"
+          git rebase "origin/$TARGET_BRANCH"
           git push origin HEAD:"$TARGET_BRANCH"
 
       - name: Skip Commit if No Changes

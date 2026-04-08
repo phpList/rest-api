@@ -10,9 +10,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[OA\Schema(
     schema: 'MessageFormatRequest',
-    required: ['html_formated', 'send_format'],
+    required: ['send_format'],
     properties: [
-        new OA\Property(property: 'html_formated', type: 'boolean', example: true),
         new OA\Property(
             property: 'send_format',
             type: 'string',
@@ -24,16 +23,12 @@ use Symfony\Component\Validator\Constraints as Assert;
 )]
 class MessageFormatRequest implements RequestDtoInterface
 {
-    #[Assert\Type('bool')]
-    public bool $htmlFormated;
-
     #[Assert\Choice(['html', 'text', 'invite'])]
     public string $sendFormat;
 
     public function getDto(): MessageFormatDto
     {
         return new MessageFormatDto(
-            htmlFormated: $this->htmlFormated,
             sendFormat: $this->sendFormat,
         );
     }
