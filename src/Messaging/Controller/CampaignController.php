@@ -66,7 +66,14 @@ class CampaignController extends BaseController
                 in: 'query',
                 required: false,
                 schema: new OA\Schema(type: 'integer', default: 25, maximum: 100, minimum: 1)
-            )
+            ),
+            new OA\Parameter(
+                name: 'subject',
+                description: 'Filter campaigns by subject (partial match)',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'string', maxLength: 50)
+            ),
         ],
         responses: [
             new OA\Response(
@@ -96,7 +103,7 @@ class CampaignController extends BaseController
         $authUser = $this->requireAuthentication($request);
 
         return $this->json(
-            $this->campaignService->getMessages($request, $authUser),
+            $this->campaignService->getMessages(request: $request, administrator: $authUser),
             Response::HTTP_OK
         );
     }
@@ -148,10 +155,10 @@ class CampaignController extends BaseController
         Request $request,
         #[MapEntity(mapping: ['messageId' => 'id'])] ?Message $message = null
     ): JsonResponse {
+        $this->requireAuthentication($request);
         if ($message === null) {
             throw $this->createNotFoundException('Campaign not found.');
         }
-        $this->requireAuthentication($request);
 
         return $this->json($this->campaignService->getMessage($message), Response::HTTP_OK);
     }
