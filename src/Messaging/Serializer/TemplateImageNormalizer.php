@@ -45,7 +45,7 @@ class TemplateImageNormalizer implements NormalizerInterface
             'template_id' => $object->getTemplate()?->getId(),
             'mimetype' => $object->getMimeType(),
             'filename' => $object->getFilename(),
-            'data' => base64_encode($object->getData() ?? ''),
+            'data' => $object->getData() ?? '',
             'width' => $object->getWidth(),
             'height' => $object->getHeight(),
         ];
