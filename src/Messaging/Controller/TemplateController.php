@@ -14,6 +14,7 @@ use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Service\Provider\PaginatedDataProvider;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
 use PhpList\RestBundle\Messaging\Request\CreateTemplateRequest;
+use PhpList\RestBundle\Messaging\Request\UpdateTemplateRequest;
 use PhpList\RestBundle\Messaging\Serializer\TemplateNormalizer;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -180,7 +181,7 @@ class TemplateController extends BaseController
             required: true,
             content: new OA\MediaType(
                 mediaType: 'multipart/form-data',
-                schema: new OA\Schema(ref: '#/components/schemas/CreateTemplateRequest')
+                schema: new OA\Schema(ref: '#/components/schemas/UpdateTemplateRequest')
             )
         ),
         tags: ['templates'],
@@ -226,6 +227,72 @@ class TemplateController extends BaseController
         return $this->json(
             $this->normalizer->normalize($template),
             Response::HTTP_CREATED
+        );
+    }
+
+    #[Route('/{templateId}', name: 'update', methods: ['PUT'])]
+    #[OA\Put(
+        path: '/api/v2/templates/{templateId}',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
+        'Returns a JSON response of updated template.',
+        summary: 'Update template.',
+        requestBody: new OA\RequestBody(
+            description: 'Pass session credentials',
+            required: true,
+            content: new OA\MediaType(
+                mediaType: 'multipart/form-data',
+                schema: new OA\Schema(ref: '#/components/schemas/CreateTemplateRequest')
+            )
+        ),
+        tags: ['templates'],
+        parameters: [
+            new OA\Parameter(
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: 'Success',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Template')
+                )
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
+            ),
+            new OA\Response(
+                response: 422,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/ValidationErrorResponse')
+            ),
+        ]
+    )]
+    public function updateTemplates(
+        Request $request,
+        #[MapEntity(mapping: ['templateId' => 'id'])] ?Template $template = null,
+    ): JsonResponse {
+        $this->requireAuthentication($request);
+
+        if (!$template) {
+            throw $this->createNotFoundException('Template not found.');
+        }
+
+        /** @var UpdateTemplateRequest $templateRequest */
+        $templateRequest = $this->validator->validate($request, UpdateTemplateRequest::class);
+        $template = $this->templateManager->update(template: $template, updateTemplateDto: $templateRequest->getDto());
+        $this->entityManager->flush();
+
+        return $this->json(
+            data: $this->normalizer->normalize($template),
+            status: Response::HTTP_CREATED
         );
     }
 

@@ -108,6 +108,40 @@ class TemplateControllerTest extends AbstractTestController
         $this->assertHttpUnprocessableEntity();
     }
 
+    public function testUpdateTemplateWithValidPayloadReturnsCreatedAndUpdatesTemplate(): void
+    {
+        $this->loadFixtures([TemplateFixture::class]);
+
+        $payload = json_encode([
+            'title' => 'Updated Template',
+            'content' => '<html><body>[CONTENT]</body></html>',
+            'text' => '[CONTENT]',
+            'check_links' => true,
+            'check_images' => false,
+            'check_external_images' => false,
+        ]);
+
+        $this->authenticatedJsonRequest('PUT', '/api/v2/templates/1', [], [], [], $payload);
+        $this->assertHttpCreated();
+
+        $response = $this->getDecodedJsonResponseContent();
+        self::assertSame(1, $response['id']);
+        self::assertSame('Updated Template', $response['title']);
+
+        $templateRepository = self::getContainer()->get(TemplateRepository::class);
+        self::assertSame('Updated Template', $templateRepository->find(1)?->getTitle());
+    }
+
+    public function testUpdateTemplateWithInvalidIdReturnsNotFound(): void
+    {
+        $payload = json_encode([
+            'title' => 'Updated Template',
+        ]);
+
+        $this->authenticatedJsonRequest('PUT', '/api/v2/templates/999', [], [], [], $payload);
+        $this->assertHttpNotFound();
+    }
+
     public function testDeleteTemplateWithValidSessionKeyReturnsNoContent(): void
     {
         $this->loadFixtures([TemplateFixture::class]);
