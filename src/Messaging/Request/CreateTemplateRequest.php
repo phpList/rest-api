@@ -8,6 +8,7 @@ use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Messaging\Model\Dto\CreateTemplateDto;
 use PhpList\RestBundle\Common\Request\RequestInterface;
 use PhpList\RestBundle\Messaging\Validator\Constraint\ContainsPlaceholder;
+use PhpList\RestBundle\Messaging\Validator\Constraint\UniqueTemplateTitle;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -54,6 +55,7 @@ class CreateTemplateRequest implements RequestInterface
 {
     #[Assert\NotBlank(normalizer: 'trim')]
     #[Assert\NotNull]
+    #[UniqueTemplateTitle]
     public string $title;
 
     #[ContainsPlaceholder]

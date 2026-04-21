@@ -27,6 +27,11 @@ services:
   PhpList\RestBundle\Messaging\Validator\Constraint\ContainsPlaceholderValidator:
     tags: ['validator.constraint_validator']
 
+  PhpList\RestBundle\Messaging\Validator\Constraint\UniqueTemplateTitleValidator:
+    autowire: true
+    autoconfigure: true
+    tags: [ 'validator.constraint_validator' ]
+
   PhpList\RestBundle\Identity\Validator\Constraint\UniqueLoginNameValidator:
     autowire: true
     autoconfigure: true
