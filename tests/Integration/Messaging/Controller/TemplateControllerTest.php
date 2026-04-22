@@ -57,6 +57,29 @@ class TemplateControllerTest extends AbstractTestController
         self::assertArrayHasKey('title', $response['items'][0]);
     }
 
+    public function testListDefaultTemplatesWithValidSessionKeyReturnsOkay(): void
+    {
+        $this->authenticatedJsonRequest('GET', '/api/v2/templates/defaults');
+        $this->assertHttpOkay();
+    }
+
+    public function testCreateTemplateFromDefaultWithValidSessionKeyReturnsCreated(): void
+    {
+        $this->authenticatedJsonRequest('GET', '/api/v2/templates/defaults');
+        $defaults = $this->getDecodedJsonResponseContent();
+
+        self::assertIsArray($defaults);
+        self::assertNotEmpty($defaults);
+        self::assertArrayHasKey('key', $defaults[0]);
+
+        $this->authenticatedJsonRequest('POST', '/api/v2/templates/defaults/' . $defaults[0]['key']);
+        $this->assertHttpCreated();
+
+        $response = $this->getDecodedJsonResponseContent();
+        self::assertArrayHasKey('id', $response);
+        self::assertArrayHasKey('title', $response);
+    }
+
     public function testGetTemplateWithoutSessionKeyReturnsForbidden(): void
     {
         $this->loadFixtures([TemplateFixture::class]);

@@ -116,6 +116,99 @@ class TemplateController extends BaseController
         );
     }
 
+    #[Route('/defaults', name: 'get_defaults', methods: ['GET'])]
+    #[OA\Get(
+        path: '/api/v2/templates/defaults',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
+            'Returns a JSON list of all available default templates.',
+        summary: 'Gets a list of all default templates.',
+        tags: ['templates'],
+        parameters: [
+            new OA\Parameter(
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Success',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(
+                        properties: [
+                            new OA\Property(property: 'key', type: 'string', example: 'system'),
+                            new OA\Property(property: 'name', type: 'string', example: 'System'),
+                            new OA\Property(property: 'description', type: 'string', example: 'Default system email'),
+                            new OA\Property(property: 'file', type: 'string', example: 'system.html'),
+                        ],
+                        type: 'object'
+                    )
+                )
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
+            )
+        ]
+    )]
+    public function listDefaults(Request $request): JsonResponse
+    {
+        $this->requireAuthentication($request);
+
+        return $this->json($this->templateManager->listDefaults(), Response::HTTP_OK);
+    }
+
+    #[Route('/defaults/{key}', name: 'create_default', methods: ['POST'])]
+    #[OA\Post(
+        path: '/api/v2/templates/defaults/{key}',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
+            'Creates a new template from a default template key.',
+        summary: 'Creates a template from a default template.',
+        tags: ['templates'],
+        parameters: [
+            new OA\Parameter(
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                name: 'key',
+                description: 'Default template key',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string', enum: ['system', 'responsive'])
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: 'Success',
+                content: new OA\JsonContent(ref: '#/components/schemas/Template')
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
+            )
+        ]
+    )]
+    public function createDefaultTemplate(Request $request, string $key): JsonResponse
+    {
+        $this->requireAuthentication($request);
+
+        $template = $this->templateManager->createDefaultTemplate($key);
+        $this->entityManager->flush();
+
+        return $this->json($this->normalizer->normalize($template), Response::HTTP_CREATED);
+    }
+
     #[Route('/{templateId}', name: 'get_one', requirements: ['templateId' => '\d+'], methods: ['GET'])]
     #[OA\Get(
         path: '/api/v2/templates/{templateId}',

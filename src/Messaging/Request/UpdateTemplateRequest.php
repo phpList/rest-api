@@ -25,6 +25,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             nullable: true
         ),
         new OA\Property(property: 'text', type: 'string', example: '[CONTENT]'),
+        new OA\Property(property: 'list_order', type: 'integer', example: 10, nullable: true),
         new OA\Property(
             property: 'file',
             description: 'Optional file upload for HTML content',
@@ -67,6 +68,8 @@ class UpdateTemplateRequest implements RequestInterface
     #[ContainsPlaceholder]
     public ?string $text = null;
 
+    public ?int $listOrder = null;
+
     public ?UploadedFile $file = null;
     public bool $checkLinks = false;
     public bool $checkImages = false;
@@ -82,6 +85,7 @@ class UpdateTemplateRequest implements RequestInterface
             shouldCheckLinks: $this->checkLinks,
             shouldCheckImages: $this->checkImages,
             shouldCheckExternalImages: $this->checkExternalImages,
+            listOrder: $this->listOrder ?? 0,
         );
     }
 }
