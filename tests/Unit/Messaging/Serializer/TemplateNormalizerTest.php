@@ -58,7 +58,7 @@ class TemplateNormalizerTest extends TestCase
             'title' => 'Test Template',
             'content' => '<html>Content</html>',
             'text' => 'Plain text',
-            'order' => 5,
+            'list_order' => 5,
             'images' => [
                 [
                     'id' => 100,
@@ -87,7 +87,7 @@ class TemplateNormalizerTest extends TestCase
             'title' => 'Empty Template',
             'content' => '<html>No Images</html>',
             'text' => 'No images text',
-            'order' => 0,
+            'list_order' => 0,
             'images' => null
         ], $normalized);
     }

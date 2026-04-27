@@ -42,7 +42,7 @@ class SubscriberOnlyNormalizer implements NormalizerInterface
         return [
             'id' => $object->getId(),
             'email' => $object->getEmail(),
-            'created_at' => $object->getCreatedAt()->format('Y-m-d\TH:i:sP'),
+            'created_at' => $object->getCreatedAt()->format(\DateTimeInterface::ATOM),
             'confirmed' => $object->isConfirmed(),
             'blacklisted' => $object->isBlacklisted(),
             'bounce_count' => $object->getBounceCount(),

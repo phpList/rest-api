@@ -27,25 +27,16 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/list-messages', name: 'list_message_')]
 class ListMessageController extends BaseController
 {
-    private ListMessageManager $listMessageManager;
-    private ListMessageNormalizer $listMessageNormalizer;
-    private SubscriberListNormalizer $subscriberListNormalizer;
-    private MessageNormalizer $messageNormalizer;
-
     public function __construct(
-        Authentication $authentication,
-        RequestValidator $validator,
-        ListMessageManager $listMessageManager,
-        ListMessageNormalizer $listMessageNormalizer,
-        SubscriberListNormalizer $subscriberListNormalizer,
-        MessageNormalizer $messageNormalizer,
+        protected Authentication $authentication,
+        protected RequestValidator $validator,
+        private readonly ListMessageManager $listMessageManager,
+        private readonly ListMessageNormalizer $listMessageNormalizer,
+        private readonly SubscriberListNormalizer $subscriberListNormalizer,
+        private readonly MessageNormalizer $messageNormalizer,
         private readonly EntityManagerInterface $entityManager,
     ) {
         parent::__construct($authentication, $validator);
-        $this->listMessageManager = $listMessageManager;
-        $this->listMessageNormalizer = $listMessageNormalizer;
-        $this->subscriberListNormalizer = $subscriberListNormalizer;
-        $this->messageNormalizer = $messageNormalizer;
     }
 
     #[Route(
@@ -339,6 +330,7 @@ class ListMessageController extends BaseController
         }
 
         $this->listMessageManager->removeAssociation($message, $subscriberList);
+        $this->entityManager->flush();
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }
@@ -398,6 +390,7 @@ class ListMessageController extends BaseController
         }
 
         $this->listMessageManager->removeAllListAssociationsForMessage($message);
+        $this->entityManager->flush();
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
     }

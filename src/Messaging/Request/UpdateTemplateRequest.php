@@ -6,6 +6,7 @@ namespace PhpList\RestBundle\Messaging\Request;
 
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Messaging\Model\Dto\CreateTemplateDto;
+use PhpList\Core\Domain\Messaging\Model\Dto\UpdateTemplateDto;
 use PhpList\RestBundle\Common\Request\RequestInterface;
 use PhpList\RestBundle\Messaging\Validator\Constraint\ContainsPlaceholder;
 use PhpList\RestBundle\Messaging\Validator\Constraint\UniqueTemplateTitle;
@@ -13,7 +14,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[OA\Schema(
-    schema: 'CreateTemplateRequest',
+    schema: 'UpdateTemplateRequest',
     required: ['title'],
     properties: [
         new OA\Property(property: 'title', type: 'string', example: 'Newsletter Template'),
@@ -52,8 +53,10 @@ use Symfony\Component\Validator\Constraints as Assert;
     ],
     type: 'object'
 )]
-class CreateTemplateRequest implements RequestInterface
+class UpdateTemplateRequest implements RequestInterface
 {
+    public ?int $templateId = null;
+
     #[Assert\NotBlank(normalizer: 'trim')]
     #[Assert\NotNull]
     #[UniqueTemplateTitle]
@@ -72,9 +75,9 @@ class CreateTemplateRequest implements RequestInterface
     public bool $checkImages = false;
     public bool $checkExternalImages = false;
 
-    public function getDto(): CreateTemplateDto
+    public function getDto(): UpdateTemplateDto
     {
-        return new CreateTemplateDto(
+        return new UpdateTemplateDto(
             title: $this->title,
             content: $this->content,
             text: $this->text,

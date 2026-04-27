@@ -33,6 +33,9 @@ class RequestValidator
         if (isset($routeParams['listId'])) {
             $routeParams['listId'] = (int) $routeParams['listId'];
         }
+        if (isset($routeParams['templateId'])) {
+            $routeParams['templateId'] = (int) $routeParams['templateId'];
+        }
 
         $data = array_merge($routeParams, $request->query->all(), $body ?? []);
 

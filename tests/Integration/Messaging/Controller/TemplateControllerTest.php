@@ -57,6 +57,29 @@ class TemplateControllerTest extends AbstractTestController
         self::assertArrayHasKey('title', $response['items'][0]);
     }
 
+    public function testListDefaultTemplatesWithValidSessionKeyReturnsOkay(): void
+    {
+        $this->authenticatedJsonRequest('GET', '/api/v2/templates/defaults');
+        $this->assertHttpOkay();
+    }
+
+    public function testCreateTemplateFromDefaultWithValidSessionKeyReturnsCreated(): void
+    {
+        $this->authenticatedJsonRequest('GET', '/api/v2/templates/defaults');
+        $defaults = $this->getDecodedJsonResponseContent();
+
+        self::assertIsArray($defaults);
+        self::assertNotEmpty($defaults);
+        self::assertArrayHasKey('key', $defaults[0]);
+
+        $this->authenticatedJsonRequest('POST', '/api/v2/templates/defaults/' . $defaults[0]['key']);
+        $this->assertHttpCreated();
+
+        $response = $this->getDecodedJsonResponseContent();
+        self::assertArrayHasKey('id', $response);
+        self::assertArrayHasKey('title', $response);
+    }
+
     public function testGetTemplateWithoutSessionKeyReturnsForbidden(): void
     {
         $this->loadFixtures([TemplateFixture::class]);
@@ -106,6 +129,40 @@ class TemplateControllerTest extends AbstractTestController
 
         $this->authenticatedJsonRequest('POST', '/api/v2/templates', [], [], [], $payload);
         $this->assertHttpUnprocessableEntity();
+    }
+
+    public function testUpdateTemplateWithValidPayloadReturnsCreatedAndUpdatesTemplate(): void
+    {
+        $this->loadFixtures([TemplateFixture::class]);
+
+        $payload = json_encode([
+            'title' => 'Updated Template',
+            'content' => '<html><body>[CONTENT]</body></html>',
+            'text' => '[CONTENT]',
+            'check_links' => true,
+            'check_images' => false,
+            'check_external_images' => false,
+        ]);
+
+        $this->authenticatedJsonRequest('PUT', '/api/v2/templates/1', [], [], [], $payload);
+        $this->assertHttpCreated();
+
+        $response = $this->getDecodedJsonResponseContent();
+        self::assertSame(1, $response['id']);
+        self::assertSame('Updated Template', $response['title']);
+
+        $templateRepository = self::getContainer()->get(TemplateRepository::class);
+        self::assertSame('Updated Template', $templateRepository->find(1)?->getTitle());
+    }
+
+    public function testUpdateTemplateWithInvalidIdReturnsNotFound(): void
+    {
+        $payload = json_encode([
+            'title' => 'Updated Template',
+        ]);
+
+        $this->authenticatedJsonRequest('PUT', '/api/v2/templates/999', [], [], [], $payload);
+        $this->assertHttpNotFound();
     }
 
     public function testDeleteTemplateWithValidSessionKeyReturnsNoContent(): void

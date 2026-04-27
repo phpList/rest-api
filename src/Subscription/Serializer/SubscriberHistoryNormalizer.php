@@ -39,7 +39,7 @@ class SubscriberHistoryNormalizer implements NormalizerInterface
         return [
             'id' => $object->getId(),
             'ip' => $object->getIp(),
-            'created_at' => $object->getCreatedAt()->format('Y-m-d\TH:i:sP'),
+            'created_at' => $object->getCreatedAt()->format(\DateTimeInterface::ATOM),
             'summary' => $object->getSummary(),
             'detail' => $object->getDetail(),
             'system_info' => $object->getSystemInfo(),

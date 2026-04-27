@@ -65,7 +65,15 @@ class SessionControllerTest extends AbstractTestController
         $this->assertHttpUnprocessableEntity();
         $this->assertJsonResponseContentEquals(
             [
-                'message' => "loginName: This value should not be blank.\npassword: This value should not be blank.",
+                'message' => 'Validation failed',
+                'errors' => [
+                    'loginName' => [
+                        'This value should not be blank.',
+                    ],
+                    'password' => [
+                        'This value should not be blank.',
+                    ],
+                ],
             ]
         );
     }
@@ -91,7 +99,10 @@ class SessionControllerTest extends AbstractTestController
 
         $this->assertHttpUnprocessableEntity();
         $data = $this->getDecodedJsonResponseContent();
-        $this->assertStringContainsString('This value should not be blank', $data['message']);
+        $this->assertStringContainsString(
+            'Validation failed',
+            $data['message']
+        );
     }
 
     public function testPostSessionsWithInvalidCredentialsReturnsNotAuthorized()

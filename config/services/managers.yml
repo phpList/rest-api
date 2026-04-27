@@ -8,7 +8,7 @@ services:
     autowire: true
     autoconfigure: true
 
-  PhpList\Core\Domain\Identity\Service\SessionManager:
+  PhpList\Core\Domain\Identity\Service\Manager\SessionManager:
     autowire: true
     autoconfigure: true
 
@@ -36,7 +36,7 @@ services:
     autowire: true
     autoconfigure: true
 
-  PhpList\Core\Domain\Identity\Service\AdministratorManager:
+  PhpList\Core\Domain\Identity\Service\Manager\AdministratorManager:
     autowire: true
     autoconfigure: true
 
@@ -56,6 +56,6 @@ services:
     autowire: true
     autoconfigure: true
 
-  PhpList\Core\Domain\Identity\Service\PasswordManager:
+  PhpList\Core\Domain\Identity\Service\Manager\PasswordManager:
     autowire: true
     autoconfigure: true

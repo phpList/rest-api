@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Subscription\Serializer;
 
+use DateTimeInterface;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Subscription\Model\Subscription;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -47,7 +48,7 @@ class SubscriptionNormalizer implements NormalizerInterface
         return [
             'subscriber' => $this->subscriberNormalizer->normalize($object->getSubscriber()),
             'subscriber_list' => $this->subscriberListNormalizer->normalize($object->getSubscriberList()),
-            'subscription_date' => $object->getCreatedAt()->format('Y-m-d\TH:i:sP'),
+            'subscription_date' => $object->getCreatedAt()->format(DateTimeInterface::ATOM),
         ];
     }
 
