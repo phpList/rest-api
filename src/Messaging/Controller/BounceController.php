@@ -66,6 +66,13 @@ class BounceController extends BaseController
                 required: false,
                 schema: new OA\Schema(type: 'integer', default: 25, maximum: 100, minimum: 1)
             ),
+            new OA\Parameter(
+                name: 'status',
+                description: 'Bounce status',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'string', default: 'unidentified bounce', maxLength: 100, minLength: 1)
+            ),
         ],
         responses: [
             new OA\Response(
@@ -88,13 +95,13 @@ class BounceController extends BaseController
         $this->requireAuthentication($request);
 
         return $this->json(
-            $this->paginatedProvider->getPaginatedList(
+            data: $this->paginatedProvider->getPaginatedList(
                 request: $request,
                 normalizer: $this->normalizer,
                 className: Bounce::class,
-                filter: new BounceFilter()
+                filter: (new BounceFilter())->setStatus($request->query->get('status'))
             ),
-            Response::HTTP_OK
+            status: Response::HTTP_OK
         );
     }
 
