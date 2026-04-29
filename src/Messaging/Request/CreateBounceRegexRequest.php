@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Messaging\Request;
 
 use PhpList\RestBundle\Common\Request\RequestInterface;
+use PhpList\Core\Domain\Messaging\Model\BounceAction;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
@@ -15,6 +16,7 @@ class CreateBounceRegexRequest implements RequestInterface
     public string $regex;
 
     #[Assert\Type('string')]
+    #[Assert\Choice(callback: [BounceAction::class, 'values'])]
     public ?string $action = null;
 
     #[Assert\Type('integer')]

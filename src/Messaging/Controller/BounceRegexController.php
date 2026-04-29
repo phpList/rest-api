@@ -141,7 +141,6 @@ class BounceRegexController extends BaseController
                     new OA\Property(property: 'regex', type: 'string', example: '/mailbox is full/i'),
                     new OA\Property(property: 'action', type: 'string', example: 'delete', nullable: true),
                     new OA\Property(property: 'list_order', type: 'integer', example: 0, nullable: true),
-                    new OA\Property(property: 'admin', type: 'integer', example: 1, nullable: true),
                     new OA\Property(property: 'comment', type: 'string', example: 'Auto-generated', nullable: true),
                     new OA\Property(property: 'status', type: 'string', example: 'active', nullable: true),
                 ],
@@ -178,7 +177,7 @@ class BounceRegexController extends BaseController
     )]
     public function createOrUpdate(Request $request): JsonResponse
     {
-        $this->requireAuthentication($request);
+        $authAdmin = $this->requireAuthentication($request);
         /** @var CreateBounceRegexRequest $dto */
         $dto = $this->validator->validate($request, CreateBounceRegexRequest::class);
 
@@ -186,7 +185,7 @@ class BounceRegexController extends BaseController
             regex: $dto->regex,
             action: $dto->action,
             listOrder: $dto->listOrder,
-            adminId: $dto->admin,
+            adminId: $authAdmin->getId(),
             comment: $dto->comment,
             status: $dto->status
         );
