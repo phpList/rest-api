@@ -33,14 +33,16 @@ class CreateBounceRegexRequestTest extends TestCase
     {
         $req = new BounceRegexRequest();
         $req->regex = '/some/i';
+        $req->action = 'delete';
+        $req->status = 'active';
 
         $dto = $req->getDto();
 
         $this->assertSame('/some/i', $dto['regex']);
-        $this->assertNull($dto['action']);
+        $this->assertSame('delete', $dto['action']);
         $this->assertSame(0, $dto['listOrder']);
         $this->assertNull($dto['comment']);
-        $this->assertNull($dto['status']);
+        $this->assertSame('active', $dto['status']);
     }
 
     public function testValidateRegexPatternWithValidRegexDoesNotAddViolation(): void

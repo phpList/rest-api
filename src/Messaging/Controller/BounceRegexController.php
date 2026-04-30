@@ -76,12 +76,12 @@ class BounceRegexController extends BaseController
         return $this->json($normalized, Response::HTTP_OK);
     }
 
-    #[Route('/{regexHash}', name: 'get_one', methods: ['GET'])]
+    #[Route('/{ruleId}', name: 'get_one', methods: ['GET'])]
     #[OA\Get(
-        path: '/api/v2/bounces/regex/{regexHash}',
+        path: '/api/v2/bounces/regex/{ruleId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
-            'Returns a bounce regex by its hash.',
-        summary: 'Get a bounce regex by its hash',
+            'Returns a bounce regex by its ID.',
+        summary: 'Get a bounce regex by its ID',
         tags: ['bounces'],
         parameters: [
             new OA\Parameter(
@@ -92,11 +92,11 @@ class BounceRegexController extends BaseController
                 schema: new OA\Schema(type: 'string')
             ),
             new OA\Parameter(
-                name: 'regexHash',
-                description: 'Regex hash',
+                name: 'ruleId',
+                description: 'Regex ID',
                 in: 'path',
                 required: true,
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(type: 'integer')
             ),
         ],
         responses: [
@@ -117,15 +117,16 @@ class BounceRegexController extends BaseController
             )
         ]
     )]
-    public function getOne(Request $request, string $regexHash): JsonResponse
-    {
+    public function getOne(
+        Request $request,
+        #[MapEntity(mapping: ['ruleId' => 'id'])] ?BounceRegex $bounceRegex = null,
+    ): JsonResponse {
         $this->requireAuthentication($request);
-        $entity = $this->manager->getByHash($regexHash);
-        if (!$entity) {
+        if (!$bounceRegex) {
             throw $this->createNotFoundException('Bounce regex not found.');
         }
 
-        return $this->json($this->normalizer->normalize($entity), Response::HTTP_OK);
+        return $this->json($this->normalizer->normalize($bounceRegex), Response::HTTP_OK);
     }
 
     #[Route('', name: 'create', methods: ['POST'])]
@@ -277,7 +278,7 @@ class BounceRegexController extends BaseController
                 schema: new OA\Schema(type: 'string')
             ),
             new OA\Parameter(
-                name: 'regexHash',
+                name: 'ruleId',
                 description: 'Regex hash',
                 in: 'path',
                 required: true,
