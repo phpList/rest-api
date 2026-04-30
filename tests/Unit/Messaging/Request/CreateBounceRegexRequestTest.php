@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Unit\Messaging\Request;
 
-use PhpList\RestBundle\Messaging\Request\CreateBounceRegexRequest;
+use PhpList\RestBundle\Messaging\Request\BounceRegexRequest;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\Validator\Violation\ConstraintViolationBuilderInterface;
@@ -13,11 +13,10 @@ class CreateBounceRegexRequestTest extends TestCase
 {
     public function testGetDtoReturnsExpectedArray(): void
     {
-        $req = new CreateBounceRegexRequest();
+        $req = new BounceRegexRequest();
         $req->regex = '/mailbox is full/i';
         $req->action = 'delete';
         $req->listOrder = 3;
-        $req->admin = 9;
         $req->comment = 'Auto';
         $req->status = 'active';
 
@@ -26,14 +25,13 @@ class CreateBounceRegexRequestTest extends TestCase
         $this->assertSame('/mailbox is full/i', $dto['regex']);
         $this->assertSame('delete', $dto['action']);
         $this->assertSame(3, $dto['listOrder']);
-        $this->assertSame(9, $dto['admin']);
         $this->assertSame('Auto', $dto['comment']);
         $this->assertSame('active', $dto['status']);
     }
 
     public function testGetDtoWithDefaults(): void
     {
-        $req = new CreateBounceRegexRequest();
+        $req = new BounceRegexRequest();
         $req->regex = '/some/i';
 
         $dto = $req->getDto();
@@ -41,14 +39,13 @@ class CreateBounceRegexRequestTest extends TestCase
         $this->assertSame('/some/i', $dto['regex']);
         $this->assertNull($dto['action']);
         $this->assertSame(0, $dto['listOrder']);
-        $this->assertNull($dto['admin']);
         $this->assertNull($dto['comment']);
         $this->assertNull($dto['status']);
     }
 
     public function testValidateRegexPatternWithValidRegexDoesNotAddViolation(): void
     {
-        $req = new CreateBounceRegexRequest();
+        $req = new BounceRegexRequest();
         $req->regex = '/valid.*/i';
 
         $context = $this->createMock(ExecutionContextInterface::class);
@@ -62,7 +59,7 @@ class CreateBounceRegexRequestTest extends TestCase
 
     public function testValidateRegexPatternWithInvalidRegexAddsViolation(): void
     {
-        $req = new CreateBounceRegexRequest();
+        $req = new BounceRegexRequest();
         $req->regex = '/[invalid';
 
         $builder = $this->createMock(ConstraintViolationBuilderInterface::class);
