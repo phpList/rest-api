@@ -46,7 +46,7 @@ class TemplateImageNormalizerTest extends TestCase
             'template_id' => 42,
             'mimetype' => 'image/png',
             'filename' => 'test.png',
-            'data' => base64_encode('binary-data'),
+            'data' => 'binary-data',
             'width' => 100,
             'height' => 200,
         ], $normalized);

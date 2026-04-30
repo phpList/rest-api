@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Messaging\Serializer;
 
+use DateTimeInterface;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Messaging\Model\Message;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -35,6 +36,9 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
                 new OA\Property(property: 'send_format', type: 'string', example: 'text', nullable: true),
                 new OA\Property(property: 'as_text', type: 'integer', example: 12),
                 new OA\Property(property: 'as_html', type: 'integer', example: 12),
+                new OA\Property(property: 'as_text_and_html', type: 'integer', example: 12),
+                new OA\Property(property: 'as_pdf', type: 'integer', example: 12),
+                new OA\Property(property: 'as_text_and_pdf', type: 'integer', example: 12),
             ],
             type: 'object'
         ),
@@ -111,22 +115,25 @@ class MessageNormalizer implements NormalizerInterface
                 'send_format' => $object->getFormat()->getSendFormat(),
                 'as_text' => $object->getFormat()->getAsText(),
                 'as_html' => $object->getFormat()->getAsHtml(),
+                'as_text_and_html' => $object->getFormat()->getAsTextAndHtml(),
+                'as_pdf' => $object->getFormat()->getAsPdf(),
+                'as_text_and_pdf' => $object->getFormat()->getAsTextAndHtml(),
             ],
             'message_metadata' => [
                 'status' => $object->getMetadata()->getStatus()->value,
                 'processed' => $object->getMetadata()->getProcessed(),
                 'views' => $object->getMetadata()->getViews(),
                 'bounce_count' => $object->getMetadata()->getBounceCount(),
-                'entered' => $object->getMetadata()->getEntered()?->format('Y-m-d\TH:i:sP'),
-                'sent' => $object->getMetadata()->getSent()?->format('Y-m-d\TH:i:sP'),
-                'send_start' => $object->getMetadata()->getSendStart()?->format('Y-m-d\TH:i:sP'),
+                'entered' => $object->getMetadata()->getEntered()?->format(DateTimeInterface::ATOM),
+                'sent' => $object->getMetadata()->getSent()?->format(DateTimeInterface::ATOM),
+                'send_start' => $object->getMetadata()->getSendStart()?->format(DateTimeInterface::ATOM),
             ],
             'message_schedule' => [
                 'repeat_interval' => $object->getSchedule()->getRepeatInterval(),
-                'repeat_until' => $object->getSchedule()->getRepeatUntil()?->format('Y-m-d\TH:i:sP'),
+                'repeat_until' => $object->getSchedule()->getRepeatUntil()?->format(DateTimeInterface::ATOM),
                 'requeue_interval' => $object->getSchedule()->getRequeueInterval(),
-                'requeue_until' => $object->getSchedule()->getRequeueUntil()?->format('Y-m-d\TH:i:sP'),
-                'embargo' => $object->getSchedule()->getEmbargo()?->format('Y-m-d\TH:i:sP'),
+                'requeue_until' => $object->getSchedule()->getRequeueUntil()?->format(DateTimeInterface::ATOM),
+                'embargo' => $object->getSchedule()->getEmbargo()?->format(DateTimeInterface::ATOM),
             ],
             'message_options' => [
                 'from_field' => $object->getOptions()->getFromField(),

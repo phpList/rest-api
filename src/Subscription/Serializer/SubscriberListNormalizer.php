@@ -42,7 +42,7 @@ class SubscriberListNormalizer implements NormalizerInterface
         return [
             'id' => $object->getId(),
             'name' => $object->getName(),
-            'created_at' => $object->getCreatedAt()->format('Y-m-d\TH:i:sP'),
+            'created_at' => $object->getCreatedAt()->format(\DateTimeInterface::ATOM),
             'description' => $object->getDescription(),
             'list_position' => $object->getListPosition(),
             'subject_prefix' => $object->getSubjectPrefix(),

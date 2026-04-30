@@ -1,5 +1,10 @@
 services:
-    PhpList\Core\Domain\Messaging\MessageHandler\CampaignProcessorMessageHandler:
+    PhpList\Core\Domain\Messaging\MessageHandler\CampaignProcessor\CampaignProcessorMessageHandler:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    PhpList\Core\Domain\Messaging\MessageHandler\CampaignProcessor\TestCampaignProcessorMessageHandler:
         autowire: true
         autoconfigure: true
         public: false

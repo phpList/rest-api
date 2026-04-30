@@ -1,7 +1,7 @@
 services:
   PhpList\RestBundle\Common\Validator\RequestValidator:
     arguments:
-      $serializer: '@Symfony\Component\Serializer\Normalizer\ObjectNormalizer'
+      $serializer: '@phplist.request_serializer'
       $validator: '@validator'
 
   PhpList\RestBundle\Identity\Validator\Constraint\UniqueEmailValidator:
@@ -27,6 +27,11 @@ services:
   PhpList\RestBundle\Messaging\Validator\Constraint\ContainsPlaceholderValidator:
     tags: ['validator.constraint_validator']
 
+  PhpList\RestBundle\Messaging\Validator\Constraint\UniqueTemplateTitleValidator:
+    autowire: true
+    autoconfigure: true
+    tags: [ 'validator.constraint_validator' ]
+
   PhpList\RestBundle\Identity\Validator\Constraint\UniqueLoginNameValidator:
     autowire: true
     autoconfigure: true
@@ -50,4 +55,3 @@ services:
     autowire: true
     autoconfigure: true
     tags: [ 'validator.constraint_validator' ]
-

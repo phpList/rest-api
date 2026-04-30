@@ -34,12 +34,12 @@ class MessageScheduleRequest implements RequestDtoInterface
 {
     public ?int $repeatInterval = null;
 
-    #[Assert\DateTime]
+    #[Assert\DateTime(format: 'Y-m-d\TH:i:s.uP')]
     public ?string $repeatUntil = null;
 
     public ?int $requeueInterval = null;
 
-    #[Assert\DateTime]
+    #[Assert\DateTime(format: 'Y-m-d\TH:i:s.uP')]
     public ?string $requeueUntil = null;
 
     #[Assert\NotBlank]

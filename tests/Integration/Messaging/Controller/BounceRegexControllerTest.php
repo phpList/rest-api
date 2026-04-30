@@ -47,7 +47,7 @@ class BounceRegexControllerTest extends AbstractTestController
     {
         $payload = json_encode([
             'regex' => '/mailbox is full/i',
-            'action' => 'delete',
+            'action' => 'blacklistuser',
             'list_order' => 0,
             'admin' => 1,
             'comment' => 'Auto-generated rule',
@@ -60,11 +60,11 @@ class BounceRegexControllerTest extends AbstractTestController
         $this->assertSame('/mailbox is full/i', $created['regex']);
         $this->assertSame(md5('/mailbox is full/i'), $created['regex_hash']);
 
-        $hash = $created['regex_hash'];
-        $this->authenticatedJsonRequest('GET', '/api/v2/bounces/regex/' . $hash);
+        $id = $created['id'];
+        $this->authenticatedJsonRequest('GET', '/api/v2/bounces/regex/' . $id);
         $this->assertHttpOkay();
         $one = $this->getDecodedJsonResponseContent();
-        $this->assertSame($hash, $one['regex_hash']);
+        $this->assertSame($id, $one['id']);
 
         $this->authenticatedJsonRequest('GET', '/api/v2/bounces/regex');
         $this->assertHttpOkay();
@@ -72,10 +72,10 @@ class BounceRegexControllerTest extends AbstractTestController
         $this->assertIsArray($list);
         $this->assertIsArray($list[0] ?? []);
 
-        $this->authenticatedJsonRequest('DELETE', '/api/v2/bounces/regex/' . $hash);
+        $this->authenticatedJsonRequest('DELETE', '/api/v2/bounces/regex/' . $id);
         $this->assertHttpNoContent();
 
-        $this->authenticatedJsonRequest('GET', '/api/v2/bounces/regex/' . $hash);
+        $this->authenticatedJsonRequest('GET', '/api/v2/bounces/regex/' . $id);
         $this->assertHttpNotFound();
     }
 }

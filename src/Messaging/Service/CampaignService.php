@@ -30,7 +30,9 @@ class CampaignService
 
     public function getMessages(Request $request, Administrator $administrator): array
     {
-        $filter = (new MessageFilter())->setOwner($administrator);
+        $filter = (new MessageFilter())
+            ->setOwner($administrator)
+            ->setSubject($request->query->get('subject'));
 
         return $this->paginatedProvider->getPaginatedList(
             request: $request,

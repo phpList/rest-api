@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Identity\Serializer;
 
+use DateTimeInterface;
 use PhpList\Core\Domain\Identity\Model\AdministratorToken;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
@@ -21,7 +22,7 @@ class AdministratorTokenNormalizer implements NormalizerInterface
         return [
             'id' => $object->getId(),
             'key' => $object->getKey(),
-            'expiry_date' => $object->getExpiry()->format('Y-m-d\TH:i:sP'),
+            'expiry_date' => $object->getExpiry()->format(DateTimeInterface::ATOM),
         ];
     }
 

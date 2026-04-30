@@ -3,13 +3,24 @@ name: Update phplist-api-client OpenAPI
 on:
   push:
     branches:
-      - main
+      - '**'
   pull_request:
 
 jobs:
   generate-openapi:
     runs-on: ubuntu-22.04
+    outputs:
+      source_branch: ${{ steps.branch.outputs.source_branch }}
     steps:
+      - name: Determine source branch
+        id: branch
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "source_branch=${{ github.head_ref }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "source_branch=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Checkout Source Repository
         uses: actions/checkout@v3
 
@@ -42,6 +53,8 @@ jobs:
   update-phplist-api-client:
     runs-on: ubuntu-22.04
     needs: generate-openapi
+    env:
+      TARGET_BRANCH: ${{ needs.generate-openapi.outputs.source_branch }}
     steps:
       - name: Checkout phplist-api-client Repository
         uses: actions/checkout@v3
@@ -49,6 +62,17 @@ jobs:
           repository: TatevikGr/phplist-api-client
           token: ${{ secrets.PUSH_API_CLIENT }}
           fetch-depth: 0
+
+      - name: Prepare target branch
+        run: |
+          git fetch origin
+
+          if git ls-remote --exit-code --heads origin "$TARGET_BRANCH" >/dev/null 2>&1; then
+            git checkout "$TARGET_BRANCH"
+            git pull --rebase origin "$TARGET_BRANCH"
+          else
+            git checkout -b "$TARGET_BRANCH"
+          fi
 
       - name: Download Generated OpenAPI JSON
         uses: actions/download-artifact@v4
@@ -63,24 +87,31 @@ jobs:
           if [ -f openapi.json ]; then
             diff openapi.json new-openapi/latest-restapi.json > openapi-diff.txt || true
             if [ -s openapi-diff.txt ]; then
-              echo "diff=true" >> $GITHUB_OUTPUT
+              echo "diff=true" >> "$GITHUB_OUTPUT"
             else
-              echo "diff=false" >> $GITHUB_OUTPUT
+              echo "diff=false" >> "$GITHUB_OUTPUT"
             fi
           else
             echo "No previous openapi.json, will add."
-            echo "diff=true" >> $GITHUB_OUTPUT
+            echo "diff=true" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Update and Commit OpenAPI File
         if: steps.diff.outputs.diff == 'true'
         run: |
+          set -euo pipefail
           cp new-openapi/latest-restapi.json openapi.json
           git config user.name "github-actions"
           git config user.email "github-actions@phplist-api-client.workflow"
           git add openapi.json
-          git commit -m "Update openapi.json from REST API workflow `date`"
-          git push
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "Update openapi.json from REST API workflow $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+          git fetch origin "$TARGET_BRANCH"
+          git rebase "origin/$TARGET_BRANCH"
+          git push origin HEAD:"$TARGET_BRANCH"
 
       - name: Skip Commit if No Changes
         if: steps.diff.outputs.diff == 'false'

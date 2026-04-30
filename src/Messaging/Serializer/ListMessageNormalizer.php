@@ -51,8 +51,8 @@ class ListMessageNormalizer implements NormalizerInterface
             'id' => $object->getId(),
             'message' => $this->messageNormalizer->normalize($object->getMessage()),
             'subscriber_list' => $this->subscriberListNormalizer->normalize($object->getList()),
-            'created_at' => $object->getEntered()->format('Y-m-d\TH:i:sP'),
-            'updated_at' => $object->getUpdatedAt()->format('Y-m-d\TH:i:sP'),
+            'created_at' => $object->getEntered()->format(\DateTimeInterface::ATOM),
+            'updated_at' => $object->getUpdatedAt()->format(\DateTimeInterface::ATOM),
         ];
     }
 

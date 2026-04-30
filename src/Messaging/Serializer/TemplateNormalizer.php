@@ -16,7 +16,7 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
         new OA\Property(property: 'title', type: 'string', example: 'Newsletter'),
         new OA\Property(property: 'content', type: 'string', example: 'Hello World!', nullable: true),
         new OA\Property(property: 'text', type: 'string', nullable: true),
-        new OA\Property(property: 'order', type: 'integer', nullable: true),
+        new OA\Property(property: 'list_order', type: 'integer', nullable: true),
         new OA\Property(
             property: 'images',
             type: 'array',
@@ -47,7 +47,7 @@ class TemplateNormalizer implements NormalizerInterface
             'title' => $object->getTitle(),
             'content' => $object->getContent(),
             'text' => $object->getText(),
-            'order' => $object->getListOrder(),
+            'list_order' => $object->getListOrder(),
             'images' => $object->getImages()->toArray() ? array_map(function (TemplateImage $image) {
                 return $this->templateImageNormalizer->normalize($image);
             }, $object->getImages()->toArray()) : null

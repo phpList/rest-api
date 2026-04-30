@@ -32,7 +32,8 @@ class PasswordResetControllerTest extends AbstractTestController
 
         $this->assertHttpUnprocessableEntity();
         $data = $this->getDecodedJsonResponseContent();
-        $this->assertStringContainsString('This value is not a valid email address', $data['message']);
+        $this->assertStringContainsString('Validation failed', $data['message']);
+        $this->assertStringContainsString('This value is not a valid email address', $data['errors']['email'][0]);
     }
 
     public function testRequestPasswordResetWithNonExistentEmailReturnsError404(): void
@@ -97,6 +98,7 @@ class PasswordResetControllerTest extends AbstractTestController
 
         $this->assertHttpUnprocessableEntity();
         $data = $this->getDecodedJsonResponseContent();
-        $this->assertStringContainsString('This value is too short', $data['message']);
+        $this->assertStringContainsString('Validation failed', $data['message']);
+        $this->assertStringContainsString('This value is too short', $data['errors']['newPassword'][0]);
     }
 }
