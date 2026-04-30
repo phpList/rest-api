@@ -81,8 +81,15 @@ class BounceController extends BaseController
                 response: 200,
                 description: 'Success',
                 content: new OA\JsonContent(
-                    type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/BounceView')
+                    properties: [
+                        new OA\Property(
+                            property: 'items',
+                            type: 'array',
+                            items: new OA\Items(ref: '#/components/schemas/BounceView')
+                        ),
+                        new OA\Property(property: 'pagination', ref: '#/components/schemas/CursorPagination')
+                    ],
+                    type: 'object'
                 )
             ),
             new OA\Response(
