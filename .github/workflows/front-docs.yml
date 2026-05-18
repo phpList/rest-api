@@ -1,4 +1,4 @@
-name: Update phplist-api-client OpenAPI
+name: Update phplist-web-frontend OpenAPI
 
 on:
   push:
@@ -8,7 +8,6 @@ on:
   pull_request:
     branches:
       - main
-
 jobs:
   generate-openapi:
     runs-on: ubuntu-22.04
@@ -53,17 +52,17 @@ jobs:
           name: openapi-json
           path: docs/latest-restapi.json
 
-  update-phplist-api-client:
+  update-web-frontend:
     runs-on: ubuntu-22.04
     needs: generate-openapi
     env:
       TARGET_BRANCH: ${{ needs.generate-openapi.outputs.source_branch }}
     steps:
-      - name: Checkout phplist-api-client Repository
+      - name: Checkout phplist-web-frontend Repository
         uses: actions/checkout@v3
         with:
-          repository: TatevikGr/phplist-api-client
-          token: ${{ secrets.PUSH_API_CLIENT }}
+          repository: phplist/phplist-web-frontend
+          token: ${{ secrets.PUSH_WEB_FRONTEND }}
           fetch-depth: 0
 
       - name: Prepare target branch
@@ -105,13 +104,13 @@ jobs:
           set -euo pipefail
           cp new-openapi/latest-restapi.json openapi.json
           git config user.name "github-actions"
-          git config user.email "github-actions@phplist-api-client.workflow"
+          git config user.email "github-actions@web-frontend.workflow"
           git add openapi.json
           if git diff --cached --quiet; then
             echo "No changes to commit"
             exit 0
           fi
-          git commit -m "Update openapi.json from REST API workflow $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+          git commit -m "Update openapi.json from web frontend workflow $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
           git fetch origin "$TARGET_BRANCH"
           git rebase "origin/$TARGET_BRANCH"
           git push origin HEAD:"$TARGET_BRANCH"
