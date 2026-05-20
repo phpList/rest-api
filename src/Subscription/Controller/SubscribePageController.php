@@ -6,11 +6,13 @@ namespace PhpList\RestBundle\Subscription\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
+use PhpList\Core\Domain\Common\Model\Filter\PaginatedFilter;
 use PhpList\Core\Domain\Identity\Model\PrivilegeFlag;
 use PhpList\Core\Domain\Subscription\Model\SubscribePage;
 use PhpList\Core\Domain\Subscription\Service\Manager\SubscribePageManager;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
+use PhpList\RestBundle\Common\Service\Provider\PaginatedDataProvider;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
 use PhpList\RestBundle\Subscription\Request\SubscribePageDataRequest;
 use PhpList\RestBundle\Subscription\Request\SubscribePageRequest;
@@ -30,8 +32,84 @@ class SubscribePageController extends BaseController
         private readonly SubscribePageManager $subscribePageManager,
         private readonly SubscribePageNormalizer $normalizer,
         private readonly EntityManagerInterface $entityManager,
+        private readonly PaginatedDataProvider $paginatedProvider,
     ) {
         parent::__construct($authentication, $validator);
+    }
+
+    #[Route('/', name: 'get_all', methods: ['GET'])]
+    #[OA\Get(
+        path: '/api/v2/subscribe-pages',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production.',
+        summary: 'Get subscribe pages list',
+        tags: ['subscriptions'],
+        parameters: [
+            new OA\Parameter(
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                name: 'after_id',
+                description: 'Last id (starting from 0)',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'integer', default: 1, minimum: 1)
+            ),
+            new OA\Parameter(
+                name: 'limit',
+                description: 'Number of results per page',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'integer', default: 25, maximum: 100, minimum: 1)
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Success',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: 'items',
+                            type: 'array',
+                            items: new OA\Items(ref: '#/components/schemas/SubscribePage')
+                        ),
+                        new OA\Property(property: 'pagination', ref: '#/components/schemas/CursorPagination')
+                    ],
+                    type: 'object'
+                )
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Not Found',
+                content: new OA\JsonContent(ref: '#/components/schemas/NotFoundErrorResponse')
+            ),
+        ]
+    )]
+    public function getPages(Request $request): JsonResponse
+    {
+        $admin = $this->requireAuthentication($request);
+        if (!$admin->getPrivileges()->has(PrivilegeFlag::Subscribers)) {
+            throw $this->createAccessDeniedException('You are not allowed to view subscribe pages.');
+        }
+
+        return $this->json(
+            $this->paginatedProvider->getPaginatedList(
+                request: $request,
+                normalizer: $this->normalizer,
+                className: SubscribePage::class,
+                filter: new PaginatedFilter(),
+            ),
+            Response::HTTP_OK
+        );
     }
 
     #[Route('/{id}', name: 'get', requirements: ['id' => '\\d+'], methods: ['GET'])]

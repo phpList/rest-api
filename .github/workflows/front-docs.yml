@@ -58,10 +58,10 @@ jobs:
     env:
       TARGET_BRANCH: ${{ needs.generate-openapi.outputs.source_branch }}
     steps:
-      - name: Checkout phplist-web-frontend Repository
+      - name: Checkout phpList-web-frontend Repository
         uses: actions/checkout@v3
         with:
-          repository: phplist/phplist-web-frontend
+          repository: phpList/web-frontend
           token: ${{ secrets.PUSH_WEB_FRONTEND }}
           fetch-depth: 0
 
