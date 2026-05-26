@@ -20,12 +20,12 @@ class SubscribePageControllerTest extends AbstractTestController
         );
     }
 
-    public function testGetSubscribePageWithoutSessionReturnsForbidden(): void
+    public function testGetSubscribePageWithoutSessionReturnsPageIfItIsActive(): void
     {
         $this->loadFixtures([AdministratorFixture::class, SubscribePageFixture::class]);
 
         self::getClient()->request('GET', '/api/v2/subscribe-pages/1');
-        $this->assertHttpForbidden();
+        $this->assertHttpOkay();
     }
 
     public function testGetSubscribePageWithSessionReturnsPage(): void
