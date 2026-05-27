@@ -26,6 +26,10 @@ class SubscribePageDataNormalizer implements NormalizerInterface
             return [];
         }
 
+        if ($object->getName() === 'attributes') {
+            $object->setData(trim(str_replace('+', ',', $object->getData()), ','));
+        }
+
         return [
             'key' => $object->getName(),
             'value' => $object->getData(),
