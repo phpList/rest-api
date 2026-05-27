@@ -205,6 +205,7 @@ class SubscriberListController extends BaseController
                     properties: [
                         new OA\Property(property: 'id', type: 'integer', example: 1),
                         new OA\Property(property: 'name', type: 'string', example: 'Newsletter subscribers'),
+                        new OA\Property(property: 'list_position', type: 'integer', example: 1),
                         new OA\Property(
                             property: 'description',
                             type: 'string',
@@ -240,6 +241,7 @@ class SubscriberListController extends BaseController
             'id' => $list->getId(),
             'name' => $list->getName(),
             'description' => $list->getDescription(),
+            'list_position' => $list->getListPosition(),
         ], Response::HTTP_OK);
     }
 

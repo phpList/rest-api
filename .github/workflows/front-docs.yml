@@ -1,5 +1,9 @@
 name: Update phplist-web-frontend OpenAPI
 
+permissions:
+  contents: write      # Required to push to web-frontend repo
+  actions: read        # Required to download artifacts
+
 on:
   push:
     branches:
@@ -15,16 +19,22 @@ jobs:
       source_branch: ${{ steps.branch.outputs.source_branch }}
     steps:
       - name: Determine source branch
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          HEAD_REF: ${{ github.head_ref }}
+          REF_NAME: ${{ github.ref_name }}
         id: branch
         run: |
-          if [ "${{ github.event_name }}" = "pull_request" ]; then
-            echo "source_branch=${{ github.head_ref }}" >> "$GITHUB_OUTPUT"
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            echo "source_branch=$HEAD_REF" >> "$GITHUB_OUTPUT"
           else
-            echo "source_branch=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
+            echo "source_branch=$REF_NAME" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Checkout Source Repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Setup PHP with Composer and Extensions
         uses: shivammathur/setup-php@v2
@@ -64,6 +74,7 @@ jobs:
           repository: phpList/web-frontend
           token: ${{ secrets.PUSH_WEB_FRONTEND }}
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Prepare target branch
         run: |
