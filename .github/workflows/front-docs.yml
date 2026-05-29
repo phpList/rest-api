@@ -33,8 +33,6 @@ jobs:
 
       - name: Checkout Source Repository
         uses: actions/checkout@v4
-        with:
-          persist-credentials: false
 
       - name: Setup PHP with Composer and Extensions
         uses: shivammathur/setup-php@v2
@@ -74,7 +72,6 @@ jobs:
           repository: phpList/web-frontend
           token: ${{ secrets.PUSH_WEB_FRONTEND }}
           fetch-depth: 0
-          persist-credentials: false
 
       - name: Prepare target branch
         run: |
