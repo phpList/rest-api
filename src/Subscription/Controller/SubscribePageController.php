@@ -16,6 +16,7 @@ use PhpList\RestBundle\Common\Service\Provider\PaginatedDataProvider;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
 use PhpList\RestBundle\Subscription\Request\SubscribePageRequest;
 use PhpList\RestBundle\Subscription\Serializer\SubscribePageNormalizer;
+use PhpList\RestBundle\Subscription\Serializer\SubscribePagePublicNormalizer;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -153,14 +154,56 @@ class SubscribePageController extends BaseController
     )]
     public function getPage(Request $request): JsonResponse
     {
-        $admin = $this->authentication->authenticateByApiKey($request);
-        $page = $this->subscribePageManager->findPage(id: (int) $request->get('id'));
+        $admin = $this->requireAuthentication($request);
+        if (!$admin->getPrivileges()->has(PrivilegeFlag::Subscribers)) {
+            throw $this->createAccessDeniedException('You are not allowed to view subscribe pages.');
+        }
 
-        if (!$page || ($page->isActive() === false && $admin === null)) {
+        $page = $this->subscribePageManager->findPage(id: (int) $request->get('id'));
+        if (!$page) {
             throw $this->createNotFoundException('Subscribe page not found');
         }
 
         return $this->json($this->normalizer->normalize($page), Response::HTTP_OK);
+    }
+
+    #[Route('/{id}/public', name: 'get_public', requirements: ['id' => '\\d+'], methods: ['GET'])]
+    #[OA\Get(
+        path: '/api/v2/subscribe-pages/{id}/public',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production.',
+        summary: 'Get public subscribe page (placeholders replaced with actual values)',
+        tags: ['subscriptions'],
+        parameters: [
+            new OA\Parameter(
+                name: 'id',
+                description: 'Subscribe page ID',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Success',
+                content: new OA\JsonContent(ref: '#/components/schemas/SubscribePagePublic'),
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Not Found',
+                content: new OA\JsonContent(ref: '#/components/schemas/NotFoundErrorResponse')
+            ),
+        ]
+    )]
+    public function getPublicPage(Request $request, SubscribePagePublicNormalizer $normalizer): JsonResponse
+    {
+        $page = $this->subscribePageManager->findPublicPage(id: (int) $request->get('id'));
+
+        if (!$page || $page->isActive() === false) {
+            throw $this->createNotFoundException('Subscribe page not found');
+        }
+
+        return $this->json($normalizer->normalize($page), Response::HTTP_OK);
     }
 
     #[Route('', name: 'create', methods: ['POST'])]
