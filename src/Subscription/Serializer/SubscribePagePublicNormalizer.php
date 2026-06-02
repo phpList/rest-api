@@ -7,6 +7,7 @@ namespace PhpList\RestBundle\Subscription\Serializer;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Subscription\Model\SubscribePage;
 use PhpList\Core\Domain\Subscription\Model\SubscribePageData;
+use PhpList\Core\Domain\Subscription\Repository\SubscriberAttributeDefinitionRepository;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 #[OA\Schema(
@@ -28,6 +29,11 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 )]
 class SubscribePagePublicNormalizer implements NormalizerInterface
 {
+    public function __construct(
+        private readonly SubscriberAttributeDefinitionRepository $attributeDefinitionRepository,
+    ) {
+    }
+
     /**
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
@@ -43,12 +49,37 @@ class SubscribePagePublicNormalizer implements NormalizerInterface
             'data' => array_reduce(
                 $object->getData(),
                 function (array $carry, SubscribePageData $data) {
-                    $carry[$data->getName()] = $data->getData();
+                    $value = $data->getData();
+                    if ($data->getName() === 'attributes') {
+                        $ids = array_filter(explode('+',  $data->getData()));
+                        $value = $this->getAttributeDefinitions($ids);
+                    }
+                    $carry[$data->getName()] = $value;
+
                     return $carry;
                 },
                 []
             ),
         ];
+    }
+
+    private function getAttributeDefinitions(array $ids): array
+    {
+        $attributeDefinitions = $this->attributeDefinitionRepository->getByIds($ids);
+        $result = [];
+        foreach ($attributeDefinitions as $attributeDefinition) {
+            $result[] = [
+                'id' => $attributeDefinition->getId(),
+                'name' => $attributeDefinition->getName(),
+                'type' => $attributeDefinition->getType()->value,
+                'required' => $attributeDefinition->isRequired(),
+                'default_value' => $attributeDefinition->getDefaultValue(),
+                'list_order' => $attributeDefinition->getListOrder(),
+                'options' => $attributeDefinition->getOptions(),
+            ];
+        }
+
+        return $result;
     }
 
     /**

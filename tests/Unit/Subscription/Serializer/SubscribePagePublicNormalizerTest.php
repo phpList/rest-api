@@ -6,6 +6,7 @@ namespace PhpList\RestBundle\Tests\Unit\Subscription\Serializer;
 
 use PhpList\Core\Domain\Identity\Model\Administrator;
 use PhpList\Core\Domain\Subscription\Model\SubscribePage;
+use PhpList\Core\Domain\Subscription\Repository\SubscriberAttributeDefinitionRepository;
 use PhpList\RestBundle\Subscription\Serializer\SubscribePagePublicNormalizer;
 use PHPUnit\Framework\TestCase;
 use stdClass;
@@ -14,7 +15,9 @@ class SubscribePagePublicNormalizerTest extends TestCase
 {
     public function testSupportsNormalization(): void
     {
-        $normalizer = new SubscribePagePublicNormalizer();
+        $normalizer = new SubscribePagePublicNormalizer(
+            $this->createMock(SubscriberAttributeDefinitionRepository::class)
+        );
 
         $page = $this->createMock(SubscribePage::class);
 
@@ -32,7 +35,9 @@ class SubscribePagePublicNormalizerTest extends TestCase
         $page->method('isActive')->willReturn(true);
         $page->method('getOwner')->willReturn($owner);
 
-        $normalizer = new SubscribePagePublicNormalizer();
+        $normalizer = new SubscribePagePublicNormalizer(
+            $this->createMock(SubscriberAttributeDefinitionRepository::class)
+        );
 
         $expected = [
             'id' => 42,
@@ -45,7 +50,9 @@ class SubscribePagePublicNormalizerTest extends TestCase
 
     public function testNormalizeWithInvalidObjectReturnsEmptyArray(): void
     {
-        $normalizer = new SubscribePagePublicNormalizer();
+        $normalizer = new SubscribePagePublicNormalizer(
+            $this->createMock(SubscriberAttributeDefinitionRepository::class)
+        );
         $this->assertSame([], $normalizer->normalize(new stdClass()));
     }
 }
