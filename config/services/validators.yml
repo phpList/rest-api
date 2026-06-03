@@ -42,6 +42,11 @@ services:
     autoconfigure: true
     tags: [ 'validator.constraint_validator' ]
 
+  PhpList\RestBundle\Subscription\Validator\Constraint\ValidPublicSubscriptionValidator:
+    autowire: true
+    autoconfigure: true
+    tags: [ 'validator.constraint_validator' ]
+
   PhpList\Core\Domain\Identity\Validator\AttributeTypeValidator:
     autowire: true
     autoconfigure: true

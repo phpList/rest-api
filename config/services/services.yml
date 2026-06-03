@@ -3,6 +3,10 @@ services:
         autowire: true
         autoconfigure: true
 
+    PhpList\RestBundle\Subscription\Service\PublicSubscriptionAttributeRuleProvider:
+        autowire: true
+        autoconfigure: true
+
     PhpList\Core\Domain\Messaging\Service\ForwardingGuard:
         autowire: true
         autoconfigure: true

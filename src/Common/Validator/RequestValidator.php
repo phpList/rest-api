@@ -20,7 +20,7 @@ class RequestValidator
     ) {
     }
 
-    public function validate(Request $request, string $dtoClass): RequestInterface
+    public function validate(Request $request, string $dtoClass, ?callable $beforeValidation = null): RequestInterface
     {
         try {
             $content = $request->getContent();
@@ -51,6 +51,10 @@ class RequestValidator
             throw new BadRequestHttpException(
                 'Invalid request data: ' . $e->getMessage() . ' Data: ' . json_encode($data)
             );
+        }
+
+        if ($beforeValidation !== null) {
+            $beforeValidation($dto);
         }
 
         return $this->validateDto($dto);

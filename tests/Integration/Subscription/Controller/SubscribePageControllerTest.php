@@ -4,11 +4,16 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Integration\Subscription\Controller;
 
+use PhpList\Core\Domain\Subscription\Model\Subscriber;
+use PhpList\Core\Domain\Subscription\Model\SubscriberAttributeDefinition;
+use PhpList\Core\Domain\Subscription\Model\SubscriberAttributeValue;
 use PhpList\RestBundle\Subscription\Controller\SubscribePageController;
 use PhpList\RestBundle\Tests\Integration\Common\AbstractTestController;
 use PhpList\RestBundle\Tests\Integration\Identity\Fixtures\AdministratorFixture;
 use PhpList\RestBundle\Tests\Integration\Identity\Fixtures\AdministratorTokenFixture;
 use PhpList\RestBundle\Tests\Integration\Subscription\Fixtures\SubscribePageFixture;
+use PhpList\RestBundle\Tests\Integration\Subscription\Fixtures\SubscriberAttributeDefinitionFixture;
+use PhpList\RestBundle\Tests\Integration\Subscription\Fixtures\SubscriberListFixture;
 
 class SubscribePageControllerTest extends AbstractTestController
 {
@@ -215,5 +220,42 @@ class SubscribePageControllerTest extends AbstractTestController
 
         $this->authenticatedJsonRequest('DELETE', '/api/v2/subscribe-pages/9999');
         $this->assertHttpNotFound();
+    }
+
+    public function testPublicSubscribeCreatesSubscriptionAndAttributes(): void
+    {
+        $this->loadFixtures([
+            AdministratorFixture::class,
+            SubscribePageFixture::class,
+            SubscriberListFixture::class,
+            SubscriberAttributeDefinitionFixture::class,
+        ]);
+
+        $payload = json_encode([
+            'email' => 'public@example.com',
+            'confirmEmail' => 'public@example.com',
+            'attributes' => [
+                'Country' => 'Armenia',
+            ],
+        ]);
+
+        $this->jsonRequest('POST', '/api/v2/subscribe-pages/1/lists/1/subscribers', [], [], [], $payload);
+        $this->assertHttpCreated();
+
+        $response = $this->getDecodedJsonResponseContent();
+        self::assertSame('public@example.com', $response[0]['subscriber']['email'] ?? null);
+
+        $subscriber = $this->entityManager?->getRepository(Subscriber::class)->findOneBy(['email' => 'public@example.com']);
+        self::assertInstanceOf(Subscriber::class, $subscriber);
+
+        $definition = $this->entityManager?->getRepository(SubscriberAttributeDefinition::class)->findOneBy(['name' => 'Country']);
+        self::assertInstanceOf(SubscriberAttributeDefinition::class, $definition);
+
+        $value = $this->entityManager?->getRepository(SubscriberAttributeValue::class)->findOneBy([
+            'subscriber' => $subscriber,
+            'attributeDefinition' => $definition,
+        ]);
+        self::assertInstanceOf(SubscriberAttributeValue::class, $value);
+        self::assertSame('Armenia', $value->getValue());
     }
 }
