@@ -9,19 +9,13 @@ use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Common\Model\Filter\PaginatedFilter;
 use PhpList\Core\Domain\Identity\Model\PrivilegeFlag;
 use PhpList\Core\Domain\Subscription\Model\SubscribePage;
-use PhpList\Core\Domain\Subscription\Model\SubscriberList;
 use PhpList\Core\Domain\Subscription\Service\Manager\SubscribePageManager;
-use PhpList\Core\Domain\Subscription\Service\Manager\SubscriberAttributeManager;
-use PhpList\Core\Domain\Subscription\Service\Manager\SubscriptionManager;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Service\Provider\PaginatedDataProvider;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
-use PhpList\RestBundle\Subscription\Request\PublicSubscriptionRequest;
 use PhpList\RestBundle\Subscription\Request\SubscribePageRequest;
 use PhpList\RestBundle\Subscription\Serializer\SubscribePageNormalizer;
-use PhpList\RestBundle\Subscription\Serializer\SubscribePagePublicNormalizer;
-use PhpList\RestBundle\Subscription\Serializer\SubscriptionNormalizer;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -38,9 +32,6 @@ class SubscribePageController extends BaseController
         private readonly SubscribePageNormalizer $normalizer,
         private readonly EntityManagerInterface $entityManager,
         private readonly PaginatedDataProvider $paginatedProvider,
-        private readonly SubscriptionManager $subscriptionManager,
-        private readonly SubscriptionNormalizer $subscriptionNormalizer,
-        private readonly SubscriberAttributeManager $subscriberAttributeManager,
     ) {
         parent::__construct($authentication, $validator);
     }
@@ -120,101 +111,7 @@ class SubscribePageController extends BaseController
         );
     }
 
-    #[Route('/{id}', name: 'get', requirements: ['id' => '\\d+'], methods: ['GET'])]
-    #[OA\Get(
-        path: '/api/v2/subscribe-pages/{id}',
-        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production.',
-        summary: 'Get subscribe page',
-        tags: ['subscriptions'],
-        parameters: [
-            new OA\Parameter(
-                name: 'php-auth-pw',
-                description: 'Session key obtained from login',
-                in: 'header',
-                required: false,
-                schema: new OA\Schema(type: 'string')
-            ),
-            new OA\Parameter(
-                name: 'id',
-                description: 'Subscribe page ID',
-                in: 'path',
-                required: true,
-                schema: new OA\Schema(type: 'integer')
-            )
-        ],
-        responses: [
-            new OA\Response(
-                response: 200,
-                description: 'Success',
-                content: new OA\JsonContent(ref: '#/components/schemas/SubscribePage'),
-            ),
-            new OA\Response(
-                response: 403,
-                description: 'Failure',
-                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
-            ),
-            new OA\Response(
-                response: 404,
-                description: 'Not Found',
-                content: new OA\JsonContent(ref: '#/components/schemas/NotFoundErrorResponse')
-            ),
-        ]
-    )]
-    public function getPage(Request $request): JsonResponse
-    {
-        $admin = $this->requireAuthentication($request);
-        if (!$admin->getPrivileges()->has(PrivilegeFlag::Subscribers)) {
-            throw $this->createAccessDeniedException('You are not allowed to view subscribe pages.');
-        }
-
-        $page = $this->subscribePageManager->findPage(id: (int) $request->get('id'));
-        if (!$page) {
-            throw $this->createNotFoundException('Subscribe page not found');
-        }
-
-        return $this->json($this->normalizer->normalize($page), Response::HTTP_OK);
-    }
-
-    #[Route('/{id}/public', name: 'get_public', requirements: ['id' => '\\d+'], methods: ['GET'])]
-    #[OA\Get(
-        path: '/api/v2/subscribe-pages/{id}/public',
-        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production.',
-        summary: 'Get public subscribe page (placeholders replaced with actual values)',
-        tags: ['subscriptions'],
-        parameters: [
-            new OA\Parameter(
-                name: 'id',
-                description: 'Subscribe page ID',
-                in: 'path',
-                required: true,
-                schema: new OA\Schema(type: 'integer')
-            )
-        ],
-        responses: [
-            new OA\Response(
-                response: 200,
-                description: 'Success',
-                content: new OA\JsonContent(ref: '#/components/schemas/SubscribePagePublic'),
-            ),
-            new OA\Response(
-                response: 404,
-                description: 'Not Found',
-                content: new OA\JsonContent(ref: '#/components/schemas/NotFoundErrorResponse')
-            ),
-        ]
-    )]
-    public function getPublicPage(Request $request, SubscribePagePublicNormalizer $normalizer): JsonResponse
-    {
-        $page = $this->subscribePageManager->findPublicPage(id: (int) $request->get('id'));
-
-        if (!$page || $page->isActive() === false) {
-            throw $this->createNotFoundException('Subscribe page not found');
-        }
-
-        return $this->json($normalizer->normalize($page), Response::HTTP_OK);
-    }
-
-    #[Route('', name: 'create', methods: ['POST'])]
+    #[Route('/', name: 'create', methods: ['POST'])]
     #[OA\Post(
         path: '/api/v2/subscribe-pages',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production.',
@@ -286,6 +183,61 @@ class SubscribePageController extends BaseController
         $this->entityManager->flush();
 
         return $this->json($this->normalizer->normalize($page), Response::HTTP_CREATED);
+    }
+
+    #[Route('/{id}', name: 'get', requirements: ['id' => '\\d+'], methods: ['GET'])]
+    #[OA\Get(
+        path: '/api/v2/subscribe-pages/{id}',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production.',
+        summary: 'Get subscribe page',
+        tags: ['subscriptions'],
+        parameters: [
+            new OA\Parameter(
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
+                in: 'header',
+                required: false,
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                name: 'id',
+                description: 'Subscribe page ID',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Success',
+                content: new OA\JsonContent(ref: '#/components/schemas/SubscribePage'),
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Not Found',
+                content: new OA\JsonContent(ref: '#/components/schemas/NotFoundErrorResponse')
+            ),
+        ]
+    )]
+    public function getPage(Request $request): JsonResponse
+    {
+        $admin = $this->requireAuthentication($request);
+        if (!$admin->getPrivileges()->has(PrivilegeFlag::Subscribers)) {
+            throw $this->createAccessDeniedException('You are not allowed to view subscribe pages.');
+        }
+
+        $page = $this->subscribePageManager->findPage(id: (int) $request->get('id'));
+        if (!$page) {
+            throw $this->createNotFoundException('Subscribe page not found');
+        }
+
+        return $this->json($this->normalizer->normalize($page), Response::HTTP_OK);
     }
 
     #[Route('/{id}', name: 'update', requirements: ['id' => '\\d+'], methods: ['PUT'])]
@@ -432,103 +384,5 @@ class SubscribePageController extends BaseController
         $this->entityManager->flush();
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
-    }
-
-    #[Route(
-        '/{id}/lists/{listId}/subscribers',
-        name: 'subscribe',
-        requirements: ['listId' => '\d+', 'id' => '\d+'],
-        methods: ['POST']
-    )]
-    #[OA\Post(
-        path: '/api/v2/subscribe-pages/{id}/lists/{listId}/subscribers',
-        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production.' .
-        'Subscribe subscriber to a list from subscribe page.',
-        summary: 'Create subscription',
-        requestBody: new OA\RequestBody(
-            description: '',
-            required: true,
-            content: new OA\JsonContent(ref: '#/components/schemas/PublicSubscriptionRequest')
-        ),
-        tags: ['subscriptions'],
-        parameters: [
-            new OA\Parameter(
-                name: 'listId',
-                description: 'List ID',
-                in: 'path',
-                required: true,
-                schema: new OA\Schema(type: 'string')
-            ),
-            new OA\Parameter(
-                name: 'id',
-                description: 'Subscribe page ID',
-                in: 'path',
-                required: true,
-                schema: new OA\Schema(type: 'integer')
-            ),
-        ],
-        responses: [
-            new OA\Response(
-                response: 201,
-                description: 'Success',
-                content: new OA\JsonContent(
-                    type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Subscription')
-                )
-            ),
-            new OA\Response(
-                response: 400,
-                description: 'Failure',
-                content: new OA\JsonContent(ref: '#/components/schemas/BadRequestResponse')
-            ),
-            new OA\Response(
-                response: 404,
-                description: 'Failure',
-                content: new OA\JsonContent(ref: '#/components/schemas/NotFoundErrorResponse')
-            ),
-            new OA\Response(
-                response: 422,
-                description: 'Failure',
-                content: new OA\JsonContent(ref: '#/components/schemas/ValidationErrorResponse')
-            ),
-        ]
-    )]
-    public function subscribe(
-        Request $request,
-        int $id,
-        #[MapEntity(mapping: ['listId' => 'id'])] ?SubscriberList $list = null,
-    ): JsonResponse {
-        $page = $this->subscribePageManager->findPublicPage(id: $id);
-        if (!$list || !$page) {
-            throw $this->createNotFoundException('Subscriber list or subscribe page not found.');
-        }
-
-        /** @var PublicSubscriptionRequest $subscriptionRequest */
-        $subscriptionRequest = $this->validator->validate(
-            request: $request,
-            dtoClass: PublicSubscriptionRequest::class,
-            beforeValidation: static function (PublicSubscriptionRequest $dto) use ($page): void {
-                $dto->setSubscribePage($page);
-            }
-        );
-        $subscriberEmail = $subscriptionRequest->email;
-        $subscriptions = $this->subscriptionManager->createSubscriptions(
-            subscriberList: $list,
-            emails: [$subscriberEmail],
-            autoConfirm: false,
-        );
-        $this->entityManager->flush();
-
-        if ($subscriptionRequest->attributes !== []) {
-            $this->subscriberAttributeManager->processAttributes(
-                subscriber: $subscriptions[0]->getSubscriber(),
-                attributeData: $subscriptionRequest->attributes
-            );
-        }
-        $this->entityManager->flush();
-
-        $normalized = array_map(fn($item) => $this->subscriptionNormalizer->normalize($item), $subscriptions);
-
-        return $this->json($normalized, Response::HTTP_CREATED);
     }
 }

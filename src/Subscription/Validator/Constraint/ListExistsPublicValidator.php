@@ -10,26 +10,23 @@ use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
-class ListExistsValidator extends ConstraintValidator
+class ListExistsPublicValidator extends ConstraintValidator
 {
-    private SubscriberListRepository $subscriberListRepository;
-
-    public function __construct(SubscriberListRepository $subscriberListRepository)
+    public function __construct(private readonly SubscriberListRepository $subscriberListRepository)
     {
-        $this->subscriberListRepository = $subscriberListRepository;
     }
 
     public function validate($value, Constraint $constraint): void
     {
-        if (!$constraint instanceof ListExists) {
-            throw new UnexpectedTypeException($constraint, ListExists::class);
+        if (!$constraint instanceof ListExistsPublic) {
+            throw new UnexpectedTypeException($constraint, ListExistsPublic::class);
         }
 
         if (null === $value || '' === $value) {
             return;
         }
 
-        $existingList = $this->subscriberListRepository->find((int)$value);
+        $existingList = $this->subscriberListRepository->findBy(['id' => (int)$value, 'public' => true]);
 
         if (!$existingList) {
             throw new NotFoundHttpException('Subscriber list does not exists.');

@@ -245,16 +245,19 @@ class SubscribePageControllerTest extends AbstractTestController
         $response = $this->getDecodedJsonResponseContent();
         self::assertSame('public@example.com', $response[0]['subscriber']['email'] ?? null);
 
-        $subscriber = $this->entityManager?->getRepository(Subscriber::class)->findOneBy(['email' => 'public@example.com']);
+        $subscriber = $this->entityManager?->getRepository(Subscriber::class)
+            ->findOneBy(['email' => 'public@example.com']);
         self::assertInstanceOf(Subscriber::class, $subscriber);
 
-        $definition = $this->entityManager?->getRepository(SubscriberAttributeDefinition::class)->findOneBy(['name' => 'Country']);
+        $definition = $this->entityManager?->getRepository(SubscriberAttributeDefinition::class)
+            ->findOneBy(['name' => 'Country']);
         self::assertInstanceOf(SubscriberAttributeDefinition::class, $definition);
 
-        $value = $this->entityManager?->getRepository(SubscriberAttributeValue::class)->findOneBy([
-            'subscriber' => $subscriber,
-            'attributeDefinition' => $definition,
-        ]);
+        $value = $this->entityManager?->getRepository(SubscriberAttributeValue::class)
+            ->findOneBy([
+                'subscriber' => $subscriber,
+                'attributeDefinition' => $definition,
+            ]);
         self::assertInstanceOf(SubscriberAttributeValue::class, $value);
         self::assertSame('Armenia', $value->getValue());
     }

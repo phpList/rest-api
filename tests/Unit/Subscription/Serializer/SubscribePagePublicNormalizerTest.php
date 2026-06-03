@@ -7,22 +7,31 @@ namespace PhpList\RestBundle\Tests\Unit\Subscription\Serializer;
 use PhpList\Core\Domain\Identity\Model\Administrator;
 use PhpList\Core\Domain\Subscription\Model\SubscribePage;
 use PhpList\Core\Domain\Subscription\Repository\SubscriberAttributeDefinitionRepository;
+use PhpList\Core\Domain\Subscription\Repository\SubscriberListRepository;
 use PhpList\RestBundle\Subscription\Serializer\SubscribePagePublicNormalizer;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 
 class SubscribePagePublicNormalizerTest extends TestCase
 {
+    private SubscribePagePublicNormalizer $normalizer;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->normalizer = new SubscribePagePublicNormalizer(
+            $this->createMock(SubscriberAttributeDefinitionRepository::class),
+            $this->createMock(SubscriberListRepository::class)
+        );
+    }
+
     public function testSupportsNormalization(): void
     {
-        $normalizer = new SubscribePagePublicNormalizer(
-            $this->createMock(SubscriberAttributeDefinitionRepository::class)
-        );
-
         $page = $this->createMock(SubscribePage::class);
 
-        $this->assertTrue($normalizer->supportsNormalization($page));
-        $this->assertFalse($normalizer->supportsNormalization(new stdClass()));
+        $this->assertTrue($this->normalizer->supportsNormalization($page));
+        $this->assertFalse($this->normalizer->supportsNormalization(new stdClass()));
     }
 
     public function testNormalizeReturnsExpectedArray(): void
@@ -35,24 +44,17 @@ class SubscribePagePublicNormalizerTest extends TestCase
         $page->method('isActive')->willReturn(true);
         $page->method('getOwner')->willReturn($owner);
 
-        $normalizer = new SubscribePagePublicNormalizer(
-            $this->createMock(SubscriberAttributeDefinitionRepository::class)
-        );
-
         $expected = [
             'id' => 42,
             'title' => 'welcome@example.org',
             'data' => [],
         ];
 
-        $this->assertSame($expected, $normalizer->normalize($page));
+        $this->assertSame($expected, $this->normalizer->normalize($page));
     }
 
     public function testNormalizeWithInvalidObjectReturnsEmptyArray(): void
     {
-        $normalizer = new SubscribePagePublicNormalizer(
-            $this->createMock(SubscriberAttributeDefinitionRepository::class)
-        );
-        $this->assertSame([], $normalizer->normalize(new stdClass()));
+        $this->assertSame([], $this->normalizer->normalize(new stdClass()));
     }
 }

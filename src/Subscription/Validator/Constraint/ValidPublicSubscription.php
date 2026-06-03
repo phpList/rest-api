@@ -25,4 +25,3 @@ class ValidPublicSubscription extends Constraint
         return ValidPublicSubscriptionValidator::class;
     }
 }
-

@@ -8,6 +8,7 @@ use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Subscription\Model\SubscribePage;
 use PhpList\Core\Domain\Subscription\Model\SubscribePageData;
 use PhpList\Core\Domain\Subscription\Repository\SubscriberAttributeDefinitionRepository;
+use PhpList\Core\Domain\Subscription\Repository\SubscriberListRepository;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 #[OA\Schema(
@@ -31,6 +32,7 @@ class SubscribePagePublicNormalizer implements NormalizerInterface
 {
     public function __construct(
         private readonly SubscriberAttributeDefinitionRepository $attributeDefinitionRepository,
+        private readonly SubscriberListRepository $subscriberListRepository,
     ) {
     }
 
@@ -51,8 +53,12 @@ class SubscribePagePublicNormalizer implements NormalizerInterface
                 function (array $carry, SubscribePageData $data) {
                     $value = $data->getData();
                     if ($data->getName() === 'attributes') {
-                        $ids = array_filter(explode('+',  $data->getData()));
+                        $ids = array_filter(explode('+', $data->getData()));
                         $value = $this->getAttributeDefinitions($ids);
+                    }
+                    if ($data->getName() === 'lists') {
+                        $ids = array_filter(explode(',', $data->getData()));
+                        $value = $this->getLists($ids);
                     }
                     $carry[$data->getName()] = $value;
 
@@ -76,6 +82,22 @@ class SubscribePagePublicNormalizer implements NormalizerInterface
                 'default_value' => $attributeDefinition->getDefaultValue(),
                 'list_order' => $attributeDefinition->getListOrder(),
                 'options' => $attributeDefinition->getOptions(),
+            ];
+        }
+
+        return $result;
+    }
+
+    private function getLists(array $ids): array
+    {
+        $lists = $this->subscriberListRepository->getPublicByIds($ids);
+        $result = [];
+        foreach ($lists as $list) {
+            $result[] = [
+                'id' => $list->getId(),
+                'name' => $list->getName(),
+                'description' => $list->getDescription(),
+                'list_position' => $list->getListPosition(),
             ];
         }
 

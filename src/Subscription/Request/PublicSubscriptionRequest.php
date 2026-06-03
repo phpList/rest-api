@@ -7,6 +7,7 @@ namespace PhpList\RestBundle\Subscription\Request;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Subscription\Model\SubscribePage;
 use PhpList\RestBundle\Common\Request\RequestInterface;
+use PhpList\RestBundle\Subscription\Validator\Constraint\ListExistsPublic;
 use PhpList\RestBundle\Subscription\Validator\Constraint\ValidPublicSubscription;
 use Symfony\Component\Serializer\Attribute\Ignore;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -21,10 +22,15 @@ use Symfony\Component\Validator\Constraints as Assert;
             example: 'lia@example.com'
         ),
         new OA\Property(
-            property: 'confirmEmail',
+            property: 'confirm_email',
             type: 'string',
             format: 'email',
             example: 'lia@example.com'
+        ),
+        new OA\Property(
+            property: 'list_id',
+            type: 'integer',
+            example: 1
         ),
         new OA\Property(
             property: 'attributes',
@@ -44,6 +50,10 @@ class PublicSubscriptionRequest implements RequestInterface
     #[Assert\NotBlank]
     #[Assert\Email]
     public ?string $email = null;
+
+    #[ListExistsPublic]
+    #[Assert\Type(type: 'integer')]
+    public ?int $listId = null;
 
     #[Assert\NotBlank]
     #[Assert\Email]

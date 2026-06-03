@@ -114,8 +114,12 @@ class ValidPublicSubscriptionValidatorTest extends TestCase
             ]);
 
         $builder = $this->createMock(ConstraintViolationBuilderInterface::class);
-        $builder->expects($this->once())->method('atPath')->with('attributes.country')->willReturnSelf();
-        $builder->expects($this->once())->method('addViolation');
+        $builder->expects($this->once())
+            ->method('atPath')
+            ->with('attributes.country')
+            ->willReturnSelf();
+        $builder->expects($this->once())
+            ->method('addViolation');
 
         $this->context->expects($this->once())
             ->method('buildViolation')
@@ -125,4 +129,3 @@ class ValidPublicSubscriptionValidatorTest extends TestCase
         $this->validator->validate($request, new ValidPublicSubscription());
     }
 }
-
