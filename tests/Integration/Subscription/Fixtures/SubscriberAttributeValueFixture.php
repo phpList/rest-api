@@ -22,7 +22,6 @@ class SubscriberAttributeValueFixture extends Fixture implements FixtureInterfac
         $definition->setListOrder(1);
         $definition->setDefaultValue('US');
         $definition->setRequired(true);
-        $definition->setTableName('list_attributes');
 
         $manager->persist($definition);
 

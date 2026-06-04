@@ -41,7 +41,7 @@ class SubscribePageController extends BaseController
         path: '/api/v2/subscribe-pages',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production.',
         summary: 'Get subscribe pages list',
-        tags: ['subscriptions'],
+        tags: ['subscribe-pages'],
         parameters: [
             new OA\Parameter(
                 name: 'php-auth-pw',
@@ -137,7 +137,7 @@ class SubscribePageController extends BaseController
                 ]
             )
         ),
-        tags: ['subscriptions'],
+        tags: ['subscribe-pages'],
         parameters: [
             new OA\Parameter(
                 name: 'php-auth-pw',
@@ -175,10 +175,14 @@ class SubscribePageController extends BaseController
         /** @var SubscribePageRequest $createRequest */
         $createRequest = $this->validator->validate($request, SubscribePageRequest::class);
 
-        $page = $this->subscribePageManager->createPage($createRequest->title, $createRequest->active, $admin);
+        $page = $this->subscribePageManager->createPage(
+            title: $createRequest->title,
+            active: $createRequest->active,
+            owner: $admin
+        );
         if ($createRequest->hasData()) {
             $this->entityManager->flush();
-            $this->subscribePageManager->syncPageData($createRequest->getDataMap(), $page);
+            $this->subscribePageManager->syncPageData(data: $createRequest->getDataMap(), page: $page);
         }
         $this->entityManager->flush();
 
@@ -190,7 +194,7 @@ class SubscribePageController extends BaseController
         path: '/api/v2/subscribe-pages/{id}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production.',
         summary: 'Get subscribe page',
-        tags: ['subscriptions'],
+        tags: ['subscribe-pages'],
         parameters: [
             new OA\Parameter(
                 name: 'php-auth-pw',
@@ -266,7 +270,7 @@ class SubscribePageController extends BaseController
                 ]
             )
         ),
-        tags: ['subscriptions'],
+        tags: ['subscribe-pages'],
         parameters: [
             new OA\Parameter(
                 name: 'php-auth-pw',
@@ -336,7 +340,7 @@ class SubscribePageController extends BaseController
         path: '/api/v2/subscribe-pages/{id}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production.',
         summary: 'Delete subscribe page',
-        tags: ['subscriptions'],
+        tags: ['subscribe-pages'],
         parameters: [
             new OA\Parameter(
                 name: 'php-auth-pw',

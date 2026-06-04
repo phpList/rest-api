@@ -52,6 +52,7 @@ class PublicSubscriptionRequest implements RequestInterface
     public ?string $email = null;
 
     #[ListExistsPublic]
+    #[Assert\NotNull]
     #[Assert\Type(type: 'integer')]
     public ?int $listId = null;
 

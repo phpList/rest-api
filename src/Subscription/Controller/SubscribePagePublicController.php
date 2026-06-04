@@ -6,7 +6,7 @@ namespace PhpList\RestBundle\Subscription\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
-use PhpList\Core\Domain\Subscription\Model\SubscriberList;
+use PhpList\Core\Domain\Subscription\Repository\SubscriberListRepository;
 use PhpList\Core\Domain\Subscription\Service\Manager\SubscribePageManager;
 use PhpList\Core\Domain\Subscription\Service\Manager\SubscriberAttributeManager;
 use PhpList\Core\Domain\Subscription\Service\Manager\SubscriptionManager;
@@ -16,7 +16,6 @@ use PhpList\RestBundle\Common\Validator\RequestValidator;
 use PhpList\RestBundle\Subscription\Request\PublicSubscriptionRequest;
 use PhpList\RestBundle\Subscription\Serializer\SubscribePagePublicNormalizer;
 use PhpList\RestBundle\Subscription\Serializer\SubscriptionNormalizer;
-use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,6 +32,7 @@ class SubscribePagePublicController extends BaseController
         private readonly SubscriptionManager $subscriptionManager,
         private readonly SubscriptionNormalizer $subscriptionNormalizer,
         private readonly SubscriberAttributeManager $subscriberAttributeManager,
+        private readonly SubscriberListRepository $subscriberListRepository,
     ) {
         parent::__construct($authentication, $validator);
     }
@@ -42,7 +42,7 @@ class SubscribePagePublicController extends BaseController
         path: '/api/v2/public/subscribe-pages/{pageId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production.',
         summary: 'Get public subscribe page (placeholders replaced with actual values)',
-        tags: ['public'],
+        tags: ['subscribe-pages'],
         parameters: [
             new OA\Parameter(
                 name: 'pageId',
@@ -87,7 +87,7 @@ class SubscribePagePublicController extends BaseController
             required: true,
             content: new OA\JsonContent(ref: '#/components/schemas/PublicSubscriptionRequest')
         ),
-        tags: ['public'],
+        tags: ['subscribe-pages'],
         parameters: [
             new OA\Parameter(
                 name: 'pageId',
@@ -139,7 +139,10 @@ class SubscribePagePublicController extends BaseController
             }
         );
 
-        $list = $this->entityManager->getRepository(SubscriberList::class)->find($subscriptionRequest->listId);
+        $list = $this->subscriberListRepository->find($subscriptionRequest->listId);
+        if ($list === null) {
+            throw $this->createNotFoundException('Subscriber list does not exists.');
+        }
         $subscriptions = $this->subscriptionManager->createSubscriptions(
             subscriberList: $list,
             emails: [$subscriptionRequest->email],
