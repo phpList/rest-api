@@ -14,6 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[OA\Schema(
     schema: 'PublicSubscriptionRequest',
+    required: ['email', 'list_id'],
     properties: [
         new OA\Property(
             property: 'email',

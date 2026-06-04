@@ -6,6 +6,7 @@ namespace PhpList\RestBundle\Subscription\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
+use PhpList\Core\Domain\Subscription\Model\SubscribePageData;
 use PhpList\Core\Domain\Subscription\Repository\SubscriberListRepository;
 use PhpList\Core\Domain\Subscription\Service\Manager\SubscribePageManager;
 use PhpList\Core\Domain\Subscription\Service\Manager\SubscriberAttributeManager;
@@ -15,7 +16,6 @@ use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
 use PhpList\RestBundle\Subscription\Request\PublicSubscriptionRequest;
 use PhpList\RestBundle\Subscription\Serializer\SubscribePagePublicNormalizer;
-use PhpList\RestBundle\Subscription\Serializer\SubscriptionNormalizer;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -30,7 +30,6 @@ class SubscribePagePublicController extends BaseController
         private readonly SubscribePageManager $subscribePageManager,
         private readonly EntityManagerInterface $entityManager,
         private readonly SubscriptionManager $subscriptionManager,
-        private readonly SubscriptionNormalizer $subscriptionNormalizer,
         private readonly SubscriberAttributeManager $subscriberAttributeManager,
         private readonly SubscriberListRepository $subscriberListRepository,
     ) {
@@ -99,12 +98,8 @@ class SubscribePagePublicController extends BaseController
         ],
         responses: [
             new OA\Response(
-                response: 201,
-                description: 'Success',
-                content: new OA\JsonContent(
-                    type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Subscription')
-                )
+                response: 204,
+                description: 'Success'
             ),
             new OA\Response(
                 response: 400,
@@ -127,7 +122,7 @@ class SubscribePagePublicController extends BaseController
     {
         $page = $this->subscribePageManager->findPublicPage(id: $pageId);
         if (!$page) {
-            throw $this->createNotFoundException('Subscriber subscribe page not found.');
+            throw $this->createNotFoundException('Subscribe page not found.');
         }
 
         /** @var PublicSubscriptionRequest $subscriptionRequest */
@@ -158,8 +153,85 @@ class SubscribePagePublicController extends BaseController
         }
         $this->entityManager->flush();
 
-        $normalized = array_map(fn($item) => $this->subscriptionNormalizer->normalize($item), $subscriptions);
+        return $this->json(null, Response::HTTP_NO_CONTENT);
+    }
 
-        return $this->json($normalized, Response::HTTP_CREATED);
+    #[Route('/{pageId}', name: 'unsubscribe', methods: ['DELETE'])]
+    #[OA\Delete(
+        path: '/api/v2/public/subscribe-pages/{pageId}',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production.' .
+        'Unsubscribe subscriber from a list from subscribe page.',
+        summary: 'Delete subscription',
+        tags: ['subscribe-pages'],
+        parameters: [
+            new OA\Parameter(
+                name: 'pageId',
+                description: 'Subscribe page ID',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'integer')
+            ),
+            new OA\Parameter(
+                name: 'email',
+                description: 'Subscriber email',
+                in: 'query',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: 204,
+                description: 'Success'
+            ),
+            new OA\Response(
+                response: 400,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/BadRequestResponse')
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/NotFoundErrorResponse')
+            ),
+            new OA\Response(
+                response: 422,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/ValidationErrorResponse')
+            ),
+        ]
+    )]
+    public function unsubscribe(Request $request, int $pageId): JsonResponse
+    {
+        $page = $this->subscribePageManager->findPage(id: $pageId);
+        if (!$page) {
+            throw $this->createNotFoundException('Subscribe page not found.');
+        }
+
+        /** @var SubscribePageData|null $listsField */
+        $listsField = array_find(
+            $page->getData(),
+            fn (SubscribePageData $data) => $data->getName() === 'lists'
+        );
+
+        if ($listsField === null) {
+            return $this->json(null, Response::HTTP_NO_CONTENT);
+        }
+
+        $listsIds = explode(',', $listsField->getData() ?? '');
+        if ($listsIds == []) {
+            return $this->json(null, Response::HTTP_NO_CONTENT);
+        }
+
+        $lists = $this->subscriberListRepository->findBy(['id' => $listsIds]);
+        foreach ($lists as $list) {
+            $this->subscriptionManager->deleteSubscriptions(
+                subscriberList: $list,
+                emails: [$request->query->get('email')]
+            );
+        }
+        $this->entityManager->flush();
+
+        return $this->json(null, Response::HTTP_NO_CONTENT);
     }
 }

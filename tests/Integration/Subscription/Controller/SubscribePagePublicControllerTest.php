@@ -89,10 +89,7 @@ class SubscribePagePublicControllerTest extends AbstractTestController
         ], JSON_THROW_ON_ERROR);
 
         $this->jsonRequest('POST', '/api/v2/public/subscribe-pages/1', [], [], [], $payload);
-        $this->assertHttpCreated();
-
-        $response = $this->getDecodedJsonResponseContent();
-        self::assertSame('public@example.com', $response[0]['subscriber']['email'] ?? null);
+        $this->assertHttpNoContent();
 
         $subscriber = $this->entityManager?->getRepository(Subscriber::class)
             ->findOneBy(['email' => 'public@example.com']);
