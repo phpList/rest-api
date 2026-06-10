@@ -15,6 +15,7 @@ use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
 use PhpList\RestBundle\Subscription\Request\PublicSubscriptionRequest;
+use PhpList\RestBundle\Subscription\Request\PublicUnsubscriptionRequest;
 use PhpList\RestBundle\Subscription\Serializer\SubscribePagePublicNormalizer;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -160,8 +161,13 @@ class SubscribePagePublicController extends BaseController
     #[OA\Delete(
         path: '/api/v2/public/subscribe-pages/{pageId}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production.' .
-        'Unsubscribe subscriber from a list from subscribe page.',
+        'Unsubscribe subscriber from lists of subscribe page.',
         summary: 'Delete subscription',
+        requestBody: new OA\RequestBody(
+            description: '',
+            required: true,
+            content: new OA\JsonContent(ref: '#/components/schemas/PublicUnsubscriptionRequest')
+        ),
         tags: ['subscribe-pages'],
         parameters: [
             new OA\Parameter(
@@ -170,13 +176,6 @@ class SubscribePagePublicController extends BaseController
                 in: 'path',
                 required: true,
                 schema: new OA\Schema(type: 'integer')
-            ),
-            new OA\Parameter(
-                name: 'email',
-                description: 'Subscriber email',
-                in: 'query',
-                required: true,
-                schema: new OA\Schema(type: 'string')
             ),
         ],
         responses: [
@@ -223,11 +222,17 @@ class SubscribePagePublicController extends BaseController
             return $this->json(null, Response::HTTP_NO_CONTENT);
         }
 
+        /** @var PublicUnsubscriptionRequest $unsubscribeRequest */
+        $unsubscribeRequest = $this->validator->validate(
+            request: $request,
+            dtoClass: PublicUnsubscriptionRequest::class
+        );
+
         $lists = $this->subscriberListRepository->findBy(['id' => $listsIds]);
         foreach ($lists as $list) {
             $this->subscriptionManager->deleteSubscriptions(
                 subscriberList: $list,
-                emails: [$request->query->get('email')]
+                emails: [$unsubscribeRequest->email]
             );
         }
         $this->entityManager->flush();

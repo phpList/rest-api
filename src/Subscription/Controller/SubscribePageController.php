@@ -200,7 +200,7 @@ class SubscribePageController extends BaseController
                 name: 'php-auth-pw',
                 description: 'Session key obtained from login',
                 in: 'header',
-                required: false,
+                required: true,
                 schema: new OA\Schema(type: 'string')
             ),
             new OA\Parameter(
