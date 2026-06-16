@@ -126,6 +126,11 @@
                     "type": "attribute",
                     "prefix": "/api/v2"
                 },
+                "rest-api-configuration": {
+                    "resource": "@PhpListRestBundle/Configuration/Controller/",
+                    "type": "attribute",
+                    "prefix": "/api/v2"
+                },
                 "rest-api-analitics": {
                     "resource": "@PhpListRestBundle/Statistics/Controller/",
                     "type": "attribute",

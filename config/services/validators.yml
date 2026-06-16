@@ -37,6 +37,11 @@ services:
     autoconfigure: true
     tags: [ 'validator.constraint_validator' ]
 
+  PhpList\RestBundle\Configuration\Validator\Constraint\UniqueConfigKeyValidator:
+    autowire: true
+    autoconfigure: true
+    tags: [ 'validator.constraint_validator' ]
+
   PhpList\RestBundle\Subscription\Validator\Constraint\ListExistsValidator:
     autowire: true
     autoconfigure: true
