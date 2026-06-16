@@ -21,7 +21,7 @@ use PhpList\Core\Domain\Configuration\Model\Dto\CreateConfigDto;
     ],
     type: 'object'
 )]
-class ConfigRequest implements RequestInterface
+class CreateConfigRequest implements RequestInterface
 {
     #[Assert\NotBlank]
     #[Assert\Type('string')]
@@ -44,10 +44,10 @@ class ConfigRequest implements RequestInterface
     public function getDto(): CreateConfigDto
     {
         return new CreateConfigDto(
-            $this->key,
-            $this->value,
-            $this->editable,
-            $this->type
+            key: $this->key,
+            value: $this->value,
+            editable: $this->editable,
+            type: $this->type
         );
     }
 }

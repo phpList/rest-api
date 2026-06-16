@@ -13,7 +13,7 @@ use PhpList\Core\Domain\Identity\Model\PrivilegeFlag;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
-use PhpList\RestBundle\Configuration\Request\ConfigRequest;
+use PhpList\RestBundle\Configuration\Request\CreateConfigRequest;
 use PhpList\RestBundle\Configuration\Request\UpdateConfigRequest;
 use PhpList\RestBundle\Configuration\Serializer\ConfigNormalizer;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
@@ -37,11 +37,11 @@ class ConfigController extends BaseController
 
     #[Route('', name: 'get_list', methods: ['GET'])]
     #[OA\Get(
-        path: '/api/v2/config',
+        path: '/api/v2/configs',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Returns all configuration items.',
         summary: 'Gets all configuration items.',
-        tags: ['config'],
+        tags: ['configs'],
         parameters: [
             new OA\Parameter(
                 name: 'php-auth-pw',
@@ -105,11 +105,11 @@ class ConfigController extends BaseController
 
     #[Route('/{key}', name: 'get_one', requirements: ['key' => '[A-Za-z0-9_.:-]+'], methods: ['GET'])]
     #[OA\Get(
-        path: '/api/v2/config/{key}',
+        path: '/api/v2/configs/{key}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Returns one configuration item by key.',
         summary: 'Gets a configuration item.',
-        tags: ['config'],
+        tags: ['configs'],
         parameters: [
             new OA\Parameter(
                 name: 'php-auth-pw',
@@ -158,7 +158,7 @@ class ConfigController extends BaseController
 
     #[Route('', name: 'create', methods: ['POST'])]
     #[OA\Post(
-        path: '/api/v2/config',
+        path: '/api/v2/configs',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Creates a configuration item.',
         summary: 'Creates a configuration item.',
@@ -167,7 +167,7 @@ class ConfigController extends BaseController
             required: true,
             content: new OA\JsonContent(ref: '#/components/schemas/ConfigRequest')
         ),
-        tags: ['config'],
+        tags: ['configs'],
         parameters: [
             new OA\Parameter(
                 name: 'php-auth-pw',
@@ -203,8 +203,8 @@ class ConfigController extends BaseController
     public function create(Request $request): JsonResponse
     {
         $this->denyUnlessSettingsAdmin($request, 'You are not allowed to create configuration.');
-        /* @var ConfigRequest $configRequest */
-        $configRequest = $this->validator->validate($request, ConfigRequest::class);
+        /* @var CreateConfigRequest $configRequest */
+        $configRequest = $this->validator->validate($request, CreateConfigRequest::class);
 
         $config = $this->manager->create($configRequest->getDto());
         $this->entityManager->flush();
@@ -214,7 +214,7 @@ class ConfigController extends BaseController
 
     #[Route('/{key}', name: 'update', requirements: ['key' => '[A-Za-z0-9_.:-]+'], methods: ['PUT'])]
     #[OA\Put(
-        path: '/api/v2/config/{key}',
+        path: '/api/v2/configs/{key}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Updates a configuration item value.',
         summary: 'Updates a configuration item.',
@@ -223,7 +223,7 @@ class ConfigController extends BaseController
             required: true,
             content: new OA\JsonContent(ref: '#/components/schemas/ConfigUpdateRequest')
         ),
-        tags: ['config'],
+        tags: ['configs'],
         parameters: [
             new OA\Parameter(
                 name: 'php-auth-pw',
@@ -286,11 +286,11 @@ class ConfigController extends BaseController
 
     #[Route('/{key}', name: 'delete', requirements: ['key' => '[A-Za-z0-9_.:-]+'], methods: ['DELETE'])]
     #[OA\Delete(
-        path: '/api/v2/config/{key}',
+        path: '/api/v2/configs/{key}',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
             'Deletes a configuration item.',
         summary: 'Deletes a configuration item.',
-        tags: ['config'],
+        tags: ['configs'],
         parameters: [
             new OA\Parameter(
                 name: 'php-auth-pw',
