@@ -24,17 +24,13 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/password-reset', name: 'password_reset_')]
 class PasswordResetController extends BaseController
 {
-    private PasswordManager $passwordManager;
-
     public function __construct(
         Authentication $authentication,
         RequestValidator $validator,
-        PasswordManager $passwordManager,
+        private readonly PasswordManager $passwordManager,
         private readonly EntityManagerInterface $entityManager,
     ) {
         parent::__construct($authentication, $validator);
-
-        $this->passwordManager = $passwordManager;
     }
 
     #[Route('/request', name: 'request', methods: ['POST'])]
@@ -170,8 +166,8 @@ class PasswordResetController extends BaseController
         $resetRequest = $this->validator->validate($request, ResetPasswordRequest::class);
         
         $success = $this->passwordManager->updatePasswordWithToken(
-            $resetRequest->token,
-            $resetRequest->newPassword
+            token: $resetRequest->token,
+            newPassword: $resetRequest->newPassword
         );
         $this->entityManager->flush();
         

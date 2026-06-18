@@ -135,7 +135,7 @@ class SubscribePagePublicController extends BaseController
             }
         );
 
-        $list = $this->subscriberListRepository->find($subscriptionRequest->listId);
+        $list = $this->subscriberListRepository->findById($subscriptionRequest->listId);
         if ($list === null) {
             throw $this->createNotFoundException('Subscriber list does not exists.');
         }

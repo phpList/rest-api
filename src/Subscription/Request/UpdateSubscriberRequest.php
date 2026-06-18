@@ -25,6 +25,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 )]
 class UpdateSubscriberRequest implements RequestInterface
 {
+    public ?int $updatingId = null;
+
     #[Assert\NotBlank]
     #[Assert\Email]
     #[UniqueEmail(entityClass: Subscriber::class)]
@@ -51,5 +53,10 @@ class UpdateSubscriberRequest implements RequestInterface
             htmlEmail: $this->htmlEmail,
             disabled: $this->disabled,
         );
+    }
+
+    public function setUpdatingId(int $updatingId): void
+    {
+        $this->updatingId = $updatingId;
     }
 }

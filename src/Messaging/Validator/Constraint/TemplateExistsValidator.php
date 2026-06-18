@@ -34,9 +34,9 @@ class TemplateExistsValidator extends ConstraintValidator
             throw new UnexpectedValueException($value, 'integer');
         }
 
-        $existingUser = $this->templateRepository->find($value);
+        $existing = $this->templateRepository->find($value);
 
-        if (!$existingUser) {
+        if (!$existing) {
             throw new ConflictHttpException('Template with that id does not exists.');
         }
     }

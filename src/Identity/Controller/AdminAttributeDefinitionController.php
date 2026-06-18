@@ -24,22 +24,15 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/administrators/attributes', name: 'admin_attribute_definition_')]
 class AdminAttributeDefinitionController extends BaseController
 {
-    private AdminAttributeDefinitionManager $definitionManager;
-    private AdminAttributeDefinitionNormalizer $normalizer;
-    private PaginatedDataProvider $paginatedDataProvider;
-
     public function __construct(
         Authentication $authentication,
         RequestValidator $validator,
-        AdminAttributeDefinitionManager $definitionManager,
-        AdminAttributeDefinitionNormalizer $normalizer,
-        PaginatedDataProvider $paginatedDataProvider,
+        private readonly AdminAttributeDefinitionManager $definitionManager,
+        private readonly AdminAttributeDefinitionNormalizer $normalizer,
+        private readonly PaginatedDataProvider $paginatedDataProvider,
         private readonly EntityManagerInterface $entityManager,
     ) {
         parent::__construct($authentication, $validator);
-        $this->definitionManager = $definitionManager;
-        $this->normalizer = $normalizer;
-        $this->paginatedDataProvider = $paginatedDataProvider;
     }
 
     #[Route('', name: 'create', methods: ['POST'])]

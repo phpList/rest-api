@@ -379,7 +379,13 @@ class TemplateController extends BaseController
         }
 
         /** @var UpdateTemplateRequest $templateRequest */
-        $templateRequest = $this->validator->validate($request, UpdateTemplateRequest::class);
+        $templateRequest = $this->validator->validate(
+            request: $request,
+            dtoClass: UpdateTemplateRequest::class,
+            beforeValidation: static function (UpdateTemplateRequest $dto) use ($template): void {
+                $dto->setUpdatingId($template->getId());
+            }
+        );
         $template = $this->templateManager->update(template: $template, updateTemplateDto: $templateRequest->getDto());
         $this->entityManager->flush();
 

@@ -31,11 +31,11 @@ class UniqueTemplateTitleValidator extends ConstraintValidator
             throw new UnexpectedValueException($value, 'string');
         }
 
-        $existingTemplate = $this->templateRepository->findOneBy(['title' => $value]);
+        $existing = $this->templateRepository->findOneBy(['title' => $value]);
         $dto = $this->context->getObject();
-        $updatingId = $dto->templateId ?? null;
+        $updatingId = $dto->updatingId ?? null;
 
-        if ($existingTemplate && (null === $updatingId || $existingTemplate->getId() !== $updatingId)) {
+        if ($existing && (null === $updatingId || $existing->getId() !== $updatingId)) {
             throw new ConflictHttpException('Template title already exists.');
         }
     }

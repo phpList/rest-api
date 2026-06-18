@@ -28,22 +28,15 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/administrators', name: 'admin_')]
 class AdministratorController extends BaseController
 {
-    private AdministratorManager $administratorManager;
-    private AdministratorNormalizer $normalizer;
-    private PaginatedDataProvider $paginatedProvider;
-
     public function __construct(
         Authentication $authentication,
         RequestValidator $validator,
-        AdministratorManager $administratorManager,
-        AdministratorNormalizer $normalizer,
-        PaginatedDataProvider $paginatedProvider,
+        private readonly AdministratorManager $administratorManager,
+        private readonly AdministratorNormalizer $normalizer,
+        private readonly PaginatedDataProvider $paginatedProvider,
         private readonly EntityManagerInterface $entityManager,
     ) {
         parent::__construct($authentication, $validator);
-        $this->administratorManager = $administratorManager;
-        $this->normalizer = $normalizer;
-        $this->paginatedProvider = $paginatedProvider;
     }
 
     #[Route('', name: 'get_list', methods: ['GET'])]
@@ -262,7 +255,13 @@ class AdministratorController extends BaseController
             throw $this->createNotFoundException('Administrator not found.');
         }
         /** @var UpdateAdministratorRequest $updateRequest */
-        $updateRequest = $this->validator->validate($request, UpdateAdministratorRequest::class);
+        $updateRequest = $this->validator->validate(
+            request: $request,
+            dtoClass:UpdateAdministratorRequest::class,
+            beforeValidation: static function (UpdateAdministratorRequest $dto) use ($administrator): void {
+                $dto->setUpdatingId($administrator->getId());
+            }
+        );
         $this->administratorManager->updateAdministrator($administrator, $updateRequest->getDto());
         $this->entityManager->flush();
 

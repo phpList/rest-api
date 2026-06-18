@@ -30,18 +30,14 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/sessions', name: 'session_')]
 class SessionController extends BaseController
 {
-    private SessionManager $sessionManager;
-
     public function __construct(
         Authentication $authentication,
         RequestValidator $validator,
-        SessionManager $sessionManager,
+        private readonly SessionManager $sessionManager,
         private readonly EntityManagerInterface $entityManager,
         private readonly AdministratorNormalizer $normalizer,
     ) {
         parent::__construct($authentication, $validator);
-
-        $this->sessionManager = $sessionManager;
     }
 
     #[Route('', name: 'create', methods: ['POST'])]
