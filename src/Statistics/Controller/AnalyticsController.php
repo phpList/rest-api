@@ -495,18 +495,15 @@ class AnalyticsController extends BaseController
                 )
             ),
             new OA\Response(
-                response: 403,
-                description: 'Unauthorized',
+                response: 401,
+                description: 'Not authenticated',
                 content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
             )
         ]
     )]
     public function getDashboardStatistics(Request $request): JsonResponse
     {
-        $authUser = $this->requireAuthentication($request);
-        if (!$authUser->getPrivileges()->has(PrivilegeFlag::Statistics)) {
-            throw $this->createAccessDeniedException('You are not allowed to access statistics.');
-        }
+        $this->requireAuthentication($request);
 
         $response = [
             'summary_statistics' => $this->analyticsService->getSummaryStatistics(),
