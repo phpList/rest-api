@@ -20,12 +20,12 @@ class SubscribePageControllerTest extends AbstractTestController
         );
     }
 
-    public function testGetSubscribePageWithoutSessionReturnsForbidden(): void
+    public function testGetSubscribePageWithoutSessionReturnsUnauthorized(): void
     {
         $this->loadFixtures([AdministratorFixture::class, SubscribePageFixture::class]);
 
         self::getClient()->request('GET', '/api/v2/subscribe-pages/1');
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testGetSubscribePageWithSessionReturnsPage(): void
@@ -64,7 +64,7 @@ class SubscribePageControllerTest extends AbstractTestController
         $this->assertHttpNotFound();
     }
 
-    public function testCreateSubscribePageWithoutSessionReturnsForbidden(): void
+    public function testCreateSubscribePageWithoutSessionReturnsUnauthorized(): void
     {
         // no auth fixtures loaded here
         $payload = json_encode([
@@ -77,7 +77,7 @@ class SubscribePageControllerTest extends AbstractTestController
 
         $this->jsonRequest('POST', '/api/v2/subscribe-pages/', content: $payload);
 
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testCreateSubscribePageWithSessionCreatesPage(): void
@@ -108,7 +108,7 @@ class SubscribePageControllerTest extends AbstractTestController
         self::assertArrayHasKey('privileges', $data['owner']);
     }
 
-    public function testUpdateSubscribePageWithoutSessionReturnsForbidden(): void
+    public function testUpdateSubscribePageWithoutSessionReturnsUnauthorized(): void
     {
         $this->loadFixtures([AdministratorFixture::class, SubscribePageFixture::class]);
         $payload = json_encode([
@@ -120,7 +120,7 @@ class SubscribePageControllerTest extends AbstractTestController
         ], JSON_THROW_ON_ERROR);
 
         $this->jsonRequest('PUT', '/api/v2/subscribe-pages/1', content: $payload);
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testCreateSubscribePageWithDataMissingValueReturnsUnprocessableEntity(): void
@@ -183,11 +183,11 @@ class SubscribePageControllerTest extends AbstractTestController
         $this->assertHttpNotFound();
     }
 
-    public function testDeleteSubscribePageWithoutSessionReturnsForbidden(): void
+    public function testDeleteSubscribePageWithoutSessionReturnsUnauthorized(): void
     {
         $this->loadFixtures([AdministratorFixture::class, SubscribePageFixture::class]);
         $this->jsonRequest('DELETE', '/api/v2/subscribe-pages/1');
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testDeleteSubscribePageWithSessionReturnsNoContentAndRemovesResource(): void

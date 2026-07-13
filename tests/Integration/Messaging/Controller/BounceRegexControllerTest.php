@@ -16,13 +16,13 @@ class BounceRegexControllerTest extends AbstractTestController
         self::assertInstanceOf(BounceRegexController::class, self::getContainer()->get(BounceRegexController::class));
     }
 
-    public function testListWithoutSessionKeyReturnsForbidden(): void
+    public function testListWithoutSessionKeyReturnsUnauthorized(): void
     {
         self::getClient()->request('GET', '/api/v2/bounces/regex');
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
-    public function testListWithExpiredSessionKeyReturnsForbidden(): void
+    public function testListWithExpiredSessionKeyReturnsUnauthorized(): void
     {
         $this->loadFixtures([AdministratorFixture::class, AdministratorTokenFixture::class]);
 
@@ -34,7 +34,7 @@ class BounceRegexControllerTest extends AbstractTestController
             ['PHP_AUTH_USER' => 'unused', 'PHP_AUTH_PW' => 'expiredtoken']
         );
 
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testListWithValidSessionKeyReturnsOkay(): void

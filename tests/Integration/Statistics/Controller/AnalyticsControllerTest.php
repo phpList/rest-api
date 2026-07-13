@@ -18,13 +18,13 @@ class AnalyticsControllerTest extends AbstractTestController
         self::assertInstanceOf(AnalyticsController::class, self::getContainer()->get(AnalyticsController::class));
     }
 
-    public function testGetCampaignStatisticsWithoutSessionKeyReturnsForbidden(): void
+    public function testGetCampaignStatisticsWithoutSessionKeyReturnsUnauthorized(): void
     {
         self::getClient()->request('GET', '/api/v2/analytics/campaigns');
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
-    public function testGetCampaignStatisticsWithExpiredSessionKeyReturnsForbidden(): void
+    public function testGetCampaignStatisticsWithExpiredSessionKeyReturnsUnauthorized(): void
     {
         $this->loadFixtures([AdministratorFixture::class, AdministratorTokenFixture::class]);
 
@@ -36,7 +36,7 @@ class AnalyticsControllerTest extends AbstractTestController
             ['PHP_AUTH_USER' => 'unused', 'PHP_AUTH_PW' => 'expiredtoken']
         );
 
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testGetCampaignStatisticsWithValidSessionReturnsOkay(): void
@@ -59,10 +59,10 @@ class AnalyticsControllerTest extends AbstractTestController
         self::assertArrayHasKey('pagination', $response);
     }
 
-    public function testGetViewOpensStatisticsWithoutSessionKeyReturnsForbidden(): void
+    public function testGetViewOpensStatisticsWithoutSessionKeyReturnsUnauthorized(): void
     {
         self::getClient()->request('GET', '/api/v2/analytics/view-opens');
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testGetViewOpensStatisticsWithValidSessionReturnsOkay(): void
@@ -87,10 +87,10 @@ class AnalyticsControllerTest extends AbstractTestController
         self::assertIsArray($response['pagination']);
     }
 
-    public function testGetTopDomainsWithoutSessionKeyReturnsForbidden(): void
+    public function testGetTopDomainsWithoutSessionKeyReturnsUnauthorized(): void
     {
         self::getClient()->request('GET', '/api/v2/analytics/domains/top');
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testGetTopDomainsWithValidSessionReturnsOkay(): void
@@ -176,10 +176,10 @@ class AnalyticsControllerTest extends AbstractTestController
         self::assertIsArray($response['domains']);
     }
 
-    public function testGetDomainConfirmationStatisticsWithoutSessionKeyReturnsForbidden(): void
+    public function testGetDomainConfirmationStatisticsWithoutSessionKeyReturnsUnauthorized(): void
     {
         self::getClient()->request('GET', '/api/v2/analytics/domains/confirmation');
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testGetDomainConfirmationStatisticsWithValidSessionReturnsOkay(): void
@@ -202,10 +202,10 @@ class AnalyticsControllerTest extends AbstractTestController
         self::assertArrayHasKey('total', $response);
     }
 
-    public function testGetTopLocalPartsWithoutSessionKeyReturnsForbidden(): void
+    public function testGetTopLocalPartsWithoutSessionKeyReturnsUnauthorized(): void
     {
         self::getClient()->request('GET', '/api/v2/analytics/local-parts/top');
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testGetTopLocalPartsWithValidSessionReturnsOkay(): void
@@ -255,10 +255,10 @@ class AnalyticsControllerTest extends AbstractTestController
         self::assertIsArray($response['local_parts']);
     }
 
-    public function testGetDashboardStatisticsWithoutSessionKeyReturnsForbidden(): void
+    public function testGetDashboardStatisticsWithoutSessionKeyReturnsUnauthorized(): void
     {
         self::getClient()->request('GET', '/api/v2/analytics/dashboard');
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testGetDashboardStatisticsWithValidSessionReturnsCardsData(): void

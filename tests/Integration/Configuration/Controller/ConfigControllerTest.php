@@ -17,13 +17,13 @@ class ConfigControllerTest extends AbstractTestController
         self::assertInstanceOf(ConfigController::class, self::getContainer()->get(ConfigController::class));
     }
 
-    public function testListWithoutSessionKeyReturnsForbidden(): void
+    public function testListWithoutSessionKeyReturnsUnauthorized(): void
     {
         self::getClient()->request('GET', '/api/v2/configs');
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
-    public function testListWithExpiredSessionKeyReturnsForbidden(): void
+    public function testListWithExpiredSessionKeyReturnsUnauthorized(): void
     {
         $this->loadFixtures([AdministratorFixture::class, AdministratorTokenFixture::class]);
 
@@ -35,7 +35,7 @@ class ConfigControllerTest extends AbstractTestController
             ['PHP_AUTH_USER' => 'unused', 'PHP_AUTH_PW' => 'expiredtoken']
         );
 
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testListWithValidSessionKeyReturnsOkayWithPaginationStructure(): void
@@ -79,10 +79,10 @@ class ConfigControllerTest extends AbstractTestController
         self::assertTrue($found, 'Created config item not found in list response.');
     }
 
-    public function testGetOneWithoutSessionKeyReturnsForbidden(): void
+    public function testGetOneWithoutSessionKeyReturnsUnauthorized(): void
     {
         self::getClient()->request('GET', '/api/v2/configs/organisation_name');
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testGetOneWithValidSessionReturnsOkayAndData(): void
@@ -110,11 +110,11 @@ class ConfigControllerTest extends AbstractTestController
         $this->assertHttpNotFound();
     }
 
-    public function testCreateWithoutSessionKeyReturnsForbidden(): void
+    public function testCreateWithoutSessionKeyReturnsUnauthorized(): void
     {
         $json = json_encode(['key' => 'new_key', 'value' => 'val']);
         $this->jsonRequest('POST', '/api/v2/configs', [], [], [], $json);
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testCreateWithValidSessionCreatesConfig(): void
@@ -144,10 +144,10 @@ class ConfigControllerTest extends AbstractTestController
         $this->assertHttpConflict();
     }
 
-    public function testUpdateWithoutSessionKeyReturnsForbidden(): void
+    public function testUpdateWithoutSessionKeyReturnsUnauthorized(): void
     {
         $this->jsonRequest('PUT', '/api/v2/configs/some_key', [], [], [], json_encode(['value' => 'x']));
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testUpdateWithValidSessionUpdatesValue(): void
@@ -200,10 +200,10 @@ class ConfigControllerTest extends AbstractTestController
         $this->assertHttpForbidden();
     }
 
-    public function testDeleteWithoutSessionKeyReturnsForbidden(): void
+    public function testDeleteWithoutSessionKeyReturnsUnauthorized(): void
     {
         self::getClient()->request('DELETE', '/api/v2/configs/some_key');
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testDeleteWithValidSessionDeletesConfig(): void

@@ -27,7 +27,7 @@ class ExceptionListener
         AttributeDefinitionCreationException::class => null,
         AdminAttributeCreationException::class => null,
         AccessDeniedException::class => 403,
-        AccessDeniedHttpException::class => 403,
+        AccessDeniedHttpException::class => 401,
         AttachmentFileNotFoundException::class => 404,
         SubscriberNotFoundException::class => 404,
         MessageNotReceivedException::class => 422,

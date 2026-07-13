@@ -17,13 +17,13 @@ class CampaignControllerTest extends AbstractTestController
         self::assertInstanceOf(CampaignController::class, self::getContainer()->get(CampaignController::class));
     }
 
-    public function testGetCampaignsWithoutSessionKeyReturnsForbidden(): void
+    public function testGetCampaignsWithoutSessionKeyReturnsUnauthorized(): void
     {
         self::getClient()->request('GET', '/api/v2/campaigns');
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
-    public function testGetCampaignsWithExpiredSessionKeyReturnsForbidden(): void
+    public function testGetCampaignsWithExpiredSessionKeyReturnsUnauthorized(): void
     {
         $this->loadFixtures([AdministratorFixture::class, AdministratorTokenFixture::class]);
 
@@ -35,7 +35,7 @@ class CampaignControllerTest extends AbstractTestController
             ['PHP_AUTH_USER' => 'unused', 'PHP_AUTH_PW' => 'expiredtoken']
         );
 
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testGetCampaignsWithValidSessionReturnsOkay(): void
@@ -67,11 +67,11 @@ class CampaignControllerTest extends AbstractTestController
         self::assertSame(1, $response['id']);
     }
 
-    public function testGetSingleCampaignWithoutSessionReturnsForbidden(): void
+    public function testGetSingleCampaignWithoutSessionReturnsUnauthorized(): void
     {
         $this->loadFixtures([MessageFixture::class]);
         self::getClient()->request('GET', '/api/v2/campaigns/1');
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testGetCampaignWithInvalidIdReturnsNotFound(): void

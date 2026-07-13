@@ -30,14 +30,14 @@ class SubscriberListControllerTest extends AbstractTestController
         );
     }
 
-    public function testGetListsWithoutSessionKeyReturnsForbiddenStatus()
+    public function testGetListsWithoutSessionKeyReturnsUnauthorized()
     {
         self::getClient()->request('get', '/api/v2/lists');
 
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
-    public function testGetListsWithExpiredSessionKeyReturnsForbiddenStatus()
+    public function testGetListsWithExpiredSessionKeyReturnsUnauthorized()
     {
         $this->loadFixtures([AdministratorFixture::class, AdministratorTokenFixture::class]);
 
@@ -49,7 +49,7 @@ class SubscriberListControllerTest extends AbstractTestController
             ['PHP_AUTH_USER' => 'unused', 'PHP_AUTH_PW' => 'cfdf64eecbbf336628b0f3071adba763']
         );
 
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testGetListsWithCurrentSessionKeyReturnsOkayStatus()
@@ -110,13 +110,13 @@ class SubscriberListControllerTest extends AbstractTestController
         ]);
     }
 
-    public function testGetListWithoutSessionKeyForExistingListReturnsForbiddenStatus()
+    public function testGetListWithoutSessionKeyForExistingListReturnsUnauthorized()
     {
         $this->loadFixtures([SubscriberListFixture::class]);
 
         self::getClient()->request('get', '/api/v2/lists/1');
 
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testGetListWithCurrentSessionKeyForExistingListReturnsOkayStatus()
@@ -156,13 +156,13 @@ class SubscriberListControllerTest extends AbstractTestController
         );
     }
 
-    public function testDeleteListWithoutSessionKeyForExistingListReturnsForbiddenStatus()
+    public function testDeleteListWithoutSessionKeyForExistingListReturnsUnauthorized()
     {
         $this->loadFixtures([SubscriberListFixture::class]);
 
         self::getClient()->request('delete', '/api/v2/lists/1');
 
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testDeleteListWithCurrentSessionKeyForExistingListReturnsNoContentStatus()
@@ -191,16 +191,16 @@ class SubscriberListControllerTest extends AbstractTestController
         self::assertNull($listRepository->find(1));
     }
 
-    public function testGetListMembersForExistingListWithoutSessionKeyReturnsForbiddenStatus()
+    public function testGetListMembersForExistingListWithoutSessionKeyReturnsUnauthorized()
     {
         $this->loadFixtures([SubscriberListFixture::class]);
 
         self::getClient()->request('get', '/api/v2/lists/1/subscribers');
 
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
-    public function testGetListMembersForExistingListWithExpiredSessionKeyReturnsForbiddenStatus()
+    public function testGetListMembersForExistingListWithExpiredSessionKeyReturnsUnauthorized()
     {
         $this->loadFixtures([
             SubscriberListFixture::class,
@@ -216,7 +216,7 @@ class SubscriberListControllerTest extends AbstractTestController
             ['PHP_AUTH_USER' => 'unused', 'PHP_AUTH_PW' => 'cfdf64eecbbf336628b0f3071adba763']
         );
 
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testGetListMembersWithCurrentSessionKeyForInexistentListReturnsNotFoundStatus()
@@ -367,11 +367,11 @@ class SubscriberListControllerTest extends AbstractTestController
         $this->assertHttpUnprocessableEntity();
     }
 
-    public function testCreateListWithoutSessionKeyReturnsForbidden(): void
+    public function testCreateListWithoutSessionKeyUnauthorized(): void
     {
         self::getClient()->request('POST', '/api/v2/lists', [], [], [], json_encode([ 'name' => 'UnauthorizedList']));
 
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testUpdateListWithValidPayloadReturnsUpdatedListData(): void

@@ -18,11 +18,11 @@ class SubscriberExportControllerTest extends AbstractTestController
         );
     }
 
-    public function testExportSubscribersWithoutSessionKeyReturnsForbiddenStatus(): void
+    public function testExportSubscribersWithoutSessionKeyReturnsUnauthorized(): void
     {
         $this->jsonRequest('POST', '/api/v2/subscribers/export');
 
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testExportSubscribersWithInvalidRequestReturnsUnprocessableEntityStatus(): void

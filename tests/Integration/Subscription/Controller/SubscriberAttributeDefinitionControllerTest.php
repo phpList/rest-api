@@ -21,10 +21,10 @@ class SubscriberAttributeDefinitionControllerTest extends AbstractTestController
         );
     }
 
-    public function testGetAttributesWithoutSessionKeyReturnsForbidden()
+    public function testGetAttributesWithoutSessionKeyReturnsUnauthorized()
     {
         self::getClient()->request('GET', '/api/v2/attributes');
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testGetAttributesWithSessionKeyReturnsOk()

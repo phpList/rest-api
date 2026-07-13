@@ -36,11 +36,11 @@ class SubscriberControllerTest extends AbstractTestController
         );
     }
 
-    public function testPostSubscribersWithoutSessionKeyReturnsForbiddenStatus()
+    public function testPostSubscribersWithoutSessionKeyReturnsUnauthorized()
     {
         $this->jsonRequest('post', '/api/v2/subscribers');
 
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testPostSubscribersWithValidSessionKeyAndMinimalValidSubscriberDataCreatesResource()
