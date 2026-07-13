@@ -11,6 +11,12 @@ use PhpList\Core\Domain\Messaging\Exception\MessageNotReceivedException;
 use PhpList\Core\Domain\Messaging\Exception\SubscriberNotFoundException;
 use PhpList\Core\Domain\Subscription\Exception\AttributeDefinitionCreationException;
 use PhpList\Core\Domain\Subscription\Exception\SubscriptionCreationException;
+use PhpList\Core\Domain\Common\Upload\Exception\InvalidUploadException;
+use PhpList\Core\Domain\Common\Upload\Exception\MissingUploadException;
+use PhpList\Core\Domain\Common\Upload\Exception\StorageException;
+use PhpList\Core\Domain\Common\Upload\Exception\UnsupportedExtensionException;
+use PhpList\Core\Domain\Common\Upload\Exception\UnsupportedMimeTypeException;
+use PhpList\Core\Domain\Common\Upload\Exception\UploadTooLargeException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -31,6 +37,12 @@ class ExceptionListener
         AttachmentFileNotFoundException::class => 404,
         SubscriberNotFoundException::class => 404,
         MessageNotReceivedException::class => 422,
+        MissingUploadException::class => 400,
+        InvalidUploadException::class => 400,
+        UnsupportedExtensionException::class => 400,
+        UnsupportedMimeTypeException::class => 415,
+        UploadTooLargeException::class => 413,
+        StorageException::class => 500,
     ];
 
     public function onKernelException(ExceptionEvent $event): void

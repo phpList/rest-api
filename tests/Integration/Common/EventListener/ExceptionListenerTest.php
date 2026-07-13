@@ -6,6 +6,10 @@ namespace PhpList\RestBundle\Tests\Integration\Common\EventListener;
 
 use PhpList\Core\Domain\Subscription\Exception\SubscriptionCreationException;
 use PhpList\RestBundle\Common\EventListener\ExceptionListener;
+use PhpList\Core\Domain\Common\Upload\Exception\MissingUploadException;
+use PhpList\Core\Domain\Common\Upload\Exception\StorageException;
+use PhpList\Core\Domain\Common\Upload\Exception\UnsupportedMimeTypeException;
+use PhpList\Core\Domain\Common\Upload\Exception\UploadTooLargeException;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,7 +37,7 @@ class ExceptionListenerTest extends TestCase
         $response = $event->getResponse();
 
         $this->assertInstanceOf(JsonResponse::class, $response);
-        $this->assertEquals(403, $response->getStatusCode());
+        $this->assertEquals(401, $response->getStatusCode());
         $this->assertEquals(
             ['message' => 'Forbidden'],
             json_decode($response->getContent(), true)
@@ -87,5 +91,53 @@ class ExceptionListenerTest extends TestCase
             ['message' => 'Something went wrong'],
             json_decode($response->getContent(), true)
         );
+    }
+
+    public function testMissingUploadExceptionHandled(): void
+    {
+        $listener = new ExceptionListener();
+        $event = $this->createExceptionEvent(new MissingUploadException('No file uploaded.'));
+
+        $listener->onKernelException($event);
+        $response = $event->getResponse();
+
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals(400, $response->getStatusCode());
+    }
+
+    public function testUnsupportedMimeTypeExceptionHandled(): void
+    {
+        $listener = new ExceptionListener();
+        $event = $this->createExceptionEvent(new UnsupportedMimeTypeException('Unsupported MIME type.'));
+
+        $listener->onKernelException($event);
+        $response = $event->getResponse();
+
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals(415, $response->getStatusCode());
+    }
+
+    public function testUploadTooLargeExceptionHandled(): void
+    {
+        $listener = new ExceptionListener();
+        $event = $this->createExceptionEvent(new UploadTooLargeException('Too large.'));
+
+        $listener->onKernelException($event);
+        $response = $event->getResponse();
+
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals(413, $response->getStatusCode());
+    }
+
+    public function testStorageExceptionHandled(): void
+    {
+        $listener = new ExceptionListener();
+        $event = $this->createExceptionEvent(new StorageException('Storage failed.'));
+
+        $listener->onKernelException($event);
+        $response = $event->getResponse();
+
+        $this->assertInstanceOf(JsonResponse::class, $response);
+        $this->assertEquals(500, $response->getStatusCode());
     }
 }
