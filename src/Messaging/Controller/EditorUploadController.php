@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Messaging\Controller;
 
 use OpenApi\Attributes as OA;
+use PhpList\Core\Domain\Common\Validator\UploadDirectoryValidator;
 use PhpList\Core\Security\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
-use PhpList\Core\Domain\Common\Upload\UploadService;
+use PhpList\Core\Domain\Common\Service\UploadService;
+use PhpList\Core\Domain\Common\Service\DirectoryListingService;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
+use PhpList\RestBundle\Messaging\Serializer\EditorUploadNormalizer;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,6 +25,9 @@ class EditorUploadController extends BaseController
         Authentication $authentication,
         RequestValidator $validator,
         private readonly UploadService $uploadService,
+        private readonly DirectoryListingService $directoryListingService,
+        private readonly UploadDirectoryValidator $uploadDirectoryValidator,
+        private readonly EditorUploadNormalizer $editorUploadNormalizer,
     ) {
         parent::__construct($authentication, $validator);
     }
@@ -67,23 +73,8 @@ class EditorUploadController extends BaseController
         responses: [
             new OA\Response(
                 response: 201,
-                description: 'Asset uploaded',
-                content: new OA\JsonContent(
-                    properties: [
-                        new OA\Property(property: 'uploaded', type: 'boolean', example: true),
-                        new OA\Property(property: 'fileName', type: 'string', example: 'test.png'),
-                        new OA\Property(property: 'url', type: 'string', example: 'https://ex.com/uploads/test.png'),
-                        new OA\Property(
-                            property: 'default',
-                            type: 'string',
-                            example: 'https://ex.com/uploads/test.png'
-                        ),
-                        new OA\Property(property: 'mimeType', type: 'string', example: 'image/png'),
-                        new OA\Property(property: 'size', type: 'integer', example: 123456, nullable: true),
-                        new OA\Property(property: 'extension', type: 'string', example: 'png'),
-                    ],
-                    type: 'object'
-                )
+                description: 'Success',
+                content: new OA\JsonContent(ref: '#/components/schemas/EditorUpload')
             ),
             new OA\Response(
                 response: 400,
@@ -116,16 +107,94 @@ class EditorUploadController extends BaseController
         $uploadResult = $this->uploadService->upload($uploadedFile);
 
         return new JsonResponse(
-            [
-                'uploaded' => true,
-                'fileName' => $uploadResult->getFilename(),
-                'url' => $uploadResult->getUrl(),
-                'default' => $uploadResult->getUrl(),
-                'mimeType' => $uploadResult->getMimeType(),
-                'size' => $uploadResult->getSize(),
-                'extension' => $uploadResult->getExtension(),
+            data: $this->editorUploadNormalizer->normalize($uploadResult),
+            status: Response::HTTP_CREATED
+        );
+    }
+
+    #[Route('', name: 'list', methods: ['GET'])]
+    #[OA\Get(
+        path: '/api/v2/editor-uploads',
+        description: 'Returns a list of files in the requested upload directory.',
+        summary: 'List files in upload directory',
+        tags: ['editor-uploads'],
+        parameters: [
+            new OA\Parameter(
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                name: 'directory',
+                description: 'Upload directory name (e.g., "uploads" or "images")',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'string', default: 'uploads')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Success',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: 'files',
+                            type: 'array',
+                            items: new OA\Items(
+                                properties: [
+                                    new OA\Property(property: 'name', type: 'string', example: 'image.png'),
+                                    new OA\Property(property: 'path', type: 'string', example: '/uploads/image.png'),
+                                    new OA\Property(property: 'size', type: 'integer', example: 12345),
+                                    new OA\Property(property: 'type', type: 'string', example: 'file'),
+                                    new OA\Property(property: 'modified', type: 'integer', example: 1689255600),
+                                ],
+                                type: 'object'
+                            )
+                        ),
+                        new OA\Property(property: 'directory', type: 'string', example: 'uploads'),
+                        new OA\Property(property: 'total', type: 'integer', example: 5),
+                    ],
+                    type: 'object'
+                )
+            ),
+            new OA\Response(
+                response: 400,
+                description: 'Bad request - invalid directory',
+                content: new OA\JsonContent(ref: '#/components/schemas/BadRequestResponse')
+            ),
+            new OA\Response(
+                response: 401,
+                description: 'Unauthorized',
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Directory not found',
+                content: new OA\JsonContent(ref: '#/components/schemas/NotFoundErrorResponse')
+            ),
+        ]
+    )]
+    public function listFiles(Request $request): JsonResponse
+    {
+        $this->requireAuthentication($request);
+
+        $dir = trim($request->query->get('directory', ''), '/');
+        $directory = $dir !== '' ? '/' . $dir : '';
+
+        $realPath = $this->uploadDirectoryValidator->validate($directory);
+
+        $files = $this->directoryListingService->list(directory: $directory, realPath: $realPath);
+
+        return new JsonResponse(
+            data: [
+                'files' => $files,
+                'directory' => $directory,
+                'total' => count($files),
             ],
-            Response::HTTP_CREATED
+            status: Response::HTTP_OK
         );
     }
 }

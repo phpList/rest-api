@@ -21,3 +21,14 @@ services:
         autowire: true
         autoconfigure: true
         public: false
+
+    PhpList\Core\Domain\Common\Service\UploadService:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+
+    PhpList\Core\Domain\Common\Service\DirectoryListingService:
+        autowire: true
+        autoconfigure: true
+        public: false

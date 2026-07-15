@@ -6,10 +6,10 @@ namespace PhpList\RestBundle\Tests\Integration\Common\EventListener;
 
 use PhpList\Core\Domain\Subscription\Exception\SubscriptionCreationException;
 use PhpList\RestBundle\Common\EventListener\ExceptionListener;
-use PhpList\Core\Domain\Common\Upload\Exception\MissingUploadException;
-use PhpList\Core\Domain\Common\Upload\Exception\StorageException;
-use PhpList\Core\Domain\Common\Upload\Exception\UnsupportedMimeTypeException;
-use PhpList\Core\Domain\Common\Upload\Exception\UploadTooLargeException;
+use PhpList\Core\Domain\Common\Exception\MissingUploadException;
+use PhpList\Core\Domain\Common\Exception\StorageException;
+use PhpList\Core\Domain\Common\Exception\UnsupportedMimeTypeException;
+use PhpList\Core\Domain\Common\Exception\UploadTooLargeException;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
