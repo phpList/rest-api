@@ -12,6 +12,9 @@ use PhpList\Core\Domain\Common\Service\UploadService;
 use PhpList\Core\Domain\Common\Service\DirectoryListingService;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
 use PhpList\RestBundle\Messaging\Serializer\EditorUploadNormalizer;
+use PhpList\RestBundle\Messaging\Serializer\FileListingNormalizer;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,6 +31,9 @@ class EditorUploadController extends BaseController
         private readonly DirectoryListingService $directoryListingService,
         private readonly UploadDirectoryValidator $uploadDirectoryValidator,
         private readonly EditorUploadNormalizer $editorUploadNormalizer,
+        private readonly FileListingNormalizer $fileListingNormalizer,
+        #[Autowire('%phplist.upload_images_dir%')]
+        private readonly string $uploadImagesDir,
     ) {
         parent::__construct($authentication, $validator);
     }
@@ -146,7 +152,11 @@ class EditorUploadController extends BaseController
                             items: new OA\Items(
                                 properties: [
                                     new OA\Property(property: 'name', type: 'string', example: 'image.png'),
-                                    new OA\Property(property: 'path', type: 'string', example: '/uploads/image.png'),
+                                    new OA\Property(
+                                        property: 'url',
+                                        type: 'string',
+                                        example: 'https://ex.com/api/v2/editor-uploads/image.png'
+                                    ),
                                     new OA\Property(property: 'size', type: 'integer', example: 12345),
                                     new OA\Property(property: 'type', type: 'string', example: 'file'),
                                     new OA\Property(property: 'modified', type: 'integer', example: 1689255600),
@@ -184,17 +194,65 @@ class EditorUploadController extends BaseController
         $dir = trim($request->query->get('directory', ''), '/');
         $directory = $dir !== '' ? '/' . $dir : '';
 
-        $realPath = $this->uploadDirectoryValidator->validate($directory);
+        $realPath = $this->uploadDirectoryValidator->validate($this->uploadImagesDir . $directory);
 
         $files = $this->directoryListingService->list(directory: $directory, realPath: $realPath);
 
         return new JsonResponse(
             data: [
-                'files' => $files,
+                'files' => array_map(
+                    fn ($file) => $this->fileListingNormalizer->normalize($file),
+                    $files
+                ),
                 'directory' => $directory,
                 'total' => count($files),
             ],
             status: Response::HTTP_OK
         );
+    }
+
+    #[Route('/{filename}', name: 'get_file', methods: ['GET'])]
+    #[OA\Get(
+        path: '/api/v2/editor-uploads/{filename}',
+        description: 'Returns an uploaded image file by its name.',
+        summary: 'Get uploaded image by name',
+        tags: ['editor-uploads'],
+        parameters: [
+            new OA\Parameter(
+                name: 'filename',
+                description: 'Name of the uploaded image file',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Success',
+                content: new OA\MediaType(mediaType: 'application/octet-stream')
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'File not found',
+                content: new OA\JsonContent(ref: '#/components/schemas/NotFoundErrorResponse')
+            ),
+        ]
+    )]
+    public function getFile(string $filename): BinaryFileResponse
+    {
+        $realDirectory = $this->uploadDirectoryValidator->validate($this->uploadImagesDir);
+
+        $requestedPath = $realDirectory . DIRECTORY_SEPARATOR . basename($filename);
+        $realPath = realpath($requestedPath);
+
+        if ($realPath === false
+            || !str_starts_with($realPath, $realDirectory . DIRECTORY_SEPARATOR)
+            || !is_file($realPath)
+        ) {
+            throw $this->createNotFoundException(sprintf('File "%s" not found.', $filename));
+        }
+
+        return $this->file($realPath);
     }
 }
