@@ -28,21 +28,14 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/lists', name: 'subscription_')]
 class SubscriptionController extends BaseController
 {
-    private SubscriptionManager $subscriptionManager;
-    private SubscriptionNormalizer $subscriptionNormalizer;
-    private EntityManagerInterface $entityManager;
-
     public function __construct(
         Authentication $authentication,
         RequestValidator $validator,
-        SubscriptionManager $subscriptionManager,
-        SubscriptionNormalizer $subscriptionNormalizer,
-        EntityManagerInterface $entityManager,
+        private readonly SubscriptionManager $subscriptionManager,
+        private readonly SubscriptionNormalizer $subscriptionNormalizer,
+        private readonly EntityManagerInterface $entityManager,
     ) {
         parent::__construct($authentication, $validator);
-        $this->subscriptionManager = $subscriptionManager;
-        $this->subscriptionNormalizer = $subscriptionNormalizer;
-        $this->entityManager = $entityManager;
     }
 
     #[Route('/{listId}/subscribers', name: 'create', requirements: ['listId' => '\d+'], methods: ['POST'])]

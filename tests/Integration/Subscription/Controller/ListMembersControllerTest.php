@@ -22,11 +22,11 @@ class ListMembersControllerTest extends AbstractTestController
         );
     }
 
-    public function testGetSubscribersWithoutSessionReturnsForbidden(): void
+    public function testGetSubscribersWithoutSessionReturnsUnauthorized(): void
     {
         $this->loadFixtures([SubscriberListFixture::class]);
         self::getClient()->request('GET', '/api/v2/lists/1/subscribers');
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testGetSubscribersWithSessionReturnsList(): void
@@ -44,16 +44,16 @@ class ListMembersControllerTest extends AbstractTestController
         self::assertSame(2, $data['subscribers_count']);
     }
 
-    public function testGetListSubscribersCountForExistingListWithoutSessionKeyReturnsForbiddenStatus()
+    public function testGetListSubscribersCountForExistingListWithoutSessionKeyReturnsUnauthorized()
     {
         $this->loadFixtures([SubscriberListFixture::class]);
 
         self::getClient()->request('get', '/api/v2/lists/1/subscribers/count');
 
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
-    public function testGetListSubscribersCountForExistingListWithExpiredSessionKeyReturnsForbiddenStatus()
+    public function testGetListSubscribersCountForExistingListWithExpiredSessionKeyReturnsUnauthorized()
     {
         $this->loadFixtures([
             SubscriberListFixture::class,
@@ -69,7 +69,7 @@ class ListMembersControllerTest extends AbstractTestController
             ['PHP_AUTH_USER' => 'unused', 'PHP_AUTH_PW' => 'cfdf64eecbbf336628b0f3071adba764']
         );
 
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testGetSubscribersCountForEmptyListWithValidSession()

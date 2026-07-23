@@ -21,18 +21,18 @@ class BlacklistControllerTest extends AbstractTestController
         );
     }
 
-    public function testCheckEmailBlacklistedWithoutSessionKeyReturnsForbiddenStatus(): void
+    public function testCheckEmailBlacklistedWithoutSessionKeyReturnsUnauthorized(): void
     {
         $this->jsonRequest('get', '/api/v2/blacklist/check/test@example.com');
 
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
-    public function testAddEmailToBlacklistWithoutSessionKeyReturnsForbiddenStatus(): void
+    public function testAddEmailToBlacklistWithoutSessionKeyReturnsUnauthorized(): void
     {
         $this->jsonRequest('post', '/api/v2/blacklist/add');
 
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testAddEmailToBlacklistWithMissingEmailReturnsUnprocessableEntityStatus(): void
@@ -44,17 +44,17 @@ class BlacklistControllerTest extends AbstractTestController
         $this->assertHttpUnprocessableEntity();
     }
 
-    public function testRemoveEmailFromBlacklistWithoutSessionKeyReturnsForbiddenStatus(): void
+    public function testRemoveEmailFromBlacklistWithoutSessionKeyReturnsUnauthorized(): void
     {
         $this->jsonRequest('delete', '/api/v2/blacklist/remove/test@example.com');
 
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
-    public function testGetBlacklistInfoWithoutSessionKeyReturnsForbiddenStatus(): void
+    public function testGetBlacklistInfoWithoutSessionKeyReturnsUnauthorized(): void
     {
         $this->jsonRequest('get', '/api/v2/blacklist/info/test@example.com');
 
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 }

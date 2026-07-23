@@ -3,6 +3,10 @@ services:
         autowire: true
         autoconfigure: true
 
+    PhpList\RestBundle\Subscription\Service\PublicSubscriptionAttributeRuleProvider:
+        autowire: true
+        autoconfigure: true
+
     PhpList\Core\Domain\Messaging\Service\ForwardingGuard:
         autowire: true
         autoconfigure: true
@@ -14,6 +18,17 @@ services:
         public: false
 
     PhpList\Core\Domain\Messaging\Service\ForwardContentService:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    PhpList\Core\Domain\Common\Service\UploadService:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+
+    PhpList\Core\Domain\Common\Service\DirectoryListingService:
         autowire: true
         autoconfigure: true
         public: false

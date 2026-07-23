@@ -3,8 +3,11 @@ name: Update phplist-api-client OpenAPI
 on:
   push:
     branches:
-      - '**'
+      - dev
+      - main
   pull_request:
+    branches:
+      - main
 
 jobs:
   generate-openapi:

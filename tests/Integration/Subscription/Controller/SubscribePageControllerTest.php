@@ -20,12 +20,12 @@ class SubscribePageControllerTest extends AbstractTestController
         );
     }
 
-    public function testGetSubscribePageWithoutSessionReturnsForbidden(): void
+    public function testGetSubscribePageWithoutSessionReturnsUnauthorized(): void
     {
         $this->loadFixtures([AdministratorFixture::class, SubscribePageFixture::class]);
 
         self::getClient()->request('GET', '/api/v2/subscribe-pages/1');
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testGetSubscribePageWithSessionReturnsPage(): void
@@ -64,17 +64,20 @@ class SubscribePageControllerTest extends AbstractTestController
         $this->assertHttpNotFound();
     }
 
-    public function testCreateSubscribePageWithoutSessionReturnsForbidden(): void
+    public function testCreateSubscribePageWithoutSessionReturnsUnauthorized(): void
     {
         // no auth fixtures loaded here
         $payload = json_encode([
             'title' => 'new-page@example.org',
             'active' => true,
+            'data' => [
+                ['key' => 'intro_text', 'value' => 'Welcome'],
+            ],
         ], JSON_THROW_ON_ERROR);
 
-        $this->jsonRequest('POST', '/api/v2/subscribe-pages', content: $payload);
+        $this->jsonRequest('POST', '/api/v2/subscribe-pages/', content: $payload);
 
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testCreateSubscribePageWithSessionCreatesPage(): void
@@ -83,9 +86,12 @@ class SubscribePageControllerTest extends AbstractTestController
         $payload = json_encode([
             'title' => 'new-page@example.org',
             'active' => true,
+            'data' => [
+                ['key' => 'intro_text', 'value' => 'Welcome'],
+            ],
         ], JSON_THROW_ON_ERROR);
 
-        $this->authenticatedJsonRequest('POST', '/api/v2/subscribe-pages', content: $payload);
+        $this->authenticatedJsonRequest('POST', '/api/v2/subscribe-pages/', content: $payload);
 
         $this->assertHttpCreated();
         $data = $this->getDecodedJsonResponseContent();
@@ -102,16 +108,38 @@ class SubscribePageControllerTest extends AbstractTestController
         self::assertArrayHasKey('privileges', $data['owner']);
     }
 
-    public function testUpdateSubscribePageWithoutSessionReturnsForbidden(): void
+    public function testUpdateSubscribePageWithoutSessionReturnsUnauthorized(): void
     {
         $this->loadFixtures([AdministratorFixture::class, SubscribePageFixture::class]);
         $payload = json_encode([
             'title' => 'updated-page@example.org',
             'active' => false,
+            'data' => [
+                ['key' => 'intro_text', 'value' => 'Updated text'],
+            ],
         ], JSON_THROW_ON_ERROR);
 
         $this->jsonRequest('PUT', '/api/v2/subscribe-pages/1', content: $payload);
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
+    }
+
+    public function testCreateSubscribePageWithDataMissingValueReturnsUnprocessableEntity(): void
+    {
+        $this->loadFixtures([
+            AdministratorFixture::class,
+            AdministratorTokenFixture::class,
+            SubscribePageFixture::class,
+        ]);
+        $payload = json_encode([
+            'title' => 'new-page@example.org',
+            'active' => true,
+            'data' => [
+                ['key' => 'intro_text'],
+            ],
+        ], JSON_THROW_ON_ERROR);
+
+        $this->authenticatedJsonRequest('POST', '/api/v2/subscribe-pages/', content: $payload);
+        $this->assertHttpUnprocessableEntity();
     }
 
     public function testUpdateSubscribePageWithSessionReturnsOk(): void
@@ -124,6 +152,9 @@ class SubscribePageControllerTest extends AbstractTestController
         $payload = json_encode([
             'title' => 'updated-page@example.org',
             'active' => false,
+            'data' => [
+                ['key' => 'intro_text', 'value' => 'Updated text'],
+            ],
         ], JSON_THROW_ON_ERROR);
 
         $this->authenticatedJsonRequest('PUT', '/api/v2/subscribe-pages/1', content: $payload);
@@ -152,11 +183,11 @@ class SubscribePageControllerTest extends AbstractTestController
         $this->assertHttpNotFound();
     }
 
-    public function testDeleteSubscribePageWithoutSessionReturnsForbidden(): void
+    public function testDeleteSubscribePageWithoutSessionReturnsUnauthorized(): void
     {
         $this->loadFixtures([AdministratorFixture::class, SubscribePageFixture::class]);
         $this->jsonRequest('DELETE', '/api/v2/subscribe-pages/1');
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testDeleteSubscribePageWithSessionReturnsNoContentAndRemovesResource(): void
@@ -183,110 +214,6 @@ class SubscribePageControllerTest extends AbstractTestController
         ]);
 
         $this->authenticatedJsonRequest('DELETE', '/api/v2/subscribe-pages/9999');
-        $this->assertHttpNotFound();
-    }
-
-    public function testGetSubscribePageDataWithoutSessionReturnsForbidden(): void
-    {
-        $this->loadFixtures([AdministratorFixture::class, SubscribePageFixture::class]);
-        $this->jsonRequest('GET', '/api/v2/subscribe-pages/1/data');
-        $this->assertHttpForbidden();
-    }
-
-    public function testGetSubscribePageDataWithSessionReturnsArray(): void
-    {
-        $this->loadFixtures([
-            AdministratorFixture::class,
-            AdministratorTokenFixture::class,
-            SubscribePageFixture::class,
-        ]);
-
-        $this->authenticatedJsonRequest('GET', '/api/v2/subscribe-pages/1/data');
-        $this->assertHttpOkay();
-        $data = $this->getDecodedJsonResponseContent();
-        self::assertIsArray($data);
-
-        if (!empty($data)) {
-            self::assertArrayHasKey('id', $data[0]);
-            self::assertArrayHasKey('name', $data[0]);
-            self::assertArrayHasKey('data', $data[0]);
-        }
-    }
-
-    public function testGetSubscribePageDataWithSessionNotFound(): void
-    {
-        $this->loadFixtures([
-            AdministratorFixture::class,
-            AdministratorTokenFixture::class,
-            SubscribePageFixture::class,
-        ]);
-
-        $this->authenticatedJsonRequest('GET', '/api/v2/subscribe-pages/9999/data');
-        $this->assertHttpNotFound();
-    }
-
-    public function testSetSubscribePageDataWithoutSessionReturnsForbidden(): void
-    {
-        $this->loadFixtures([AdministratorFixture::class, SubscribePageFixture::class]);
-        $payload = json_encode([
-            'name' => 'intro_text',
-            'value' => 'Hello world',
-        ], JSON_THROW_ON_ERROR);
-
-        $this->jsonRequest('PUT', '/api/v2/subscribe-pages/1/data', content: $payload);
-        $this->assertHttpForbidden();
-    }
-
-    public function testSetSubscribePageDataWithMissingNameReturnsUnprocessableEntity(): void
-    {
-        $this->loadFixtures([
-            AdministratorFixture::class,
-            AdministratorTokenFixture::class,
-            SubscribePageFixture::class,
-        ]);
-        $payload = json_encode([
-            'value' => 'Hello world',
-        ], JSON_THROW_ON_ERROR);
-
-        $this->authenticatedJsonRequest('PUT', '/api/v2/subscribe-pages/1/data', content: $payload);
-        $this->assertHttpUnprocessableEntity();
-    }
-
-    public function testSetSubscribePageDataWithSessionReturnsOk(): void
-    {
-        $this->loadFixtures([
-            AdministratorFixture::class,
-            AdministratorTokenFixture::class,
-            SubscribePageFixture::class,
-        ]);
-        $payload = json_encode([
-            'name' => 'intro_text',
-            'value' => 'Hello world',
-        ], JSON_THROW_ON_ERROR);
-
-        $this->authenticatedJsonRequest('PUT', '/api/v2/subscribe-pages/1/data', content: $payload);
-        $this->assertHttpOkay();
-        $data = $this->getDecodedJsonResponseContent();
-        self::assertArrayHasKey('id', $data);
-        self::assertArrayHasKey('name', $data);
-        self::assertArrayHasKey('data', $data);
-        self::assertSame('intro_text', $data['name']);
-        self::assertSame('Hello world', $data['data']);
-    }
-
-    public function testSetSubscribePageDataWithSessionNotFound(): void
-    {
-        $this->loadFixtures([
-            AdministratorFixture::class,
-            AdministratorTokenFixture::class,
-            SubscribePageFixture::class,
-        ]);
-        $payload = json_encode([
-            'name' => 'intro_text',
-            'value' => 'Hello world',
-        ], JSON_THROW_ON_ERROR);
-
-        $this->authenticatedJsonRequest('PUT', '/api/v2/subscribe-pages/9999/data', content: $payload);
         $this->assertHttpNotFound();
     }
 }

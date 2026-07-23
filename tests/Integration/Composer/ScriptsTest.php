@@ -123,6 +123,7 @@ class ScriptsTest extends TestCase
             'identity' => ["resource: '@PhpListRestBundle/Identity/Controller/'"],
             'messaging' => ["resource: '@PhpListRestBundle/Messaging/Controller/'"],
             'subscription' => ["resource: '@PhpListRestBundle/Subscription/Controller/'"],
+            'configuration' => ["resource: '@PhpListRestBundle/Configuration/Controller/'"],
             'type' => ['type: attribute'],
         ];
     }

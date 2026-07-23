@@ -40,11 +40,11 @@ class ListMessageControllerTest extends AbstractTestController
         );
     }
 
-    public function testGetListsByMessageWithoutSessionKeyReturnsForbiddenStatus(): void
+    public function testGetListsByMessageWithoutSessionKeyReturnsUnauthorized(): void
     {
         $this->jsonRequest('get', '/api/v2/list-messages/message/1/lists');
 
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testGetListsByMessageWithInvalidMessageIdReturnsNotFoundStatus(): void
@@ -71,11 +71,11 @@ class ListMessageControllerTest extends AbstractTestController
         self::assertNotEmpty($responseContent['items']);
     }
 
-    public function testGetMessagesByListWithoutSessionKeyReturnsForbiddenStatus(): void
+    public function testGetMessagesByListWithoutSessionKeyReturnsUnauthorized(): void
     {
         $this->jsonRequest('get', '/api/v2/list-messages/list/1/messages');
 
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testGetMessagesByListWithInvalidListIdReturnsNotFoundStatus(): void
@@ -101,11 +101,11 @@ class ListMessageControllerTest extends AbstractTestController
         self::assertIsArray($responseContent['items']);
     }
 
-    public function testAssociateMessageWithListWithoutSessionKeyReturnsForbiddenStatus(): void
+    public function testAssociateMessageWithListWithoutSessionKeyReturnsUnauthorized(): void
     {
         $this->jsonRequest('post', '/api/v2/list-messages/message/1/list/1');
 
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testAssociateMessageWithListWithInvalidMessageIdReturnsNotFoundStatus(): void
@@ -144,11 +144,11 @@ class ListMessageControllerTest extends AbstractTestController
         self::assertArrayHasKey('subscriber_list', $responseContent);
     }
 
-    public function testDisassociateMessageFromListWithoutSessionKeyReturnsForbiddenStatus(): void
+    public function testDisassociateMessageFromListWithoutSessionKeyReturnsUnauthorized(): void
     {
         $this->jsonRequest('delete', '/api/v2/list-messages/message/1/list/1');
 
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testDisassociateMessageFromListWithInvalidMessageIdReturnsNotFoundStatus(): void
@@ -187,11 +187,11 @@ class ListMessageControllerTest extends AbstractTestController
         $this->assertHttpNoContent();
     }
 
-    public function testRemoveAllListAssociationsForMessageWithoutSessionKeyReturnsForbiddenStatus(): void
+    public function testRemoveAllListAssociationsForMessageWithoutSessionKeyReturnsUnauthorized(): void
     {
         $this->jsonRequest('delete', '/api/v2/list-messages/message/1/lists');
 
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testRemoveAllListAssociationsForMessageWithInvalidMessageIdReturnsNotFoundStatus(): void
@@ -213,11 +213,11 @@ class ListMessageControllerTest extends AbstractTestController
         $this->assertHttpNoContent();
     }
 
-    public function testCheckAssociationWithoutSessionKeyReturnsForbiddenStatus(): void
+    public function testCheckAssociationWithoutSessionKeyReturnsUnauthorized(): void
     {
         $this->jsonRequest('get', '/api/v2/list-messages/message/1/list/1/check');
 
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testCheckAssociationWithInvalidMessageIdReturnsNotFoundStatus(): void

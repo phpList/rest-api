@@ -7,6 +7,7 @@ namespace PhpList\RestBundle\Tests\Unit\Subscription\Serializer;
 use PhpList\Core\Domain\Identity\Model\Administrator;
 use PhpList\Core\Domain\Subscription\Model\SubscribePage;
 use PhpList\RestBundle\Identity\Serializer\AdministratorNormalizer;
+use PhpList\RestBundle\Subscription\Serializer\SubscribePageDataNormalizer;
 use PhpList\RestBundle\Subscription\Serializer\SubscribePageNormalizer;
 use PHPUnit\Framework\TestCase;
 use stdClass;
@@ -16,7 +17,8 @@ class SubscribePageNormalizerTest extends TestCase
     public function testSupportsNormalization(): void
     {
         $adminNormalizer = $this->createMock(AdministratorNormalizer::class);
-        $normalizer = new SubscribePageNormalizer($adminNormalizer);
+        $subscribePageDataNormalizer = $this->createMock(SubscribePageDataNormalizer::class);
+        $normalizer = new SubscribePageNormalizer($adminNormalizer, $subscribePageDataNormalizer);
 
         $page = $this->createMock(SubscribePage::class);
 
@@ -49,13 +51,15 @@ class SubscribePageNormalizerTest extends TestCase
         $adminNormalizer = $this->createMock(AdministratorNormalizer::class);
         $adminNormalizer->method('normalize')->with($owner)->willReturn($adminData);
 
-        $normalizer = new SubscribePageNormalizer($adminNormalizer);
+        $subscribePageDataNormalizer = $this->createMock(SubscribePageDataNormalizer::class);
+        $normalizer = new SubscribePageNormalizer($adminNormalizer, $subscribePageDataNormalizer);
 
         $expected = [
             'id' => 42,
             'title' => 'welcome@example.org',
             'active' => true,
             'owner' => $adminData,
+            'data' => [],
         ];
 
         $this->assertSame($expected, $normalizer->normalize($page));
@@ -64,8 +68,8 @@ class SubscribePageNormalizerTest extends TestCase
     public function testNormalizeWithInvalidObjectReturnsEmptyArray(): void
     {
         $adminNormalizer = $this->createMock(AdministratorNormalizer::class);
-        $normalizer = new SubscribePageNormalizer($adminNormalizer);
-
+        $subscribePageDataNormalizer = $this->createMock(SubscribePageDataNormalizer::class);
+        $normalizer = new SubscribePageNormalizer($adminNormalizer, $subscribePageDataNormalizer);
         $this->assertSame([], $normalizer->normalize(new stdClass()));
     }
 }

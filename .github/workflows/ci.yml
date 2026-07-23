@@ -1,5 +1,9 @@
 name: phpList REST API Build
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - main
+  pull_request:
 jobs:
   main:
     name: phpList Base Dist on PHP ${{ matrix.php-versions }}, with dist ${{ matrix.dependencies }} [Build, Test]

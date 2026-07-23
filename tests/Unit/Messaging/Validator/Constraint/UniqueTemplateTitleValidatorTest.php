@@ -96,7 +96,7 @@ class UniqueTemplateTitleValidatorTest extends TestCase
             ->willReturn($existingTemplate);
 
         $dto = new class {
-            public int $templateId = 10;
+            public int $updatingId = 10;
         };
 
         $this->context

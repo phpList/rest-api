@@ -25,24 +25,15 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/administrators', name: 'admin_attribute_value_')]
 class AdminAttributeValueController extends BaseController
 {
-    private AdminAttributeManager $attributeManager;
-    private AdminAttributeValueNormalizer $normalizer;
-    private PaginatedDataProvider $paginatedDataProvider;
-    private EntityManagerInterface $entityManager;
-
     public function __construct(
         Authentication $authentication,
         RequestValidator $validator,
-        AdminAttributeManager $attributeManager,
-        AdminAttributeValueNormalizer $normalizer,
-        PaginatedDataProvider $paginatedDataProvider,
-        EntityManagerInterface $entityManager,
+        private readonly AdminAttributeManager $attributeManager,
+        private readonly AdminAttributeValueNormalizer $normalizer,
+        private readonly PaginatedDataProvider $paginatedDataProvider,
+        private readonly EntityManagerInterface $entityManager,
     ) {
         parent::__construct($authentication, $validator);
-        $this->attributeManager = $attributeManager;
-        $this->normalizer = $normalizer;
-        $this->paginatedDataProvider = $paginatedDataProvider;
-        $this->entityManager = $entityManager;
     }
 
     #[Route(
@@ -280,13 +271,13 @@ class AdminAttributeValueController extends BaseController
         $filter = (new AdminAttributeValueFilter())->setAdminId($admin->getId());
 
         return $this->json(
-            $this->paginatedDataProvider->getPaginatedList(
+            data: $this->paginatedDataProvider->getPaginatedList(
                 request: $request,
                 normalizer:$this->normalizer,
                 className: AdminAttributeValue::class,
                 filter: $filter
             ),
-            Response::HTTP_OK
+            status: Response::HTTP_OK
         );
     }
 

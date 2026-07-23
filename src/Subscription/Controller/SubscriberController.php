@@ -282,7 +282,13 @@ class SubscriberController extends BaseController
             throw $this->createNotFoundException('Subscriber not found.');
         }
         /** @var UpdateSubscriberRequest $updateSubscriberRequest */
-        $updateSubscriberRequest = $this->validator->validate($request, UpdateSubscriberRequest::class);
+        $updateSubscriberRequest = $this->validator->validate(
+            request: $request,
+            dtoClass: UpdateSubscriberRequest::class,
+            beforeValidation: static function (UpdateSubscriberRequest $dto) use ($subscriber): void {
+                $dto->setUpdatingId($subscriber->getId());
+            }
+        );
         $subscriber = $this->subscriberManager->updateSubscriber(
             subscriber: $subscriber,
             subscriberDto: $updateSubscriberRequest->getDto(),

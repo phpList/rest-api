@@ -16,12 +16,18 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
         new OA\Property(property: 'title', type: 'string', example: 'Subscribe to our newsletter'),
         new OA\Property(property: 'active', type: 'boolean', example: true),
         new OA\Property(property: 'owner', ref: '#/components/schemas/Administrator'),
+        new OA\Property(
+            property: 'data',
+            type: 'array',
+            items: new OA\Items(ref: '#/components/schemas/SubscribePageData')
+        ),
     ],
 )]
 class SubscribePageNormalizer implements NormalizerInterface
 {
     public function __construct(
         private readonly AdministratorNormalizer $adminNormalizer,
+        private readonly SubscribePageDataNormalizer $dataNormalizer,
     ) {
     }
 
@@ -39,6 +45,9 @@ class SubscribePageNormalizer implements NormalizerInterface
             'title' => $object->getTitle(),
             'active' => $object->isActive(),
             'owner' => $this->adminNormalizer->normalize($object->getOwner()),
+            'data' => array_map(function ($data) {
+                return $this->dataNormalizer->normalize($data);
+            }, $object->getData())
         ];
     }
 

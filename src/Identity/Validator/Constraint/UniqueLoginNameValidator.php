@@ -37,7 +37,7 @@ class UniqueLoginNameValidator extends ConstraintValidator
         $existingUser = $this->administratorRepository->findOneBy(['loginName' => $value]);
 
         $dto = $this->context->getObject();
-        $updatingId = $dto->administratorId ?? null;
+        $updatingId = $dto->updatingId ?? null;
 
         if ($existingUser && $existingUser->getId() !== $updatingId) {
             throw new ConflictHttpException('Login already exists.');

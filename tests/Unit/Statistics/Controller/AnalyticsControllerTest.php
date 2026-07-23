@@ -40,13 +40,13 @@ class AnalyticsControllerTest extends TestCase
         $viewOpensStatisticsNormalizer = new ViewOpensStatisticsNormalizer();
         $topDomainsNormalizer = new TopDomainsNormalizer();
         $this->controller = new DummyAnalyticsController(
-            $this->authentication,
-            $validator,
-            $this->analyticsService,
-            $campaignStatisticsNormalizer,
-            $viewOpensStatisticsNormalizer,
-            $topDomainsNormalizer,
-            new TopLocalPartsNormalizer()
+            authentication: $this->authentication,
+            validator: $validator,
+            analyticsService: $this->analyticsService,
+            campaignStatsNormalizer: $campaignStatisticsNormalizer,
+            viewOpensStatsNormalizer: $viewOpensStatisticsNormalizer,
+            topDomainsNormalizer: $topDomainsNormalizer,
+            topLocalPartsNormalizer: new TopLocalPartsNormalizer()
         );
 
         $this->privileges = $this->createMock(Privileges::class);
@@ -443,7 +443,7 @@ class AnalyticsControllerTest extends TestCase
         ], json_decode($response->getContent(), true));
     }
 
-    public function testGetDashboardStatisticsWithoutStatisticsPrivilegeThrowsException(): void
+    public function testGetDashboardStatisticsWithoutStatisticsPrivilegeDoesNotThrowException(): void
     {
         $request = new Request();
 
@@ -454,13 +454,10 @@ class AnalyticsControllerTest extends TestCase
             ->willReturn($this->administrator);
 
         $this->privileges
-            ->expects(self::once())
+            ->expects(self::never())
             ->method('has')
             ->with(PrivilegeFlag::Statistics)
             ->willReturn(false);
-
-        $this->expectException(AccessDeniedException::class);
-        $this->expectExceptionMessage('You are not allowed to access statistics.');
 
         $this->controller->getDashboardStatistics($request);
     }
@@ -476,7 +473,7 @@ class AnalyticsControllerTest extends TestCase
             ->willReturn($this->administrator);
 
         $this->privileges
-            ->expects(self::once())
+            ->expects(self::never())
             ->method('has')
             ->with(PrivilegeFlag::Statistics)
             ->willReturn(true);

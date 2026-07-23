@@ -20,11 +20,11 @@ class CampaignActionControllerTest extends AbstractTestController
         );
     }
 
-    public function testSendMessageWithoutSessionReturnsForbidden(): void
+    public function testSendMessageWithoutSessionReturnsUnauthorized(): void
     {
         $this->loadFixtures([MessageFixture::class]);
         self::getClient()->request('POST', '/api/v2/campaigns/1/send');
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testSendMessageWithValidSessionReturnsOkay(): void
@@ -44,12 +44,12 @@ class CampaignActionControllerTest extends AbstractTestController
         $this->assertHttpNotFound();
     }
 
-    public function testResendMessageToListsWithoutSessionReturnsForbidden(): void
+    public function testResendMessageToListsWithoutSessionReturnsUnauthorized(): void
     {
         $this->loadFixtures([MessageFixture::class, SubscriberListFixture::class]);
 
         $this->jsonRequest('POST', '/api/v2/campaigns/2/resend', [], [], [], json_encode(['list_ids' => [1]]));
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testResendMessageToListsWithValidSessionReturnsOkay(): void

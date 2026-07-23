@@ -18,13 +18,13 @@ class TemplateControllerTest extends AbstractTestController
         self::assertInstanceOf(TemplateController::class, self::getContainer()->get(TemplateController::class));
     }
 
-    public function testGetTemplatesWithoutSessionKeyReturnsForbidden(): void
+    public function testGetTemplatesWithoutSessionKeyReturnsUnauthorized(): void
     {
         self::getClient()->request('GET', '/api/v2/templates');
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
-    public function testGetTemplatesWithExpiredSessionKeyReturnsForbidden(): void
+    public function testGetTemplatesWithExpiredSessionKeyReturnsUnauthorized(): void
     {
         $this->loadFixtures([AdministratorFixture::class, AdministratorTokenFixture::class]);
 
@@ -36,7 +36,7 @@ class TemplateControllerTest extends AbstractTestController
             ['PHP_AUTH_USER' => 'unused', 'PHP_AUTH_PW' => 'expiredtoken']
         );
 
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testGetTemplatesWithValidSessionKeyReturnsOkay(): void
@@ -80,12 +80,12 @@ class TemplateControllerTest extends AbstractTestController
         self::assertArrayHasKey('title', $response);
     }
 
-    public function testGetTemplateWithoutSessionKeyReturnsForbidden(): void
+    public function testGetTemplateWithoutSessionKeyReturnsUnauthorized(): void
     {
         $this->loadFixtures([TemplateFixture::class]);
 
         self::getClient()->request('GET', '/api/v2/templates/1');
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testGetTemplateWithValidSessionKeyReturnsOkay(): void

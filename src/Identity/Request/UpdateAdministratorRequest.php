@@ -58,6 +58,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 )]
 class UpdateAdministratorRequest implements RequestInterface
 {
+    public ?int $updatingId = null;
+
     #[Assert\Length(min: 3, max: 255)]
     #[UniqueLoginName]
     public ?string $loginName = null;
@@ -93,5 +95,10 @@ class UpdateAdministratorRequest implements RequestInterface
             superAdmin: $this->superUser,
             privileges: $this->privileges
         );
+    }
+
+    public function setUpdatingId(?int $updatingId): void
+    {
+        $this->updatingId = $updatingId;
     }
 }

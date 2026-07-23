@@ -18,7 +18,7 @@ use OpenApi\Attributes as OA;
     description: 'This is the OpenAPI documentation for phpList API.',
     title: 'phpList API Documentation',
     contact: new OA\Contact(
-        email: 'support@phplist.com'
+        email: 'tatevik@phplist.com'
     ),
     license: new OA\License(
         name: 'AGPL-3.0-or-later',

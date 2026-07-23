@@ -55,7 +55,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 )]
 class UpdateTemplateRequest implements RequestInterface
 {
-    public ?int $templateId = null;
+    public ?int $updatingId = null;
 
     #[Assert\NotBlank(normalizer: 'trim')]
     #[Assert\NotNull]
@@ -87,5 +87,10 @@ class UpdateTemplateRequest implements RequestInterface
             shouldCheckExternalImages: $this->checkExternalImages,
             listOrder: $this->listOrder ?? 0,
         );
+    }
+
+    public function setUpdatingId(int $id): void
+    {
+        $this->updatingId = $id;
     }
 }

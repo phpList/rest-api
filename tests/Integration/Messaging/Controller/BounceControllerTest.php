@@ -18,13 +18,13 @@ class BounceControllerTest extends AbstractTestController
         self::assertInstanceOf(BounceController::class, self::getContainer()->get(BounceController::class));
     }
 
-    public function testListWithoutSessionKeyReturnsForbidden(): void
+    public function testListWithoutSessionKeyReturnsUnauthorized(): void
     {
         self::getClient()->request('GET', '/api/v2/bounces');
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
-    public function testListWithExpiredSessionKeyReturnsForbidden(): void
+    public function testListWithExpiredSessionKeyReturnsUnauthorized(): void
     {
         $this->loadFixtures([AdministratorFixture::class, AdministratorTokenFixture::class]);
 
@@ -36,7 +36,7 @@ class BounceControllerTest extends AbstractTestController
             ['PHP_AUTH_USER' => 'unused', 'PHP_AUTH_PW' => 'expiredtoken']
         );
 
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testListWithValidSessionKeyReturnsOkayWithPaginationStructure(): void
@@ -79,10 +79,10 @@ class BounceControllerTest extends AbstractTestController
         self::assertNull($firstItem['subscriber_email']);
     }
 
-    public function testDeleteWithoutSessionKeyReturnsForbidden(): void
+    public function testDeleteWithoutSessionKeyReturnsUnauthorized(): void
     {
         self::getClient()->request('DELETE', '/api/v2/bounces/1');
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testDeleteWithInvalidIdReturnsNotFound(): void

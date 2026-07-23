@@ -158,13 +158,13 @@ class SessionControllerTest extends AbstractTestController
         self::assertSame($administratorId, $token->getAdministrator()->getId());
     }
 
-    public function testDeleteSessionWithoutSessionKeyForExistingSessionReturnsForbiddenStatus()
+    public function testDeleteSessionWithoutSessionKeyForExistingSessionReturnsUnauthorized()
     {
         $this->loadFixtures([AdministratorFixture::class, AdministratorTokenFixture::class]);
 
         self::getClient()->request('delete', '/api/v2/sessions/1');
 
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testDeleteSessionWithCurrentSessionKeyForExistingSessionReturnsNoContentStatus()
@@ -189,11 +189,11 @@ class SessionControllerTest extends AbstractTestController
         self::assertNull($this->administratorTokenRepository->find(1));
     }
 
-    public function testDeleteSessionWithCurrentSessionAndOwnSessionKeyKeepsReturnsForbiddenStatus()
+    public function testDeleteSessionWithCurrentSessionAndOwnSessionKeyKeepsReturnsUnauthorized()
     {
         $this->authenticatedJsonRequest('delete', '/api/v2/sessions/3');
 
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testDeleteSessionWithCurrentSessionAndOwnSessionKeyKeepsSession()
@@ -239,11 +239,11 @@ class SessionControllerTest extends AbstractTestController
         $this->assertHttpNotFound();
     }
 
-    public function testGetSessionUserWithoutAuthenticationReturnsForbiddenStatus(): void
+    public function testGetSessionUserWithoutAuthenticationReturnsUnauthorized(): void
     {
         self::getClient()->request('GET', '/api/v2/sessions/me');
 
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testGetSessionUserWithAuthenticationReturnsOkayStatus(): void

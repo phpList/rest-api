@@ -31,11 +31,11 @@ class SubscriberImportControllerTest extends AbstractTestController
         );
     }
 
-    public function testImportSubscribersWithoutSessionKeyReturnsForbiddenStatus(): void
+    public function testImportSubscribersWithoutSessionKeyReturnsUnauthorized(): void
     {
         self::getClient()->request('POST', '/api/v2/subscribers/import');
 
-        $this->assertHttpForbidden();
+        $this->assertHttpUnauthorized();
     }
 
     public function testImportSubscribersWithoutFileReturnsBadRequestStatus(): void
