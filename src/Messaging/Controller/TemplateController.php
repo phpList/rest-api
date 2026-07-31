@@ -116,6 +116,66 @@ class TemplateController extends BaseController
         );
     }
 
+    #[Route('', name: 'create', methods: ['POST'])]
+    #[OA\Post(
+        path: '/api/v2/templates',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
+        'Returns a JSON response of created template.',
+        summary: 'Create a new template.',
+        requestBody: new OA\RequestBody(
+            description: 'Pass session credentials',
+            required: true,
+            content: new OA\MediaType(
+                mediaType: 'multipart/form-data',
+                schema: new OA\Schema(ref: '#/components/schemas/UpdateTemplateRequest')
+            )
+        ),
+        tags: ['templates'],
+        parameters: [
+            new OA\Parameter(
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            ),
+        ],
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: 'Success',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(ref: '#/components/schemas/Template')
+                )
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
+            ),
+            new OA\Response(
+                response: 422,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/ValidationErrorResponse')
+            ),
+        ]
+    )]
+    public function createTemplates(Request $request): JsonResponse
+    {
+        $this->requireAuthentication($request);
+
+        /** @var CreateTemplateRequest $createTemplateRequest */
+        $createTemplateRequest = $this->validator->validate($request, CreateTemplateRequest::class);
+        $template = $this->templateManager->create($createTemplateRequest->getDto());
+        $this->entityManager->flush();
+
+        return $this->json(
+            $this->normalizer->normalize($template),
+            Response::HTTP_CREATED
+        );
+    }
+
     #[Route('/defaults', name: 'get_defaults', methods: ['GET'])]
     #[OA\Get(
         path: '/api/v2/templates/defaults',
@@ -261,66 +321,6 @@ class TemplateController extends BaseController
         }
 
         return $this->json($this->normalizer->normalize($template), Response::HTTP_OK);
-    }
-
-    #[Route('', name: 'create', methods: ['POST'])]
-    #[OA\Post(
-        path: '/api/v2/templates',
-        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
-            'Returns a JSON response of created template.',
-        summary: 'Create a new template.',
-        requestBody: new OA\RequestBody(
-            description: 'Pass session credentials',
-            required: true,
-            content: new OA\MediaType(
-                mediaType: 'multipart/form-data',
-                schema: new OA\Schema(ref: '#/components/schemas/UpdateTemplateRequest')
-            )
-        ),
-        tags: ['templates'],
-        parameters: [
-            new OA\Parameter(
-                name: 'php-auth-pw',
-                description: 'Session key obtained from login',
-                in: 'header',
-                required: true,
-                schema: new OA\Schema(type: 'string')
-            ),
-        ],
-        responses: [
-            new OA\Response(
-                response: 201,
-                description: 'Success',
-                content: new OA\JsonContent(
-                    type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Template')
-                )
-            ),
-            new OA\Response(
-                response: 403,
-                description: 'Failure',
-                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
-            ),
-            new OA\Response(
-                response: 422,
-                description: 'Failure',
-                content: new OA\JsonContent(ref: '#/components/schemas/ValidationErrorResponse')
-            ),
-        ]
-    )]
-    public function createTemplates(Request $request): JsonResponse
-    {
-        $this->requireAuthentication($request);
-
-        /** @var CreateTemplateRequest $createTemplateRequest */
-        $createTemplateRequest = $this->validator->validate($request, CreateTemplateRequest::class);
-        $template = $this->templateManager->create($createTemplateRequest->getDto());
-        $this->entityManager->flush();
-
-        return $this->json(
-            $this->normalizer->normalize($template),
-            Response::HTTP_CREATED
-        );
     }
 
     #[Route('/{templateId}', name: 'update', methods: ['PUT'])]
