@@ -17,7 +17,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         new OA\Property(
             property: 'status',
             type: 'string',
-            enum: ['draft', 'sent', 'prepared', 'submitted', 'suspended', 'requeued'],
+            enum: ['draft', 'sent', 'prepared', 'submitted', 'suspended'],
             example: 'draft'
         ),
     ],
@@ -26,7 +26,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class MessageMetadataRequest implements RequestDtoInterface, RequestInterface
 {
     #[Assert\NotBlank]
-    #[Assert\Choice(['draft', 'sent', 'prepared', 'submitted', 'suspended', 'requeued'])]
+    #[Assert\Choice(['draft', 'sent', 'prepared', 'submitted', 'suspended'])]
     public string $status;
 
     /**
