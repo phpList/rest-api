@@ -57,7 +57,7 @@ class ExceptionListener
                 new JsonResponse([
                     'message' => 'Validation failed',
                     'errors' => $this->parseFlatValidationMessage($exception->getMessage()),
-                    ], 422)
+                ], 422)
             );
 
             return;

@@ -127,7 +127,7 @@ class TemplateController extends BaseController
             required: true,
             content: new OA\MediaType(
                 mediaType: 'multipart/form-data',
-                schema: new OA\Schema(ref: '#/components/schemas/UpdateTemplateRequest')
+                schema: new OA\Schema(ref: '#/components/schemas/CreateTemplateRequest')
             )
         ),
         tags: ['templates'],
@@ -144,15 +144,17 @@ class TemplateController extends BaseController
             new OA\Response(
                 response: 201,
                 description: 'Success',
-                content: new OA\JsonContent(
-                    type: 'array',
-                    items: new OA\Items(ref: '#/components/schemas/Template')
-                )
+                content: new OA\JsonContent(ref: '#/components/schemas/Template')
             ),
             new OA\Response(
                 response: 403,
                 description: 'Failure',
                 content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
+            ),
+            new OA\Response(
+                response: 409,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/AlreadyExistsResponse')
             ),
             new OA\Response(
                 response: 422,
