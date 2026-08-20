@@ -68,6 +68,52 @@ class CampaignServiceTest extends TestCase
         $this->assertSame($expectedResult, $result);
     }
 
+    public function testGetMessagesAppliesStatusAndSortFromQuery(): void
+    {
+        $request = new Request(query: ['status' => 'submitted,prepared', 'sort' => 'desc']);
+        $administrator = $this->createMock(Administrator::class);
+        $expectedResult = ['items' => [], 'pagination' => []];
+
+        $this->paginatedProvider->expects($this->once())
+            ->method('getPaginatedList')
+            ->with(
+                $this->identicalTo($request),
+                $this->identicalTo($this->normalizer),
+                Message::class,
+                $this->callback(function (MessageFilter $filter) {
+                    return $filter->getStatus() === 'submitted,prepared' && $filter->getSortOrder() === 'desc';
+                })
+            )
+            ->willReturn($expectedResult);
+
+        $result = $this->campaignService->getMessages($request, $administrator);
+
+        $this->assertSame($expectedResult, $result);
+    }
+
+    public function testGetMessagesIgnoresInvalidSortValue(): void
+    {
+        $request = new Request(query: ['sort' => 'bogus']);
+        $administrator = $this->createMock(Administrator::class);
+        $expectedResult = ['items' => [], 'pagination' => []];
+
+        $this->paginatedProvider->expects($this->once())
+            ->method('getPaginatedList')
+            ->with(
+                $this->identicalTo($request),
+                $this->identicalTo($this->normalizer),
+                Message::class,
+                $this->callback(function (MessageFilter $filter) {
+                    return $filter->getSortOrder() === 'asc';
+                })
+            )
+            ->willReturn($expectedResult);
+
+        $result = $this->campaignService->getMessages($request, $administrator);
+
+        $this->assertSame($expectedResult, $result);
+    }
+
     public function testGetMessageThrowsExceptionWhenMessageIsNull(): void
     {
         $this->expectException(NotFoundHttpException::class);
