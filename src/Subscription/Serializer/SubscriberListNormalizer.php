@@ -59,4 +59,14 @@ class SubscriberListNormalizer implements NormalizerInterface
     {
         return $data instanceof SubscriberList;
     }
+
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            SubscriberList::class => true,
+        ];
+    }
 }

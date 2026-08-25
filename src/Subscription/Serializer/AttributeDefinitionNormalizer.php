@@ -75,4 +75,14 @@ class AttributeDefinitionNormalizer implements NormalizerInterface
     {
         return $data instanceof SubscriberAttributeDefinition;
     }
+
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            SubscriberAttributeDefinition::class => true,
+        ];
+    }
 }

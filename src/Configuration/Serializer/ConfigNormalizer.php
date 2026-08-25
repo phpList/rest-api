@@ -48,4 +48,14 @@ class ConfigNormalizer implements NormalizerInterface
     {
         return $data instanceof Config;
     }
+
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            Config::class => true,
+        ];
+    }
 }

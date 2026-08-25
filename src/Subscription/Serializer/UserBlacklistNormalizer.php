@@ -39,4 +39,14 @@ class UserBlacklistNormalizer implements NormalizerInterface
     {
         return $data instanceof UserBlacklist;
     }
+
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            UserBlacklist::class => true,
+        ];
+    }
 }

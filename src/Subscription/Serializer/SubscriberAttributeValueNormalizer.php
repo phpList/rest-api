@@ -47,4 +47,14 @@ class SubscriberAttributeValueNormalizer implements NormalizerInterface
     {
         return $data instanceof SubscriberAttributeValue;
     }
+
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            SubscriberAttributeValue::class => true,
+        ];
+    }
 }

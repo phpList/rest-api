@@ -61,4 +61,14 @@ class TemplateNormalizer implements NormalizerInterface
     {
         return $data instanceof Template;
     }
+
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            Template::class => true,
+        ];
+    }
 }

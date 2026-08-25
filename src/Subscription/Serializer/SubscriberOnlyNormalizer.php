@@ -59,4 +59,14 @@ class SubscriberOnlyNormalizer implements NormalizerInterface
     {
         return $data instanceof Subscriber;
     }
+
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            Subscriber::class => true,
+        ];
+    }
 }

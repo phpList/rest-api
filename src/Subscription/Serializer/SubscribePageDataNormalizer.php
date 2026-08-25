@@ -43,4 +43,14 @@ class SubscribePageDataNormalizer implements NormalizerInterface
     {
         return $data instanceof SubscribePageData;
     }
+
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            SubscribePageData::class => true,
+        ];
+    }
 }

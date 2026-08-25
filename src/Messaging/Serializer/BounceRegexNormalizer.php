@@ -54,4 +54,14 @@ class BounceRegexNormalizer implements NormalizerInterface
     {
         return $data instanceof BounceRegex;
     }
+
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            BounceRegex::class => true,
+        ];
+    }
 }

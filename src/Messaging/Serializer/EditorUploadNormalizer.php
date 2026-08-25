@@ -51,4 +51,14 @@ class EditorUploadNormalizer implements NormalizerInterface
     {
         return $data instanceof UploadResult;
     }
+
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            UploadResult::class => true,
+        ];
+    }
 }

@@ -48,4 +48,14 @@ class AdminAttributeDefinitionNormalizer implements NormalizerInterface
     {
         return $data instanceof AdminAttributeDefinition;
     }
+
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            AdminAttributeDefinition::class => true,
+        ];
+    }
 }

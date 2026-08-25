@@ -34,4 +34,14 @@ class SubscribersExportRequestNormalizer implements NormalizerInterface
     {
         return $data instanceof SubscribersExportRequest;
     }
+
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            SubscribersExportRequest::class => true,
+        ];
+    }
 }

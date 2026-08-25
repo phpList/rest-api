@@ -58,4 +58,14 @@ class TemplateImageNormalizer implements NormalizerInterface
     {
         return $data instanceof TemplateImage;
     }
+
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            TemplateImage::class => true,
+        ];
+    }
 }

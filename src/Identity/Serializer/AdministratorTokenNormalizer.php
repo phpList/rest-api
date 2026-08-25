@@ -33,4 +33,14 @@ class AdministratorTokenNormalizer implements NormalizerInterface
     {
         return $data instanceof AdministratorToken;
     }
+
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            AdministratorToken::class => true,
+        ];
+    }
 }

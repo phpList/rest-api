@@ -56,4 +56,14 @@ class AdministratorNormalizer implements NormalizerInterface
     {
         return $data instanceof Administrator;
     }
+
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            Administrator::class => true,
+        ];
+    }
 }

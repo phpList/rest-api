@@ -151,4 +151,14 @@ class MessageNormalizer implements NormalizerInterface
     {
         return $data instanceof Message;
     }
+
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            Message::class => true,
+        ];
+    }
 }

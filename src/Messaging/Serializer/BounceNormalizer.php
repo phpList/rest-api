@@ -52,4 +52,14 @@ class BounceNormalizer implements NormalizerInterface
     {
         return $data instanceof BounceView;
     }
+
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            BounceView::class => true,
+        ];
+    }
 }

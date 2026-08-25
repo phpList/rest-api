@@ -68,4 +68,14 @@ class ForwardingResultNormalizer implements NormalizerInterface
     {
         return $data instanceof ForwardingResult;
     }
+
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            ForwardingResult::class => true,
+        ];
+    }
 }

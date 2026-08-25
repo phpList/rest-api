@@ -53,4 +53,14 @@ class SubscriberHistoryNormalizer implements NormalizerInterface
     {
         return $data instanceof SubscriberHistory;
     }
+
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            SubscriberHistory::class => true,
+        ];
+    }
 }

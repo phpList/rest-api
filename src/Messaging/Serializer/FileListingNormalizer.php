@@ -57,4 +57,14 @@ class FileListingNormalizer implements NormalizerInterface
     {
         return $data instanceof DirectoryEntryDto;
     }
+
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            DirectoryEntryDto::class => true,
+        ];
+    }
 }

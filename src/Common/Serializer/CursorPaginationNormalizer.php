@@ -38,4 +38,14 @@ class CursorPaginationNormalizer implements NormalizerInterface
     {
         return $data instanceof CursorPaginationResult;
     }
+
+    /**
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            CursorPaginationResult::class => true,
+        ];
+    }
 }
