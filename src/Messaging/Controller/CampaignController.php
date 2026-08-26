@@ -7,7 +7,7 @@ namespace PhpList\RestBundle\Messaging\Controller;
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Messaging\Model\Message;
-use PhpList\Core\Security\Authentication;
+use PhpList\Core\Domain\Identity\Service\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
 use PhpList\RestBundle\Messaging\Request\CreateMessageRequest;
@@ -73,6 +73,21 @@ class CampaignController extends BaseController
                 in: 'query',
                 required: false,
                 schema: new OA\Schema(type: 'string', maxLength: 50)
+            ),
+            new OA\Parameter(
+                name: 'status',
+                description: 'Filter by one or more comma-separated statuses: ' .
+                    'draft, prepared, submitted, inprocess, sent, suspended',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                name: 'sort',
+                description: 'Sort direction by campaign id - desc returns newest campaigns first',
+                in: 'query',
+                required: false,
+                schema: new OA\Schema(type: 'string', default: 'asc', enum: ['asc', 'desc'])
             ),
         ],
         responses: [

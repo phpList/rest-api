@@ -28,7 +28,7 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 class SubscriberHistoryNormalizer implements NormalizerInterface
 {
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function normalize($object, string $format = null, array $context = []): array
     {
@@ -47,10 +47,20 @@ class SubscriberHistoryNormalizer implements NormalizerInterface
     }
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function supportsNormalization($data, string $format = null): bool
     {
         return $data instanceof SubscriberHistory;
+    }
+
+    /**
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
+     */
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            SubscriberHistory::class => true,
+        ];
     }
 }

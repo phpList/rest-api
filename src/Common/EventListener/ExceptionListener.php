@@ -9,7 +9,7 @@ use PhpList\Core\Domain\Identity\Exception\AdminAttributeCreationException;
 use PhpList\Core\Domain\Messaging\Exception\AttachmentFileNotFoundException;
 use PhpList\Core\Domain\Messaging\Exception\MessageNotReceivedException;
 use PhpList\Core\Domain\Messaging\Exception\SubscriberNotFoundException;
-use PhpList\Core\Domain\Subscription\Exception\AttributeDefinitionCreationException;
+use PhpList\Core\Domain\Common\Exception\AttributeDefinitionCreationException;
 use PhpList\Core\Domain\Subscription\Exception\SubscriptionCreationException;
 use PhpList\Core\Domain\Common\Exception\InvalidUploadException;
 use PhpList\Core\Domain\Common\Exception\MissingUploadException;
@@ -57,7 +57,7 @@ class ExceptionListener
                 new JsonResponse([
                     'message' => 'Validation failed',
                     'errors' => $this->parseFlatValidationMessage($exception->getMessage()),
-                    ], 422)
+                ], 422)
             );
 
             return;

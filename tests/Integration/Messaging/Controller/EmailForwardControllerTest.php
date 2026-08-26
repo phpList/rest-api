@@ -50,7 +50,6 @@ class EmailForwardControllerTest extends AbstractTestController
         self::assertStringContainsString('application/json', (string)$response->headers);
 
         $data = $this->getDecodedJsonResponseContent();
-        self::assertIsArray($data);
         self::assertArrayHasKey('message', $data);
         self::assertStringContainsString('Cannot forward: user has not received this message', $data['message']);
     }

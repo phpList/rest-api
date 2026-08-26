@@ -32,7 +32,13 @@ class CampaignService
     {
         $filter = (new MessageFilter())
             ->setOwner($administrator)
-            ->setSubject($request->query->get('subject'));
+            ->setSubject($request->query->get('subject'))
+            ->setStatus($request->query->get('status'));
+
+        $sort = $request->query->get('sort');
+        if (in_array($sort, ['asc', 'desc'], true)) {
+            $filter->setSortOrder($sort);
+        }
 
         return $this->paginatedProvider->getPaginatedList(
             request: $request,

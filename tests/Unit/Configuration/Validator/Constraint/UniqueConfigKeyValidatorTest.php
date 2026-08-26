@@ -31,8 +31,6 @@ class UniqueConfigKeyValidatorTest extends TestCase
         $this->entityManager->expects(self::never())->method('find');
 
         $this->validator->validate(null, new UniqueConfigKey());
-
-        self::assertTrue(true);
     }
 
     public function testValidateSkipsEmptyString(): void
@@ -40,8 +38,6 @@ class UniqueConfigKeyValidatorTest extends TestCase
         $this->entityManager->expects(self::never())->method('find');
 
         $this->validator->validate('', new UniqueConfigKey());
-
-        self::assertTrue(true);
     }
 
     public function testValidateThrowsUnexpectedTypeException(): void
@@ -81,7 +77,5 @@ class UniqueConfigKeyValidatorTest extends TestCase
             ->willReturn(null);
 
         $this->validator->validate('new_config_key', new UniqueConfigKey());
-
-        self::assertTrue(true);
     }
 }

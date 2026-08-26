@@ -51,7 +51,6 @@ class CampaignControllerTest extends AbstractTestController
         $this->authenticatedJsonRequest('GET', '/api/v2/campaigns');
         $response = $this->getDecodedJsonResponseContent();
 
-        self::assertIsArray($response);
         self::assertArrayHasKey('id', $response['items'][0]);
         self::assertArrayHasKey('message_content', $response['items'][0]);
     }
@@ -86,5 +85,49 @@ class CampaignControllerTest extends AbstractTestController
 
         $this->authenticatedJsonRequest('DELETE', '/api/v2/campaigns/1');
         $this->assertHttpNoContent();
+    }
+
+    public function testGetCampaignsFiltersBySingleStatus(): void
+    {
+        $this->loadFixtures([AdministratorFixture::class, MessageFixture::class]);
+
+        $this->authenticatedJsonRequest('GET', '/api/v2/campaigns?status=sent');
+        $response = $this->getDecodedJsonResponseContent();
+
+        self::assertCount(1, $response['items']);
+        self::assertSame(1, $response['items'][0]['id']);
+    }
+
+    public function testGetCampaignsFiltersByCommaSeparatedStatuses(): void
+    {
+        $this->loadFixtures([AdministratorFixture::class, MessageFixture::class]);
+
+        $this->authenticatedJsonRequest('GET', '/api/v2/campaigns?status=submitted,draft');
+        $response = $this->getDecodedJsonResponseContent();
+
+        self::assertCount(1, $response['items']);
+        self::assertSame(2, $response['items'][0]['id']);
+    }
+
+    public function testGetCampaignsSortsDescendingWhenRequested(): void
+    {
+        $this->loadFixtures([AdministratorFixture::class, MessageFixture::class]);
+
+        $this->authenticatedJsonRequest('GET', '/api/v2/campaigns?sort=desc');
+        $response = $this->getDecodedJsonResponseContent();
+
+        self::assertSame(2, $response['items'][0]['id']);
+        self::assertSame(1, $response['items'][1]['id']);
+    }
+
+    public function testGetCampaignsDefaultsToAscendingOrder(): void
+    {
+        $this->loadFixtures([AdministratorFixture::class, MessageFixture::class]);
+
+        $this->authenticatedJsonRequest('GET', '/api/v2/campaigns');
+        $response = $this->getDecodedJsonResponseContent();
+
+        self::assertSame(1, $response['items'][0]['id']);
+        self::assertSame(2, $response['items'][1]['id']);
     }
 }

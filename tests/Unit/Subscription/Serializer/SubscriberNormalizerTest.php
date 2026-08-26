@@ -43,6 +43,7 @@ class SubscriberNormalizerTest extends TestCase
         $subscriber->method('getId')->willReturn(101);
         $subscriber->method('getEmail')->willReturn('test@example.com');
         $subscriber->method('getCreatedAt')->willReturn(new DateTime('2024-12-31T12:00:00+00:00'));
+        $subscriber->method('getUpdatedAt')->willReturn(new DateTime('2024-12-31T12:00:00+00:00'));
         $subscriber->method('isConfirmed')->willReturn(true);
         $subscriber->method('isBlacklisted')->willReturn(false);
         $subscriber->method('getBounceCount')->willReturn(0);
@@ -58,7 +59,7 @@ class SubscriberNormalizerTest extends TestCase
             'id' => 101,
             'email' => 'test@example.com',
             'created_at' => '2024-12-31T12:00:00+00:00',
-            'updated_at' => null,
+            'updated_at' => '2024-12-31T12:00:00+00:00',
             'confirmed' => true,
             'blacklisted' => false,
             'bounce_count' => 0,

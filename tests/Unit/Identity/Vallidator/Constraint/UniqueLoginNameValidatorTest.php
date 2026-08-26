@@ -27,8 +27,6 @@ class UniqueLoginNameValidatorTest extends TestCase
 
         $constraint = new UniqueLoginName();
         $validator->validate('new_login', $constraint);
-
-        $this->assertTrue(true);
     }
 
     public function testValidateThrowsConflictForExistingLoginName(): void
@@ -75,7 +73,5 @@ class UniqueLoginNameValidatorTest extends TestCase
 
         $constraint = new UniqueLoginName();
         $validator->validate('same_login', $constraint);
-
-        $this->assertTrue(true);
     }
 }
