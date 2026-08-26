@@ -26,7 +26,7 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 class BounceNormalizer implements NormalizerInterface
 {
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function normalize($object, string $format = null, array $context = []): array
     {
@@ -46,7 +46,7 @@ class BounceNormalizer implements NormalizerInterface
     }
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function supportsNormalization($data, string $format = null): bool
     {
@@ -54,7 +54,7 @@ class BounceNormalizer implements NormalizerInterface
     }
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function getSupportedTypes(?string $format): array
     {

@@ -8,7 +8,7 @@ use PhpList\Core\Domain\Analytics\Service\AnalyticsService;
 use PhpList\Core\Domain\Identity\Model\Administrator;
 use PhpList\Core\Domain\Identity\Model\PrivilegeFlag;
 use PhpList\Core\Domain\Identity\Model\Privileges;
-use PhpList\Core\Security\Authentication;
+use PhpList\Core\Domain\Identity\Service\Authentication;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
 use PhpList\RestBundle\Statistics\Controller\AnalyticsController;
 use PhpList\RestBundle\Statistics\Serializer\CampaignStatisticsNormalizer;

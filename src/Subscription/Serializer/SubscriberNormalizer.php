@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Subscription\Serializer;
 
+use DateTimeInterface;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Subscription\Model\Subscriber;
 use PhpList\Core\Domain\Subscription\Model\SubscriberHistory;
@@ -56,7 +57,7 @@ class SubscriberNormalizer implements NormalizerInterface
     }
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function normalize($object, string $format = null, array $context = []): array
     {
@@ -67,8 +68,8 @@ class SubscriberNormalizer implements NormalizerInterface
         return [
             'id' => $object->getId(),
             'email' => $object->getEmail(),
-            'created_at' => $object->getCreatedAt()?->format(\DateTimeInterface::ATOM),
-            'updated_at' => $object->getUpdatedAt()?->format(\DateTimeInterface::ATOM),
+            'created_at' => $object->getCreatedAt()->format(DateTimeInterface::ATOM),
+            'updated_at' => $object->getUpdatedAt()->format(DateTimeInterface::ATOM),
             'confirmed' => $object->isConfirmed(),
             'blacklisted' => $object->isBlacklisted(),
             'bounce_count' => $object->getBounceCount(),
@@ -86,7 +87,7 @@ class SubscriberNormalizer implements NormalizerInterface
     }
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function supportsNormalization($data, string $format = null): bool
     {
@@ -94,7 +95,7 @@ class SubscriberNormalizer implements NormalizerInterface
     }
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function getSupportedTypes(?string $format): array
     {

@@ -34,14 +34,12 @@ class ListExistsValidatorTest extends TestCase
     {
         $this->subscriberListRepository->expects($this->never())->method('find');
         $this->validator->validate(null, new ListExists());
-        $this->assertTrue(true);
     }
 
     public function testValidateSkipsEmptyString(): void
     {
         $this->subscriberListRepository->expects($this->never())->method('find');
         $this->validator->validate('', new ListExists());
-        $this->assertTrue(true);
     }
 
     public function testValidateThrowsUnexpectedTypeException(): void
@@ -75,6 +73,5 @@ class ListExistsValidatorTest extends TestCase
             ->willReturn($subscriberList);
 
         $this->validator->validate('123', new ListExists());
-        $this->assertTrue(true);
     }
 }

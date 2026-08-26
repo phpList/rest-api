@@ -30,7 +30,7 @@ class MessageMetadataRequest implements RequestDtoInterface, RequestInterface
     public string $status;
 
     /**
-     * @SuppressWarnings(PHPMD.StaticAccess)
+     * @SuppressWarnings("PHPMD.StaticAccess")
      */
     public function getDto(): MessageMetadataDto
     {

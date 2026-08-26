@@ -11,7 +11,7 @@ use PhpList\Core\Domain\Subscription\Repository\SubscriberListRepository;
 use PhpList\Core\Domain\Subscription\Service\Manager\SubscribePageManager;
 use PhpList\Core\Domain\Subscription\Service\Manager\SubscriberAttributeManager;
 use PhpList\Core\Domain\Subscription\Service\Manager\SubscriptionManager;
-use PhpList\Core\Security\Authentication;
+use PhpList\Core\Domain\Identity\Service\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
 use PhpList\RestBundle\Subscription\Request\PublicSubscriptionRequest;
@@ -217,8 +217,8 @@ class SubscribePagePublicController extends BaseController
             return $this->json(null, Response::HTTP_NO_CONTENT);
         }
 
-        $listsIds = explode(',', $listsField->getData() ?? '');
-        if ($listsIds == []) {
+        $listsIds = array_filter(explode(',', $listsField->getData() ?? ''));
+        if (count($listsIds) === 0) {
             return $this->json(null, Response::HTTP_NO_CONTENT);
         }
 

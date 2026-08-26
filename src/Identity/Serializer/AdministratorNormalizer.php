@@ -30,7 +30,7 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 class AdministratorNormalizer implements NormalizerInterface
 {
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      * @throws InvalidArgumentException
      */
     public function normalize($object, string $format = null, array $context = []): array
@@ -45,12 +45,12 @@ class AdministratorNormalizer implements NormalizerInterface
             'email' => $object->getEmail(),
             'super_user' => $object->isSuperUser(),
             'privileges' => $object->getPrivileges()->all(),
-            'created_at' => $object->getCreatedAt()?->format(DateTimeInterface::ATOM),
+            'created_at' => $object->getCreatedAt()->format(DateTimeInterface::ATOM),
         ];
     }
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function supportsNormalization($data, string $format = null): bool
     {
@@ -58,7 +58,7 @@ class AdministratorNormalizer implements NormalizerInterface
     }
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function getSupportedTypes(?string $format): array
     {

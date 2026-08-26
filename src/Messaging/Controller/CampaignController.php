@@ -7,7 +7,7 @@ namespace PhpList\RestBundle\Messaging\Controller;
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Messaging\Model\Message;
-use PhpList\Core\Security\Authentication;
+use PhpList\Core\Domain\Identity\Service\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
 use PhpList\RestBundle\Messaging\Request\CreateMessageRequest;

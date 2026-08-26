@@ -23,7 +23,7 @@ class ConfigNormalizer implements NormalizerInterface
     /**
      * Normalizes a configuration item.
      *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function normalize($object, string $format = null, array $context = []): array
     {
@@ -42,7 +42,7 @@ class ConfigNormalizer implements NormalizerInterface
     /**
      * Checks whether the value can be normalized.
      *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function supportsNormalization($data, string $format = null): bool
     {
@@ -50,7 +50,7 @@ class ConfigNormalizer implements NormalizerInterface
     }
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function getSupportedTypes(?string $format): array
     {

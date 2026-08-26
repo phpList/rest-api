@@ -26,7 +26,7 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 class BounceRegexNormalizer implements NormalizerInterface
 {
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function normalize($object, string $format = null, array $context = []): array
     {
@@ -48,7 +48,7 @@ class BounceRegexNormalizer implements NormalizerInterface
     }
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function supportsNormalization($data, string $format = null): bool
     {
@@ -56,7 +56,7 @@ class BounceRegexNormalizer implements NormalizerInterface
     }
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function getSupportedTypes(?string $format): array
     {

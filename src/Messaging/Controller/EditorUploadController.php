@@ -6,7 +6,7 @@ namespace PhpList\RestBundle\Messaging\Controller;
 
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Common\Validator\UploadDirectoryValidator;
-use PhpList\Core\Security\Authentication;
+use PhpList\Core\Domain\Identity\Service\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\Core\Domain\Common\Service\UploadService;
 use PhpList\Core\Domain\Common\Service\DirectoryListingService;

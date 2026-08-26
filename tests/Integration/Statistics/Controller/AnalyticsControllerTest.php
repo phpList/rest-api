@@ -54,7 +54,6 @@ class AnalyticsControllerTest extends AbstractTestController
         $this->authenticatedJsonRequest('GET', '/api/v2/analytics/campaigns');
         $response = $this->getDecodedJsonResponseContent();
 
-        self::assertIsArray($response);
         self::assertArrayHasKey('items', $response);
         self::assertArrayHasKey('pagination', $response);
     }
@@ -80,7 +79,6 @@ class AnalyticsControllerTest extends AbstractTestController
         $this->authenticatedJsonRequest('GET', '/api/v2/analytics/view-opens');
         $response = $this->getDecodedJsonResponseContent();
 
-        self::assertIsArray($response);
         self::assertArrayHasKey('items', $response);
         self::assertArrayHasKey('pagination', $response);
         self::assertIsArray($response['items']);
@@ -108,7 +106,6 @@ class AnalyticsControllerTest extends AbstractTestController
         $this->authenticatedJsonRequest('GET', '/api/v2/analytics/domains/top');
         $response = $this->getDecodedJsonResponseContent();
 
-        self::assertIsArray($response);
         self::assertArrayHasKey('domains', $response);
         self::assertArrayHasKey('total', $response);
         self::assertIsArray($response['domains']);
@@ -122,7 +119,6 @@ class AnalyticsControllerTest extends AbstractTestController
         $this->authenticatedJsonRequest('GET', '/api/v2/analytics/domains/top?limit=5');
         $response = $this->getDecodedJsonResponseContent();
 
-        self::assertIsArray($response);
         self::assertArrayHasKey('domains', $response);
         self::assertIsArray($response['domains']);
         self::assertLessThanOrEqual(5, count($response['domains']));
@@ -135,7 +131,6 @@ class AnalyticsControllerTest extends AbstractTestController
         $this->authenticatedJsonRequest('GET', '/api/v2/analytics/domains/top?min_subscribers=10');
         $response = $this->getDecodedJsonResponseContent();
 
-        self::assertIsArray($response);
         self::assertArrayHasKey('domains', $response);
         self::assertIsArray($response['domains']);
 
@@ -153,7 +148,6 @@ class AnalyticsControllerTest extends AbstractTestController
         $this->authenticatedJsonRequest('GET', '/api/v2/analytics/domains/top?limit=3&min_subscribers=10');
         $response = $this->getDecodedJsonResponseContent();
 
-        self::assertIsArray($response);
         self::assertArrayHasKey('domains', $response);
         self::assertIsArray($response['domains']);
         self::assertLessThanOrEqual(3, count($response['domains']));
@@ -171,7 +165,6 @@ class AnalyticsControllerTest extends AbstractTestController
         $this->authenticatedJsonRequest('GET', '/api/v2/analytics/domains/top?limit=invalid');
         $response = $this->getDecodedJsonResponseContent();
 
-        self::assertIsArray($response);
         self::assertArrayHasKey('domains', $response);
         self::assertIsArray($response['domains']);
     }
@@ -197,7 +190,6 @@ class AnalyticsControllerTest extends AbstractTestController
         $this->authenticatedJsonRequest('GET', '/api/v2/analytics/domains/confirmation');
         $response = $this->getDecodedJsonResponseContent();
 
-        self::assertIsArray($response);
         self::assertArrayHasKey('domains', $response);
         self::assertArrayHasKey('total', $response);
     }
@@ -223,7 +215,6 @@ class AnalyticsControllerTest extends AbstractTestController
         $this->authenticatedJsonRequest('GET', '/api/v2/analytics/local-parts/top');
         $response = $this->getDecodedJsonResponseContent();
 
-        self::assertIsArray($response);
         self::assertArrayHasKey('local_parts', $response);
         self::assertArrayHasKey('total', $response);
         self::assertIsArray($response['local_parts']);
@@ -237,7 +228,6 @@ class AnalyticsControllerTest extends AbstractTestController
         $this->authenticatedJsonRequest('GET', '/api/v2/analytics/local-parts/top?limit=5');
         $response = $this->getDecodedJsonResponseContent();
 
-        self::assertIsArray($response);
         self::assertArrayHasKey('local_parts', $response);
         self::assertIsArray($response['local_parts']);
         self::assertLessThanOrEqual(5, count($response['local_parts']));
@@ -250,7 +240,6 @@ class AnalyticsControllerTest extends AbstractTestController
         $this->authenticatedJsonRequest('GET', '/api/v2/analytics/local-parts/top?limit=invalid');
         $response = $this->getDecodedJsonResponseContent();
 
-        self::assertIsArray($response);
         self::assertArrayHasKey('local_parts', $response);
         self::assertIsArray($response['local_parts']);
     }
@@ -273,8 +262,6 @@ class AnalyticsControllerTest extends AbstractTestController
         $this->authenticatedJsonRequest('GET', '/api/v2/analytics/dashboard/summary');
         $this->assertHttpOkay();
         $response = $this->getDecodedJsonResponseContent();
-
-        self::assertIsArray($response);
 
         foreach (['total_subscribers', 'active_campaigns', 'open_rate', 'bounce_rate'] as $metric) {
             self::assertIsArray($response[$metric]);
@@ -303,8 +290,6 @@ class AnalyticsControllerTest extends AbstractTestController
         $this->authenticatedJsonRequest('GET', '/api/v2/analytics/dashboard/recent-campaigns');
         $this->assertHttpOkay();
         $response = $this->getDecodedJsonResponseContent();
-
-        self::assertIsArray($response);
     }
 
     public function testGetCampaignPerformanceStatisticsWithoutSessionKeyReturnsUnauthorized(): void
@@ -324,8 +309,6 @@ class AnalyticsControllerTest extends AbstractTestController
 
         $this->authenticatedJsonRequest('GET', '/api/v2/analytics/dashboard/performance');
         $this->assertHttpOkay();
-        $response = $this->getDecodedJsonResponseContent();
-
-        self::assertIsArray($response);
+        $this->getDecodedJsonResponseContent();
     }
 }

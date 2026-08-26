@@ -7,7 +7,7 @@ namespace PhpList\RestBundle\Statistics\Controller;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Analytics\Service\AnalyticsService;
 use PhpList\Core\Domain\Identity\Model\PrivilegeFlag;
-use PhpList\Core\Security\Authentication;
+use PhpList\Core\Domain\Identity\Service\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
 use PhpList\RestBundle\Statistics\Serializer\CampaignStatisticsNormalizer;

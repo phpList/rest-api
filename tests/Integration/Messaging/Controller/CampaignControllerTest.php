@@ -51,7 +51,6 @@ class CampaignControllerTest extends AbstractTestController
         $this->authenticatedJsonRequest('GET', '/api/v2/campaigns');
         $response = $this->getDecodedJsonResponseContent();
 
-        self::assertIsArray($response);
         self::assertArrayHasKey('id', $response['items'][0]);
         self::assertArrayHasKey('message_content', $response['items'][0]);
     }

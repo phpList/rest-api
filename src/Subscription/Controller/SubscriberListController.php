@@ -10,7 +10,7 @@ use PhpList\Core\Domain\Identity\Model\Administrator;
 use PhpList\Core\Domain\Messaging\Model\Filter\SubscriberListFilter;
 use PhpList\Core\Domain\Subscription\Model\SubscriberList;
 use PhpList\Core\Domain\Subscription\Service\Manager\SubscriberListManager;
-use PhpList\Core\Security\Authentication;
+use PhpList\Core\Domain\Identity\Service\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Service\Provider\PaginatedDataProvider;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
