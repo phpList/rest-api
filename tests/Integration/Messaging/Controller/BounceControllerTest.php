@@ -110,4 +110,32 @@ class BounceControllerTest extends AbstractTestController
         $this->entityManager->clear();
         self::assertNull($this->entityManager->getRepository(Bounce::class)->find($bounceId));
     }
+
+    public function testGetBounceCountsByCampaignWithoutSessionKeyReturnsUnauthorized(): void
+    {
+        self::getClient()->request('GET', '/api/v2/bounces/by/campaign');
+        $this->assertHttpUnauthorized();
+    }
+
+    public function testGetBounceCountsByCampaignWithValidSessionKeyReturnsArray(): void
+    {
+        // Regression check for wiring BounceController to UserMessageBounceReportReaderInterface
+        // (Elasticsearch-backed by default) - exercises the real service graph end to end.
+        $this->authenticatedJsonRequest('GET', '/api/v2/bounces/by/campaign');
+        $this->assertHttpOkay();
+    }
+
+    public function testGetBounceCountsBySubscriberWithoutSessionKeyReturnsUnauthorized(): void
+    {
+        self::getClient()->request('GET', '/api/v2/bounces/by/subscriber');
+        $this->assertHttpUnauthorized();
+    }
+
+    public function testGetBounceCountsBySubscriberWithValidSessionKeyReturnsArray(): void
+    {
+        // Regression check for wiring BounceController to UserMessageBounceReportReaderInterface
+        // (Elasticsearch-backed by default) - exercises the real service graph end to end.
+        $this->authenticatedJsonRequest('GET', '/api/v2/bounces/by/subscriber');
+        $this->assertHttpOkay();
+    }
 }
