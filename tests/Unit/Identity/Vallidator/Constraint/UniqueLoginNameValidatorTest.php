@@ -63,7 +63,7 @@ class UniqueLoginNameValidatorTest extends TestCase
 
         $context = $this->createMock(ExecutionContextInterface::class);
         $dto = new class {
-            public $updatingId = 1;
+            public int $updatingId = 1;
         };
 
         $context->method('getObject')->willReturn($dto);
