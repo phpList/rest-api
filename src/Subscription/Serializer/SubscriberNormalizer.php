@@ -6,8 +6,8 @@ namespace PhpList\RestBundle\Subscription\Serializer;
 
 use DateTimeInterface;
 use OpenApi\Attributes as OA;
+use PhpList\Core\Domain\Subscription\Model\Interfaces\SubscriberHistoryRecordInterface;
 use PhpList\Core\Domain\Subscription\Model\Subscriber;
-use PhpList\Core\Domain\Subscription\Model\SubscriberHistory;
 use PhpList\Core\Domain\Subscription\Model\Subscription;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
@@ -80,7 +80,7 @@ class SubscriberNormalizer implements NormalizerInterface
             'subscribed_lists' => array_map(function (Subscription $subscription) {
                 return $this->subscriberListNormalizer->normalize($subscription->getSubscriberList());
             }, $object->getSubscriptions()->toArray()),
-            'history' => array_map(function (SubscriberHistory $history) {
+            'history' => array_map(function (SubscriberHistoryRecordInterface $history) {
                 return  $this->subscriberHistoryNormalizer->normalize($history);
             }, $object->getHistory()),
         ];

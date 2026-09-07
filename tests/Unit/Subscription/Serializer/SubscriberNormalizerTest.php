@@ -6,6 +6,7 @@ namespace PhpList\RestBundle\Tests\Unit\Subscription\Serializer;
 
 use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
+use PhpList\Core\Domain\Subscription\Model\ReadModel\SubscriberHistoryReadModel;
 use PhpList\Core\Domain\Subscription\Model\Subscriber;
 use PhpList\Core\Domain\Subscription\Model\SubscriberList;
 use PhpList\Core\Domain\Subscription\Model\Subscription;
@@ -90,5 +91,48 @@ class SubscriberNormalizerTest extends TestCase
     {
         $normalizer = new SubscriberNormalizer(new SubscriberListNormalizer(), new SubscriberHistoryNormalizer());
         $this->assertSame([], $normalizer->normalize(new stdClass()));
+    }
+
+    public function testNormalizeAcceptsElasticsearchBackedHistoryReadModels(): void
+    {
+        $history = new SubscriberHistoryReadModel(
+            id: 7,
+            subscriberId: 101,
+            ip: '127.0.0.1',
+            createdAt: new DateTime('2025-02-01T00:00:00+00:00'),
+            summary: 'Updated',
+            detail: 'Detail',
+            systemInfo: 'Info',
+        );
+
+        $subscriber = $this->createMock(Subscriber::class);
+        $subscriber->method('getId')->willReturn(101);
+        $subscriber->method('getEmail')->willReturn('test@example.com');
+        $subscriber->method('getCreatedAt')->willReturn(new DateTime('2024-12-31T12:00:00+00:00'));
+        $subscriber->method('getUpdatedAt')->willReturn(new DateTime('2024-12-31T12:00:00+00:00'));
+        $subscriber->method('isConfirmed')->willReturn(true);
+        $subscriber->method('isBlacklisted')->willReturn(false);
+        $subscriber->method('getBounceCount')->willReturn(0);
+        $subscriber->method('getUniqueId')->willReturn('abc123');
+        $subscriber->method('getUuid')->willReturn('abc-123-abc-123');
+        $subscriber->method('hasHtmlEmail')->willReturn(true);
+        $subscriber->method('isDisabled')->willReturn(false);
+        $subscriber->method('getSubscriptions')->willReturn(new ArrayCollection([]));
+        $subscriber->method('getHistory')->willReturn([$history]);
+
+        $normalizer = new SubscriberNormalizer(new SubscriberListNormalizer(), new SubscriberHistoryNormalizer());
+
+        $result = $normalizer->normalize($subscriber);
+
+        $this->assertSame([
+            [
+                'id' => 7,
+                'ip' => '127.0.0.1',
+                'created_at' => '2025-02-01T00:00:00+00:00',
+                'summary' => 'Updated',
+                'detail' => 'Detail',
+                'system_info' => 'Info',
+            ],
+        ], $result['history']);
     }
 }

@@ -8,7 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Messaging\Model\Bounce;
 use PhpList\Core\Domain\Messaging\Repository\BounceRepository;
-use PhpList\Core\Domain\Messaging\Repository\UserMessageBounceRepository;
+use PhpList\Core\Domain\Messaging\Repository\Interfaces\UserMessageBounceReportReaderInterface;
 use PhpList\Core\Domain\Identity\Service\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Service\Provider\PaginatedDataProvider;
@@ -34,7 +34,7 @@ class BounceController extends BaseController
         private readonly EntityManagerInterface $entityManager,
         private readonly BounceNormalizer $normalizer,
         private readonly PaginatedDataProvider $paginatedProvider,
-        private readonly UserMessageBounceRepository $userMessageBounceRepository
+        private readonly UserMessageBounceReportReaderInterface $userMessageBounceReportReader
     ) {
         parent::__construct($authentication, $validator);
     }
@@ -212,7 +212,7 @@ class BounceController extends BaseController
         $authUser = $this->requireAuthentication($request);
 
         return $this->json(
-            data: $this->userMessageBounceRepository->getCampaignBounceTotals($authUser->getId()),
+            data: $this->userMessageBounceReportReader->getCampaignBounceTotals($authUser->getId()),
             status: Response::HTTP_OK
         );
     }
@@ -263,7 +263,7 @@ class BounceController extends BaseController
         $authUser = $this->requireAuthentication($request);
 
         return $this->json(
-            data: $this->userMessageBounceRepository->getListBounceTotals($authUser->getId()),
+            data: $this->userMessageBounceReportReader->getListBounceTotals($authUser->getId()),
             status: Response::HTTP_OK
         );
     }
