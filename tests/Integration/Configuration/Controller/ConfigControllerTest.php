@@ -44,7 +44,6 @@ class ConfigControllerTest extends AbstractTestController
         $this->assertHttpOkay();
 
         $response = $this->getDecodedJsonResponseContent();
-        self::assertIsArray($response);
         self::assertArrayHasKey('items', $response);
         self::assertArrayHasKey('pagination', $response);
     }

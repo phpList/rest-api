@@ -54,9 +54,6 @@ class CreateBounceRegexRequestTest extends TestCase
         $context->expects($this->never())->method('buildViolation');
 
         $req->validateRegexPattern($context);
-
-        // if no exception and no violation calls, the test passes
-        $this->assertTrue(true);
     }
 
     public function testValidateRegexPatternWithInvalidRegexAddsViolation(): void

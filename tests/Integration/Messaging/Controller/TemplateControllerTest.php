@@ -52,7 +52,6 @@ class TemplateControllerTest extends AbstractTestController
         $this->authenticatedJsonRequest('GET', '/api/v2/templates');
         $response = $this->getDecodedJsonResponseContent();
 
-        self::assertIsArray($response);
         self::assertArrayHasKey('id', $response['items'][0]);
         self::assertArrayHasKey('title', $response['items'][0]);
     }
@@ -68,7 +67,6 @@ class TemplateControllerTest extends AbstractTestController
         $this->authenticatedJsonRequest('GET', '/api/v2/templates/defaults');
         $defaults = $this->getDecodedJsonResponseContent();
 
-        self::assertIsArray($defaults);
         self::assertNotEmpty($defaults);
         self::assertArrayHasKey('key', $defaults[0]);
 

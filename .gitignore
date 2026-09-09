@@ -15,3 +15,5 @@
 /var/
 /vendor/
 .phpunit.result.cache
+.env
+.env.dist

@@ -69,7 +69,6 @@ class BounceRegexControllerTest extends AbstractTestController
         $this->authenticatedJsonRequest('GET', '/api/v2/bounces/regex');
         $this->assertHttpOkay();
         $list = $this->getDecodedJsonResponseContent();
-        $this->assertIsArray($list);
         $this->assertIsArray($list[0] ?? []);
 
         $this->authenticatedJsonRequest('DELETE', '/api/v2/bounces/regex/' . $id);

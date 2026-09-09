@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Common\Controller;
 
 use PhpList\Core\Domain\Identity\Model\Administrator;
-use PhpList\Core\Security\Authentication;
+use PhpList\Core\Domain\Identity\Service\Authentication;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
-/**  @SuppressWarnings(PHPMD.NumberOfChildren) */
+/**  @SuppressWarnings("PHPMD.NumberOfChildren") */
 abstract class BaseController extends AbstractController
 {
     protected Authentication $authentication;

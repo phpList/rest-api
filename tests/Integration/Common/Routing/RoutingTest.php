@@ -16,7 +16,7 @@ class RoutingTest extends WebTestCase
     public function testRootUrlHasHtmlContentType()
     {
         $client = self::createClient();
-        $client->request('get', '/api/v2');
+        $client->request('GET', '/api/v2', server: ['HTTP_ACCEPT' => 'text/html']);
 
         $response = $client->getResponse();
 

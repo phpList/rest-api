@@ -34,14 +34,12 @@ class EmailExistsValidatorTest extends TestCase
     {
         $this->subscriberRepository->expects($this->never())->method('findOneBy');
         $this->validator->validate(null, new EmailExists());
-        $this->assertTrue(true);
     }
 
     public function testValidateSkipsEmptyString(): void
     {
         $this->subscriberRepository->expects($this->never())->method('findOneBy');
         $this->validator->validate('', new EmailExists());
-        $this->assertTrue(true);
     }
 
     public function testValidateThrowsUnexpectedTypeException(): void
@@ -81,6 +79,5 @@ class EmailExistsValidatorTest extends TestCase
             ->willReturn($subscriber);
 
         $this->validator->validate('found@example.com', new EmailExists());
-        $this->assertTrue(true);
     }
 }

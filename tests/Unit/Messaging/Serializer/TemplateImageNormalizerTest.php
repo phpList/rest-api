@@ -40,7 +40,6 @@ class TemplateImageNormalizerTest extends TestCase
 
         $normalized = $this->normalizer->normalize($templateImage);
 
-        $this->assertIsArray($normalized);
         $this->assertEquals([
             'id' => 10,
             'template_id' => 42,
@@ -56,7 +55,6 @@ class TemplateImageNormalizerTest extends TestCase
     {
         $normalized = $this->normalizer->normalize(new \stdClass());
 
-        $this->assertIsArray($normalized);
         $this->assertEmpty($normalized);
     }
 }

@@ -36,7 +36,6 @@ class AttributeDefinitionNormalizerTest extends TestCase
         $normalizer = new AttributeDefinitionNormalizer();
         $result = $normalizer->normalize($definition);
 
-        self::assertIsArray($result);
         self::assertSame([
             'id' => 1,
             'name' => 'Country',
@@ -82,8 +81,6 @@ class AttributeDefinitionNormalizerTest extends TestCase
 
         $normalizer = new AttributeDefinitionNormalizer();
         $result = $normalizer->normalize($definition);
-
-        self::assertIsArray($result);
 
         self::assertSame([
             'id' => 5,

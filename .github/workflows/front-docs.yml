@@ -14,6 +14,7 @@ on:
       - main
 jobs:
   generate-openapi:
+    if: (github.event_name == 'push' && (github.ref_name == 'main' || github.ref_name == 'dev')) || (github.event_name == 'pull_request' && github.base_ref == 'main')
     runs-on: ubuntu-22.04
     outputs:
       source_branch: ${{ steps.branch.outputs.source_branch }}

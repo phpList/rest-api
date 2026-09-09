@@ -8,7 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\Core\Domain\Analytics\Service\UserMessageService;
-use PhpList\Core\Security\Authentication;
+use PhpList\Core\Domain\Identity\Service\Authentication;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
