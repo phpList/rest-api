@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Messaging\Service;
 
+use DateTimeImmutable;
+use DateTimeInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpList\Core\Domain\Identity\Model\Administrator;
 use PhpList\Core\Domain\Identity\Model\PrivilegeFlag;
@@ -14,8 +16,10 @@ use PhpList\RestBundle\Common\Service\Provider\PaginatedDataProvider;
 use PhpList\RestBundle\Messaging\Request\CreateMessageRequest;
 use PhpList\RestBundle\Messaging\Request\UpdateMessageRequest;
 use PhpList\RestBundle\Messaging\Serializer\MessageNormalizer;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CampaignService
@@ -25,6 +29,7 @@ class CampaignService
         private readonly PaginatedDataProvider $paginatedProvider,
         private readonly MessageNormalizer $normalizer,
         private readonly EntityManagerInterface $entityManager,
+        #[Autowire('%messaging.stuck_campaign_threshold%')] private readonly int $stuckCampaignThresholdSeconds = 1800,
     ) {
     }
 
@@ -105,5 +110,56 @@ class CampaignService
 
         $this->messageManager->delete($message);
         $this->entityManager->flush();
+    }
+
+    /**
+     * Lists campaigns whose processing appears stalled: still in Prepared/InProcess status
+     * with no update for longer than the stuck-campaign threshold. This is a monitoring view
+     * only, no automatic action is taken - an admin decides whether to resume each one.
+     */
+    public function getStuckCampaigns(): array
+    {
+        $stuckMessages = $this->messageManager->getStuckCampaigns($this->getStaleBefore());
+        $now = new DateTimeImmutable();
+
+        return array_map(
+            fn (Message $message) => $this->toStuckCampaignArray($message, $now),
+            $stuckMessages
+        );
+    }
+
+    public function resumeStuckCampaign(Administrator $administrator, Message $message = null): void
+    {
+        if (!$administrator->getPrivileges()->has(PrivilegeFlag::Campaigns)) {
+            throw new AccessDeniedHttpException('You are not allowed to update campaigns.');
+        }
+
+        if (!$message) {
+            throw new NotFoundHttpException('Campaign not found.');
+        }
+
+        $stuckIds = array_map(
+            static fn (Message $stuckMessage) => $stuckMessage->getId(),
+            $this->messageManager->getStuckCampaigns($this->getStaleBefore())
+        );
+        if (!in_array($message->getId(), $stuckIds, true)) {
+            throw new ConflictHttpException('Campaign is not currently stuck in processing.');
+        }
+    }
+
+    private function getStaleBefore(): DateTimeImmutable
+    {
+        return new DateTimeImmutable(sprintf('-%d seconds', $this->stuckCampaignThresholdSeconds));
+    }
+
+    private function toStuckCampaignArray(Message $message, DateTimeImmutable $now): array
+    {
+        return [
+            'id' => $message->getId(),
+            'subject' => $message->getContent()->getSubject(),
+            'status' => $message->getMetadata()->getStatus()->value,
+            'updated_at' => $message->getUpdatedAt()->format(DateTimeInterface::ATOM),
+            'stuck_seconds' => $now->getTimestamp() - $message->getUpdatedAt()->getTimestamp(),
+        ];
     }
 }
