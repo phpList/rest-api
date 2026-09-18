@@ -73,6 +73,7 @@ jobs:
           export PHPLIST_DATABASE_PASSWORD=${{ env.DB_PASSWORD }}
           export PHPLIST_DATABASE_PORT=${{ job.services.mysql.ports['3306'] }}
           export PHPLIST_DATABASE_HOST=127.0.0.1
+          export PHPLIST_DATABASE_PATH=
           vendor/bin/phpunit tests/Integration/
         continue-on-error: ${{matrix.php-versions == '8.0' }} # [temp-php8]
       - name: Running static analysis

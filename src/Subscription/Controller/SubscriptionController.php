@@ -9,7 +9,7 @@ use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Identity\Model\Administrator;
 use PhpList\Core\Domain\Subscription\Model\SubscriberList;
 use PhpList\Core\Domain\Subscription\Service\Manager\SubscriptionManager;
-use PhpList\Core\Security\Authentication;
+use PhpList\Core\Domain\Identity\Service\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
 use PhpList\RestBundle\Subscription\Request\SubscriptionRequest;

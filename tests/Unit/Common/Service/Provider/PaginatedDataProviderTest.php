@@ -61,7 +61,6 @@ class PaginatedDataProviderTest extends TestCase
             filter: new PaginatedFilter(),
         );
 
-        $this->assertIsArray($result);
         $this->assertArrayHasKey('items', $result);
         $this->assertArrayHasKey('pagination', $result);
     }

@@ -38,7 +38,6 @@ class EditorUploadControllerTest extends AbstractTestController
         $this->assertHttpOkay();
 
         $response = $this->getDecodedJsonResponseContent();
-        self::assertIsArray($response);
         self::assertArrayHasKey('files', $response);
         self::assertArrayHasKey('directory', $response);
         self::assertArrayHasKey('total', $response);

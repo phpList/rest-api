@@ -22,7 +22,6 @@ class TopDomainsNormalizerTest extends TestCase
         $normalizer = new TopDomainsNormalizer();
         $result = $normalizer->normalize($data);
 
-        $this->assertIsArray($result);
         $this->assertArrayHasKey('domains', $result);
         $this->assertArrayHasKey('total', $result);
         $this->assertEquals(150, $result['total']);
@@ -46,7 +45,6 @@ class TopDomainsNormalizerTest extends TestCase
         $normalizer = new TopDomainsNormalizer();
         $result = $normalizer->normalize($data);
 
-        $this->assertIsArray($result);
         $this->assertArrayHasKey('domains', $result);
         $this->assertArrayHasKey('total', $result);
         $this->assertEquals(0, $result['total']);
@@ -69,7 +67,6 @@ class TopDomainsNormalizerTest extends TestCase
         $normalizer = new TopDomainsNormalizer();
         $result = $normalizer->normalize($data);
 
-        $this->assertIsArray($result);
         $this->assertArrayHasKey('domains', $result);
         $this->assertArrayHasKey('total', $result);
         $this->assertEquals(0, $result['total']);
@@ -85,7 +82,6 @@ class TopDomainsNormalizerTest extends TestCase
         $normalizer = new TopDomainsNormalizer();
         $result = $normalizer->normalize($data);
 
-        $this->assertIsArray($result);
         $this->assertArrayHasKey('domains', $result);
         $this->assertArrayHasKey('total', $result);
         $this->assertEquals(100, $result['total']);
@@ -97,7 +93,6 @@ class TopDomainsNormalizerTest extends TestCase
         $normalizer = new TopDomainsNormalizer();
         $result = $normalizer->normalize('not an array');
 
-        $this->assertIsArray($result);
         $this->assertEmpty($result);
     }
 

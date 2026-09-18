@@ -10,7 +10,7 @@ use PhpList\Core\Domain\Common\Model\Filter\PaginatedFilter;
 use PhpList\Core\Domain\Identity\Model\PrivilegeFlag;
 use PhpList\Core\Domain\Subscription\Model\SubscribePage;
 use PhpList\Core\Domain\Subscription\Service\Manager\SubscribePageManager;
-use PhpList\Core\Security\Authentication;
+use PhpList\Core\Domain\Identity\Service\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Service\Provider\PaginatedDataProvider;
 use PhpList\RestBundle\Common\Validator\RequestValidator;

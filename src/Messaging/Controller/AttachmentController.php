@@ -7,7 +7,7 @@ namespace PhpList\RestBundle\Messaging\Controller;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Messaging\Model\Attachment;
 use PhpList\Core\Domain\Messaging\Service\AttachmentDownloadService;
-use PhpList\Core\Security\Authentication;
+use PhpList\Core\Domain\Identity\Service\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;

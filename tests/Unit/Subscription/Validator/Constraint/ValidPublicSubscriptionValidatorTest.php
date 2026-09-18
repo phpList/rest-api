@@ -40,7 +40,6 @@ class ValidPublicSubscriptionValidatorTest extends TestCase
         $this->context->expects($this->never())->method('buildViolation');
 
         $this->validator->validate($request, new ValidPublicSubscription());
-        $this->assertTrue(true);
     }
 
     public function testAddsViolationsForUnknownAndRequiredAttributes(): void

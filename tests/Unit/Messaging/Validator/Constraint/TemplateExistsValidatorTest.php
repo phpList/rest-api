@@ -34,14 +34,12 @@ class TemplateExistsValidatorTest extends TestCase
     {
         $this->templateRepository->expects($this->never())->method('find');
         $this->validator->validate(null, new TemplateExists());
-        $this->assertTrue(true);
     }
 
     public function testValidateSkipsEmptyString(): void
     {
         $this->templateRepository->expects($this->never())->method('find');
         $this->validator->validate('', new TemplateExists());
-        $this->assertTrue(true);
     }
 
     public function testValidateThrowsUnexpectedTypeException(): void
@@ -81,6 +79,5 @@ class TemplateExistsValidatorTest extends TestCase
             ->willReturn($template);
 
         $this->validator->validate(1, new TemplateExists());
-        $this->assertTrue(true);
     }
 }

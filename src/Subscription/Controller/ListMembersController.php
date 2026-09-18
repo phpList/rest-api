@@ -8,7 +8,7 @@ use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Subscription\Model\Filter\SubscriberFilter;
 use PhpList\Core\Domain\Subscription\Model\Subscriber;
 use PhpList\Core\Domain\Subscription\Model\SubscriberList;
-use PhpList\Core\Security\Authentication;
+use PhpList\Core\Domain\Identity\Service\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Service\Provider\PaginatedDataProvider;
 use PhpList\RestBundle\Common\Validator\RequestValidator;

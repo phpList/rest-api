@@ -22,8 +22,6 @@ class MaxForwardCountValidatorTest extends TestCase
 
         $constraint = new MaxForwardCount();
         $validator->validate('not-an-array', $constraint);
-
-        $this->assertTrue(true);
     }
 
     public function testTriggersViolationWhenUniqueCountExceedsLimit(): void
@@ -73,6 +71,5 @@ class MaxForwardCountValidatorTest extends TestCase
         $emails = ['a@example.com', 'b@example.com', 'a@example.com'];
 
         $validator->validate($emails, $constraint);
-        $this->assertTrue(true);
     }
 }

@@ -12,7 +12,7 @@ services:
         calls:
             - ['registerHandler', [ 'json', ['@my.secure_handler', 'createResponse'] ] ]
 
-    PhpList\Core\Security\Authentication:
+    PhpList\Core\Domain\Identity\Service\Authentication:
         autowire: true
         autoconfigure: true
 
