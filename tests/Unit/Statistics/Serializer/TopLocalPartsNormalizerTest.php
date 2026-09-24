@@ -22,7 +22,6 @@ class TopLocalPartsNormalizerTest extends TestCase
         $normalizer = new TopLocalPartsNormalizer();
         $result = $normalizer->normalize($data);
 
-        $this->assertIsArray($result);
         $this->assertArrayHasKey('local_parts', $result);
         $this->assertArrayHasKey('total', $result);
         $this->assertEquals(250, $result['total']);
@@ -49,7 +48,6 @@ class TopLocalPartsNormalizerTest extends TestCase
         $normalizer = new TopLocalPartsNormalizer();
         $result = $normalizer->normalize($data);
 
-        $this->assertIsArray($result);
         $this->assertArrayHasKey('local_parts', $result);
         $this->assertArrayHasKey('total', $result);
         $this->assertEquals(0, $result['total']);
@@ -78,7 +76,6 @@ class TopLocalPartsNormalizerTest extends TestCase
         $normalizer = new TopLocalPartsNormalizer();
         $result = $normalizer->normalize($data);
 
-        $this->assertIsArray($result);
         $this->assertArrayHasKey('local_parts', $result);
         $this->assertArrayHasKey('total', $result);
         $this->assertEquals(0, $result['total']);
@@ -94,7 +91,6 @@ class TopLocalPartsNormalizerTest extends TestCase
         $normalizer = new TopLocalPartsNormalizer();
         $result = $normalizer->normalize($data);
 
-        $this->assertIsArray($result);
         $this->assertArrayHasKey('local_parts', $result);
         $this->assertArrayHasKey('total', $result);
         $this->assertEquals(100, $result['total']);
@@ -106,7 +102,6 @@ class TopLocalPartsNormalizerTest extends TestCase
         $normalizer = new TopLocalPartsNormalizer();
         $result = $normalizer->normalize('not an array');
 
-        $this->assertIsArray($result);
         $this->assertEmpty($result);
     }
 

@@ -27,8 +27,6 @@ class UniqueLoginNameValidatorTest extends TestCase
 
         $constraint = new UniqueLoginName();
         $validator->validate('new_login', $constraint);
-
-        $this->assertTrue(true);
     }
 
     public function testValidateThrowsConflictForExistingLoginName(): void
@@ -65,7 +63,7 @@ class UniqueLoginNameValidatorTest extends TestCase
 
         $context = $this->createMock(ExecutionContextInterface::class);
         $dto = new class {
-            public $updatingId = 1;
+            public int $updatingId = 1;
         };
 
         $context->method('getObject')->willReturn($dto);
@@ -75,7 +73,5 @@ class UniqueLoginNameValidatorTest extends TestCase
 
         $constraint = new UniqueLoginName();
         $validator->validate('same_login', $constraint);
-
-        $this->assertTrue(true);
     }
 }

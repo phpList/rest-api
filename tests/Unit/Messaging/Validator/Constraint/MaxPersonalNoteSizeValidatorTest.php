@@ -23,8 +23,6 @@ class MaxPersonalNoteSizeValidatorTest extends TestCase
         $constraint = new MaxPersonalNoteSize();
         $validator->validate(null, $constraint);
         $validator->validate('', $constraint);
-
-        $this->assertTrue(true);
     }
 
     public function testSkipsWhenMaxSizeIsNullOrNegative(): void
@@ -39,8 +37,6 @@ class MaxPersonalNoteSizeValidatorTest extends TestCase
         $validatorNeg = new MaxPersonalNoteSizeValidator(-1);
         $validatorNeg->initialize($context);
         $validatorNeg->validate('anything', new MaxPersonalNoteSize());
-
-        $this->assertTrue(true);
     }
 
     public function testNoViolationWhenWithinOrAtLimit(): void
@@ -59,8 +55,6 @@ class MaxPersonalNoteSizeValidatorTest extends TestCase
         // below limit
         $short = str_repeat('b', 5);
         $validator->validate($short, $constraint);
-
-        $this->assertTrue(true);
     }
 
     public function testViolationWhenExceedsLimit(): void

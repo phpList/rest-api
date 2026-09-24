@@ -29,9 +29,7 @@ class ScriptsTest extends TestCase
     public static function publicDirectoryFilesDataProvider(): array
     {
         return [
-            'production entry point' => ['app.php'],
-            'development entry point' => ['app_dev.php'],
-            'testing entry point' => ['app_test.php'],
+            'entry point' => ['index.php'],
             '.htaccess' => ['.htaccess'],
         ];
     }
