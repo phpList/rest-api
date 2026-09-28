@@ -154,7 +154,7 @@ class SubscriptionController extends BaseController
                 description: 'emails of subscribers to delete from list.',
                 in: 'query',
                 required: true,
-                schema: new OA\Schema(type: 'string')
+                schema: new OA\Schema(type: 'array', items: new OA\Items(type: 'string', format: 'email'))
             ),
         ],
         responses: [
