@@ -62,6 +62,11 @@ class UniqueLoginNameValidatorTest extends TestCase
         $repository->method('findOneBy')->willReturn($admin);
 
         $context = $this->createMock(ExecutionContextInterface::class);
+
+        $context
+            ->expects($this->never())
+            ->method('buildViolation');
+
         $dto = new class {
             public int $updatingId = 1;
         };

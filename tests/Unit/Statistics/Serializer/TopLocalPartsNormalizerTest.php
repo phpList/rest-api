@@ -22,16 +22,16 @@ class TopLocalPartsNormalizerTest extends TestCase
         $normalizer = new TopLocalPartsNormalizer();
         $result = $normalizer->normalize($data);
 
-        $this->assertArrayHasKey('local_parts', $result);
+        $this->assertArrayHasKey('items', $result);
         $this->assertArrayHasKey('total', $result);
         $this->assertEquals(250, $result['total']);
-        $this->assertCount(2, $result['local_parts']);
-        $this->assertEquals('john', $result['local_parts'][0]['local_part']);
-        $this->assertEquals(100, $result['local_parts'][0]['count']);
-        $this->assertEquals(40.0, $result['local_parts'][0]['percentage']);
-        $this->assertEquals('info', $result['local_parts'][1]['local_part']);
-        $this->assertEquals(50, $result['local_parts'][1]['count']);
-        $this->assertEquals(20.0, $result['local_parts'][1]['percentage']);
+        $this->assertCount(2, $result['items']);
+        $this->assertEquals('john', $result['items'][0]['local_part']);
+        $this->assertEquals(100, $result['items'][0]['count']);
+        $this->assertEquals(40.0, $result['items'][0]['percentage']);
+        $this->assertEquals('info', $result['items'][1]['local_part']);
+        $this->assertEquals(50, $result['items'][1]['count']);
+        $this->assertEquals(20.0, $result['items'][1]['percentage']);
     }
 
     public function testNormalizeWithMissingFields(): void
@@ -48,22 +48,22 @@ class TopLocalPartsNormalizerTest extends TestCase
         $normalizer = new TopLocalPartsNormalizer();
         $result = $normalizer->normalize($data);
 
-        $this->assertArrayHasKey('local_parts', $result);
+        $this->assertArrayHasKey('items', $result);
         $this->assertArrayHasKey('total', $result);
         $this->assertEquals(0, $result['total']);
-        $this->assertCount(4, $result['local_parts']);
-        $this->assertEquals('john', $result['local_parts'][0]['local_part']);
-        $this->assertEquals(0, $result['local_parts'][0]['count']);
-        $this->assertEquals(0.0, $result['local_parts'][0]['percentage']);
-        $this->assertEquals('', $result['local_parts'][1]['local_part']);
-        $this->assertEquals(50, $result['local_parts'][1]['count']);
-        $this->assertEquals(0.0, $result['local_parts'][1]['percentage']);
-        $this->assertEquals('', $result['local_parts'][2]['local_part']);
-        $this->assertEquals(0, $result['local_parts'][2]['count']);
-        $this->assertEquals(20.0, $result['local_parts'][2]['percentage']);
-        $this->assertEquals('', $result['local_parts'][3]['local_part']);
-        $this->assertEquals(0, $result['local_parts'][3]['count']);
-        $this->assertEquals(0.0, $result['local_parts'][3]['percentage']);
+        $this->assertCount(4, $result['items']);
+        $this->assertEquals('john', $result['items'][0]['local_part']);
+        $this->assertEquals(0, $result['items'][0]['count']);
+        $this->assertEquals(0.0, $result['items'][0]['percentage']);
+        $this->assertEquals('', $result['items'][1]['local_part']);
+        $this->assertEquals(50, $result['items'][1]['count']);
+        $this->assertEquals(0.0, $result['items'][1]['percentage']);
+        $this->assertEquals('', $result['items'][2]['local_part']);
+        $this->assertEquals(0, $result['items'][2]['count']);
+        $this->assertEquals(20.0, $result['items'][2]['percentage']);
+        $this->assertEquals('', $result['items'][3]['local_part']);
+        $this->assertEquals(0, $result['items'][3]['count']);
+        $this->assertEquals(0.0, $result['items'][3]['percentage']);
     }
 
     public function testNormalizeWithEmptyLocalParts(): void
@@ -76,10 +76,10 @@ class TopLocalPartsNormalizerTest extends TestCase
         $normalizer = new TopLocalPartsNormalizer();
         $result = $normalizer->normalize($data);
 
-        $this->assertArrayHasKey('local_parts', $result);
+        $this->assertArrayHasKey('items', $result);
         $this->assertArrayHasKey('total', $result);
         $this->assertEquals(0, $result['total']);
-        $this->assertEmpty($result['local_parts']);
+        $this->assertEmpty($result['items']);
     }
 
     public function testNormalizeWithNoLocalParts(): void
@@ -91,10 +91,10 @@ class TopLocalPartsNormalizerTest extends TestCase
         $normalizer = new TopLocalPartsNormalizer();
         $result = $normalizer->normalize($data);
 
-        $this->assertArrayHasKey('local_parts', $result);
+        $this->assertArrayHasKey('items', $result);
         $this->assertArrayHasKey('total', $result);
         $this->assertEquals(100, $result['total']);
-        $this->assertEmpty($result['local_parts']);
+        $this->assertEmpty($result['items']);
     }
 
     public function testNormalizeWithInvalidObject(): void

@@ -60,29 +60,29 @@ class DomainConfirmationNormalizer implements NormalizerInterface
         $domains = [];
         foreach ($object['domains'] ?? [] as $domain) {
             $domains[] = [
-                'domain' => $domain['domain'] ?? '',
+                'domain' => $domain['domain'],
                 'confirmed' => [
-                    'count' => $domain['confirmed']['count'] ?? 0,
-                    'percentage' => $domain['confirmed']['percentage'] ?? 0.0,
+                    'count' => $domain['confirmed']['count'],
+                    'percentage' => $domain['confirmed']['percentage'],
                 ],
                 'unconfirmed' => [
-                    'count' => $domain['unconfirmed']['count'] ?? 0,
-                    'percentage' => $domain['unconfirmed']['percentage'] ?? 0.0,
+                    'count' => $domain['unconfirmed']['count'],
+                    'percentage' => $domain['unconfirmed']['percentage'],
                 ],
                 'blacklisted' => [
-                    'count' => $domain['blacklisted']['count'] ?? 0,
-                    'percentage' => $domain['blacklisted']['percentage'] ?? 0.0,
+                    'count' => $domain['blacklisted']['count'],
+                    'percentage' => $domain['blacklisted']['percentage'],
                 ],
                 'total' => [
-                    'count' => $domain['total']['count'] ?? 0,
-                    'percentage' => $domain['total']['percentage'] ?? 0.0,
+                    'count' => $domain['total']['count'],
+                    'percentage' => $domain['total']['percentage'],
                 ]
             ];
         }
 
         return [
             'items' => $domains,
-            'total' => $object['total'] ?? 0,
+            'total' => $object['total'],
         ];
     }
 

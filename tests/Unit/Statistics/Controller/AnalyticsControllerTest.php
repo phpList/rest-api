@@ -12,6 +12,7 @@ use PhpList\Core\Domain\Identity\Service\Authentication;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
 use PhpList\RestBundle\Statistics\Controller\AnalyticsController;
 use PhpList\RestBundle\Statistics\Serializer\CampaignStatisticsNormalizer;
+use PhpList\RestBundle\Statistics\Serializer\DomainConfirmationNormalizer;
 use PhpList\RestBundle\Statistics\Serializer\TopDomainsNormalizer;
 use PhpList\RestBundle\Statistics\Serializer\TopLocalPartsNormalizer;
 use PhpList\RestBundle\Statistics\Serializer\ViewOpensStatisticsNormalizer;
@@ -46,7 +47,8 @@ class AnalyticsControllerTest extends TestCase
             campaignStatsNormalizer: $campaignStatisticsNormalizer,
             viewOpensStatsNormalizer: $viewOpensStatisticsNormalizer,
             topDomainsNormalizer: $topDomainsNormalizer,
-            topLocalPartsNormalizer: new TopLocalPartsNormalizer()
+            topLocalPartsNormalizer: new TopLocalPartsNormalizer(),
+            domainConfirmationNormalizer: new DomainConfirmationNormalizer(),
         );
 
         $this->privileges = $this->createMock(Privileges::class);
@@ -292,7 +294,15 @@ class AnalyticsControllerTest extends TestCase
 
         self::assertInstanceOf(JsonResponse::class, $response);
         self::assertEquals(Response::HTTP_OK, $response->getStatusCode());
-        self::assertEquals($expectedData, json_decode($response->getContent(), true));
+        self::assertEquals([
+            'items' => [
+                [
+                    'domain' => 'example.com',
+                    'subscribers' => 50,
+                ]
+            ],
+            'total' => 1,
+        ], json_decode($response->getContent(), true));
     }
 
     public function testGetDomainConfirmationStatisticsWithoutStatisticsPrivilegeThrowsException(): void
@@ -369,7 +379,30 @@ class AnalyticsControllerTest extends TestCase
 
         self::assertInstanceOf(JsonResponse::class, $response);
         self::assertEquals(Response::HTTP_OK, $response->getStatusCode());
-        self::assertEquals($expectedData, json_decode($response->getContent(), true));
+        self::assertEquals([
+            'items' => [
+                [
+                    'domain' => 'example.com',
+                    'confirmed' => [
+                        'count' => 40,
+                        'percentage' => 80.0,
+                    ],
+                    'unconfirmed' => [
+                        'count' => 5,
+                        'percentage' => 10.0,
+                    ],
+                    'blacklisted' => [
+                        'count' => 5,
+                        'percentage' => 10.0,
+                    ],
+                    'total' => [
+                        'count' => 50,
+                        'percentage' => 100.0,
+                    ],
+                ]
+            ],
+            'total' => 1,
+        ], json_decode($response->getContent(), true));
     }
 
     public function testGetTopLocalPartsWithoutStatisticsPrivilegeThrowsException(): void
@@ -432,11 +465,11 @@ class AnalyticsControllerTest extends TestCase
 
         self::assertEquals(Response::HTTP_OK, $response->getStatusCode());
         self::assertEquals([
-            'local_parts' => [
+            'items' => [
                 [
                     'local_part' => 'info',
                     'count' => 30,
-                    'percentage' => 60.0,
+                    'percentage' => 60,
                 ]
             ],
             'total' => 1,
