@@ -18,7 +18,13 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
         new OA\Property(property: 'action', type: 'string', example: 'delete', nullable: false),
         new OA\Property(property: 'list_order', type: 'integer', example: 0, nullable: true),
         new OA\Property(property: 'comment', type: 'string', example: 'Auto-generated', nullable: true),
-        new OA\Property(property: 'status', type: 'string', example: 'active', nullable: false),
+        new OA\Property(
+            property: 'status',
+            type: 'string',
+            enum: ['active', 'inactive'],
+            example: 'active',
+            nullable: false
+        ),
     ],
     type: 'object'
 )]
@@ -39,7 +45,7 @@ class BounceRegexRequest implements RequestInterface
     public ?string $comment = null;
 
     #[Assert\Type('string')]
-    #[Assert\Choice(['active', 'invite'])]
+    #[Assert\Choice(['active', 'inactive'])]
     public string $status;
 
     public function getDto(): array

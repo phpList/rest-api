@@ -149,7 +149,7 @@ class SessionControllerTest extends AbstractTestController
         $key = $responseContent['key'];
         $expiry = $responseContent['expiry_date'];
 
-        /** @var AdministratorToken $token */
+        /** @var ?AdministratorToken $token */
         $token = $this->administratorTokenRepository->find($tokenId);
 
         self::assertNotNull($token);

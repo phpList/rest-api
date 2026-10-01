@@ -54,7 +54,6 @@ class AdminAttributeValueNormalizerTest extends TestCase
 
         $data = $this->normalizer->normalize($attributeValue);
 
-        $this->assertIsArray($data);
         $this->assertEquals([
             'administrator' => ['id' => 1, 'login_name' => 'admin'],
             'definition' => ['id' => 2, 'name' => 'test_attribute'],
@@ -78,7 +77,6 @@ class AdminAttributeValueNormalizerTest extends TestCase
 
         $data = $this->normalizer->normalize($attributeValue);
 
-        $this->assertIsArray($data);
         $this->assertEquals([
             'administrator' => ['id' => 1, 'login_name' => 'admin'],
             'definition' => ['id' => 2, 'name' => 'test_attribute'],
@@ -90,7 +88,6 @@ class AdminAttributeValueNormalizerTest extends TestCase
     {
         $data = $this->normalizer->normalize(new \stdClass());
 
-        $this->assertIsArray($data);
         $this->assertEmpty($data);
     }
 

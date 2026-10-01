@@ -11,7 +11,7 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
     schema: 'TopDomainStats',
     properties: [
         new OA\Property(
-            property: 'domains',
+            property: 'items',
             type: 'array',
             items: new OA\Items(
                 properties: [
@@ -29,7 +29,7 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 class TopDomainsNormalizer implements NormalizerInterface
 {
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function normalize(mixed $object, string $format = null, array $context = []): array
     {
@@ -46,13 +46,13 @@ class TopDomainsNormalizer implements NormalizerInterface
         }
 
         return [
-            'domains' => $domains,
+            'items' => $domains,
             'total' => $object['total'] ?? 0,
         ];
     }
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function supportsNormalization(mixed $data, string $format = null, array $context = []): bool
     {

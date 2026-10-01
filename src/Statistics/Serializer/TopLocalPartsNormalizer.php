@@ -11,7 +11,7 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
     schema: 'LocalPartsStats',
     properties: [
         new OA\Property(
-            property: 'local_parts',
+            property: 'items',
             type: 'array',
             items: new OA\Items(
                 properties: [
@@ -30,7 +30,7 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 class TopLocalPartsNormalizer implements NormalizerInterface
 {
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function normalize(mixed $object, string $format = null, array $context = []): array
     {
@@ -48,13 +48,13 @@ class TopLocalPartsNormalizer implements NormalizerInterface
         }
 
         return [
-            'local_parts' => $localParts,
+            'items' => $localParts,
             'total' => $object['total'] ?? 0,
         ];
     }
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function supportsNormalization(mixed $data, string $format = null, array $context = []): bool
     {

@@ -31,7 +31,6 @@ class AdministratorNormalizerTest extends TestCase
         $normalizer = new AdministratorNormalizer();
         $data = $normalizer->normalize($admin);
 
-        $this->assertIsArray($data);
         $this->assertEquals([
             'id' => 123,
             'login_name' => 'admin',

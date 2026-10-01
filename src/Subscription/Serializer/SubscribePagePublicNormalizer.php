@@ -41,7 +41,14 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
                             new OA\Property(
                                 property: 'options',
                                 type: 'array',
-                                items: new OA\Items(type: 'object')
+                                items: new OA\Items(
+                                    properties: [
+                                        new OA\Property(property: 'id', type: 'integer'),
+                                        new OA\Property(property: 'name', type: 'string'),
+                                        new OA\Property(property: 'list_order', type: 'integer'),
+                                    ],
+                                    type: 'object'
+                                )
                             ),
                         ],
                         type: 'object'
@@ -83,7 +90,7 @@ class SubscribePagePublicNormalizer implements NormalizerInterface
     }
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function normalize($object, string $format = null, array $context = []): array
     {
@@ -128,7 +135,14 @@ class SubscribePagePublicNormalizer implements NormalizerInterface
                 'required' => $attributeDefinition->isRequired(),
                 'default_value' => $attributeDefinition->getDefaultValue(),
                 'list_order' => $attributeDefinition->getListOrder(),
-                'options' => $attributeDefinition->getOptions(),
+                'options' => array_map(
+                    static fn ($option) => [
+                        'id' => $option->id,
+                        'name' => $option->name,
+                        'list_order' => $option->listOrder,
+                    ],
+                    $attributeDefinition->getOptions()
+                ),
             ];
         }
 
@@ -152,10 +166,20 @@ class SubscribePagePublicNormalizer implements NormalizerInterface
     }
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function supportsNormalization($data, string $format = null): bool
     {
         return $data instanceof SubscribePage;
+    }
+
+    /**
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
+     */
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            SubscribePage::class => true,
+        ];
     }
 }

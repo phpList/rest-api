@@ -7,10 +7,11 @@ namespace PhpList\RestBundle\Statistics\Controller;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Analytics\Service\AnalyticsService;
 use PhpList\Core\Domain\Identity\Model\PrivilegeFlag;
-use PhpList\Core\Security\Authentication;
+use PhpList\Core\Domain\Identity\Service\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
 use PhpList\RestBundle\Statistics\Serializer\CampaignStatisticsNormalizer;
+use PhpList\RestBundle\Statistics\Serializer\DomainConfirmationNormalizer;
 use PhpList\RestBundle\Statistics\Serializer\TopDomainsNormalizer;
 use PhpList\RestBundle\Statistics\Serializer\TopLocalPartsNormalizer;
 use PhpList\RestBundle\Statistics\Serializer\ViewOpensStatisticsNormalizer;
@@ -18,7 +19,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Throwable;
 
 /**
  * This controller provides REST API to access analytics data.
@@ -27,27 +27,18 @@ use Throwable;
 class AnalyticsController extends BaseController
 {
     public const BATCH_SIZE = 20;
-    private AnalyticsService $analyticsService;
-    private CampaignStatisticsNormalizer $campaignStatsNormalizer;
-    private ViewOpensStatisticsNormalizer $viewOpensStatsNormalizer;
-    private TopDomainsNormalizer $topDomainsNormalizer;
-    private TopLocalPartsNormalizer $topLocalPartsNormalizer;
 
     public function __construct(
         Authentication $authentication,
         RequestValidator $validator,
-        AnalyticsService $analyticsService,
-        CampaignStatisticsNormalizer $campaignStatsNormalizer,
-        ViewOpensStatisticsNormalizer $viewOpensStatsNormalizer,
-        TopDomainsNormalizer $topDomainsNormalizer,
-        TopLocalPartsNormalizer $topLocalPartsNormalizer
+        private readonly AnalyticsService $analyticsService,
+        private readonly CampaignStatisticsNormalizer $campaignStatsNormalizer,
+        private readonly ViewOpensStatisticsNormalizer $viewOpensStatsNormalizer,
+        private readonly TopDomainsNormalizer $topDomainsNormalizer,
+        private readonly TopLocalPartsNormalizer $topLocalPartsNormalizer,
+        private readonly DomainConfirmationNormalizer $domainConfirmationNormalizer,
     ) {
         parent::__construct($authentication, $validator);
-        $this->analyticsService = $analyticsService;
-        $this->campaignStatsNormalizer = $campaignStatsNormalizer;
-        $this->viewOpensStatsNormalizer = $viewOpensStatsNormalizer;
-        $this->topDomainsNormalizer = $topDomainsNormalizer;
-        $this->topLocalPartsNormalizer = $topLocalPartsNormalizer;
     }
 
     #[Route('/campaigns', name: 'campaign_statistics', methods: ['GET'])]
@@ -302,7 +293,11 @@ class AnalyticsController extends BaseController
 
         $data = $this->analyticsService->getDomainConfirmationStatistics($limit);
 
-        return $this->json($data, Response::HTTP_OK);
+        $normalizedData = $this->domainConfirmationNormalizer->normalize($data, null, [
+            'domain_confirmation' => true,
+        ]);
+
+        return $this->json($normalizedData, Response::HTTP_OK);
     }
 
     #[Route('/local-parts/top', name: 'top_local_parts', methods: ['GET'])]
@@ -358,12 +353,12 @@ class AnalyticsController extends BaseController
         return $this->json($normalizedData, Response::HTTP_OK);
     }
 
-    #[Route('/dashboard', name: 'dashboard_statistics', methods: ['GET'])]
+    #[Route('/dashboard/summary', name: 'dashboard_summary', methods: ['GET'])]
     #[OA\Get(
-        path: '/api/v2/analytics/dashboard',
+        path: '/api/v2/analytics/dashboard/summary',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
-            'Returns dashboard cards with aggregate analytics metrics.',
-        summary: 'Gets dashboard analytics statistics.',
+            'Returns dashboard summary statistics.',
+        summary: 'Gets dashboard summary statistics.',
         tags: ['analytics'],
         parameters: [
             new OA\Parameter(
@@ -381,114 +376,66 @@ class AnalyticsController extends BaseController
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(
-                            property: 'summary_statistics',
+                            property: 'total_subscribers',
                             properties: [
+                                new OA\Property(property: 'value', type: 'integer', example: 48294),
                                 new OA\Property(
-                                    property: 'total_subscribers',
-                                    properties: [
-                                        new OA\Property(property: 'value', type: 'integer', example: 48294),
-                                        new OA\Property(
-                                            property: 'change_vs_last_month',
-                                            type: 'number',
-                                            format: 'float',
-                                            example: 12.5
-                                        ),
-                                    ],
-                                    type: 'object'
-                                ),
-                                new OA\Property(
-                                    property: 'active_campaigns',
-                                    properties: [
-                                        new OA\Property(property: 'value', type: 'integer', example: 12),
-                                        new OA\Property(
-                                            property: 'change_vs_last_month',
-                                            type: 'number',
-                                            format: 'float',
-                                            example: 0
-                                        ),
-                                    ],
-                                    type: 'object'
-                                ),
-                                new OA\Property(
-                                    property: 'open_rate',
-                                    properties: [
-                                        new OA\Property(
-                                            property: 'value',
-                                            type: 'number',
-                                            format: 'float',
-                                            example: 12
-                                        ),
-                                        new OA\Property(
-                                            property: 'change_vs_last_month',
-                                            type: 'number',
-                                            format: 'float',
-                                            example: 0
-                                        ),
-                                    ],
-                                    type: 'object'
-                                ),
-                                new OA\Property(
-                                    property: 'bounce_rate',
-                                    properties: [
-                                        new OA\Property(
-                                            property: 'value',
-                                            type: 'number',
-                                            format: 'float',
-                                            example: 12
-                                        ),
-                                        new OA\Property(
-                                            property: 'change_vs_last_month',
-                                            type: 'number',
-                                            format: 'float',
-                                            example: 0
-                                        ),
-                                    ],
-                                    type: 'object'
+                                    property: 'change_vs_last_month',
+                                    type: 'number',
+                                    format: 'float',
+                                    example: 12.5
                                 ),
                             ],
                             type: 'object'
                         ),
                         new OA\Property(
-                            property: 'recent_campaigns',
-                            type: 'array',
-                            items: new OA\Items(
-                                properties: [
-                                    new OA\Property(property: 'name', type: 'string', example: 'March Newsletter'),
-                                    new OA\Property(
-                                        property: 'status',
-                                        type: 'string',
-                                        example: 'sent',
-                                        nullable: true
-                                    ),
-                                    new OA\Property(
-                                        property: 'date',
-                                        type: 'string',
-                                        format: 'date',
-                                        example: '2026-03-15',
-                                        nullable: true
-                                    ),
-                                    new OA\Property(property: 'open_rate', type: 'string', example: '42.50%'),
-                                    new OA\Property(property: 'click_rate', type: 'string', example: '8.10%'),
-                                ],
-                                type: 'object'
-                            )
+                            property: 'active_campaigns',
+                            properties: [
+                                new OA\Property(property: 'value', type: 'integer', example: 12),
+                                new OA\Property(
+                                    property: 'change_vs_last_month',
+                                    type: 'number',
+                                    format: 'float',
+                                    example: 0
+                                ),
+                            ],
+                            type: 'object'
                         ),
                         new OA\Property(
-                            property: 'campaign_performance',
-                            type: 'array',
-                            items: new OA\Items(
-                                properties: [
-                                    new OA\Property(
-                                        property: 'date',
-                                        type: 'string',
-                                        format: 'date',
-                                        example: '2026-03-19'
-                                    ),
-                                    new OA\Property(property: 'opens', type: 'integer', example: 234),
-                                    new OA\Property(property: 'clicks', type: 'integer', example: 57),
-                                ],
-                                type: 'object'
-                            )
+                            property: 'open_rate',
+                            properties: [
+                                new OA\Property(
+                                    property: 'value',
+                                    type: 'number',
+                                    format: 'float',
+                                    example: 12
+                                ),
+                                new OA\Property(
+                                    property: 'change_vs_last_month',
+                                    type: 'number',
+                                    format: 'float',
+                                    example: 0
+                                ),
+                            ],
+                            type: 'object'
+                        ),
+                        new OA\Property(
+                            property: 'bounce_rate',
+                            properties: [
+                                new OA\Property(
+                                    property: 'value',
+                                    type: 'number',
+                                    format: 'float',
+                                    example: 12
+                                ),
+                                new OA\Property(
+                                    property: 'change_vs_last_month',
+                                    type: 'number',
+                                    format: 'float',
+                                    example: 0
+                                ),
+                            ],
+                            type: 'object'
                         ),
                     ],
                     type: 'object'
@@ -501,16 +448,126 @@ class AnalyticsController extends BaseController
             )
         ]
     )]
-    public function getDashboardStatistics(Request $request): JsonResponse
+    public function getDashboardSummary(Request $request): JsonResponse
     {
         $this->requireAuthentication($request);
 
-        $response = [
-            'summary_statistics' => $this->analyticsService->getSummaryStatistics(),
-            'recent_campaigns' => $this->analyticsService->getRecentCampaigns(),
-            'campaign_performance' => $this->analyticsService->getCampaignPerformance(),
-        ];
+        $data = $this->analyticsService->getSummaryStatistics();
 
-        return $this->json($response, Response::HTTP_OK);
+        return $this->json($data, Response::HTTP_OK);
+    }
+
+    #[Route('/dashboard/recent-campaigns', name: 'dashboard_recent_campaigns', methods: ['GET'])]
+    #[OA\Get(
+        path: '/api/v2/analytics/dashboard/recent-campaigns',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
+            'Returns the most recent campaigns with their performance metrics.',
+        summary: 'Gets dashboard recent campaigns statistics.',
+        tags: ['analytics'],
+        parameters: [
+            new OA\Parameter(
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Success',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(
+                        properties: [
+                            new OA\Property(property: 'name', type: 'string', example: 'March Newsletter'),
+                            new OA\Property(
+                                property: 'status',
+                                type: 'string',
+                                example: 'sent',
+                                nullable: true
+                            ),
+                            new OA\Property(
+                                property: 'date',
+                                type: 'string',
+                                format: 'date',
+                                example: '2026-03-15',
+                                nullable: true
+                            ),
+                            new OA\Property(property: 'open_rate', type: 'string', example: '42.50%'),
+                            new OA\Property(property: 'click_rate', type: 'string', example: '8.10%'),
+                        ],
+                        type: 'object'
+                    )
+                )
+            ),
+            new OA\Response(
+                response: 401,
+                description: 'Not authenticated',
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
+            )
+        ]
+    )]
+    public function getRecentCampaignsStatistics(Request $request): JsonResponse
+    {
+        $this->requireAuthentication($request);
+
+        $data = $this->analyticsService->getRecentCampaigns();
+
+        return $this->json($data, Response::HTTP_OK);
+    }
+
+    #[Route('/dashboard/performance', name: 'dashboard_performance', methods: ['GET'])]
+    #[OA\Get(
+        path: '/api/v2/analytics/dashboard/performance',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
+            'Returns campaign performance metrics over time.',
+        summary: 'Gets dashboard campaign performance statistics.',
+        tags: ['analytics'],
+        parameters: [
+            new OA\Parameter(
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Success',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(
+                        properties: [
+                            new OA\Property(
+                                property: 'date',
+                                type: 'string',
+                                format: 'date',
+                                example: '2026-03-19'
+                            ),
+                            new OA\Property(property: 'opens', type: 'integer', example: 234),
+                            new OA\Property(property: 'clicks', type: 'integer', example: 57),
+                        ],
+                        type: 'object'
+                    )
+                )
+            ),
+            new OA\Response(
+                response: 401,
+                description: 'Not authenticated',
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
+            )
+        ]
+    )]
+    public function getCampaignPerformanceStatistics(Request $request): JsonResponse
+    {
+        $this->requireAuthentication($request);
+
+        $data = $this->analyticsService->getCampaignPerformance();
+
+        return $this->json($data, Response::HTTP_OK);
     }
 }

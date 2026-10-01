@@ -48,7 +48,6 @@ class ForwardingResultNormalizerTest extends TestCase
 
         $data = $this->normalizer->normalize($result);
 
-        $this->assertIsArray($data);
         $this->assertSame(5, $data['total_requested']);
         $this->assertSame(3, $data['total_sent']);
         $this->assertSame(1, $data['total_failed']);

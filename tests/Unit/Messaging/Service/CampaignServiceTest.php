@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Unit\Messaging\Service;
 
+use DateTime;
+use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpList\Core\Domain\Identity\Model\Administrator;
 use PhpList\Core\Domain\Identity\Model\PrivilegeFlag;
@@ -12,6 +14,9 @@ use PhpList\Core\Domain\Messaging\Model\Filter\MessageFilter;
 use PhpList\Core\Domain\Messaging\Model\Message;
 use PhpList\Core\Domain\Messaging\Model\Dto\CreateMessageDto;
 use PhpList\Core\Domain\Messaging\Model\Dto\UpdateMessageDto;
+use PhpList\Core\Domain\Messaging\Model\Message\MessageContent;
+use PhpList\Core\Domain\Messaging\Model\Message\MessageMetadata;
+use PhpList\Core\Domain\Messaging\Model\Message\MessageStatus;
 use PhpList\Core\Domain\Messaging\Service\Manager\MessageManager;
 use PhpList\RestBundle\Common\Service\Provider\PaginatedDataProvider;
 use PhpList\RestBundle\Messaging\Request\CreateMessageRequest;
@@ -22,6 +27,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CampaignServiceTest extends TestCase
@@ -42,6 +48,7 @@ class CampaignServiceTest extends TestCase
             paginatedProvider: $this->paginatedProvider,
             normalizer: $this->normalizer,
             entityManager: $this->createMock(EntityManagerInterface::class),
+            stuckCampaignThresholdSeconds: 1800,
         );
     }
 
@@ -59,6 +66,52 @@ class CampaignServiceTest extends TestCase
                 Message::class,
                 $this->callback(function (MessageFilter $filter) use ($administrator) {
                     return $filter->getOwner() === $administrator;
+                })
+            )
+            ->willReturn($expectedResult);
+
+        $result = $this->campaignService->getMessages($request, $administrator);
+
+        $this->assertSame($expectedResult, $result);
+    }
+
+    public function testGetMessagesAppliesStatusAndSortFromQuery(): void
+    {
+        $request = new Request(query: ['status' => 'submitted,prepared', 'sort' => 'desc']);
+        $administrator = $this->createMock(Administrator::class);
+        $expectedResult = ['items' => [], 'pagination' => []];
+
+        $this->paginatedProvider->expects($this->once())
+            ->method('getPaginatedList')
+            ->with(
+                $this->identicalTo($request),
+                $this->identicalTo($this->normalizer),
+                Message::class,
+                $this->callback(function (MessageFilter $filter) {
+                    return $filter->getStatus() === 'submitted,prepared' && $filter->getSortOrder() === 'desc';
+                })
+            )
+            ->willReturn($expectedResult);
+
+        $result = $this->campaignService->getMessages($request, $administrator);
+
+        $this->assertSame($expectedResult, $result);
+    }
+
+    public function testGetMessagesIgnoresInvalidSortValue(): void
+    {
+        $request = new Request(query: ['sort' => 'bogus']);
+        $administrator = $this->createMock(Administrator::class);
+        $expectedResult = ['items' => [], 'pagination' => []];
+
+        $this->paginatedProvider->expects($this->once())
+            ->method('getPaginatedList')
+            ->with(
+                $this->identicalTo($request),
+                $this->identicalTo($this->normalizer),
+                Message::class,
+                $this->callback(function (MessageFilter $filter) {
+                    return $filter->getSortOrder() === 'asc';
                 })
             )
             ->willReturn($expectedResult);
@@ -295,5 +348,112 @@ class CampaignServiceTest extends TestCase
             ->with($this->identicalTo($message));
 
         $this->campaignService->deleteMessage($administrator, $message);
+    }
+
+    public function testGetStuckCampaignsReturnsMappedArray(): void
+    {
+        $message = $this->createMock(Message::class);
+        $content = $this->createMock(MessageContent::class);
+        $metadata = $this->createMock(MessageMetadata::class);
+        $updatedAt = new DateTime('-45 minutes');
+
+        $content->method('getSubject')->willReturn('Stuck Campaign');
+        $metadata->method('getStatus')->willReturn(MessageStatus::InProcess);
+        $message->method('getId')->willReturn(7);
+        $message->method('getContent')->willReturn($content);
+        $message->method('getMetadata')->willReturn($metadata);
+        $message->method('getUpdatedAt')->willReturn($updatedAt);
+
+        $this->messageManager->expects($this->once())
+            ->method('getStuckCampaigns')
+            ->with($this->isInstanceOf(DateTimeImmutable::class))
+            ->willReturn([$message]);
+
+        $result = $this->campaignService->getStuckCampaigns();
+
+        $this->assertCount(1, $result);
+        $this->assertSame(7, $result[0]['id']);
+        $this->assertSame('Stuck Campaign', $result[0]['subject']);
+        $this->assertSame('inprocess', $result[0]['status']);
+        $this->assertGreaterThanOrEqual(45 * 60, $result[0]['stuck_seconds']);
+    }
+
+    public function testResumeStuckCampaignThrowsExceptionWhenAdministratorLacksPrivileges(): void
+    {
+        $privileges = $this->createMock(Privileges::class);
+        $administrator = $this->createMock(Administrator::class);
+        $message = $this->createMock(Message::class);
+
+        $administrator->expects($this->once())
+            ->method('getPrivileges')
+            ->willReturn($privileges);
+
+        $privileges->expects($this->once())
+            ->method('has')
+            ->with(PrivilegeFlag::Campaigns)
+            ->willReturn(false);
+
+        $this->expectException(AccessDeniedHttpException::class);
+
+        $this->campaignService->resumeStuckCampaign($administrator, $message);
+    }
+
+    public function testResumeStuckCampaignThrowsExceptionWhenMessageIsNull(): void
+    {
+        $privileges = $this->createMock(Privileges::class);
+        $administrator = $this->createMock(Administrator::class);
+
+        $administrator->expects($this->once())
+            ->method('getPrivileges')
+            ->willReturn($privileges);
+
+        $privileges->expects($this->once())
+            ->method('has')
+            ->with(PrivilegeFlag::Campaigns)
+            ->willReturn(true);
+
+        $this->expectException(NotFoundHttpException::class);
+
+        $this->campaignService->resumeStuckCampaign($administrator, null);
+    }
+
+    public function testResumeStuckCampaignThrowsConflictWhenCampaignIsNotStuck(): void
+    {
+        $privileges = $this->createMock(Privileges::class);
+        $administrator = $this->createMock(Administrator::class);
+        $message = $this->createMock(Message::class);
+        $otherStuckMessage = $this->createMock(Message::class);
+
+        $administrator->method('getPrivileges')->willReturn($privileges);
+        $privileges->method('has')->with(PrivilegeFlag::Campaigns)->willReturn(true);
+
+        $message->method('getId')->willReturn(1);
+        $otherStuckMessage->method('getId')->willReturn(2);
+
+        $this->messageManager->expects($this->once())
+            ->method('getStuckCampaigns')
+            ->willReturn([$otherStuckMessage]);
+
+        $this->expectException(ConflictHttpException::class);
+
+        $this->campaignService->resumeStuckCampaign($administrator, $message);
+    }
+
+    public function testResumeStuckCampaignSucceedsWhenCampaignIsStuck(): void
+    {
+        $privileges = $this->createMock(Privileges::class);
+        $administrator = $this->createMock(Administrator::class);
+        $message = $this->createMock(Message::class);
+
+        $administrator->method('getPrivileges')->willReturn($privileges);
+        $privileges->method('has')->with(PrivilegeFlag::Campaigns)->willReturn(true);
+
+        $message->method('getId')->willReturn(1);
+
+        $this->messageManager->expects($this->once())
+            ->method('getStuckCampaigns')
+            ->willReturn([$message]);
+
+        $this->campaignService->resumeStuckCampaign($administrator, $message);
     }
 }
