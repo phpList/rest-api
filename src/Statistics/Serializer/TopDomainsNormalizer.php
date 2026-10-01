@@ -11,7 +11,7 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
     schema: 'TopDomainStats',
     properties: [
         new OA\Property(
-            property: 'domains',
+            property: 'items',
             type: 'array',
             items: new OA\Items(
                 properties: [
@@ -46,7 +46,7 @@ class TopDomainsNormalizer implements NormalizerInterface
         }
 
         return [
-            'domains' => $domains,
+            'items' => $domains,
             'total' => $object['total'] ?? 0,
         ];
     }

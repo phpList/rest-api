@@ -11,6 +11,7 @@ use PhpList\Core\Domain\Identity\Service\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
 use PhpList\RestBundle\Statistics\Serializer\CampaignStatisticsNormalizer;
+use PhpList\RestBundle\Statistics\Serializer\DomainConfirmationNormalizer;
 use PhpList\RestBundle\Statistics\Serializer\TopDomainsNormalizer;
 use PhpList\RestBundle\Statistics\Serializer\TopLocalPartsNormalizer;
 use PhpList\RestBundle\Statistics\Serializer\ViewOpensStatisticsNormalizer;
@@ -18,7 +19,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Throwable;
 
 /**
  * This controller provides REST API to access analytics data.
@@ -27,27 +27,18 @@ use Throwable;
 class AnalyticsController extends BaseController
 {
     public const BATCH_SIZE = 20;
-    private AnalyticsService $analyticsService;
-    private CampaignStatisticsNormalizer $campaignStatsNormalizer;
-    private ViewOpensStatisticsNormalizer $viewOpensStatsNormalizer;
-    private TopDomainsNormalizer $topDomainsNormalizer;
-    private TopLocalPartsNormalizer $topLocalPartsNormalizer;
 
     public function __construct(
         Authentication $authentication,
         RequestValidator $validator,
-        AnalyticsService $analyticsService,
-        CampaignStatisticsNormalizer $campaignStatsNormalizer,
-        ViewOpensStatisticsNormalizer $viewOpensStatsNormalizer,
-        TopDomainsNormalizer $topDomainsNormalizer,
-        TopLocalPartsNormalizer $topLocalPartsNormalizer
+        private readonly AnalyticsService $analyticsService,
+        private readonly CampaignStatisticsNormalizer $campaignStatsNormalizer,
+        private readonly ViewOpensStatisticsNormalizer $viewOpensStatsNormalizer,
+        private readonly TopDomainsNormalizer $topDomainsNormalizer,
+        private readonly TopLocalPartsNormalizer $topLocalPartsNormalizer,
+        private readonly DomainConfirmationNormalizer $domainConfirmationNormalizer,
     ) {
         parent::__construct($authentication, $validator);
-        $this->analyticsService = $analyticsService;
-        $this->campaignStatsNormalizer = $campaignStatsNormalizer;
-        $this->viewOpensStatsNormalizer = $viewOpensStatsNormalizer;
-        $this->topDomainsNormalizer = $topDomainsNormalizer;
-        $this->topLocalPartsNormalizer = $topLocalPartsNormalizer;
     }
 
     #[Route('/campaigns', name: 'campaign_statistics', methods: ['GET'])]
@@ -302,7 +293,11 @@ class AnalyticsController extends BaseController
 
         $data = $this->analyticsService->getDomainConfirmationStatistics($limit);
 
-        return $this->json($data, Response::HTTP_OK);
+        $normalizedData = $this->domainConfirmationNormalizer->normalize($data, null, [
+            'domain_confirmation' => true,
+        ]);
+
+        return $this->json($normalizedData, Response::HTTP_OK);
     }
 
     #[Route('/local-parts/top', name: 'top_local_parts', methods: ['GET'])]
