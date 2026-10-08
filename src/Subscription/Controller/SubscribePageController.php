@@ -36,7 +36,7 @@ class SubscribePageController extends BaseController
         parent::__construct($authentication, $validator);
     }
 
-    #[Route('/', name: 'get_all', methods: ['GET'])]
+    #[Route('', name: 'get_all', methods: ['GET'])]
     #[OA\Get(
         path: '/api/v2/subscribe-pages',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production.',
@@ -111,7 +111,7 @@ class SubscribePageController extends BaseController
         );
     }
 
-    #[Route('/', name: 'create', methods: ['POST'])]
+    #[Route('', name: 'create', methods: ['POST'])]
     #[OA\Post(
         path: '/api/v2/subscribe-pages',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production.',
@@ -168,6 +168,7 @@ class SubscribePageController extends BaseController
     public function createPage(Request $request): JsonResponse
     {
         $admin = $this->requireAuthentication($request);
+
         if (!$admin->getPrivileges()->has(PrivilegeFlag::Subscribers)) {
             throw $this->createAccessDeniedException('You are not allowed to create subscribe pages.');
         }
