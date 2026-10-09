@@ -257,7 +257,7 @@ class AdministratorController extends BaseController
         /** @var UpdateAdministratorRequest $updateRequest */
         $updateRequest = $this->validator->validate(
             request: $request,
-            dtoClass:UpdateAdministratorRequest::class,
+            dtoClass: UpdateAdministratorRequest::class,
             beforeValidation: static function (UpdateAdministratorRequest $dto) use ($administrator): void {
                 $dto->setUpdatingId($administrator->getId());
             }
