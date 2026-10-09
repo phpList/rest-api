@@ -123,6 +123,70 @@ class CampaignController extends BaseController
         );
     }
 
+    #[Route('', name: 'create', methods: ['POST'])]
+    #[OA\Post(
+        path: '/api/v2/campaigns',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
+        'Returns created message.',
+        summary: 'Create a message for campaign.',
+        requestBody: new OA\RequestBody(
+            description: 'Create a new message.',
+            required: true,
+            content: new OA\JsonContent(
+                required: ['content', 'format', 'metadata', 'schedule', 'options'],
+                properties: [
+                    new OA\Property(property: 'template_id', type: 'integer', example: 1),
+                    new OA\Property(property: 'content', ref: '#/components/schemas/MessageContentRequest'),
+                    new OA\Property(property: 'format', ref: '#/components/schemas/MessageFormatRequest'),
+                    new OA\Property(property: 'metadata', ref: '#/components/schemas/MessageMetadataRequest'),
+                    new OA\Property(property: 'schedule', ref: '#/components/schemas/MessageScheduleRequest'),
+                    new OA\Property(property: 'options', ref: '#/components/schemas/MessageOptionsRequest'),
+                ],
+                type: 'object'
+            )
+        ),
+        tags: ['campaigns'],
+        parameters: [
+            new OA\Parameter(
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(
+                    type: 'string'
+                )
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: 'Success',
+                content: new OA\JsonContent(ref: '#/components/schemas/Message')
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
+            ),
+            new OA\Response(
+                response: 422,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/ValidationErrorResponse')
+            ),
+        ]
+    )]
+    public function createMessage(Request $request): JsonResponse
+    {
+        $authUser = $this->requireAuthentication($request);
+
+        /** @var CreateMessageRequest $createMessageRequest */
+        $createMessageRequest = $this->validator->validate($request, CreateMessageRequest::class);
+        $message = $this->campaignService->createMessage($createMessageRequest, $authUser);
+        $this->entityManager->flush();
+
+        return $this->json(data: $message, status: Response::HTTP_CREATED);
+    }
+
     #[Route('/stuck', name: 'get_stuck', methods: ['GET'])]
     #[OA\Get(
         path: '/api/v2/campaigns/stuck',
@@ -229,70 +293,6 @@ class CampaignController extends BaseController
         }
 
         return $this->json($this->campaignService->getMessage($message), Response::HTTP_OK);
-    }
-
-    #[Route('', name: 'create', methods: ['POST'])]
-    #[OA\Post(
-        path: '/api/v2/campaigns',
-        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
-            'Returns created message.',
-        summary: 'Create a message for campaign.',
-        requestBody: new OA\RequestBody(
-            description: 'Create a new message.',
-            required: true,
-            content: new OA\JsonContent(
-                required: ['content', 'format', 'metadata', 'schedule', 'options'],
-                properties: [
-                    new OA\Property(property: 'template_id', type: 'integer', example: 1),
-                    new OA\Property(property: 'content', ref: '#/components/schemas/MessageContentRequest'),
-                    new OA\Property(property: 'format', ref: '#/components/schemas/MessageFormatRequest'),
-                    new OA\Property(property: 'metadata', ref: '#/components/schemas/MessageMetadataRequest'),
-                    new OA\Property(property: 'schedule', ref: '#/components/schemas/MessageScheduleRequest'),
-                    new OA\Property(property: 'options', ref: '#/components/schemas/MessageOptionsRequest'),
-                ],
-                type: 'object'
-            )
-        ),
-        tags: ['campaigns'],
-        parameters: [
-            new OA\Parameter(
-                name: 'php-auth-pw',
-                description: 'Session key obtained from login',
-                in: 'header',
-                required: true,
-                schema: new OA\Schema(
-                    type: 'string'
-                )
-            )
-        ],
-        responses: [
-            new OA\Response(
-                response: 201,
-                description: 'Success',
-                content: new OA\JsonContent(ref: '#/components/schemas/Message')
-            ),
-            new OA\Response(
-                response: 403,
-                description: 'Failure',
-                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
-            ),
-            new OA\Response(
-                response: 422,
-                description: 'Failure',
-                content: new OA\JsonContent(ref: '#/components/schemas/ValidationErrorResponse')
-            ),
-        ]
-    )]
-    public function createMessage(Request $request): JsonResponse
-    {
-        $authUser = $this->requireAuthentication($request);
-
-        /** @var CreateMessageRequest $createMessageRequest */
-        $createMessageRequest = $this->validator->validate($request, CreateMessageRequest::class);
-        $message = $this->campaignService->createMessage($createMessageRequest, $authUser);
-        $this->entityManager->flush();
-
-        return $this->json(data: $message, status: Response::HTTP_CREATED);
     }
 
     #[Route('/{messageId}', name: 'update', requirements: ['messageId' => '\d+'], methods: ['PUT'])]

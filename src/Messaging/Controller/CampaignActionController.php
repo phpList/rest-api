@@ -48,7 +48,7 @@ class CampaignActionController extends BaseController
         parent::__construct($authentication, $validator);
     }
 
-    #[Route('/{messageId}/copy', name: 'copy_campaign', requirements: ['messageId' => '\d+'], methods: ['POST'])]
+    #[Route('/{messageId}/copy', name: 'copy', requirements: ['messageId' => '\d+'], methods: ['POST'])]
     #[OA\Post(
         path: '/api/v2/campaigns/{messageId}/copy',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
@@ -104,7 +104,7 @@ class CampaignActionController extends BaseController
         return $this->json($this->campaignService->getMessage($message), Response::HTTP_CREATED);
     }
 
-    #[Route('/{messageId}/resume', name: 'resume_campaign', requirements: ['messageId' => '\d+'], methods: ['POST'])]
+    #[Route('/{messageId}/resume', name: 'resume', requirements: ['messageId' => '\d+'], methods: ['POST'])]
     #[OA\Post(
         path: '/api/v2/campaigns/{messageId}/resume',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
@@ -240,7 +240,7 @@ class CampaignActionController extends BaseController
         return $this->json($this->messageNormalizer->normalize($message), Response::HTTP_OK);
     }
 
-    #[Route('/{messageId}/send', name: 'send_campaign', requirements: ['messageId' => '\d+'], methods: ['POST'])]
+    #[Route('/{messageId}/send', name: 'send', requirements: ['messageId' => '\d+'], methods: ['POST'])]
     #[OA\Post(
         path: '/api/v2/campaigns/{messageId}/send',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
@@ -295,7 +295,7 @@ class CampaignActionController extends BaseController
         return $this->json($this->campaignService->getMessage($message), Response::HTTP_OK);
     }
 
-    #[Route('/{messageId}/resend', name: 'resend_campaign', requirements: ['messageId' => '\d+'], methods: ['POST'])]
+    #[Route('/{messageId}/resend', name: 'resend', requirements: ['messageId' => '\d+'], methods: ['POST'])]
     #[OA\Post(
         path: '/api/v2/campaigns/{messageId}/resend',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
@@ -362,7 +362,7 @@ class CampaignActionController extends BaseController
 
     #[Route(
         '/{messageId}/test-send',
-        name: 'test_send_campaign',
+        name: 'test_send',
         requirements: ['messageId' => '\d+'],
         methods: ['POST']
     )]

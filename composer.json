@@ -116,27 +116,32 @@
                 "rest-api-identity": {
                     "resource": "@PhpListRestBundle/Identity/Controller/",
                     "type": "attribute",
-                    "prefix": "/api/v2"
+                    "prefix": "/api/v2",
+                    "name_prefix": "api_"
                 },
                 "rest-api-subscription": {
                     "resource": "@PhpListRestBundle/Subscription/Controller/",
                     "type": "attribute",
-                    "prefix": "/api/v2"
+                    "prefix": "/api/v2",
+                    "name_prefix": "api_"
                 },
                 "rest-api-messaging": {
                     "resource": "@PhpListRestBundle/Messaging/Controller/",
                     "type": "attribute",
-                    "prefix": "/api/v2"
+                    "prefix": "/api/v2",
+                    "name_prefix": "api_"
                 },
                 "rest-api-configuration": {
                     "resource": "@PhpListRestBundle/Configuration/Controller/",
                     "type": "attribute",
-                    "prefix": "/api/v2"
+                    "prefix": "/api/v2",
+                    "name_prefix": "api_"
                 },
                 "rest-api-analitics": {
                     "resource": "@PhpListRestBundle/Statistics/Controller/",
                     "type": "attribute",
-                    "prefix": "/api/v2"
+                    "prefix": "/api/v2",
+                    "name_prefix": "api_"
                 }
             }
         }
