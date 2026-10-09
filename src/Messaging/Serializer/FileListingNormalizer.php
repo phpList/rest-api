@@ -29,7 +29,7 @@ class FileListingNormalizer implements NormalizerInterface
     }
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function normalize($object, string $format = null, array $context = []): array
     {
@@ -40,7 +40,7 @@ class FileListingNormalizer implements NormalizerInterface
         return [
             'name' => $object->name,
             'url' => $object->type === 'directory' ? null : $this->urlGenerator->generate(
-                'editor_uploads_get_file',
+                'api_editor_uploads_get_file',
                 ['filename' => $object->name],
                 UrlGeneratorInterface::ABSOLUTE_URL
             ),
@@ -51,10 +51,20 @@ class FileListingNormalizer implements NormalizerInterface
     }
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function supportsNormalization($data, string $format = null): bool
     {
         return $data instanceof DirectoryEntryDto;
+    }
+
+    /**
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
+     */
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            DirectoryEntryDto::class => true,
+        ];
     }
 }

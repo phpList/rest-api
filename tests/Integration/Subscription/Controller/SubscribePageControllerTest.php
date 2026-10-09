@@ -75,7 +75,7 @@ class SubscribePageControllerTest extends AbstractTestController
             ],
         ], JSON_THROW_ON_ERROR);
 
-        $this->jsonRequest('POST', '/api/v2/subscribe-pages/', content: $payload);
+        $this->jsonRequest('POST', '/api/v2/subscribe-pages', content: $payload);
 
         $this->assertHttpUnauthorized();
     }
@@ -91,7 +91,7 @@ class SubscribePageControllerTest extends AbstractTestController
             ],
         ], JSON_THROW_ON_ERROR);
 
-        $this->authenticatedJsonRequest('POST', '/api/v2/subscribe-pages/', content: $payload);
+        $this->authenticatedJsonRequest('POST', '/api/v2/subscribe-pages', content: $payload);
 
         $this->assertHttpCreated();
         $data = $this->getDecodedJsonResponseContent();
@@ -138,7 +138,7 @@ class SubscribePageControllerTest extends AbstractTestController
             ],
         ], JSON_THROW_ON_ERROR);
 
-        $this->authenticatedJsonRequest('POST', '/api/v2/subscribe-pages/', content: $payload);
+        $this->authenticatedJsonRequest('POST', '/api/v2/subscribe-pages', content: $payload);
         $this->assertHttpUnprocessableEntity();
     }
 

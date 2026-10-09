@@ -6,11 +6,12 @@ namespace PhpList\RestBundle\Subscription\Controller;
 
 use Exception;
 use OpenApi\Attributes as OA;
-use PhpList\Core\Domain\Identity\Model\PrivilegeFlag;
+use PhpList\Core\Domain\Identity\Service\PermissionChecker;
 use PhpList\Core\Domain\Subscription\Exception\CouldNotReadUploadedFileException;
 use PhpList\Core\Domain\Subscription\Model\Dto\SubscriberImportOptions;
+use PhpList\Core\Domain\Subscription\Model\Subscriber;
 use PhpList\Core\Domain\Subscription\Service\SubscriberCsvImporter;
-use PhpList\Core\Security\Authentication;
+use PhpList\Core\Domain\Identity\Service\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -22,15 +23,13 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/subscribers', name: 'subscriber_import_')]
 class SubscriberImportController extends BaseController
 {
-    private SubscriberCsvImporter $importManager;
-
     public function __construct(
         Authentication $authentication,
         RequestValidator $validator,
-        SubscriberCsvImporter $importManager
+        private readonly SubscriberCsvImporter $importManager,
+        private readonly PermissionChecker $permissionChecker,
     ) {
         parent::__construct($authentication, $validator);
-        $this->importManager = $importManager;
     }
 
     #[Route('/import', name: 'csv', methods: ['POST'])]
@@ -115,7 +114,7 @@ class SubscriberImportController extends BaseController
     public function importSubscribers(Request $request): JsonResponse
     {
         $admin = $this->requireAuthentication($request);
-        if (!$admin->getPrivileges()->has(PrivilegeFlag::Subscribers)) {
+        if (!$this->permissionChecker->canCreate($admin, Subscriber::class)) {
             throw $this->createAccessDeniedException('You are not allowed to create subscribers.');
         }
 

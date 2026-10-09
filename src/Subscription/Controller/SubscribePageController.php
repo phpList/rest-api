@@ -7,10 +7,9 @@ namespace PhpList\RestBundle\Subscription\Controller;
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Common\Model\Filter\PaginatedFilter;
-use PhpList\Core\Domain\Identity\Model\PrivilegeFlag;
 use PhpList\Core\Domain\Subscription\Model\SubscribePage;
 use PhpList\Core\Domain\Subscription\Service\Manager\SubscribePageManager;
-use PhpList\Core\Security\Authentication;
+use PhpList\Core\Domain\Identity\Service\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Service\Provider\PaginatedDataProvider;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
@@ -36,7 +35,7 @@ class SubscribePageController extends BaseController
         parent::__construct($authentication, $validator);
     }
 
-    #[Route('/', name: 'get_all', methods: ['GET'])]
+    #[Route('', name: 'get_all', methods: ['GET'])]
     #[OA\Get(
         path: '/api/v2/subscribe-pages',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production.',
@@ -82,11 +81,6 @@ class SubscribePageController extends BaseController
                 )
             ),
             new OA\Response(
-                response: 403,
-                description: 'Failure',
-                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
-            ),
-            new OA\Response(
                 response: 404,
                 description: 'Not Found',
                 content: new OA\JsonContent(ref: '#/components/schemas/NotFoundErrorResponse')
@@ -95,10 +89,7 @@ class SubscribePageController extends BaseController
     )]
     public function getPages(Request $request): JsonResponse
     {
-        $admin = $this->requireAuthentication($request);
-        if (!$admin->getPrivileges()->has(PrivilegeFlag::Subscribers)) {
-            throw $this->createAccessDeniedException('You are not allowed to view subscribe pages.');
-        }
+        $this->requireAuthentication($request);
 
         return $this->json(
             $this->paginatedProvider->getPaginatedList(
@@ -111,7 +102,7 @@ class SubscribePageController extends BaseController
         );
     }
 
-    #[Route('/', name: 'create', methods: ['POST'])]
+    #[Route('', name: 'create', methods: ['POST'])]
     #[OA\Post(
         path: '/api/v2/subscribe-pages',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production.',
@@ -154,11 +145,6 @@ class SubscribePageController extends BaseController
                 content: new OA\JsonContent(ref: '#/components/schemas/SubscribePage')
             ),
             new OA\Response(
-                response: 403,
-                description: 'Failure',
-                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
-            ),
-            new OA\Response(
                 response: 422,
                 description: 'Validation failed',
                 content: new OA\JsonContent(ref: '#/components/schemas/ValidationErrorResponse')
@@ -168,9 +154,6 @@ class SubscribePageController extends BaseController
     public function createPage(Request $request): JsonResponse
     {
         $admin = $this->requireAuthentication($request);
-        if (!$admin->getPrivileges()->has(PrivilegeFlag::Subscribers)) {
-            throw $this->createAccessDeniedException('You are not allowed to create subscribe pages.');
-        }
 
         /** @var SubscribePageRequest $createRequest */
         $createRequest = $this->validator->validate($request, SubscribePageRequest::class);
@@ -218,11 +201,6 @@ class SubscribePageController extends BaseController
                 content: new OA\JsonContent(ref: '#/components/schemas/SubscribePage'),
             ),
             new OA\Response(
-                response: 403,
-                description: 'Failure',
-                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
-            ),
-            new OA\Response(
                 response: 404,
                 description: 'Not Found',
                 content: new OA\JsonContent(ref: '#/components/schemas/NotFoundErrorResponse')
@@ -231,10 +209,7 @@ class SubscribePageController extends BaseController
     )]
     public function getPage(Request $request): JsonResponse
     {
-        $admin = $this->requireAuthentication($request);
-        if (!$admin->getPrivileges()->has(PrivilegeFlag::Subscribers)) {
-            throw $this->createAccessDeniedException('You are not allowed to view subscribe pages.');
-        }
+        $this->requireAuthentication($request);
 
         $page = $this->subscribePageManager->findPage(id: (int) $request->get('id'));
         if (!$page) {
@@ -294,11 +269,6 @@ class SubscribePageController extends BaseController
                 content: new OA\JsonContent(ref: '#/components/schemas/SubscribePage')
             ),
             new OA\Response(
-                response: 403,
-                description: 'Failure',
-                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
-            ),
-            new OA\Response(
                 response: 404,
                 description: 'Not Found',
                 content: new OA\JsonContent(ref: '#/components/schemas/NotFoundErrorResponse')
@@ -310,9 +280,6 @@ class SubscribePageController extends BaseController
         #[MapEntity(mapping: ['id' => 'id'])] ?SubscribePage $page = null
     ): JsonResponse {
         $admin = $this->requireAuthentication($request);
-        if (!$admin->getPrivileges()->has(PrivilegeFlag::Subscribers)) {
-            throw $this->createAccessDeniedException('You are not allowed to update subscribe pages.');
-        }
 
         if (!$page) {
             throw $this->createNotFoundException('Subscribe page not found');
@@ -360,11 +327,6 @@ class SubscribePageController extends BaseController
         responses: [
             new OA\Response(response: 204, description: 'No Content'),
             new OA\Response(
-                response: 403,
-                description: 'Failure',
-                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
-            ),
-            new OA\Response(
                 response: 404,
                 description: 'Not Found',
                 content: new OA\JsonContent(ref: '#/components/schemas/NotFoundErrorResponse')
@@ -375,10 +337,7 @@ class SubscribePageController extends BaseController
         Request $request,
         #[MapEntity(mapping: ['id' => 'id'])] ?SubscribePage $page = null
     ): JsonResponse {
-        $admin = $this->requireAuthentication($request);
-        if (!$admin->getPrivileges()->has(PrivilegeFlag::Subscribers)) {
-            throw $this->createAccessDeniedException('You are not allowed to delete subscribe pages.');
-        }
+        $this->requireAuthentication($request);
 
         if ($page === null) {
             throw $this->createNotFoundException('Subscribe page not found');

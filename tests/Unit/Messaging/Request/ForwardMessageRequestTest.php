@@ -21,7 +21,6 @@ class ForwardMessageRequestTest extends TestCase
 
         $dto = $request->getDto();
 
-        $this->assertIsArray($dto);
         $this->assertSame(['friend1@example.com', 'friend2@example.com'], $dto['recipients']);
         $this->assertSame('fwd-123e4567-e89b-12d3-a456-426614174000', $dto['uid']);
         $this->assertSame('Thought you might like this.', $dto['note']);
@@ -41,7 +40,6 @@ class ForwardMessageRequestTest extends TestCase
 
         $dto = $request->getDto();
 
-        $this->assertIsArray($dto);
         $this->assertSame(['friend@example.com'], $dto['recipients']);
         $this->assertSame('fwd-uid-1', $dto['uid']);
         $this->assertNull($dto['note']);

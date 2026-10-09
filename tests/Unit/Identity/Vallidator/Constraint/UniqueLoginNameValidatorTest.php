@@ -9,8 +9,8 @@ use PhpList\Core\Domain\Identity\Repository\AdministratorRepository;
 use PhpList\RestBundle\Identity\Validator\Constraint\UniqueLoginName;
 use PhpList\RestBundle\Identity\Validator\Constraint\UniqueLoginNameValidator;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Symfony\Component\Validator\Violation\ConstraintViolationBuilderInterface;
 
 class UniqueLoginNameValidatorTest extends TestCase
 {
@@ -27,11 +27,9 @@ class UniqueLoginNameValidatorTest extends TestCase
 
         $constraint = new UniqueLoginName();
         $validator->validate('new_login', $constraint);
-
-        $this->assertTrue(true);
     }
 
-    public function testValidateThrowsConflictForExistingLoginName(): void
+    public function testValidateAddsViolationForExistingLoginName(): void
     {
         $admin = $this->createMock(Administrator::class);
         $admin->method('getId')->willReturn(2);
@@ -46,12 +44,24 @@ class UniqueLoginNameValidatorTest extends TestCase
 
         $context->method('getObject')->willReturn($dto);
 
+        $constraint = new UniqueLoginName();
+
+        $violationBuilder = $this->createMock(ConstraintViolationBuilderInterface::class);
+        $violationBuilder->expects(self::once())
+            ->method('setParameter')
+            ->with('{{ value }}', 'duplicate_login')
+            ->willReturn($violationBuilder);
+        $violationBuilder->expects(self::once())->method('addViolation');
+
+        $context
+            ->expects(self::once())
+            ->method('buildViolation')
+            ->with($constraint->message)
+            ->willReturn($violationBuilder);
+
         $validator = new UniqueLoginNameValidator($repository);
         $validator->initialize($context);
 
-        $this->expectException(ConflictHttpException::class);
-
-        $constraint = new UniqueLoginName();
         $validator->validate('duplicate_login', $constraint);
     }
 
@@ -64,8 +74,13 @@ class UniqueLoginNameValidatorTest extends TestCase
         $repository->method('findOneBy')->willReturn($admin);
 
         $context = $this->createMock(ExecutionContextInterface::class);
+
+        $context
+            ->expects($this->never())
+            ->method('buildViolation');
+
         $dto = new class {
-            public $updatingId = 1;
+            public int $updatingId = 1;
         };
 
         $context->method('getObject')->willReturn($dto);
@@ -75,7 +90,5 @@ class UniqueLoginNameValidatorTest extends TestCase
 
         $constraint = new UniqueLoginName();
         $validator->validate('same_login', $constraint);
-
-        $this->assertTrue(true);
     }
 }

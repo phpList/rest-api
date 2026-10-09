@@ -3,6 +3,7 @@ services:
     arguments:
       $serializer: '@phplist.request_serializer'
       $validator: '@validator'
+      $nameConverter: '@Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter'
 
   PhpList\RestBundle\Identity\Validator\Constraint\UniqueEmailValidator:
     autowire: true

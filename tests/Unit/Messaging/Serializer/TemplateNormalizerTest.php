@@ -52,7 +52,6 @@ class TemplateNormalizerTest extends TestCase
 
         $normalized = $this->normalizer->normalize($template);
 
-        $this->assertIsArray($normalized);
         $this->assertEquals([
             'id' => 1,
             'title' => 'Test Template',
@@ -81,7 +80,6 @@ class TemplateNormalizerTest extends TestCase
 
         $normalized = $this->normalizer->normalize($template);
 
-        $this->assertIsArray($normalized);
         $this->assertEquals([
             'id' => 2,
             'title' => 'Empty Template',
@@ -96,7 +94,6 @@ class TemplateNormalizerTest extends TestCase
     {
         $normalized = $this->normalizer->normalize(new \stdClass());
 
-        $this->assertIsArray($normalized);
         $this->assertEmpty($normalized);
     }
 }
