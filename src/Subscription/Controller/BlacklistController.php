@@ -24,20 +24,14 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/blacklist', name: 'blacklist_')]
 class BlacklistController extends BaseController
 {
-    private SubscriberBlacklistManager $blacklistManager;
-    private UserBlacklistNormalizer $normalizer;
-
     public function __construct(
         Authentication $authentication,
         RequestValidator $validator,
-        SubscriberBlacklistManager $blacklistManager,
-        UserBlacklistNormalizer $normalizer,
+        private readonly SubscriberBlacklistManager $blacklistManager,
+        private readonly UserBlacklistNormalizer $normalizer,
         private readonly EntityManagerInterface $entityManager,
     ) {
         parent::__construct($authentication, $validator);
-        $this->authentication = $authentication;
-        $this->blacklistManager = $blacklistManager;
-        $this->normalizer = $normalizer;
     }
 
     #[Route('/check/{email}', name: 'check', methods: ['GET'])]
@@ -82,10 +76,7 @@ class BlacklistController extends BaseController
     )]
     public function checkEmailBlacklisted(Request $request, string $email): JsonResponse
     {
-        $admin = $this->requireAuthentication($request);
-        if (!$admin->getPrivileges()->has(PrivilegeFlag::Subscribers)) {
-            throw $this->createAccessDeniedException('You are not allowed to check blacklisted emails.');
-        }
+        $this->denyUnlessHasAccess($request);
 
         $isBlacklisted = $this->blacklistManager->isEmailBlacklisted($email);
         $reason = $isBlacklisted ? $this->blacklistManager->getBlacklistReason($email) : null;
@@ -146,10 +137,7 @@ class BlacklistController extends BaseController
     )]
     public function addEmailToBlacklist(Request $request): JsonResponse
     {
-        $admin = $this->requireAuthentication($request);
-        if (!$admin->getPrivileges()->has(PrivilegeFlag::Subscribers)) {
-            throw $this->createAccessDeniedException('You are not allowed to add emails to blacklist.');
-        }
+        $this->denyUnlessHasAccess($request);
 
         /** @var AddToBlacklistRequest $definitionRequest */
         $definitionRequest = $this->validator->validate($request, AddToBlacklistRequest::class);
@@ -206,10 +194,7 @@ class BlacklistController extends BaseController
     )]
     public function removeEmailFromBlacklist(Request $request, string $email): JsonResponse
     {
-        $admin = $this->requireAuthentication($request);
-        if (!$admin->getPrivileges()->has(PrivilegeFlag::Subscribers)) {
-            throw $this->createAccessDeniedException('You are not allowed to remove emails from blacklist.');
-        }
+        $this->denyUnlessHasAccess($request);
 
         $this->blacklistManager->removeEmailFromBlacklist($email);
         $this->entityManager->flush();
@@ -265,10 +250,7 @@ class BlacklistController extends BaseController
     )]
     public function getBlacklistInfo(Request $request, string $email): JsonResponse
     {
-        $admin = $this->requireAuthentication($request);
-        if (!$admin->getPrivileges()->has(PrivilegeFlag::Subscribers)) {
-            throw $this->createAccessDeniedException('You are not allowed to view blacklist information.');
-        }
+        $this->denyUnlessHasAccess($request);
 
         $blacklistInfo = $this->blacklistManager->getBlacklistInfo($email);
         if (!$blacklistInfo) {
@@ -284,5 +266,17 @@ class BlacklistController extends BaseController
             'added' => $blacklistInfo->getAdded()?->format('c'),
             'reason' => $reason,
         ]);
+    }
+
+    private function denyUnlessHasAccess(Request $request): void
+    {
+        $admin = $this->requireAuthentication($request);
+        if ($admin->isSuperUser()) {
+            return;
+        }
+
+        if (!$admin->getPrivileges()->has(PrivilegeFlag::Subscribers)) {
+            throw $this->createAccessDeniedException('You are not allowed to manage the blacklist.');
+        }
     }
 }

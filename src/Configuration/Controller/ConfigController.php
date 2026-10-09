@@ -9,8 +9,8 @@ use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Configuration\Exception\ConfigNotEditableException;
 use PhpList\Core\Domain\Configuration\Model\Config;
 use PhpList\Core\Domain\Configuration\Service\Manager\ConfigManager;
-use PhpList\Core\Domain\Identity\Model\PrivilegeFlag;
 use PhpList\Core\Domain\Identity\Service\Authentication;
+use PhpList\Core\Domain\Identity\Service\PermissionChecker;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
 use PhpList\RestBundle\Configuration\Request\CreateConfigRequest;
@@ -31,6 +31,7 @@ class ConfigController extends BaseController
         private readonly ConfigManager $manager,
         private readonly ConfigNormalizer $normalizer,
         private readonly EntityManagerInterface $entityManager,
+        private readonly PermissionChecker $permissionChecker,
     ) {
         parent::__construct($authentication, $validator);
     }
@@ -76,7 +77,10 @@ class ConfigController extends BaseController
     )]
     public function list(Request $request): JsonResponse
     {
-        $this->denyUnlessSettingsAdmin($request, 'You are not allowed to view configuration.');
+        $admin = $this->requireAuthentication($request);
+        if (!$this->permissionChecker->canList($admin, Config::class)) {
+            throw $this->createAccessDeniedException('You are not allowed to view configuration.');
+        }
         $items = $this->manager->getAllEditable();
 
         usort(
@@ -148,9 +152,12 @@ class ConfigController extends BaseController
         Request $request,
         #[MapEntity(mapping: ['key' => 'key'])] ?Config $config,
     ): JsonResponse {
-        $this->denyUnlessSettingsAdmin($request, 'You are not allowed to view configuration.');
+        $admin = $this->requireAuthentication($request);
         if ($config === null) {
             throw $this->createNotFoundException('Configuration item not found.');
+        }
+        if (!$this->permissionChecker->canView($admin, $config)) {
+            throw $this->createAccessDeniedException('You are not allowed to view configuration.');
         }
 
         return $this->json($this->normalizer->normalize($config), Response::HTTP_OK);
@@ -202,7 +209,10 @@ class ConfigController extends BaseController
     )]
     public function create(Request $request): JsonResponse
     {
-        $this->denyUnlessSettingsAdmin($request, 'You are not allowed to create configuration.');
+        $admin = $this->requireAuthentication($request);
+        if (!$this->permissionChecker->canCreate($admin, Config::class)) {
+            throw $this->createAccessDeniedException('You are not allowed to create configuration.');
+        }
         /* @var CreateConfigRequest $configRequest */
         $configRequest = $this->validator->validate($request, CreateConfigRequest::class);
 
@@ -267,9 +277,12 @@ class ConfigController extends BaseController
         Request $request,
         #[MapEntity(mapping: ['key' => 'key'])] ?Config $config = null
     ): JsonResponse {
-        $this->denyUnlessSettingsAdmin($request, 'You are not allowed to update configuration.');
+        $admin = $this->requireAuthentication($request);
         if ($config === null) {
             throw $this->createNotFoundException('Configuration item not found.');
+        }
+        if (!$this->permissionChecker->canEdit($admin, $config)) {
+            throw $this->createAccessDeniedException('You are not allowed to update configuration.');
         }
         /* @var UpdateConfigRequest $dto */
         $dto = $this->validator->validate($request, UpdateConfigRequest::class);
@@ -325,22 +338,17 @@ class ConfigController extends BaseController
         Request $request,
         #[MapEntity(mapping: ['key' => 'key'])] ?Config $config = null
     ): JsonResponse {
-        $this->denyUnlessSettingsAdmin($request, 'You are not allowed to delete configuration.');
+        $admin = $this->requireAuthentication($request);
         if ($config === null) {
             throw $this->createNotFoundException('Configuration item not found.');
+        }
+        if (!$this->permissionChecker->canDelete($admin, $config)) {
+            throw $this->createAccessDeniedException('You are not allowed to delete configuration.');
         }
 
         $this->manager->delete($config);
         $this->entityManager->flush();
 
         return $this->json(null, Response::HTTP_NO_CONTENT);
-    }
-
-    private function denyUnlessSettingsAdmin(Request $request, string $message): void
-    {
-        $admin = $this->requireAuthentication($request);
-        if (!$admin->getPrivileges()->has(PrivilegeFlag::Settings)) {
-            throw $this->createAccessDeniedException($message);
-        }
     }
 }

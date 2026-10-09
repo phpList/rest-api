@@ -8,8 +8,7 @@ use DateTime;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpList\Core\Domain\Identity\Model\Administrator;
-use PhpList\Core\Domain\Identity\Model\PrivilegeFlag;
-use PhpList\Core\Domain\Identity\Model\Privileges;
+use PhpList\Core\Domain\Identity\Service\PermissionChecker;
 use PhpList\Core\Domain\Messaging\Model\Filter\MessageFilter;
 use PhpList\Core\Domain\Messaging\Model\Message;
 use PhpList\Core\Domain\Messaging\Model\Dto\CreateMessageDto;
@@ -35,6 +34,7 @@ class CampaignServiceTest extends TestCase
     private MessageManager|MockObject $messageManager;
     private PaginatedDataProvider|MockObject $paginatedProvider;
     private MessageNormalizer|MockObject $normalizer;
+    private PermissionChecker|MockObject $permissionChecker;
     private CampaignService $campaignService;
 
     protected function setUp(): void
@@ -42,12 +42,14 @@ class CampaignServiceTest extends TestCase
         $this->messageManager = $this->createMock(MessageManager::class);
         $this->paginatedProvider = $this->createMock(PaginatedDataProvider::class);
         $this->normalizer = $this->createMock(MessageNormalizer::class);
+        $this->permissionChecker = $this->createMock(PermissionChecker::class);
 
         $this->campaignService = new CampaignService(
             messageManager: $this->messageManager,
             paginatedProvider: $this->paginatedProvider,
             normalizer: $this->normalizer,
             entityManager: $this->createMock(EntityManagerInterface::class),
+            permissionChecker: $this->permissionChecker,
             stuckCampaignThresholdSeconds: 1800,
         );
     }
@@ -147,16 +149,11 @@ class CampaignServiceTest extends TestCase
     public function testCreateMessageThrowsExceptionWhenAdministratorLacksPrivileges(): void
     {
         $createMessageRequest = $this->createMock(CreateMessageRequest::class);
-        $privileges = $this->createMock(Privileges::class);
         $administrator = $this->createMock(Administrator::class);
 
-        $administrator->expects($this->once())
-            ->method('getPrivileges')
-            ->willReturn($privileges);
-
-        $privileges->expects($this->once())
-            ->method('has')
-            ->with(PrivilegeFlag::Campaigns)
+        $this->permissionChecker->expects($this->once())
+            ->method('canCreate')
+            ->with($administrator, Message::class)
             ->willReturn(false);
 
         $this->expectException(AccessDeniedHttpException::class);
@@ -169,18 +166,13 @@ class CampaignServiceTest extends TestCase
     {
         $messageDto = $this->createMock(CreateMessageDto::class);
         $createMessageRequest = $this->createMock(CreateMessageRequest::class);
-        $privileges = $this->createMock(Privileges::class);
         $administrator = $this->createMock(Administrator::class);
         $message = $this->createMock(Message::class);
         $expectedResult = ['id' => 1, 'subject' => 'Test Campaign'];
 
-        $administrator->expects($this->once())
-            ->method('getPrivileges')
-            ->willReturn($privileges);
-
-        $privileges->expects($this->once())
-            ->method('has')
-            ->with(PrivilegeFlag::Campaigns)
+        $this->permissionChecker->expects($this->once())
+            ->method('canCreate')
+            ->with($administrator, Message::class)
             ->willReturn(true);
 
         $createMessageRequest->expects($this->once())
@@ -205,17 +197,12 @@ class CampaignServiceTest extends TestCase
     public function testUpdateMessageThrowsExceptionWhenAdministratorLacksPrivileges(): void
     {
         $updateMessageRequest = $this->createMock(UpdateMessageRequest::class);
-        $privileges = $this->createMock(Privileges::class);
         $administrator = $this->createMock(Administrator::class);
         $message = $this->createMock(Message::class);
 
-        $administrator->expects($this->once())
-            ->method('getPrivileges')
-            ->willReturn($privileges);
-
-        $privileges->expects($this->once())
-            ->method('has')
-            ->with(PrivilegeFlag::Campaigns)
+        $this->permissionChecker->expects($this->once())
+            ->method('canEdit')
+            ->with($administrator, $message)
             ->willReturn(false);
 
         $this->expectException(AccessDeniedHttpException::class);
@@ -227,17 +214,10 @@ class CampaignServiceTest extends TestCase
     public function testUpdateMessageThrowsExceptionWhenMessageIsNull(): void
     {
         $updateMessageRequest = $this->createMock(UpdateMessageRequest::class);
-        $privileges = $this->createMock(Privileges::class);
         $administrator = $this->createMock(Administrator::class);
 
-        $administrator->expects($this->once())
-            ->method('getPrivileges')
-            ->willReturn($privileges);
-
-        $privileges->expects($this->once())
-            ->method('has')
-            ->with(PrivilegeFlag::Campaigns)
-            ->willReturn(true);
+        $this->permissionChecker->expects($this->never())
+            ->method('canEdit');
 
         $this->expectException(NotFoundHttpException::class);
         $this->expectExceptionMessage('Campaign not found.');
@@ -249,19 +229,14 @@ class CampaignServiceTest extends TestCase
     {
         $messageDto = $this->createMock(UpdateMessageDto::class);
         $updateMessageRequest = $this->createMock(UpdateMessageRequest::class);
-        $privileges = $this->createMock(Privileges::class);
         $administrator = $this->createMock(Administrator::class);
         $message = $this->createMock(Message::class);
         $updatedMessage = $this->createMock(Message::class);
         $expectedResult = ['id' => 1, 'subject' => 'Updated Campaign'];
 
-        $administrator->expects($this->once())
-            ->method('getPrivileges')
-            ->willReturn($privileges);
-
-        $privileges->expects($this->once())
-            ->method('has')
-            ->with(PrivilegeFlag::Campaigns)
+        $this->permissionChecker->expects($this->once())
+            ->method('canEdit')
+            ->with($administrator, $message)
             ->willReturn(true);
 
         $updateMessageRequest->expects($this->once())
@@ -289,17 +264,12 @@ class CampaignServiceTest extends TestCase
 
     public function testDeleteMessageThrowsExceptionWhenAdministratorLacksPrivileges(): void
     {
-        $privileges = $this->createMock(Privileges::class);
         $administrator = $this->createMock(Administrator::class);
         $message = $this->createMock(Message::class);
 
-        $administrator->expects($this->once())
-            ->method('getPrivileges')
-            ->willReturn($privileges);
-
-        $privileges->expects($this->once())
-            ->method('has')
-            ->with(PrivilegeFlag::Campaigns)
+        $this->permissionChecker->expects($this->once())
+            ->method('canDelete')
+            ->with($administrator, $message)
             ->willReturn(false);
 
         $this->expectException(AccessDeniedHttpException::class);
@@ -310,17 +280,10 @@ class CampaignServiceTest extends TestCase
 
     public function testDeleteMessageThrowsExceptionWhenMessageIsNull(): void
     {
-        $privileges = $this->createMock(Privileges::class);
         $administrator = $this->createMock(Administrator::class);
 
-        $administrator->expects($this->once())
-            ->method('getPrivileges')
-            ->willReturn($privileges);
-
-        $privileges->expects($this->once())
-            ->method('has')
-            ->with(PrivilegeFlag::Campaigns)
-            ->willReturn(true);
+        $this->permissionChecker->expects($this->never())
+            ->method('canDelete');
 
         $this->expectException(NotFoundHttpException::class);
         $this->expectExceptionMessage('Campaign not found.');
@@ -330,17 +293,12 @@ class CampaignServiceTest extends TestCase
 
     public function testDeleteMessageCallsMessageManagerDelete(): void
     {
-        $privileges = $this->createMock(Privileges::class);
         $administrator = $this->createMock(Administrator::class);
         $message = $this->createMock(Message::class);
 
-        $administrator->expects($this->once())
-            ->method('getPrivileges')
-            ->willReturn($privileges);
-
-        $privileges->expects($this->once())
-            ->method('has')
-            ->with(PrivilegeFlag::Campaigns)
+        $this->permissionChecker->expects($this->once())
+            ->method('canDelete')
+            ->with($administrator, $message)
             ->willReturn(true);
 
         $this->messageManager->expects($this->once())
@@ -380,17 +338,12 @@ class CampaignServiceTest extends TestCase
 
     public function testResumeStuckCampaignThrowsExceptionWhenAdministratorLacksPrivileges(): void
     {
-        $privileges = $this->createMock(Privileges::class);
         $administrator = $this->createMock(Administrator::class);
         $message = $this->createMock(Message::class);
 
-        $administrator->expects($this->once())
-            ->method('getPrivileges')
-            ->willReturn($privileges);
-
-        $privileges->expects($this->once())
-            ->method('has')
-            ->with(PrivilegeFlag::Campaigns)
+        $this->permissionChecker->expects($this->once())
+            ->method('canEdit')
+            ->with($administrator, $message)
             ->willReturn(false);
 
         $this->expectException(AccessDeniedHttpException::class);
@@ -400,17 +353,10 @@ class CampaignServiceTest extends TestCase
 
     public function testResumeStuckCampaignThrowsExceptionWhenMessageIsNull(): void
     {
-        $privileges = $this->createMock(Privileges::class);
         $administrator = $this->createMock(Administrator::class);
 
-        $administrator->expects($this->once())
-            ->method('getPrivileges')
-            ->willReturn($privileges);
-
-        $privileges->expects($this->once())
-            ->method('has')
-            ->with(PrivilegeFlag::Campaigns)
-            ->willReturn(true);
+        $this->permissionChecker->expects($this->never())
+            ->method('canEdit');
 
         $this->expectException(NotFoundHttpException::class);
 
@@ -419,13 +365,11 @@ class CampaignServiceTest extends TestCase
 
     public function testResumeStuckCampaignThrowsConflictWhenCampaignIsNotStuck(): void
     {
-        $privileges = $this->createMock(Privileges::class);
         $administrator = $this->createMock(Administrator::class);
         $message = $this->createMock(Message::class);
         $otherStuckMessage = $this->createMock(Message::class);
 
-        $administrator->method('getPrivileges')->willReturn($privileges);
-        $privileges->method('has')->with(PrivilegeFlag::Campaigns)->willReturn(true);
+        $this->permissionChecker->method('canEdit')->willReturn(true);
 
         $message->method('getId')->willReturn(1);
         $otherStuckMessage->method('getId')->willReturn(2);
@@ -441,12 +385,10 @@ class CampaignServiceTest extends TestCase
 
     public function testResumeStuckCampaignSucceedsWhenCampaignIsStuck(): void
     {
-        $privileges = $this->createMock(Privileges::class);
         $administrator = $this->createMock(Administrator::class);
         $message = $this->createMock(Message::class);
 
-        $administrator->method('getPrivileges')->willReturn($privileges);
-        $privileges->method('has')->with(PrivilegeFlag::Campaigns)->willReturn(true);
+        $this->permissionChecker->method('canEdit')->willReturn(true);
 
         $message->method('getId')->willReturn(1);
 

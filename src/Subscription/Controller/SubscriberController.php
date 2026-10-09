@@ -6,7 +6,7 @@ namespace PhpList\RestBundle\Subscription\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
-use PhpList\Core\Domain\Identity\Model\PrivilegeFlag;
+use PhpList\Core\Domain\Identity\Service\PermissionChecker;
 use PhpList\Core\Domain\Subscription\Model\Subscriber;
 use PhpList\Core\Domain\Subscription\Service\Manager\SubscriberManager;
 use PhpList\Core\Domain\Identity\Service\Authentication;
@@ -42,6 +42,7 @@ class SubscriberController extends BaseController
         private readonly SubscriberHistoryService $subscriberHistoryService,
         private readonly EntityManagerInterface $entityManager,
         private readonly PaginatedDataProvider $paginatedDataProvider,
+        private readonly PermissionChecker $permissionChecker,
     ) {
         parent::__construct($authentication, $validator);
         $this->authentication = $authentication;
@@ -205,7 +206,7 @@ class SubscriberController extends BaseController
     public function createSubscriber(Request $request): JsonResponse
     {
         $admin = $this->requireAuthentication($request);
-        if (!$admin->getPrivileges()->has(PrivilegeFlag::Subscribers)) {
+        if (!$this->permissionChecker->canCreate($admin, Subscriber::class)) {
             throw $this->createAccessDeniedException('You are not allowed to create subscribers.');
         }
 
@@ -274,12 +275,11 @@ class SubscriberController extends BaseController
         #[MapEntity(mapping: ['subscriberId' => 'id'])] ?Subscriber $subscriber = null,
     ): JsonResponse {
         $admin = $this->requireAuthentication($request);
-        if (!$admin->getPrivileges()->has(PrivilegeFlag::Subscribers)) {
-            throw $this->createAccessDeniedException('You are not allowed to update subscribers.');
-        }
-
         if (!$subscriber) {
             throw $this->createNotFoundException('Subscriber not found.');
+        }
+        if (!$this->permissionChecker->canEdit($admin, $subscriber)) {
+            throw $this->createAccessDeniedException('You are not allowed to update subscribers.');
         }
         /** @var UpdateSubscriberRequest $updateSubscriberRequest */
         $updateSubscriberRequest = $this->validator->validate(
@@ -450,7 +450,6 @@ class SubscriberController extends BaseController
         );
     }
 
-
     #[Route('/{subscriberId}', name: 'delete', requirements: ['subscriberId' => '\d+'], methods: ['DELETE'])]
     #[OA\Delete(
         path: '/api/v2/subscribers/{subscriberId}',
@@ -496,12 +495,11 @@ class SubscriberController extends BaseController
         #[MapEntity(mapping: ['subscriberId' => 'id'])] ?Subscriber $subscriber = null,
     ): JsonResponse {
         $admin = $this->requireAuthentication($request);
-        if (!$admin->getPrivileges()->has(PrivilegeFlag::Subscribers)) {
-            throw $this->createAccessDeniedException('You are not allowed to delete subscribers.');
-        }
-
         if (!$subscriber) {
             throw $this->createNotFoundException('Subscriber not found.');
+        }
+        if (!$this->permissionChecker->canDelete($admin, $subscriber)) {
+            throw $this->createAccessDeniedException('You are not allowed to delete subscribers.');
         }
         $this->subscriberManager->deleteSubscriber($subscriber);
         $this->entityManager->flush();
@@ -564,12 +562,12 @@ class SubscriberController extends BaseController
         #[MapEntity(mapping: ['subscriberId' => 'id'])] ?Subscriber $subscriber = null,
     ): Response {
         $admin = $this->requireAuthentication($request);
-        if (!$admin->getPrivileges()->has(PrivilegeFlag::Subscribers)) {
-            throw $this->createAccessDeniedException('You are not allowed to manage Subscribers.');
-        }
 
         if (!$subscriber) {
             throw $this->createNotFoundException('Subscriber not found.');
+        }
+        if (!$this->permissionChecker->canEdit($admin, $subscriber)) {
+            throw $this->createAccessDeniedException('You are not allowed to edit Subscribers.');
         }
 
         $subscriber = $this->subscriberManager->resetBounceCount($subscriber);
@@ -615,7 +613,6 @@ class SubscriberController extends BaseController
     public function setSubscriberAsConfirmed(Request $request): Response
     {
         $uniqueId = $request->query->get('uniqueId');
-
         if (!$uniqueId) {
             return new Response('<h1>Missing confirmation code.</h1>', 400);
         }

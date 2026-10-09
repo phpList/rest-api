@@ -96,10 +96,7 @@ class AnalyticsController extends BaseController
     )]
     public function getCampaignStatistics(Request $request): JsonResponse
     {
-        $authUser = $this->requireAuthentication($request);
-        if (!$authUser->getPrivileges()->has(PrivilegeFlag::Statistics)) {
-            throw $this->createAccessDeniedException('You are not allowed to access statistics.');
-        }
+        $this->denyUnlessHasAccess($request);
 
         $limit = (int) $request->query->get('limit', self::BATCH_SIZE);
         $lastId = (int) $request->query->get('after_id', 0);
@@ -168,10 +165,7 @@ class AnalyticsController extends BaseController
     )]
     public function getViewOpensStatistics(Request $request): JsonResponse
     {
-        $authUser = $this->requireAuthentication($request);
-        if (!$authUser->getPrivileges()->has(PrivilegeFlag::Statistics)) {
-            throw $this->createAccessDeniedException('You are not allowed to access statistics.');
-        }
+        $this->denyUnlessHasAccess($request);
 
         $limit = (int) $request->query->get('limit', self::BATCH_SIZE);
         $lastId = (int) $request->query->get('after_id', 0);
@@ -230,10 +224,7 @@ class AnalyticsController extends BaseController
     )]
     public function getTopDomains(Request $request): JsonResponse
     {
-        $authUser = $this->requireAuthentication($request);
-        if (!$authUser->getPrivileges()->has(PrivilegeFlag::Statistics)) {
-            throw $this->createAccessDeniedException('You are not allowed to access statistics.');
-        }
+        $this->denyUnlessHasAccess($request);
 
         $limit = (int) $request->query->get('limit', self::BATCH_SIZE);
         $minSubscribers = (int) $request->query->get('min_subscribers', 5);
@@ -284,13 +275,9 @@ class AnalyticsController extends BaseController
     )]
     public function getDomainConfirmationStatistics(Request $request): JsonResponse
     {
-        $authUser = $this->requireAuthentication($request);
-        if (!$authUser->getPrivileges()->has(PrivilegeFlag::Statistics)) {
-            throw $this->createAccessDeniedException('You are not allowed to access statistics.');
-        }
+        $this->denyUnlessHasAccess($request);
 
         $limit = (int) $request->query->get('limit', 50);
-
         $data = $this->analyticsService->getDomainConfirmationStatistics($limit);
 
         $normalizedData = $this->domainConfirmationNormalizer->normalize($data, null, [
@@ -338,13 +325,9 @@ class AnalyticsController extends BaseController
     )]
     public function getTopLocalParts(Request $request): JsonResponse
     {
-        $authUser = $this->requireAuthentication($request);
-        if (!$authUser->getPrivileges()->has(PrivilegeFlag::Statistics)) {
-            throw $this->createAccessDeniedException('You are not allowed to access statistics.');
-        }
+        $this->denyUnlessHasAccess($request);
 
         $limit = (int) $request->query->get('limit', 25);
-
         $data = $this->analyticsService->getTopLocalParts($limit);
         $normalizedData = $this->topLocalPartsNormalizer->normalize($data, null, [
             'top_local_parts' => true,
@@ -569,5 +552,17 @@ class AnalyticsController extends BaseController
         $data = $this->analyticsService->getCampaignPerformance();
 
         return $this->json($data, Response::HTTP_OK);
+    }
+
+    private function denyUnlessHasAccess(Request $request): void
+    {
+        $admin = $this->requireAuthentication($request);
+        if ($admin->isSuperUser()) {
+            return;
+        }
+
+        if (!$admin->getPrivileges()->has(PrivilegeFlag::Statistics)) {
+            throw $this->createAccessDeniedException('You are not allowed to access statistics.');
+        }
     }
 }

@@ -8,7 +8,7 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpList\Core\Domain\Identity\Model\Administrator;
-use PhpList\Core\Domain\Identity\Model\PrivilegeFlag;
+use PhpList\Core\Domain\Identity\Service\PermissionChecker;
 use PhpList\Core\Domain\Messaging\Model\Filter\MessageFilter;
 use PhpList\Core\Domain\Messaging\Model\Message;
 use PhpList\Core\Domain\Messaging\Service\Manager\MessageManager;
@@ -29,6 +29,7 @@ class CampaignService
         private readonly PaginatedDataProvider $paginatedProvider,
         private readonly MessageNormalizer $normalizer,
         private readonly EntityManagerInterface $entityManager,
+        private readonly PermissionChecker $permissionChecker,
         #[Autowire('%messaging.stuck_campaign_threshold%')] private readonly int $stuckCampaignThresholdSeconds = 1800,
     ) {
     }
@@ -64,7 +65,7 @@ class CampaignService
 
     public function createMessage(CreateMessageRequest $createMessageRequest, Administrator $administrator): array
     {
-        if (!$administrator->getPrivileges()->has(PrivilegeFlag::Campaigns)) {
+        if (!$this->permissionChecker->canCreate($administrator, Message::class)) {
             throw new AccessDeniedHttpException('You are not allowed to create campaigns.');
         }
 
@@ -81,12 +82,11 @@ class CampaignService
         Administrator $administrator,
         Message $message = null
     ): array {
-        if (!$administrator->getPrivileges()->has(PrivilegeFlag::Campaigns)) {
-            throw new AccessDeniedHttpException('You are not allowed to update campaigns.');
-        }
-
         if (!$message) {
             throw new NotFoundHttpException('Campaign not found.');
+        }
+        if (!$this->permissionChecker->canEdit($administrator, $message)) {
+            throw new AccessDeniedHttpException('You are not allowed to update campaigns.');
         }
 
         $data = $this->messageManager->updateMessage(
@@ -100,12 +100,11 @@ class CampaignService
 
     public function deleteMessage(Administrator $administrator, Message $message = null): void
     {
-        if (!$administrator->getPrivileges()->has(PrivilegeFlag::Campaigns)) {
-            throw new AccessDeniedHttpException('You are not allowed to delete campaigns.');
-        }
-
         if (!$message) {
             throw new NotFoundHttpException('Campaign not found.');
+        }
+        if (!$this->permissionChecker->canDelete($administrator, $message)) {
+            throw new AccessDeniedHttpException('You are not allowed to delete campaigns.');
         }
 
         $this->messageManager->delete($message);
@@ -130,12 +129,11 @@ class CampaignService
 
     public function resumeStuckCampaign(Administrator $administrator, Message $message = null): void
     {
-        if (!$administrator->getPrivileges()->has(PrivilegeFlag::Campaigns)) {
-            throw new AccessDeniedHttpException('You are not allowed to update campaigns.');
-        }
-
         if (!$message) {
             throw new NotFoundHttpException('Campaign not found.');
+        }
+        if (!$this->permissionChecker->canEdit($administrator, $message)) {
+            throw new AccessDeniedHttpException('You are not allowed to update campaigns.');
         }
 
         $stuckIds = array_map(
