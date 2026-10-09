@@ -81,7 +81,7 @@ class SubscriberControllerTest extends AbstractTestController
         self::assertInstanceOf(Subscriber::class, $this->subscriberRepository->find($subscriberId));
     }
 
-    public function testPostSubscribersWithValidSessionKeyAndExistingEmailAddressCreatesConflictStatus()
+    public function testPostSubscribersWithValidSessionKeyAndExistingEmailAddressReturnsValidationError()
     {
         $this->loadFixtures([SubscriberFixture::class]);
 
@@ -90,7 +90,9 @@ class SubscriberControllerTest extends AbstractTestController
 
         $this->authenticatedJsonRequest('post', '/api/v2/subscribers', [], [], [], json_encode($jsonData));
 
-        $this->assertHttpConflict();
+        $this->assertHttpUnprocessableEntity();
+        $data = $this->getDecodedJsonResponseContent();
+        $this->assertSame(['This email is already in use.'], $data['errors']['email']);
     }
 
     /**

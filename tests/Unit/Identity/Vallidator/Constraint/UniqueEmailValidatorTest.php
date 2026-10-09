@@ -11,11 +11,11 @@ use PhpList\RestBundle\Subscription\Validator\Constraint\UniqueEmail;
 use PhpList\RestBundle\Subscription\Validator\Constraint\UniqueEmailValidator;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
+use Symfony\Component\Validator\Violation\ConstraintViolationBuilderInterface;
 
 class UniqueEmailValidatorTest extends TestCase
 {
@@ -53,7 +53,7 @@ class UniqueEmailValidatorTest extends TestCase
         $this->validator->validate(123, new UniqueEmail(Subscriber::class));
     }
 
-    public function testThrowsConflictHttpExceptionWhenEmailAlreadyExistsWithDifferentId(): void
+    public function testAddsViolationWhenEmailAlreadyExistsWithDifferentId(): void
     {
         $email = 'foo@bar.com';
 
@@ -81,10 +81,18 @@ class UniqueEmailValidatorTest extends TestCase
             ->method('getObject')
             ->willReturn($dto);
 
-        $this->expectException(ConflictHttpException::class);
-        $this->expectExceptionMessage('Email already exists.');
+        $constraint = new UniqueEmail(Subscriber::class);
 
-        $this->validator->validate($email, new UniqueEmail(Subscriber::class));
+        $violationBuilder = $this->createMock(ConstraintViolationBuilderInterface::class);
+        $violationBuilder->expects(self::once())->method('addViolation');
+
+        $this->context
+            ->expects(self::once())
+            ->method('buildViolation')
+            ->with($constraint->message)
+            ->willReturn($violationBuilder);
+
+        $this->validator->validate($email, $constraint);
     }
 
     public function testAllowsSameEmailForSameSubscriberId(): void
