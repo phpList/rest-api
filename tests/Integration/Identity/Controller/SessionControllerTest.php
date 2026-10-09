@@ -67,7 +67,7 @@ class SessionControllerTest extends AbstractTestController
             [
                 'message' => 'Validation failed',
                 'errors' => [
-                    'loginName' => [
+                    'login_name' => [
                         'This value should not be blank.',
                     ],
                     'password' => [
