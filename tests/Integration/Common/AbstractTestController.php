@@ -147,7 +147,7 @@ abstract class AbstractTestController extends WebTestCase
     {
         $response = self::getClient()->getResponse();
 
-        self::assertSame($status, $response->getStatusCode());
+        self::assertSame($status, $response->getStatusCode(), (string) $response->getContent());
         self::assertStringContainsString('application/json', (string)$response->headers);
     }
 

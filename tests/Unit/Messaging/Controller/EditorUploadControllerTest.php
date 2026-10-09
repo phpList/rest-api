@@ -231,7 +231,7 @@ class EditorUploadControllerTest extends TestCase
             ->expects(self::once())
             ->method('generate')
             ->with(
-                'editor_uploads_get_file',
+                'api_editor_uploads_get_file',
                 ['filename' => 'test.png'],
                 UrlGeneratorInterface::ABSOLUTE_URL
             )
