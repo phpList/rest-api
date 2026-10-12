@@ -18,9 +18,9 @@ use PhpList\RestBundle\Messaging\Request\UpdateMessageRequest;
 use PhpList\RestBundle\Messaging\Serializer\MessageNormalizer;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class CampaignService
 {
@@ -66,7 +66,7 @@ class CampaignService
     public function createMessage(CreateMessageRequest $createMessageRequest, Administrator $administrator): array
     {
         if (!$this->permissionChecker->canCreate($administrator, Message::class)) {
-            throw new AccessDeniedHttpException('You are not allowed to create campaigns.');
+            throw new AccessDeniedException('You are not allowed to create campaigns.');
         }
 
         $data = $this->messageManager->createMessage(
@@ -86,7 +86,7 @@ class CampaignService
             throw new NotFoundHttpException('Campaign not found.');
         }
         if (!$this->permissionChecker->canEdit($administrator, $message)) {
-            throw new AccessDeniedHttpException('You are not allowed to update campaigns.');
+            throw new AccessDeniedException('You are not allowed to update campaigns.');
         }
 
         $data = $this->messageManager->updateMessage(
@@ -104,7 +104,7 @@ class CampaignService
             throw new NotFoundHttpException('Campaign not found.');
         }
         if (!$this->permissionChecker->canDelete($administrator, $message)) {
-            throw new AccessDeniedHttpException('You are not allowed to delete campaigns.');
+            throw new AccessDeniedException('You are not allowed to delete campaigns.');
         }
 
         $this->messageManager->delete($message);
@@ -133,7 +133,7 @@ class CampaignService
             throw new NotFoundHttpException('Campaign not found.');
         }
         if (!$this->permissionChecker->canEdit($administrator, $message)) {
-            throw new AccessDeniedHttpException('You are not allowed to update campaigns.');
+            throw new AccessDeniedException('You are not allowed to update campaigns.');
         }
 
         $stuckIds = array_map(

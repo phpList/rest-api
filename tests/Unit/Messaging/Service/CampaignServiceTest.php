@@ -25,9 +25,9 @@ use PhpList\RestBundle\Messaging\Service\CampaignService;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class CampaignServiceTest extends TestCase
 {
@@ -156,7 +156,7 @@ class CampaignServiceTest extends TestCase
             ->with($administrator, Message::class)
             ->willReturn(false);
 
-        $this->expectException(AccessDeniedHttpException::class);
+        $this->expectException(AccessDeniedException::class);
         $this->expectExceptionMessage('You are not allowed to create campaigns.');
 
         $this->campaignService->createMessage($createMessageRequest, $administrator);
@@ -205,7 +205,7 @@ class CampaignServiceTest extends TestCase
             ->with($administrator, $message)
             ->willReturn(false);
 
-        $this->expectException(AccessDeniedHttpException::class);
+        $this->expectException(AccessDeniedException::class);
         $this->expectExceptionMessage('You are not allowed to update campaigns.');
 
         $this->campaignService->updateMessage($updateMessageRequest, $administrator, $message);
@@ -272,7 +272,7 @@ class CampaignServiceTest extends TestCase
             ->with($administrator, $message)
             ->willReturn(false);
 
-        $this->expectException(AccessDeniedHttpException::class);
+        $this->expectException(AccessDeniedException::class);
         $this->expectExceptionMessage('You are not allowed to delete campaigns.');
 
         $this->campaignService->deleteMessage($administrator, $message);
@@ -346,7 +346,7 @@ class CampaignServiceTest extends TestCase
             ->with($administrator, $message)
             ->willReturn(false);
 
-        $this->expectException(AccessDeniedHttpException::class);
+        $this->expectException(AccessDeniedException::class);
 
         $this->campaignService->resumeStuckCampaign($administrator, $message);
     }
