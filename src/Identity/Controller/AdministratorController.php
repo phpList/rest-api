@@ -249,7 +249,7 @@ class AdministratorController extends BaseController
         Request $request,
         #[MapEntity(mapping: ['adminId' => 'id'])] ?Administrator $administrator,
     ): JsonResponse {
-        $this->requireAuthentication($request);
+        $authAdmin = $this->requireAuthentication($request);
 
         if (!$administrator) {
             throw $this->createNotFoundException('Administrator not found.');
@@ -262,7 +262,7 @@ class AdministratorController extends BaseController
                 $dto->setUpdatingId($administrator->getId());
             }
         );
-        $this->administratorManager->updateAdministrator($administrator, $updateRequest->getDto());
+        $this->administratorManager->updateAdministrator($administrator, $updateRequest->getDto(), $authAdmin);
         $this->entityManager->flush();
 
         return $this->json($this->normalizer->normalize($administrator), Response::HTTP_OK);
