@@ -6,12 +6,13 @@ namespace PhpList\RestBundle\Messaging\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
+use PhpList\Core\Domain\Messaging\Message\CampaignProcessor\CampaignProcessorMessage;
 use PhpList\Core\Domain\Messaging\Message\CampaignProcessor\SyncCampaignProcessorMessage;
 use PhpList\Core\Domain\Messaging\Message\CampaignProcessor\TestCampaignProcessorMessage;
 use PhpList\Core\Domain\Messaging\Model\Message;
 use PhpList\Core\Domain\Messaging\Model\Message\MessageStatus;
 use PhpList\Core\Domain\Messaging\Service\Manager\MessageManager;
-use PhpList\Core\Security\Authentication;
+use PhpList\Core\Domain\Identity\Service\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
 use PhpList\RestBundle\Messaging\Request\Message\MessageMetadataRequest;
@@ -47,7 +48,7 @@ class CampaignActionController extends BaseController
         parent::__construct($authentication, $validator);
     }
 
-    #[Route('/{messageId}/copy', name: 'copy_campaign', requirements: ['messageId' => '\d+'], methods: ['POST'])]
+    #[Route('/{messageId}/copy', name: 'copy', requirements: ['messageId' => '\d+'], methods: ['POST'])]
     #[OA\Post(
         path: '/api/v2/campaigns/{messageId}/copy',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
@@ -101,6 +102,68 @@ class CampaignActionController extends BaseController
         $this->entityManager->flush();
 
         return $this->json($this->campaignService->getMessage($message), Response::HTTP_CREATED);
+    }
+
+    #[Route('/{messageId}/resume', name: 'resume', requirements: ['messageId' => '\d+'], methods: ['POST'])]
+    #[OA\Post(
+        path: '/api/v2/campaigns/{messageId}/resume',
+        description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
+        'Resumes a campaign/message that is stuck in Prepared/InProcess status past the stuck-campaign ' .
+        'threshold, re-dispatching it for processing.',
+        summary: 'Resumes a campaign stuck in processing.',
+        tags: ['campaigns'],
+        parameters: [
+            new OA\Parameter(
+                name: 'php-auth-pw',
+                description: 'Session key obtained from login',
+                in: 'header',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            ),
+            new OA\Parameter(
+                name: 'messageId',
+                description: 'message ID',
+                in: 'path',
+                required: true,
+                schema: new OA\Schema(type: 'string')
+            )
+        ],
+        responses: [
+            new OA\Response(
+                response: 200,
+                description: 'Success',
+                content: new OA\JsonContent(ref: '#/components/schemas/Message')
+            ),
+            new OA\Response(
+                response: 403,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
+            ),
+            new OA\Response(
+                response: 404,
+                description: 'Failure',
+                content: new OA\JsonContent(ref: '#/components/schemas/NotFoundErrorResponse')
+            ),
+            new OA\Response(
+                response: 409,
+                description: 'Failure - campaign is not currently stuck in processing',
+                content: new OA\JsonContent(ref: '#/components/schemas/UnauthorizedResponse')
+            ),
+        ]
+    )]
+    public function resumeStuckCampaign(
+        Request $request,
+        #[MapEntity(mapping: ['messageId' => 'id'])] ?Message $message = null
+    ): JsonResponse {
+        $authUser = $this->requireAuthentication($request);
+        if ($message === null) {
+            throw $this->createNotFoundException('Campaign not found.');
+        }
+
+        $this->campaignService->resumeStuckCampaign($authUser, $message);
+        $this->messageBus->dispatch(new CampaignProcessorMessage($message->getId()));
+
+        return $this->json($this->campaignService->getMessage($message), Response::HTTP_OK);
     }
 
     #[Route('/{messageId}/status', name: 'update_status', requirements: ['messageId' => '\d+'], methods: ['PATCH'])]
@@ -177,7 +240,7 @@ class CampaignActionController extends BaseController
         return $this->json($this->messageNormalizer->normalize($message), Response::HTTP_OK);
     }
 
-    #[Route('/{messageId}/send', name: 'send_campaign', requirements: ['messageId' => '\d+'], methods: ['POST'])]
+    #[Route('/{messageId}/send', name: 'send', requirements: ['messageId' => '\d+'], methods: ['POST'])]
     #[OA\Post(
         path: '/api/v2/campaigns/{messageId}/send',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
@@ -232,7 +295,7 @@ class CampaignActionController extends BaseController
         return $this->json($this->campaignService->getMessage($message), Response::HTTP_OK);
     }
 
-    #[Route('/{messageId}/resend', name: 'resend_campaign', requirements: ['messageId' => '\d+'], methods: ['POST'])]
+    #[Route('/{messageId}/resend', name: 'resend', requirements: ['messageId' => '\d+'], methods: ['POST'])]
     #[OA\Post(
         path: '/api/v2/campaigns/{messageId}/resend',
         description: '🚧 **Status: Beta** – This method is under development. Avoid using in production. ' .
@@ -299,7 +362,7 @@ class CampaignActionController extends BaseController
 
     #[Route(
         '/{messageId}/test-send',
-        name: 'test_send_campaign',
+        name: 'test_send',
         requirements: ['messageId' => '\d+'],
         methods: ['POST']
     )]

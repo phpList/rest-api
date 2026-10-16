@@ -99,6 +99,6 @@ class PasswordResetControllerTest extends AbstractTestController
         $this->assertHttpUnprocessableEntity();
         $data = $this->getDecodedJsonResponseContent();
         $this->assertStringContainsString('Validation failed', $data['message']);
-        $this->assertStringContainsString('This value is too short', $data['errors']['newPassword'][0]);
+        $this->assertStringContainsString('This value is too short', $data['errors']['new_password'][0]);
     }
 }

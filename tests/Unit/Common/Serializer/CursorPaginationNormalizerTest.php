@@ -22,7 +22,6 @@ class CursorPaginationNormalizerTest extends TestCase
 
         $result = $normalizer->normalize($paginationResult);
 
-        $this->assertIsArray($result);
         $this->assertEquals($items, $result['items']);
         $this->assertEquals([
             'total' => 10,

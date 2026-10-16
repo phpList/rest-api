@@ -12,6 +12,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
+use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\ConstraintViolationList;
@@ -29,7 +30,8 @@ class RequestValidatorTest extends TestCase
         $this->validator = $this->createMock(ValidatorInterface::class);
         $this->requestValidator = new RequestValidator(
             $this->serializer,
-            $this->validator
+            $this->validator,
+            new CamelCaseToSnakeCaseNameConverter()
         );
     }
 
@@ -109,6 +111,38 @@ class RequestValidatorTest extends TestCase
 
         $this->expectException(UnprocessableEntityHttpException::class);
         $this->expectExceptionMessage("email: Must not be blank\nemail: Must be a valid email");
+
+        $this->requestValidator->validate($request, DummyRequestDto::class);
+    }
+
+    public function testValidateConvertsPropertyPathToSnakeCase(): void
+    {
+        $dto = $this->createMock(RequestInterface::class);
+        $json = '{"list_position":-1}';
+        $request = new Request([], [], [], [], [], [], $json);
+
+        $this->serializer
+            ->expects(self::once())
+            ->method('denormalize')
+            ->willReturn($dto);
+
+        $violation = new ConstraintViolation(
+            'This value should be positive.',
+            '',
+            [],
+            null,
+            'listPosition',
+            -1
+        );
+        $violations = new ConstraintViolationList([$violation]);
+
+        $this->validator
+            ->method('validate')
+            ->with($dto)
+            ->willReturn($violations);
+
+        $this->expectException(UnprocessableEntityHttpException::class);
+        $this->expectExceptionMessage('list_position: This value should be positive.');
 
         $this->requestValidator->validate($request, DummyRequestDto::class);
     }

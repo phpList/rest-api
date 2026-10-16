@@ -11,7 +11,7 @@ use PhpList\Core\Domain\Identity\Model\Administrator;
 use PhpList\Core\Domain\Identity\Model\AdminAttributeDefinition;
 use PhpList\Core\Domain\Identity\Model\AdminAttributeValue;
 use PhpList\Core\Domain\Identity\Service\Manager\AdminAttributeManager;
-use PhpList\Core\Security\Authentication;
+use PhpList\Core\Domain\Identity\Service\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Service\Provider\PaginatedDataProvider;
 use PhpList\RestBundle\Common\Validator\RequestValidator;

@@ -9,7 +9,7 @@ use OpenApi\Attributes as OA;
 use PhpList\Core\Domain\Common\Model\Filter\PaginatedFilter;
 use PhpList\Core\Domain\Identity\Model\Administrator;
 use PhpList\Core\Domain\Identity\Service\Manager\AdministratorManager;
-use PhpList\Core\Security\Authentication;
+use PhpList\Core\Domain\Identity\Service\Authentication;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Service\Provider\PaginatedDataProvider;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
@@ -249,7 +249,7 @@ class AdministratorController extends BaseController
         Request $request,
         #[MapEntity(mapping: ['adminId' => 'id'])] ?Administrator $administrator,
     ): JsonResponse {
-        $this->requireAuthentication($request);
+        $authAdmin = $this->requireAuthentication($request);
 
         if (!$administrator) {
             throw $this->createNotFoundException('Administrator not found.');
@@ -257,12 +257,12 @@ class AdministratorController extends BaseController
         /** @var UpdateAdministratorRequest $updateRequest */
         $updateRequest = $this->validator->validate(
             request: $request,
-            dtoClass:UpdateAdministratorRequest::class,
+            dtoClass: UpdateAdministratorRequest::class,
             beforeValidation: static function (UpdateAdministratorRequest $dto) use ($administrator): void {
                 $dto->setUpdatingId($administrator->getId());
             }
         );
-        $this->administratorManager->updateAdministrator($administrator, $updateRequest->getDto());
+        $this->administratorManager->updateAdministrator($administrator, $updateRequest->getDto(), $authAdmin);
         $this->entityManager->flush();
 
         return $this->json($this->normalizer->normalize($administrator), Response::HTTP_OK);

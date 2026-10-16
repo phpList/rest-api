@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Subscription\Serializer;
 
+use DateTimeInterface;
 use OpenApi\Attributes as OA;
+use PhpList\Core\Domain\Subscription\Model\Interfaces\SubscriberHistoryRecordInterface;
 use PhpList\Core\Domain\Subscription\Model\Subscriber;
-use PhpList\Core\Domain\Subscription\Model\SubscriberHistory;
 use PhpList\Core\Domain\Subscription\Model\Subscription;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
@@ -56,7 +57,7 @@ class SubscriberNormalizer implements NormalizerInterface
     }
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function normalize($object, string $format = null, array $context = []): array
     {
@@ -67,8 +68,8 @@ class SubscriberNormalizer implements NormalizerInterface
         return [
             'id' => $object->getId(),
             'email' => $object->getEmail(),
-            'created_at' => $object->getCreatedAt()?->format(\DateTimeInterface::ATOM),
-            'updated_at' => $object->getUpdatedAt()?->format(\DateTimeInterface::ATOM),
+            'created_at' => $object->getCreatedAt()->format(DateTimeInterface::ATOM),
+            'updated_at' => $object->getUpdatedAt()->format(DateTimeInterface::ATOM),
             'confirmed' => $object->isConfirmed(),
             'blacklisted' => $object->isBlacklisted(),
             'bounce_count' => $object->getBounceCount(),
@@ -79,17 +80,27 @@ class SubscriberNormalizer implements NormalizerInterface
             'subscribed_lists' => array_map(function (Subscription $subscription) {
                 return $this->subscriberListNormalizer->normalize($subscription->getSubscriberList());
             }, $object->getSubscriptions()->toArray()),
-            'history' => array_map(function (SubscriberHistory $history) {
+            'history' => array_map(function (SubscriberHistoryRecordInterface $history) {
                 return  $this->subscriberHistoryNormalizer->normalize($history);
             }, $object->getHistory()),
         ];
     }
 
     /**
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function supportsNormalization($data, string $format = null): bool
     {
         return $data instanceof Subscriber;
+    }
+
+    /**
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
+     */
+    public function getSupportedTypes(?string $format): array
+    {
+        return [
+            Subscriber::class => true,
+        ];
     }
 }

@@ -8,7 +8,7 @@ use PhpList\Core\Domain\Common\Model\Dto\DirectoryEntryDto;
 use PhpList\Core\Domain\Common\Service\DirectoryListingService;
 use PhpList\Core\Domain\Common\Validator\UploadDirectoryValidator;
 use PhpList\Core\Domain\Identity\Model\Administrator;
-use PhpList\Core\Security\Authentication;
+use PhpList\Core\Domain\Identity\Service\Authentication;
 use PhpList\Core\Domain\Common\Model\UploadResult;
 use PhpList\Core\Domain\Common\Service\UploadService;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
@@ -231,7 +231,7 @@ class EditorUploadControllerTest extends TestCase
             ->expects(self::once())
             ->method('generate')
             ->with(
-                'editor_uploads_get_file',
+                'api_editor_uploads_get_file',
                 ['filename' => 'test.png'],
                 UrlGeneratorInterface::ABSOLUTE_URL
             )

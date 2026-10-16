@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Identity\Validator\Constraint;
 
 use PhpList\Core\Domain\Identity\Repository\AdministratorRepository;
-use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
@@ -40,7 +39,9 @@ class UniqueLoginNameValidator extends ConstraintValidator
         $updatingId = $dto->updatingId ?? null;
 
         if ($existingUser && $existingUser->getId() !== $updatingId) {
-            throw new ConflictHttpException('Login already exists.');
+            $this->context->buildViolation($constraint->message)
+                ->setParameter('{{ value }}', $value)
+                ->addViolation();
         }
     }
 }
