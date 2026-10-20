@@ -162,13 +162,12 @@ class CampaignServiceTest extends TestCase
         $this->campaignService->createMessage($createMessageRequest, $administrator);
     }
 
-    public function testCreateMessageReturnsNormalizedMessage(): void
+    public function testCreateMessageReturnsMessage(): void
     {
         $messageDto = $this->createMock(CreateMessageDto::class);
         $createMessageRequest = $this->createMock(CreateMessageRequest::class);
         $administrator = $this->createMock(Administrator::class);
         $message = $this->createMock(Message::class);
-        $expectedResult = ['id' => 1, 'subject' => 'Test Campaign'];
 
         $this->permissionChecker->expects($this->once())
             ->method('canCreate')
@@ -184,14 +183,9 @@ class CampaignServiceTest extends TestCase
             ->with($this->identicalTo($messageDto), $this->identicalTo($administrator))
             ->willReturn($message);
 
-        $this->normalizer->expects($this->once())
-            ->method('normalize')
-            ->with($this->identicalTo($message))
-            ->willReturn($expectedResult);
-
         $result = $this->campaignService->createMessage($createMessageRequest, $administrator);
 
-        $this->assertSame($expectedResult, $result);
+        $this->assertSame($message, $result);
     }
 
     public function testUpdateMessageThrowsExceptionWhenAdministratorLacksPrivileges(): void

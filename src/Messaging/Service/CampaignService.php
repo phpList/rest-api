@@ -63,18 +63,16 @@ class CampaignService
         return $this->normalizer->normalize($message);
     }
 
-    public function createMessage(CreateMessageRequest $createMessageRequest, Administrator $administrator): array
+    public function createMessage(CreateMessageRequest $createMessageRequest, Administrator $administrator): Message
     {
         if (!$this->permissionChecker->canCreate($administrator, Message::class)) {
             throw new AccessDeniedException('You are not allowed to create campaigns.');
         }
 
-        $data = $this->messageManager->createMessage(
+        return $this->messageManager->createMessage(
             createMessageDto: $createMessageRequest->getDto(),
             authUser: $administrator
         );
-
-        return $this->normalizer->normalize($data);
     }
 
     public function updateMessage(

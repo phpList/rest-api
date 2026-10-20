@@ -12,6 +12,7 @@ use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
 use PhpList\RestBundle\Messaging\Request\CreateMessageRequest;
 use PhpList\RestBundle\Messaging\Request\UpdateMessageRequest;
+use PhpList\RestBundle\Messaging\Serializer\MessageNormalizer;
 use PhpList\RestBundle\Messaging\Service\CampaignService;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -32,6 +33,7 @@ class CampaignController extends BaseController
         RequestValidator $validator,
         private readonly CampaignService $campaignService,
         private readonly EntityManagerInterface $entityManager,
+        private readonly MessageNormalizer $normalizer,
     ) {
         parent::__construct($authentication, $validator);
     }
@@ -184,7 +186,7 @@ class CampaignController extends BaseController
         $message = $this->campaignService->createMessage($createMessageRequest, $authUser);
         $this->entityManager->flush();
 
-        return $this->json(data: $message, status: Response::HTTP_CREATED);
+        return $this->json(data: $this->normalizer->normalize($message), status: Response::HTTP_CREATED);
     }
 
     #[Route('/stuck', name: 'get_stuck', methods: ['GET'])]
