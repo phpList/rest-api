@@ -23,13 +23,13 @@ use Symfony\Component\Validator\Constraints as Assert;
 )]
 class MessageFormatRequest implements RequestDtoInterface
 {
-    #[Assert\Choice(['html', 'text', 'invite'])]
+    #[Assert\Regex(pattern: '/^(html|text|invite)$/i', message: 'The value must be one of: html, text, invite.')]
     public string $sendFormat;
 
     public function getDto(): MessageFormatDto
     {
         return new MessageFormatDto(
-            sendFormat: $this->sendFormat,
+            sendFormat: strtolower($this->sendFormat),
         );
     }
 }
