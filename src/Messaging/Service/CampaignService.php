@@ -11,9 +11,15 @@ use PhpList\Core\Domain\Identity\Model\Administrator;
 use PhpList\Core\Domain\Identity\Service\PermissionChecker;
 use PhpList\Core\Domain\Messaging\Model\Filter\MessageFilter;
 use PhpList\Core\Domain\Messaging\Model\Message;
+use PhpList\Core\Domain\Messaging\Model\Message\MessageStatus;
 use PhpList\Core\Domain\Messaging\Service\Manager\MessageManager;
 use PhpList\RestBundle\Common\Service\Provider\PaginatedDataProvider;
 use PhpList\RestBundle\Messaging\Request\CreateMessageRequest;
+use PhpList\RestBundle\Messaging\Request\Message\MessageContentRequest;
+use PhpList\RestBundle\Messaging\Request\Message\MessageFormatRequest;
+use PhpList\RestBundle\Messaging\Request\Message\MessageMetadataRequest;
+use PhpList\RestBundle\Messaging\Request\Message\MessageOptionsRequest;
+use PhpList\RestBundle\Messaging\Request\Message\MessageScheduleRequest;
 use PhpList\RestBundle\Messaging\Request\UpdateMessageRequest;
 use PhpList\RestBundle\Messaging\Serializer\MessageNormalizer;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -22,6 +28,9 @@ use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
+/**
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
+ */
 class CampaignService
 {
     public function __construct(
@@ -32,6 +41,39 @@ class CampaignService
         private readonly PermissionChecker $permissionChecker,
         #[Autowire('%messaging.stuck_campaign_threshold%')] private readonly int $stuckCampaignThresholdSeconds = 1800,
     ) {
+    }
+
+    public function buildMessageRequest(Message $message, MessageStatus $status): UpdateMessageRequest
+    {
+        $dateFormat = 'Y-m-d\TH:i:s.uP';
+        $schedule = $message->getSchedule();
+
+        $request = new UpdateMessageRequest();
+        $request->content = new MessageContentRequest();
+        $request->content->subject = $message->getContent()->getSubject();
+        $request->content->text = $message->getContent()->getText() ?? '';
+        $request->content->footer = $message->getContent()->getFooter() ?? '';
+
+        $request->format = new MessageFormatRequest();
+        $request->format->sendFormat = $message->getFormat()->getSendFormat() ?? '';
+
+        $request->metadata = new MessageMetadataRequest();
+        $request->metadata->status = $status->value;
+
+        $request->schedule = new MessageScheduleRequest();
+        $request->schedule->embargo = $schedule->getEmbargo()?->format($dateFormat) ?? '';
+        $request->schedule->repeatInterval = $schedule->getRepeatInterval();
+        $request->schedule->repeatUntil = $schedule->getRepeatUntil()?->format($dateFormat);
+        $request->schedule->requeueInterval = $schedule->getRequeueInterval();
+        $request->schedule->requeueUntil = $schedule->getRequeueUntil()?->format($dateFormat);
+
+        $request->options = new MessageOptionsRequest();
+        $request->options->fromField = $message->getOptions()->getFromField();
+        $request->options->toField = $message->getOptions()->getToField();
+        $request->options->replyTo = $message->getOptions()->getReplyTo();
+        $request->options->userSelection = $message->getOptions()->getUserSelection();
+
+        return $request;
     }
 
     public function getMessages(Request $request, Administrator $administrator): array

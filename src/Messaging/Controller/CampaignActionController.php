@@ -231,10 +231,12 @@ class CampaignActionController extends BaseController
         /** @var MessageMetadataRequest $messageMetadataRequest */
         $messageMetadataRequest = $this->validator->validate($request, MessageMetadataRequest::class);
 
-        $message = $this->messageManager->updateStatus(
-            $message,
-            MessageStatus::from($messageMetadataRequest->status),
-        );
+        $status = MessageStatus::from($messageMetadataRequest->status);
+        if ($status !== MessageStatus::Draft) {
+            $this->assertMessageIsValid($message, $status);
+        }
+
+        $message = $this->messageManager->updateStatus($message, $status);
         $this->entityManager->flush();
 
         return $this->json($this->messageNormalizer->normalize($message), Response::HTTP_OK);
@@ -289,6 +291,8 @@ class CampaignActionController extends BaseController
         if ($message === null) {
             throw $this->createNotFoundException('Campaign not found.');
         }
+
+        $this->assertMessageIsValid($message, MessageStatus::Submitted);
 
         $this->messageBus->dispatch(new SyncCampaignProcessorMessage($message->getId()));
 
@@ -352,6 +356,8 @@ class CampaignActionController extends BaseController
 
         /** @var ResendMessageToListsRequest $resendToListsRequest */
         $resendToListsRequest = $this->validator->validate($request, ResendMessageToListsRequest::class);
+
+        $this->assertMessageIsValid($message, MessageStatus::Submitted);
 
         $this->messageBus->dispatch(
             new SyncCampaignProcessorMessage($message->getId(), $resendToListsRequest->listIds)
@@ -423,11 +429,18 @@ class CampaignActionController extends BaseController
         /** @var TestSendMessageToSubscribersRequest $testSendRequest */
         $testSendRequest = $this->validator->validate($request, TestSendMessageToSubscribersRequest::class);
 
+        $this->assertMessageIsValid($message, MessageStatus::Submitted);
+
         $this->messageBus->dispatch(new TestCampaignProcessorMessage(
             messageId: $message->getId(),
             subscriberEmails: $testSendRequest->emails
         ));
 
         return $this->json($this->campaignService->getMessage($message), Response::HTTP_OK);
+    }
+
+    private function assertMessageIsValid(Message $message, MessageStatus $status): void
+    {
+        $this->validator->validateDto($this->campaignService->buildMessageRequest($message, $status));
     }
 }
