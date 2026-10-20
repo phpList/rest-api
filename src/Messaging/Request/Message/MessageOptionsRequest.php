@@ -21,7 +21,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 )]
 class MessageOptionsRequest implements RequestDtoInterface
 {
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(groups: [MessageMetadataRequest::NON_DRAFT_GROUP])]
     #[Assert\Email]
     public string $fromField;
 

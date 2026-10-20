@@ -25,6 +25,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 )]
 class MessageMetadataRequest implements RequestDtoInterface, RequestInterface
 {
+    public const NON_DRAFT_GROUP = 'non_draft';
+
     #[Assert\NotBlank]
     #[Assert\Choice(['draft', 'sent', 'prepared', 'submitted', 'suspended'])]
     public string $status;

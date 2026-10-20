@@ -24,13 +24,13 @@ class MessageContentRequest implements RequestDtoInterface
     private const CLICKTRACK_MESSAGE = 'You should not paste the results of a test message back into the editor. '
     . 'This will break the click-track statistics, and overload the server.';
 
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(groups: [MessageMetadataRequest::NON_DRAFT_GROUP])]
     public string $subject;
 
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(groups: [MessageMetadataRequest::NON_DRAFT_GROUP])]
     public string $text;
 
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(groups: [MessageMetadataRequest::NON_DRAFT_GROUP])]
     public string $footer;
 
     #[Assert\Callback('validateNoClickTrackLinks')]
