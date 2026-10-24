@@ -8,10 +8,11 @@ use PhpList\Core\Domain\Analytics\Service\AnalyticsService;
 use PhpList\Core\Domain\Identity\Model\Administrator;
 use PhpList\Core\Domain\Identity\Model\PrivilegeFlag;
 use PhpList\Core\Domain\Identity\Model\Privileges;
-use PhpList\Core\Security\Authentication;
+use PhpList\Core\Domain\Identity\Service\Authentication;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
 use PhpList\RestBundle\Statistics\Controller\AnalyticsController;
 use PhpList\RestBundle\Statistics\Serializer\CampaignStatisticsNormalizer;
+use PhpList\RestBundle\Statistics\Serializer\DomainConfirmationNormalizer;
 use PhpList\RestBundle\Statistics\Serializer\TopDomainsNormalizer;
 use PhpList\RestBundle\Statistics\Serializer\TopLocalPartsNormalizer;
 use PhpList\RestBundle\Statistics\Serializer\ViewOpensStatisticsNormalizer;
@@ -46,7 +47,8 @@ class AnalyticsControllerTest extends TestCase
             campaignStatsNormalizer: $campaignStatisticsNormalizer,
             viewOpensStatsNormalizer: $viewOpensStatisticsNormalizer,
             topDomainsNormalizer: $topDomainsNormalizer,
-            topLocalPartsNormalizer: new TopLocalPartsNormalizer()
+            topLocalPartsNormalizer: new TopLocalPartsNormalizer(),
+            domainConfirmationNormalizer: new DomainConfirmationNormalizer(),
         );
 
         $this->privileges = $this->createMock(Privileges::class);
@@ -292,7 +294,15 @@ class AnalyticsControllerTest extends TestCase
 
         self::assertInstanceOf(JsonResponse::class, $response);
         self::assertEquals(Response::HTTP_OK, $response->getStatusCode());
-        self::assertEquals($expectedData, json_decode($response->getContent(), true));
+        self::assertEquals([
+            'items' => [
+                [
+                    'domain' => 'example.com',
+                    'subscribers' => 50,
+                ]
+            ],
+            'total' => 1,
+        ], json_decode($response->getContent(), true));
     }
 
     public function testGetDomainConfirmationStatisticsWithoutStatisticsPrivilegeThrowsException(): void
@@ -369,7 +379,30 @@ class AnalyticsControllerTest extends TestCase
 
         self::assertInstanceOf(JsonResponse::class, $response);
         self::assertEquals(Response::HTTP_OK, $response->getStatusCode());
-        self::assertEquals($expectedData, json_decode($response->getContent(), true));
+        self::assertEquals([
+            'items' => [
+                [
+                    'domain' => 'example.com',
+                    'confirmed' => [
+                        'count' => 40,
+                        'percentage' => 80.0,
+                    ],
+                    'unconfirmed' => [
+                        'count' => 5,
+                        'percentage' => 10.0,
+                    ],
+                    'blacklisted' => [
+                        'count' => 5,
+                        'percentage' => 10.0,
+                    ],
+                    'total' => [
+                        'count' => 50,
+                        'percentage' => 100.0,
+                    ],
+                ]
+            ],
+            'total' => 1,
+        ], json_decode($response->getContent(), true));
     }
 
     public function testGetTopLocalPartsWithoutStatisticsPrivilegeThrowsException(): void
@@ -432,18 +465,18 @@ class AnalyticsControllerTest extends TestCase
 
         self::assertEquals(Response::HTTP_OK, $response->getStatusCode());
         self::assertEquals([
-            'local_parts' => [
+            'items' => [
                 [
                     'local_part' => 'info',
                     'count' => 30,
-                    'percentage' => 60.0,
+                    'percentage' => 60,
                 ]
             ],
             'total' => 1,
         ], json_decode($response->getContent(), true));
     }
 
-    public function testGetDashboardStatisticsWithoutStatisticsPrivilegeDoesNotThrowException(): void
+    public function testGetDashboardSummaryDoesNotCheckStatisticsPrivilege(): void
     {
         $request = new Request();
 
@@ -456,27 +489,7 @@ class AnalyticsControllerTest extends TestCase
         $this->privileges
             ->expects(self::never())
             ->method('has')
-            ->with(PrivilegeFlag::Statistics)
-            ->willReturn(false);
-
-        $this->controller->getDashboardStatistics($request);
-    }
-
-    public function testGetDashboardStatisticsReturnsJsonResponse(): void
-    {
-        $request = new Request();
-
-        $this->authentication
-            ->expects(self::once())
-            ->method('authenticateByApiKey')
-            ->with($request)
-            ->willReturn($this->administrator);
-
-        $this->privileges
-            ->expects(self::never())
-            ->method('has')
-            ->with(PrivilegeFlag::Statistics)
-            ->willReturn(true);
+            ->with(PrivilegeFlag::Statistics);
 
         $this->analyticsService
             ->expects(self::once())
@@ -500,30 +513,98 @@ class AnalyticsControllerTest extends TestCase
                 ],
             ]);
 
-        $response = $this->controller->getDashboardStatistics($request);
+        $response = $this->controller->getDashboardSummary($request);
 
         self::assertEquals(Response::HTTP_OK, $response->getStatusCode());
         self::assertEquals([
-            'summary_statistics' => [
-                'total_subscribers' => [
-                    'value' => 80,
-                    'change_vs_last_month' => 10.5,
-                ],
-                'active_campaigns' => [
-                    'value' => 12,
-                    'change_vs_last_month' => -4.25,
-                ],
-                'open_rate' => [
-                    'value' => 40.0,
-                    'change_vs_last_month' => 3.3,
-                ],
-                'bounce_rate' => [
-                    'value' => 6.67,
-                    'change_vs_last_month' => -1.1,
-                ],
+            'total_subscribers' => [
+                'value' => 80,
+                'change_vs_last_month' => 10.5,
             ],
-            'recent_campaigns' => [],
-            'campaign_performance' => [],
+            'active_campaigns' => [
+                'value' => 12,
+                'change_vs_last_month' => -4.25,
+            ],
+            'open_rate' => [
+                'value' => 40.0,
+                'change_vs_last_month' => 3.3,
+            ],
+            'bounce_rate' => [
+                'value' => 6.67,
+                'change_vs_last_month' => -1.1,
+            ],
         ], json_decode($response->getContent(), true));
+    }
+
+    public function testGetRecentCampaignsStatisticsReturnsJsonResponse(): void
+    {
+        $request = new Request();
+
+        $this->authentication
+            ->expects(self::once())
+            ->method('authenticateByApiKey')
+            ->with($request)
+            ->willReturn($this->administrator);
+
+        $this->privileges
+            ->expects(self::never())
+            ->method('has')
+            ->with(PrivilegeFlag::Statistics);
+
+        $expectedData = [
+            [
+                'name' => 'March Newsletter',
+                'status' => 'sent',
+                'date' => '2026-03-15',
+                'open_rate' => '42.50%',
+                'click_rate' => '8.10%',
+            ],
+        ];
+
+        $this->analyticsService
+            ->expects(self::once())
+            ->method('getRecentCampaigns')
+            ->willReturn($expectedData);
+
+        $response = $this->controller->getRecentCampaignsStatistics($request);
+
+        self::assertInstanceOf(JsonResponse::class, $response);
+        self::assertEquals(Response::HTTP_OK, $response->getStatusCode());
+        self::assertEquals($expectedData, json_decode($response->getContent(), true));
+    }
+
+    public function testGetCampaignPerformanceStatisticsReturnsJsonResponse(): void
+    {
+        $request = new Request();
+
+        $this->authentication
+            ->expects(self::once())
+            ->method('authenticateByApiKey')
+            ->with($request)
+            ->willReturn($this->administrator);
+
+        $this->privileges
+            ->expects(self::never())
+            ->method('has')
+            ->with(PrivilegeFlag::Statistics);
+
+        $expectedData = [
+            [
+                'date' => '2026-03-19',
+                'opens' => 234,
+                'clicks' => 57,
+            ],
+        ];
+
+        $this->analyticsService
+            ->expects(self::once())
+            ->method('getCampaignPerformance')
+            ->willReturn($expectedData);
+
+        $response = $this->controller->getCampaignPerformanceStatistics($request);
+
+        self::assertInstanceOf(JsonResponse::class, $response);
+        self::assertEquals(Response::HTTP_OK, $response->getStatusCode());
+        self::assertEquals($expectedData, json_decode($response->getContent(), true));
     }
 }

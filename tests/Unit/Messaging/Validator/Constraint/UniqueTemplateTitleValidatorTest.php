@@ -35,14 +35,12 @@ class UniqueTemplateTitleValidatorTest extends TestCase
     {
         $this->templateRepository->expects($this->never())->method('findOneBy');
         $this->validator->validate(null, new UniqueTemplateTitle());
-        $this->assertTrue(true);
     }
 
     public function testValidateSkipsEmptyString(): void
     {
         $this->templateRepository->expects($this->never())->method('findOneBy');
         $this->validator->validate('', new UniqueTemplateTitle());
-        $this->assertTrue(true);
     }
 
     public function testValidateThrowsUnexpectedTypeException(): void
@@ -82,7 +80,6 @@ class UniqueTemplateTitleValidatorTest extends TestCase
             ->willReturn(null);
 
         $this->validator->validate('Unique Template', new UniqueTemplateTitle());
-        $this->assertTrue(true);
     }
 
     public function testValidateSkipsConflictForSameTemplateOnUpdate(): void
@@ -104,6 +101,5 @@ class UniqueTemplateTitleValidatorTest extends TestCase
             ->willReturn($dto);
 
         $this->validator->validate('Existing Title', new UniqueTemplateTitle());
-        $this->assertTrue(true);
     }
 }

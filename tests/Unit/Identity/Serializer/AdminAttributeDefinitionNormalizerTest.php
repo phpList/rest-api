@@ -24,7 +24,6 @@ class AdminAttributeDefinitionNormalizerTest extends TestCase
         $normalizer = new AdminAttributeDefinitionNormalizer();
         $data = $normalizer->normalize($definition);
 
-        $this->assertIsArray($data);
         $this->assertEquals([
             'id' => 123,
             'name' => 'test_attribute',
@@ -40,7 +39,6 @@ class AdminAttributeDefinitionNormalizerTest extends TestCase
         $normalizer = new AdminAttributeDefinitionNormalizer();
         $data = $normalizer->normalize(new \stdClass());
 
-        $this->assertIsArray($data);
         $this->assertEmpty($data);
     }
 

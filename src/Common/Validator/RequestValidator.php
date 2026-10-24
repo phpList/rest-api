@@ -8,6 +8,7 @@ use PhpList\RestBundle\Common\Request\RequestInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
+use Symfony\Component\Serializer\NameConverter\NameConverterInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Throwable;
@@ -16,7 +17,8 @@ class RequestValidator
 {
     public function __construct(
         private readonly DenormalizerInterface $serializer,
-        private readonly ValidatorInterface $validator
+        private readonly ValidatorInterface $validator,
+        private readonly NameConverterInterface $nameConverter
     ) {
     }
 
@@ -66,7 +68,7 @@ class RequestValidator
             foreach ($errors as $violation) {
                 $lines[] = sprintf(
                     '%s: %s',
-                    $violation->getPropertyPath(),
+                    $this->nameConverter->normalize($violation->getPropertyPath()),
                     $violation->getMessage()
                 );
             }

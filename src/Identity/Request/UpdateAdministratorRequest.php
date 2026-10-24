@@ -26,8 +26,8 @@ use Symfony\Component\Validator\Constraints as Assert;
             property: 'password',
             type: 'string',
             format: 'password',
-            maxLength: 255,
-            minLength: 6,
+            maxLength: 55,
+            minLength: 5,
             example: 'StrongP@ssw0rd'
         ),
         new OA\Property(
@@ -64,7 +64,7 @@ class UpdateAdministratorRequest implements RequestInterface
     #[UniqueLoginName]
     public ?string $loginName = null;
 
-    #[Assert\Length(min: 6, max: 255)]
+    #[Assert\Length(min: 5, max: 55)]
     public ?string $password = null;
 
     #[Assert\Email]

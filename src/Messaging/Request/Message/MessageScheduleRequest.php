@@ -42,7 +42,7 @@ class MessageScheduleRequest implements RequestDtoInterface
     #[Assert\DateTime(format: 'Y-m-d\TH:i:s.uP')]
     public ?string $requeueUntil = null;
 
-    #[Assert\NotBlank]
+    #[Assert\NotBlank(groups: [MessageMetadataRequest::NON_DRAFT_GROUP])]
     public string $embargo;
 
     public function getDto(): MessageScheduleDto

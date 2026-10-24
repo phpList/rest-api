@@ -13,7 +13,9 @@ use PhpList\RestBundle\Messaging\Request\Message\MessageMetadataRequest;
 use PhpList\RestBundle\Messaging\Request\Message\MessageOptionsRequest;
 use PhpList\RestBundle\Messaging\Request\Message\MessageScheduleRequest;
 use PhpList\RestBundle\Messaging\Validator\Constraint\TemplateExists;
+use PhpList\Core\Domain\Messaging\Model\Message\MessageStatus;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class CreateMessageRequest implements RequestInterface
 {
@@ -39,6 +41,25 @@ class CreateMessageRequest implements RequestInterface
 
     #[TemplateExists]
     public ?int $templateId = null;
+
+    /**
+     * Fields that must not be blank are only enforced when the message is not a draft.
+     */
+    #[Assert\Callback]
+    public function validateNonDraft(ExecutionContextInterface $context): void
+    {
+        if (!isset($this->metadata->status) || $this->metadata->status === MessageStatus::Draft->value) {
+            return;
+        }
+
+        $validator = $context->getValidator()->inContext($context);
+        $groups = [MessageMetadataRequest::NON_DRAFT_GROUP];
+        foreach (['content', 'schedule', 'options'] as $property) {
+            if (isset($this->$property)) {
+                $validator->atPath($property)->validate($this->$property, null, $groups);
+            }
+        }
+    }
 
     public function getDto(): MessageDtoInterface
     {

@@ -31,7 +31,6 @@ class SubscriberAttributeDefinitionRequestTest extends TestCase
         $this->assertEquals(5, $dto->listOrder);
         $this->assertEquals('default', $dto->defaultValue);
         $this->assertTrue($dto->required);
-        $this->assertIsArray($dto->options);
     }
 
     public function testGetDtoWithDefaultValues(): void
@@ -47,7 +46,6 @@ class SubscriberAttributeDefinitionRequestTest extends TestCase
         $this->assertNull($dto->listOrder);
         $this->assertNull($dto->defaultValue);
         $this->assertFalse($dto->required);
-        $this->assertIsArray($dto->options);
         $this->assertSame([], $dto->options);
     }
 

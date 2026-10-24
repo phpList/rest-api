@@ -22,8 +22,6 @@ class ContainsPlaceholderValidatorTest extends TestCase
 
         $constraint = new ContainsPlaceholder(['placeholder' => '[CONTENT]']);
         $validator->validate('<html>[CONTENT]</html>', $constraint);
-
-        $this->assertTrue(true);
     }
 
     public function testValidateWithMissingPlaceholder(): void

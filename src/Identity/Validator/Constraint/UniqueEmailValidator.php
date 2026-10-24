@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace PhpList\RestBundle\Identity\Validator\Constraint;
 
 use PhpList\Core\Domain\Identity\Repository\AdministratorRepository;
-use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
@@ -34,10 +33,11 @@ class UniqueEmailValidator extends ConstraintValidator
         $existingUser = $this->repository->findOneBy(['email' => $value]);
 
         $dto = $this->context->getObject();
-        $updatingId = $dto->administratorId ?? null;
+        $updatingId = $dto->updatingId ?? null;
 
         if ($existingUser && $existingUser->getId() !== $updatingId) {
-            throw new ConflictHttpException('Email already exists.');
+            $this->context->buildViolation($constraint->message)
+                ->addViolation();
         }
     }
 }
