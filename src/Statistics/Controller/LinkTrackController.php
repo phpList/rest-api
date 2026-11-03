@@ -60,6 +60,7 @@ class LinkTrackController extends BaseController
         responses: [
             new OA\Response(response: 303, description: 'Redirect to the original url'),
             new OA\Response(response: 404, description: 'Invalid token or unknown link'),
+            new OA\Response(response: 500, description: 'The click could not be stored'),
         ]
     )]
     public function trackLinkClick(
@@ -79,7 +80,6 @@ class LinkTrackController extends BaseController
 
         try {
             $url = $this->linkClickService->trackClick($token, $signature, $metadata);
-            $this->entityManager->flush();
         } catch (Throwable $e) {
             $this->logger->error('Failed to track link click', ['exception' => $e]);
 
@@ -88,6 +88,12 @@ class LinkTrackController extends BaseController
 
         if ($url === null) {
             return $this->notFound();
+        }
+
+        try {
+            $this->entityManager->flush();
+        } catch (Throwable $e) {
+            $this->logger->error('Failed to store link click', ['exception' => $e]);
         }
 
         $response = new RedirectResponse($url, Response::HTTP_SEE_OTHER);
