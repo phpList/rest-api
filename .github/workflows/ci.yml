@@ -26,7 +26,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-versions: ['8.1']
+        php-versions: ['8.2']
         dependencies: ['latest', 'oldest']
     steps:
       - name: Checkout
@@ -63,7 +63,7 @@ jobs:
         run: composer validate --no-check-all --no-check-lock --strict;
       - name: Linting all php files
         run: find src/ tests/ public/ -name ''*.php'' -print0 | xargs -0 -n 1 -P 4 php -l; php -l;
-      - name: Running  unit tests
+      - name: Running unit tests
         run: vendor/bin/phpunit tests/Unit/;
         continue-on-error: ${{matrix.php-versions == '8.0' }} # [temp-php8]
       - name: Running the integration tests
