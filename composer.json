@@ -41,7 +41,7 @@
         "source": "https://github.com/phpList/rest-api"
     },
     "require": {
-        "php": "^8.1",
+        "php": "^8.2",
         "phplist/core": "dev-dev",
         "elasticsearch/elasticsearch": "^8.9",
         "friendsofsymfony/rest-bundle": "*",
