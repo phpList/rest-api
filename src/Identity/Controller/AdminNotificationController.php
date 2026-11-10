@@ -10,6 +10,7 @@ use PhpList\Core\Domain\Identity\Service\Authentication;
 use PhpList\Core\Domain\Identity\Service\Notification\AdminNotificationCollector;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
+use PhpList\RestBundle\Identity\Serializer\AdminNotificationNormalizer;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,6 +26,7 @@ class AdminNotificationController extends BaseController
         Authentication $authentication,
         RequestValidator $validator,
         private readonly AdminNotificationCollector $collector,
+        private readonly AdminNotificationNormalizer $normalizer,
     ) {
         parent::__construct($authentication, $validator);
     }
@@ -54,19 +56,7 @@ class AdminNotificationController extends BaseController
                         new OA\Property(
                             property: 'items',
                             type: 'array',
-                            items: new OA\Items(
-                                properties: [
-                                    new OA\Property(property: 'code', type: 'string', example: 'campaigns_in_queue'),
-                                    new OA\Property(
-                                        property: 'level',
-                                        type: 'string',
-                                        enum: ['info', 'warning', 'error']
-                                    ),
-                                    new OA\Property(property: 'message', type: 'string'),
-                                    new OA\Property(property: 'context', type: 'object'),
-                                ],
-                                type: 'object'
-                            )
+                            items: new OA\Items(ref: '#/components/schemas/AdminNotification')
                         ),
                     ],
                     type: 'object'
@@ -84,12 +74,7 @@ class AdminNotificationController extends BaseController
         $administrator = $this->requireAuthentication($request);
 
         $items = array_map(
-            static fn (AdminNotification $n): array => [
-                'code' => $n->code,
-                'level' => $n->level,
-                'message' => $n->message,
-                'context' => (object) $n->context,
-            ],
+            fn (AdminNotification $notification): array => $this->normalizer->normalize($notification),
             $this->collector->collect($administrator)
         );
 
