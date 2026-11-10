@@ -60,7 +60,6 @@ class LinkTrackController extends BaseController
         responses: [
             new OA\Response(response: 303, description: 'Redirect to the original url'),
             new OA\Response(response: 404, description: 'Invalid token or unknown link'),
-            new OA\Response(response: 500, description: 'The click could not be stored'),
         ]
     )]
     public function trackLinkClick(
