@@ -7,6 +7,7 @@ namespace PhpList\RestBundle\Messaging\Service;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use PhpList\Core\Domain\Identity\Model\AccessLevel;
 use PhpList\Core\Domain\Identity\Model\Administrator;
 use PhpList\Core\Domain\Identity\Service\PermissionChecker;
 use PhpList\Core\Domain\Messaging\Model\Filter\MessageFilter;
@@ -78,8 +79,13 @@ class CampaignService
 
     public function getMessages(Request $request, Administrator $administrator): array
     {
+        $accessLevel = $this->permissionChecker->accessLevel($administrator, Message::class);
+        if ($accessLevel === AccessLevel::None) {
+            throw new AccessDeniedException('You are not allowed to view campaigns.');
+        }
+
         $filter = (new MessageFilter())
-            ->setOwner($administrator)
+            ->setOwner($accessLevel === AccessLevel::Owner ? $administrator : null)
             ->setSubject($request->query->get('subject'))
             ->setStatus($request->query->get('status'));
 
