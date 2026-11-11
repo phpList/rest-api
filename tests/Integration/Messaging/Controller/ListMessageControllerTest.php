@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace PhpList\RestBundle\Tests\Integration\Messaging\Controller;
 
+use PhpList\Core\Domain\Identity\Repository\AdministratorTokenRepository;
 use PhpList\Core\Domain\Messaging\Repository\MessageRepository;
 use PhpList\Core\Domain\Messaging\Service\Manager\ListMessageManager;
 use PhpList\Core\Domain\Subscription\Repository\SubscriberListRepository;
 use PhpList\RestBundle\Messaging\Controller\ListMessageController;
 use PhpList\RestBundle\Tests\Integration\Common\AbstractTestController;
+use PhpList\RestBundle\Tests\Integration\Identity\Fixtures\AdministratorFixture;
+use PhpList\RestBundle\Tests\Integration\Identity\Fixtures\AdministratorTokenFixture;
 use PhpList\RestBundle\Tests\Integration\Messaging\Fixtures\MessageFixture;
 use PhpList\RestBundle\Tests\Integration\Subscription\Fixtures\SubscriberListFixture;
 
@@ -142,6 +145,29 @@ class ListMessageControllerTest extends AbstractTestController
         self::assertArrayHasKey('id', $responseContent);
         self::assertArrayHasKey('message', $responseContent);
         self::assertArrayHasKey('subscriber_list', $responseContent);
+    }
+
+    public function testAssociateMessageWithListByAdminWithoutPrivilegesIsForbidden(): void
+    {
+        $message = $this->messageRepository->findOneBy([]);
+        $subscriberList = $this->subscriberListRepository->findOneBy([]);
+
+        $this->loadFixtures([AdministratorFixture::class, AdministratorTokenFixture::class]);
+        $token = self::getContainer()->get(AdministratorTokenRepository::class)
+            ->findOneBy(['key' => 'cfdf64eecbbf336628b0f3071adba762']);
+        $admin = $token->getAdministrator();
+        $admin->setSuperUser(false);
+        self::getContainer()->get('doctrine.orm.entity_manager')->flush();
+
+        $this->jsonRequest(
+            'post',
+            '/api/v2/list-messages/message/' . $message->getId() . '/list/' . $subscriberList->getId(),
+            [],
+            [],
+            ['PHP_AUTH_USER' => 'unused', 'PHP_AUTH_PW' => 'cfdf64eecbbf336628b0f3071adba762']
+        );
+
+        $this->assertHttpForbidden();
     }
 
     public function testDisassociateMessageFromListWithoutSessionKeyReturnsUnauthorized(): void
