@@ -17,6 +17,8 @@ use PhpList\Core\Domain\Common\Exception\StorageException;
 use PhpList\Core\Domain\Common\Exception\UnsupportedExtensionException;
 use PhpList\Core\Domain\Common\Exception\UnsupportedMimeTypeException;
 use PhpList\Core\Domain\Common\Exception\UploadTooLargeException;
+use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -25,6 +27,8 @@ use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Validator\Exception\ValidationFailedException;
 use Symfony\Component\Validator\Exception\ValidatorException;
+use Symfony\Contracts\Translation\TranslatorInterface;
+use Throwable;
 
 class ExceptionListener
 {
@@ -45,6 +49,14 @@ class ExceptionListener
         StorageException::class => 500,
     ];
 
+    public function __construct(
+        private readonly TranslatorInterface $translator,
+        #[Autowire('%kernel.debug%')]
+        private readonly bool $debug = false,
+        private readonly ?LoggerInterface $logger = null,
+    ) {
+    }
+
     public function onKernelException(ExceptionEvent $event): void
     {
         $exception = $event->getThrowable();
@@ -55,7 +67,7 @@ class ExceptionListener
         ) {
             $event->setResponse(
                 new JsonResponse([
-                    'message' => 'Validation failed',
+                    'message' => $this->translator->trans('Validation failed'),
                     'errors' => $this->parseFlatValidationMessage($exception->getMessage()),
                 ], 422)
             );
@@ -73,7 +85,7 @@ class ExceptionListener
 
                 $event->setResponse(
                     new JsonResponse([
-                        'message' => $exception->getMessage(),
+                        'message' => $this->translateMessage($exception),
                     ], $status)
                 );
 
@@ -84,7 +96,7 @@ class ExceptionListener
         if ($exception instanceof HttpExceptionInterface) {
             $event->setResponse(
                 new JsonResponse([
-                    'message' => $exception->getMessage(),
+                    'message' => $this->translateMessage($exception),
                 ], $exception->getStatusCode())
             );
 
@@ -92,12 +104,28 @@ class ExceptionListener
         }
 
         if ($exception instanceof Exception) {
+            // Unexpected errors can expose internals (SQL, paths, ...): only show them in debug mode.
+            $this->logger?->error('Unhandled exception in REST API', ['exception' => $exception]);
+
             $event->setResponse(
                 new JsonResponse([
-                    'message' => $exception->getMessage(),
+                    'message' => $this->debug
+                        ? $exception->getMessage()
+                        : $this->translator->trans('An internal server error occurred.'),
                 ], 500)
             );
         }
+    }
+
+    /**
+     * Exception messages are English strings used as translation keys: a message without a
+     * catalogue entry (or already translated by the code that threw it) is returned unchanged.
+     */
+    private function translateMessage(Throwable $exception): string
+    {
+        $message = $exception->getMessage();
+
+        return $message === '' ? $message : $this->translator->trans($message);
     }
 
     /**

@@ -8,6 +8,11 @@ services:
     tags:
       - { name: kernel.event_listener, event: kernel.exception }
 
+  PhpList\RestBundle\Common\EventListener\LocaleListener:
+    tags:
+      # runs after the router (32) and before Symfony's LocaleAwareListener (15)
+      - { name: kernel.event_listener, event: kernel.request, priority: 20 }
+
   PhpList\RestBundle\Common\EventListener\ResponseListener:
     tags:
       - { name: kernel.event_listener, event: kernel.response }
