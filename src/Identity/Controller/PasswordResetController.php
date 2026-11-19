@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * This controller provides methods to reset admin passwords.
@@ -29,6 +30,7 @@ class PasswordResetController extends BaseController
         RequestValidator $validator,
         private readonly PasswordManager $passwordManager,
         private readonly EntityManagerInterface $entityManager,
+        private readonly TranslatorInterface $translator,
     ) {
         parent::__construct($authentication, $validator);
     }
@@ -172,9 +174,12 @@ class PasswordResetController extends BaseController
         $this->entityManager->flush();
         
         if ($success) {
-            return $this->json([ 'message' => 'Password updated successfully']);
+            return $this->json(['message' => $this->translator->trans('Password updated successfully')]);
         }
 
-        return $this->json(['message' => 'Invalid or expired token'], Response::HTTP_BAD_REQUEST);
+        return $this->json(
+            ['message' => $this->translator->trans('Invalid or expired token')],
+            Response::HTTP_BAD_REQUEST
+        );
     }
 }

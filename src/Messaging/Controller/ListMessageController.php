@@ -6,6 +6,7 @@ namespace PhpList\RestBundle\Messaging\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
+use PhpList\Core\Domain\Identity\Service\PermissionChecker;
 use PhpList\Core\Domain\Messaging\Model\Message;
 use PhpList\Core\Domain\Messaging\Service\Manager\ListMessageManager;
 use PhpList\Core\Domain\Subscription\Model\SubscriberList;
@@ -35,6 +36,7 @@ class ListMessageController extends BaseController
         private readonly SubscriberListNormalizer $subscriberListNormalizer,
         private readonly MessageNormalizer $messageNormalizer,
         private readonly EntityManagerInterface $entityManager,
+        private readonly PermissionChecker $permissionChecker,
     ) {
         parent::__construct($authentication, $validator);
     }
@@ -244,7 +246,7 @@ class ListMessageController extends BaseController
         #[MapEntity(mapping: ['messageId' => 'id'])] ?Message $message = null,
         #[MapEntity(mapping: ['listId' => 'id'])] ?SubscriberList $subscriberList = null
     ): JsonResponse {
-        $this->requireAuthentication($request);
+        $authUser = $this->requireAuthentication($request);
 
         if ($message === null) {
             throw $this->createNotFoundException('Message not found.');
@@ -252,6 +254,12 @@ class ListMessageController extends BaseController
 
         if ($subscriberList === null) {
             throw $this->createNotFoundException('Subscriber list not found.');
+        }
+
+        if (!$this->permissionChecker->canEdit($authUser, $message)
+            || !$this->permissionChecker->canEdit($authUser, $subscriberList)
+        ) {
+            throw $this->createAccessDeniedException('Access denied.');
         }
 
         $listMessage = $this->listMessageManager->associateMessageWithList($message, $subscriberList);

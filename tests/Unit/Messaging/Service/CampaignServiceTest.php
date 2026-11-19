@@ -7,6 +7,7 @@ namespace PhpList\RestBundle\Tests\Unit\Messaging\Service;
 use DateTime;
 use DateTimeImmutable;
 use Doctrine\ORM\EntityManagerInterface;
+use PhpList\Core\Domain\Identity\Model\AccessLevel;
 use PhpList\Core\Domain\Identity\Model\Administrator;
 use PhpList\Core\Domain\Identity\Service\PermissionChecker;
 use PhpList\Core\Domain\Messaging\Model\Filter\MessageFilter;
@@ -43,6 +44,7 @@ class CampaignServiceTest extends TestCase
         $this->paginatedProvider = $this->createMock(PaginatedDataProvider::class);
         $this->normalizer = $this->createMock(MessageNormalizer::class);
         $this->permissionChecker = $this->createMock(PermissionChecker::class);
+        $this->permissionChecker->method('accessLevel')->willReturn(AccessLevel::Owner);
 
         $this->campaignService = new CampaignService(
             messageManager: $this->messageManager,
@@ -75,6 +77,47 @@ class CampaignServiceTest extends TestCase
         $result = $this->campaignService->getMessages($request, $administrator);
 
         $this->assertSame($expectedResult, $result);
+    }
+
+    public function testGetMessagesDoesNotFilterByOwnerForSuperUser(): void
+    {
+        $permissionChecker = $this->createMock(PermissionChecker::class);
+        $permissionChecker->method('accessLevel')->willReturn(AccessLevel::All);
+        $service = new CampaignService(
+            messageManager: $this->messageManager,
+            paginatedProvider: $this->paginatedProvider,
+            normalizer: $this->normalizer,
+            entityManager: $this->createMock(EntityManagerInterface::class),
+            permissionChecker: $permissionChecker,
+        );
+        $this->paginatedProvider->expects($this->once())
+            ->method('getPaginatedList')
+            ->with(
+                $this->anything(),
+                $this->anything(),
+                Message::class,
+                $this->callback(fn (MessageFilter $filter) => $filter->getOwner() === null)
+            )
+            ->willReturn([]);
+
+        $service->getMessages(new Request(), $this->createMock(Administrator::class));
+    }
+
+    public function testGetMessagesThrowsWithoutCampaignsPrivilege(): void
+    {
+        $permissionChecker = $this->createMock(PermissionChecker::class);
+        $permissionChecker->method('accessLevel')->willReturn(AccessLevel::None);
+        $service = new CampaignService(
+            messageManager: $this->messageManager,
+            paginatedProvider: $this->paginatedProvider,
+            normalizer: $this->normalizer,
+            entityManager: $this->createMock(EntityManagerInterface::class),
+            permissionChecker: $permissionChecker,
+        );
+        $this->paginatedProvider->expects($this->never())->method('getPaginatedList');
+
+        $this->expectException(\Symfony\Component\Security\Core\Exception\AccessDeniedException::class);
+        $service->getMessages(new Request(), $this->createMock(Administrator::class));
     }
 
     public function testGetMessagesAppliesStatusAndSortFromQuery(): void

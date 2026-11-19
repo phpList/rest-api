@@ -75,7 +75,7 @@ class AttachmentController extends BaseController
         }
 
         return new StreamedResponse(
-            callback: function () use ($downloadable) {
+            function () use ($downloadable) {
                 $stream = $downloadable->content;
 
                 if ($stream->isSeekable()) {

@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/subscribers', name: 'subscriber_import_')]
 class SubscriberImportController extends BaseController
@@ -28,6 +29,7 @@ class SubscriberImportController extends BaseController
         RequestValidator $validator,
         private readonly SubscriberCsvImporter $importManager,
         private readonly PermissionChecker $permissionChecker,
+        private readonly TranslatorInterface $translator,
     ) {
         parent::__construct($authentication, $validator);
     }
@@ -122,11 +124,17 @@ class SubscriberImportController extends BaseController
         $file = $request->files->get('file');
 
         if (!$file) {
-            return $this->json(['message' => 'No file uploaded'], Response::HTTP_BAD_REQUEST);
+            return $this->json(
+                ['message' => $this->translator->trans('No file uploaded')],
+                Response::HTTP_BAD_REQUEST
+            );
         }
 
         if ($file->getClientMimeType() !== 'text/csv' && $file->getClientOriginalExtension() !== 'csv') {
-            return $this->json(['message' => 'File must be a CSV'], Response::HTTP_BAD_REQUEST);
+            return $this->json(
+                ['message' => $this->translator->trans('File must be a CSV')],
+                Response::HTTP_BAD_REQUEST
+            );
         }
 
         try {
@@ -146,7 +154,10 @@ class SubscriberImportController extends BaseController
             ]);
         } catch (CouldNotReadUploadedFileException $exception) {
             return $this->json([
-                'message' => 'Could not read uploaded file. ' . $exception->getMessage()
+                'message' => $this->translator->trans(
+                    'Could not read uploaded file. %message%',
+                    ['%message%' => $exception->getMessage()]
+                )
             ], Response::HTTP_BAD_REQUEST);
         } catch (Exception $e) {
             return $this->json([

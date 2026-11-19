@@ -11,6 +11,7 @@ use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\Serializer\NameConverter\NameConverterInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Throwable;
 
 class RequestValidator
@@ -18,7 +19,8 @@ class RequestValidator
     public function __construct(
         private readonly DenormalizerInterface $serializer,
         private readonly ValidatorInterface $validator,
-        private readonly NameConverterInterface $nameConverter
+        private readonly NameConverterInterface $nameConverter,
+        private readonly TranslatorInterface $translator
     ) {
     }
 
@@ -28,7 +30,9 @@ class RequestValidator
             $content = $request->getContent();
             $body = ($content !== '' && $content !== '0') ? json_decode($content, true, 512, JSON_THROW_ON_ERROR) : [];
         } catch (Throwable $e) {
-            throw new BadRequestHttpException('Invalid JSON: ' . $e->getMessage());
+            throw new BadRequestHttpException(
+                $this->translator->trans('Invalid JSON: %message%', ['%message%' => $e->getMessage()])
+            );
         }
         $routeParams = $request->attributes->get('_route_params') ?? [];
 
@@ -48,7 +52,10 @@ class RequestValidator
             );
         } catch (Throwable $e) {
             throw new BadRequestHttpException(
-                'Invalid request data: ' . $e->getMessage() . ' Data: ' . json_encode($data)
+                $this->translator->trans(
+                    'Invalid request data: %message% Data: %data%',
+                    ['%message%' => $e->getMessage(), '%data%' => json_encode($data)]
+                )
             );
         }
 

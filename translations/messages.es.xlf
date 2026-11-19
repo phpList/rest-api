@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" target-language="es" datatype="plaintext" original="file.ext">
+    <header>
+      <tool tool-id="symfony" tool-name="Symfony"/>
+    </header>
+    <body>
+      <trans-unit id="J48APfD" resname="Access denied.">
+        <source>Access denied.</source>
+        <target>Acceso denegado.</target>
+      </trans-unit>
+      <trans-unit id="J2dlda2" resname="Administrator attribute not found.">
+        <source>Administrator attribute not found.</source>
+        <target>Atributo de administrador no encontrado.</target>
+      </trans-unit>
+      <trans-unit id="F1BjeyQ" resname="Administrator not found.">
+        <source>Administrator not found.</source>
+        <target>Administrador no encontrado.</target>
+      </trans-unit>
+      <trans-unit id="k0kC0Ir" resname="Attribute definition not found.">
+        <source>Attribute definition not found.</source>
+        <target>Definición de atributo no encontrada.</target>
+      </trans-unit>
+      <trans-unit id="YfRJQLN" resname="Bounce regex not found.">
+        <source>Bounce regex not found.</source>
+        <target>Expresión regular de rebotes no encontrada.</target>
+      </trans-unit>
+      <trans-unit id="ZDO_lR2" resname="Campaign is not currently stuck in processing.">
+        <source>Campaign is not currently stuck in processing.</source>
+        <target>La campaña no está bloqueada en procesamiento actualmente.</target>
+      </trans-unit>
+      <trans-unit id="L8KAah-" resname="Campaign not found.">
+        <source>Campaign not found.</source>
+        <target>Campaña no encontrada.</target>
+      </trans-unit>
+      <trans-unit id="GAKQiAh" resname="Configuration item not found.">
+        <source>Configuration item not found.</source>
+        <target>Elemento de configuración no encontrado.</target>
+      </trans-unit>
+      <trans-unit id="nohFJbl" resname="Could not read uploaded file. %message%">
+        <source>Could not read uploaded file. %message%</source>
+        <target>No se pudo leer el archivo subido. %message%</target>
+      </trans-unit>
+      <trans-unit id="0HvDnyx" resname="File must be a CSV">
+        <source>File must be a CSV</source>
+        <target>El archivo debe ser un CSV</target>
+      </trans-unit>
+      <trans-unit id="xRYIheY" resname="Invalid JSON: %message%">
+        <source>Invalid JSON: %message%</source>
+        <target>JSON no válido: %message%</target>
+      </trans-unit>
+      <trans-unit id="qk5vALF" resname="Invalid date format. Use format: Y-m-d">
+        <source>Invalid date format. Use format: Y-m-d</source>
+        <target>Formato de fecha no válido. Use el formato: Y-m-d</target>
+      </trans-unit>
+      <trans-unit id="74ubt5r" resname="Invalid or expired token">
+        <source>Invalid or expired token</source>
+        <target>Token no válido o caducado</target>
+      </trans-unit>
+      <trans-unit id="zEsSHeg" resname="Invalid request data: %message% Data: %data%">
+        <source>Invalid request data: %message% Data: %data%</source>
+        <target>Datos de solicitud no válidos: %message% Datos: %data%</target>
+      </trans-unit>
+      <trans-unit id="a58LqQo" resname="Message not found.">
+        <source>Message not found.</source>
+        <target>Mensaje no encontrado.</target>
+      </trans-unit>
+      <trans-unit id="8v5685_" resname="No file uploaded">
+        <source>No file uploaded</source>
+        <target>No se ha subido ningún archivo</target>
+      </trans-unit>
+      <trans-unit id="1TZLvG1" resname="No valid session key was provided as basic auth password.">
+        <source>No valid session key was provided as basic auth password.</source>
+        <target>No se proporcionó una clave de sesión válida como contraseña de autenticación básica.</target>
+      </trans-unit>
+      <trans-unit id="63N7me4" resname="Password updated successfully">
+        <source>Password updated successfully</source>
+        <target>Contraseña actualizada correctamente</target>
+      </trans-unit>
+      <trans-unit id="14Vn5V8" resname="Subscribe page not found">
+        <source>Subscribe page not found</source>
+        <target>Página de suscripción no encontrada</target>
+      </trans-unit>
+      <trans-unit id="0scvVV2" resname="Subscribe page not found.">
+        <source>Subscribe page not found.</source>
+        <target>Página de suscripción no encontrada.</target>
+      </trans-unit>
+      <trans-unit id="0z_wz1s" resname="Subscriber attribute not found.">
+        <source>Subscriber attribute not found.</source>
+        <target>Atributo de suscriptor no encontrado.</target>
+      </trans-unit>
+      <trans-unit id="u3xuGHi" resname="Subscriber list does not exists.">
+        <source>Subscriber list does not exists.</source>
+        <target>La lista de suscriptores no existe.</target>
+      </trans-unit>
+      <trans-unit id="IuEsxaY" resname="Subscriber list not found.">
+        <source>Subscriber list not found.</source>
+        <target>Lista de suscriptores no encontrada.</target>
+      </trans-unit>
+      <trans-unit id="3Xb1O2n" resname="Subscriber not found.">
+        <source>Subscriber not found.</source>
+        <target>Suscriptor no encontrado.</target>
+      </trans-unit>
+      <trans-unit id="cvSkaZi" resname="Subscriber with email does not exists.">
+        <source>Subscriber with email does not exists.</source>
+        <target>El suscriptor con ese correo electrónico no existe.</target>
+      </trans-unit>
+      <trans-unit id="t35ldJu" resname="Template not found.">
+        <source>Template not found.</source>
+        <target>Plantilla no encontrada.</target>
+      </trans-unit>
+      <trans-unit id="VIizwZq" resname="Template title already exists.">
+        <source>Template title already exists.</source>
+        <target>El título de la plantilla ya existe.</target>
+      </trans-unit>
+      <trans-unit id="hwcskfW" resname="Template with that id does not exists.">
+        <source>Template with that id does not exists.</source>
+        <target>La plantilla con ese id no existe.</target>
+      </trans-unit>
+      <trans-unit id="XAdCdWX" resname="Token not found.">
+        <source>Token not found.</source>
+        <target>Token no encontrado.</target>
+      </trans-unit>
+      <trans-unit id="I6hvWi2" resname="Validation failed">
+        <source>Validation failed</source>
+        <target>La validación ha fallado</target>
+      </trans-unit>
+      <trans-unit id="Akvv3vC" resname="You are not allowed to access statistics.">
+        <source>You are not allowed to access statistics.</source>
+        <target>No tiene permiso para acceder a las estadísticas.</target>
+      </trans-unit>
+      <trans-unit id="9pnLzJy" resname="You are not allowed to create campaigns.">
+        <source>You are not allowed to create campaigns.</source>
+        <target>No tiene permiso para crear campañas.</target>
+      </trans-unit>
+      <trans-unit id="e8BsnRU" resname="You are not allowed to create configuration.">
+        <source>You are not allowed to create configuration.</source>
+        <target>No tiene permiso para crear configuración.</target>
+      </trans-unit>
+      <trans-unit id="IqaZiiF" resname="You are not allowed to create subscriber lists.">
+        <source>You are not allowed to create subscriber lists.</source>
+        <target>No tiene permiso para crear listas de suscriptores.</target>
+      </trans-unit>
+      <trans-unit id="Q3uOkqs" resname="You are not allowed to create subscribers.">
+        <source>You are not allowed to create subscribers.</source>
+        <target>No tiene permiso para crear suscriptores.</target>
+      </trans-unit>
+      <trans-unit id="9k12WPx" resname="You are not allowed to delete campaigns.">
+        <source>You are not allowed to delete campaigns.</source>
+        <target>No tiene permiso para eliminar campañas.</target>
+      </trans-unit>
+      <trans-unit id="luCIXkq" resname="You are not allowed to delete configuration.">
+        <source>You are not allowed to delete configuration.</source>
+        <target>No tiene permiso para eliminar configuración.</target>
+      </trans-unit>
+      <trans-unit id="8YvjyUI" resname="You are not allowed to delete subscribers.">
+        <source>You are not allowed to delete subscribers.</source>
+        <target>No tiene permiso para eliminar suscriptores.</target>
+      </trans-unit>
+      <trans-unit id="WY53V_G" resname="You are not allowed to edit Subscribers.">
+        <source>You are not allowed to edit Subscribers.</source>
+        <target>No tiene permiso para editar suscriptores.</target>
+      </trans-unit>
+      <trans-unit id="GGSaiMc" resname="You are not allowed to manage the blacklist.">
+        <source>You are not allowed to manage the blacklist.</source>
+        <target>No tiene permiso para gestionar la lista negra.</target>
+      </trans-unit>
+      <trans-unit id="WsJqSRr" resname="You are not allowed to update campaigns.">
+        <source>You are not allowed to update campaigns.</source>
+        <target>No tiene permiso para actualizar campañas.</target>
+      </trans-unit>
+      <trans-unit id="ULIEucm" resname="You are not allowed to update configuration.">
+        <source>You are not allowed to update configuration.</source>
+        <target>No tiene permiso para actualizar la configuración.</target>
+      </trans-unit>
+      <trans-unit id="MiPyFDi" resname="You are not allowed to update subscribers.">
+        <source>You are not allowed to update subscribers.</source>
+        <target>No tiene permiso para actualizar suscriptores.</target>
+      </trans-unit>
+      <trans-unit id="Rh3c6L5" resname="You are not allowed to view campaigns.">
+        <source>You are not allowed to view campaigns.</source>
+        <target>No tiene permiso para ver campañas.</target>
+      </trans-unit>
+      <trans-unit id="tFJFyAD" resname="You are not allowed to view configuration.">
+        <source>You are not allowed to view configuration.</source>
+        <target>No tiene permiso para ver la configuración.</target>
+      </trans-unit>
+      <trans-unit id="X4LbBwv" resname="You are not allowed to view subscriber lists.">
+        <source>You are not allowed to view subscriber lists.</source>
+        <target>No tiene permiso para ver listas de suscriptores.</target>
+      </trans-unit>
+      <trans-unit id="QxdQWQO" resname="You do not have access to this session.">
+        <source>You do not have access to this session.</source>
+        <target>No tiene acceso a esta sesión.</target>
+      </trans-unit>
+      <trans-unit id="xQIjJAq" resname="An internal server error occurred.">
+        <source>An internal server error occurred.</source>
+        <target>Se ha producido un error interno del servidor.</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

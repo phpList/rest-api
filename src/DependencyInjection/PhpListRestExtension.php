@@ -65,5 +65,11 @@ class PhpListRestExtension extends Extension implements PrependExtensionInterfac
                 ],
             ],
         ]);
+
+        // todo: verify in a booted kernel (base-distribution) that this translations path is actually loaded
+        //  and that e.g. 'Validation failed' is translated for a non-default locale.
+        $container->prependExtensionConfig('framework', [
+            'translator' => ['paths' => [__DIR__ . '/../../translations']],
+        ]);
     }
 }
