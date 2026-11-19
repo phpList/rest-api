@@ -61,60 +61,68 @@ class ExceptionListener
     {
         $exception = $event->getThrowable();
 
-        if ($exception instanceof ValidationFailedException
-            || $exception instanceof ValidatorException
-            || $exception instanceof UnprocessableEntityHttpException
-        ) {
-            $event->setResponse(
-                new JsonResponse([
-                    'message' => $this->translator->trans('Validation failed'),
-                    'errors' => $this->parseFlatValidationMessage($exception->getMessage()),
-                ], 422)
-            );
+        $response = $this->createValidationResponse($exception)
+            ?? $this->createMappedResponse($exception)
+            ?? $this->createHttpExceptionResponse($exception)
+            ?? $this->createInternalErrorResponse($exception);
 
-            return;
+        if ($response !== null) {
+            $event->setResponse($response);
+        }
+    }
+
+    private function createValidationResponse(Throwable $exception): ?JsonResponse
+    {
+        if (!$exception instanceof ValidationFailedException
+            && !$exception instanceof ValidatorException
+            && !$exception instanceof UnprocessableEntityHttpException
+        ) {
+            return null;
         }
 
+        return new JsonResponse([
+            'message' => $this->translator->trans('Validation failed'),
+            'errors' => $this->parseFlatValidationMessage($exception->getMessage()),
+        ], 422);
+    }
+
+    private function createMappedResponse(Throwable $exception): ?JsonResponse
+    {
         foreach (self::EXCEPTION_STATUS_MAP as $class => $statusCode) {
             if ($exception instanceof $class) {
-                $status = $statusCode ?? (
-                method_exists($exception, 'getStatusCode')
-                    ? $exception->getStatusCode()
-                    : 400
-                );
+                $status = $statusCode
+                    ?? (method_exists($exception, 'getStatusCode') ? $exception->getStatusCode() : 400);
 
-                $event->setResponse(
-                    new JsonResponse([
-                        'message' => $this->translateMessage($exception),
-                    ], $status)
-                );
-
-                return;
+                return new JsonResponse(['message' => $this->translateMessage($exception)], $status);
             }
         }
 
-        if ($exception instanceof HttpExceptionInterface) {
-            $event->setResponse(
-                new JsonResponse([
-                    'message' => $this->translateMessage($exception),
-                ], $exception->getStatusCode())
-            );
+        return null;
+    }
 
-            return;
+    private function createHttpExceptionResponse(Throwable $exception): ?JsonResponse
+    {
+        if (!$exception instanceof HttpExceptionInterface) {
+            return null;
         }
 
-        if ($exception instanceof Exception) {
-            // Unexpected errors can expose internals (SQL, paths, ...): only show them in debug mode.
-            $this->logger?->error('Unhandled exception in REST API', ['exception' => $exception]);
+        return new JsonResponse(['message' => $this->translateMessage($exception)], $exception->getStatusCode());
+    }
 
-            $event->setResponse(
-                new JsonResponse([
-                    'message' => $this->debug
-                        ? $exception->getMessage()
-                        : $this->translator->trans('An internal server error occurred.'),
-                ], 500)
-            );
+    private function createInternalErrorResponse(Throwable $exception): ?JsonResponse
+    {
+        if (!$exception instanceof Exception) {
+            return null;
         }
+
+        // Unexpected errors can expose internals (SQL, paths, ...): only show them in debug mode.
+        $this->logger?->error('Unhandled exception in REST API', ['exception' => $exception]);
+
+        return new JsonResponse([
+            'message' => $this->debug
+                ? $exception->getMessage()
+                : $this->translator->trans('An internal server error occurred.'),
+        ], 500);
     }
 
     /**
