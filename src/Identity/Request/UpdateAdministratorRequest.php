@@ -79,11 +79,7 @@ class UpdateAdministratorRequest implements RequestInterface
      * Example: ['subscribers' => true, 'campaigns' => false, 'statistics' => true, 'settings' => false]
      */
     #[Assert\Type('array')]
-    #[Assert\All([
-        'constraints' => [
-            new Assert\Type(['type' => 'bool']),
-        ],
-    ])]
+    #[Assert\All(constraints: [new Assert\Type(type: 'bool')])]
     public array $privileges = [];
 
     public function getDto(): UpdateAdministratorDto
