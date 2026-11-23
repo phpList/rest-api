@@ -6,11 +6,12 @@ namespace PhpList\RestBundle\Subscription\Controller;
 
 use Doctrine\ORM\EntityManagerInterface;
 use OpenApi\Attributes as OA;
-use PhpList\Core\Domain\Identity\Model\Administrator;
+use PhpList\Core\Domain\Identity\Model\AccessLevel;
 use PhpList\Core\Domain\Messaging\Model\Filter\SubscriberListFilter;
 use PhpList\Core\Domain\Subscription\Model\SubscriberList;
 use PhpList\Core\Domain\Subscription\Service\Manager\SubscriberListManager;
 use PhpList\Core\Domain\Identity\Service\Authentication;
+use PhpList\Core\Domain\Identity\Service\PermissionChecker;
 use PhpList\RestBundle\Common\Controller\BaseController;
 use PhpList\RestBundle\Common\Service\Provider\PaginatedDataProvider;
 use PhpList\RestBundle\Common\Validator\RequestValidator;
@@ -39,6 +40,7 @@ class SubscriberListController extends BaseController
         private readonly SubscriberListManager $subscriberListManager,
         private readonly PaginatedDataProvider $paginatedDataProvider,
         private readonly EntityManagerInterface $entityManager,
+        private readonly PermissionChecker $permissionChecker,
     ) {
         parent::__construct($authentication, $validator);
     }
@@ -100,12 +102,17 @@ class SubscriberListController extends BaseController
     {
         $admin = $this->requireAuthentication($request);
 
+        $accessLevel = $this->permissionChecker->accessLevel($admin, SubscriberList::class);
+        if ($accessLevel === AccessLevel::None) {
+            throw $this->createAccessDeniedException('You are not allowed to view subscriber lists.');
+        }
+
         return $this->json(
             $this->paginatedDataProvider->getPaginatedList(
                 request: $request,
                 normalizer: $this->normalizer,
                 className: SubscriberList::class,
-                filter: (new SubscriberListFilter())->setOwner($admin),
+                filter: (new SubscriberListFilter())->setOwner($accessLevel === AccessLevel::Owner ? $admin : null),
             ),
             Response::HTTP_OK
         );
@@ -176,7 +183,9 @@ class SubscriberListController extends BaseController
             throw $this->createNotFoundException('Subscriber list not found.');
         }
 
-        $this->denyAccessUnlessOwner($list, $authUser);
+        if (!$this->permissionChecker->canView($authUser, $list)) {
+            throw $this->createAccessDeniedException('Access denied.');
+        }
 
         return $this->json($this->normalizer->normalize($list), Response::HTTP_OK);
     }
@@ -236,7 +245,9 @@ class SubscriberListController extends BaseController
             throw $this->createNotFoundException('Subscriber list not found.');
         }
 
-        $this->denyAccessUnlessOwner($list, $authUser);
+        if (!$this->permissionChecker->canDelete($authUser, $list)) {
+            throw $this->createAccessDeniedException('Access denied.');
+        }
 
         $this->subscriberListManager->delete($list);
         $this->entityManager->flush();
@@ -286,6 +297,10 @@ class SubscriberListController extends BaseController
     public function createList(Request $request): JsonResponse
     {
         $authUser = $this->requireAuthentication($request);
+
+        if (!$this->permissionChecker->canCreate($authUser, SubscriberList::class)) {
+            throw $this->createAccessDeniedException('You are not allowed to create subscriber lists.');
+        }
 
         /** @var CreateSubscriberListRequest $subscriberListRequest */
         $subscriberListRequest = $this->validator->validate($request, CreateSubscriberListRequest::class);
@@ -356,7 +371,9 @@ class SubscriberListController extends BaseController
             throw $this->createNotFoundException('Subscriber list not found.');
         }
 
-        $this->denyAccessUnlessOwner($list, $authUser);
+        if (!$this->permissionChecker->canEdit($authUser, $list)) {
+            throw $this->createAccessDeniedException('Access denied.');
+        }
 
         /** @var CreateSubscriberListRequest $subscriberListRequest */
         $subscriberListRequest = $this->validator->validate($request, CreateSubscriberListRequest::class);
@@ -368,18 +385,5 @@ class SubscriberListController extends BaseController
         $this->entityManager->flush();
 
         return $this->json($this->normalizer->normalize($data), Response::HTTP_OK);
-    }
-
-    private function denyAccessUnlessOwner(SubscriberList $list, Administrator $user): void
-    {
-        if ($list->getOwner() === null) {
-            return;
-        }
-
-        if ($list->getOwner()->getId() === $user->getId()) {
-            return;
-        }
-
-        throw $this->createAccessDeniedException('Access denied.');
     }
 }

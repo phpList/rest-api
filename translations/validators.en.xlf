@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" target-language="en" datatype="plaintext" original="file.ext">
+    <header>
+      <tool tool-id="symfony" tool-name="Symfony"/>
+    </header>
+    <body>
+      <trans-unit id="nAgPJ6W" resname="Configuration item already exists.">
+        <source>Configuration item already exists.</source>
+        <target>Configuration item already exists.</target>
+      </trans-unit>
+      <trans-unit id="-t4kjpG" resname="Email addresses do not match.">
+        <source>Email addresses do not match.</source>
+        <target>Email addresses do not match.</target>
+      </trans-unit>
+      <trans-unit id="fSWywJn" resname="Invalid email address.">
+        <source>Invalid email address.</source>
+        <target>Invalid email address.</target>
+      </trans-unit>
+      <trans-unit id="tQtv5-B" resname="Invalid findColumn value">
+        <source>Invalid findColumn value</source>
+        <target>Invalid findColumn value</target>
+      </trans-unit>
+      <trans-unit id="cHh8a0k" resname="Invalid regular expression pattern.">
+        <source>Invalid regular expression pattern.</source>
+        <target>Invalid regular expression pattern.</target>
+      </trans-unit>
+      <trans-unit id="VcnpObT" resname="Invalid type. Allowed values: hidden, textline.">
+        <source>Invalid type. Allowed values: hidden, textline.</source>
+        <target>Invalid type. Allowed values: hidden, textline.</target>
+      </trans-unit>
+      <trans-unit id="U6aXiTx" resname="Invalid value.">
+        <source>Invalid value.</source>
+        <target>Invalid value.</target>
+      </trans-unit>
+      <trans-unit id="bQH2ySb" resname="Subscriber list with id &quot;{{ value }}&quot; does not exists.">
+        <source>Subscriber list with id "{{ value }}" does not exists.</source>
+        <target>Subscriber list with id "{{ value }}" does not exists.</target>
+      </trans-unit>
+      <trans-unit id="v2InERW" resname="Subscriber with  email &quot;{{ value }}&quot; does not exists.">
+        <source>Subscriber with  email "{{ value }}" does not exists.</source>
+        <target>Subscriber with  email "{{ value }}" does not exists.</target>
+      </trans-unit>
+      <trans-unit id="VIizwZq" resname="Template title already exists.">
+        <source>Template title already exists.</source>
+        <target>Template title already exists.</target>
+      </trans-unit>
+      <trans-unit id="DI0jHms" resname="Template with  id &quot;{{ value }}&quot; does not exists.">
+        <source>Template with  id "{{ value }}" does not exists.</source>
+        <target>Template with  id "{{ value }}" does not exists.</target>
+      </trans-unit>
+      <trans-unit id="q2tv-CN" resname="The content must include at least one &quot;{{ placeholder }}&quot; placeholder.">
+        <source>The content must include at least one "{{ placeholder }}" placeholder.</source>
+        <target>The content must include at least one "{{ placeholder }}" placeholder.</target>
+      </trans-unit>
+      <trans-unit id="WtNzKWs" resname="The login &quot;{{ value }}&quot; is already taken.">
+        <source>The login "{{ value }}" is already taken.</source>
+        <target>The login "{{ value }}" is already taken.</target>
+      </trans-unit>
+      <trans-unit id="cM81tKG" resname="The value must be one of: html, text, invite.">
+        <source>The value must be one of: html, text, invite.</source>
+        <target>The value must be one of: html, text, invite.</target>
+      </trans-unit>
+      <trans-unit id="ByliN7p" resname="This attribute is required.">
+        <source>This attribute is required.</source>
+        <target>This attribute is required.</target>
+      </trans-unit>
+      <trans-unit id="kDjokpF" resname="This email is already in use.">
+        <source>This email is already in use.</source>
+        <target>This email is already in use.</target>
+      </trans-unit>
+      <trans-unit id="uNsMBRF" resname="Unknown attribute.">
+        <source>Unknown attribute.</source>
+        <target>Unknown attribute.</target>
+      </trans-unit>
+      <trans-unit id="-uC2eAR" resname="You can forward to at most {{ limit }} recipients.">
+        <source>You can forward to at most {{ limit }} recipients.</source>
+        <target>You can forward to at most {{ limit }} recipients.</target>
+      </trans-unit>
+      <trans-unit id="T-9o1RG" resname="You should not paste the results of a test message back into the editor. This will break the click-track statistics, and overload the server.">
+        <source>You should not paste the results of a test message back into the editor. This will break the click-track statistics, and overload the server.</source>
+        <target>You should not paste the results of a test message back into the editor. This will break the click-track statistics, and overload the server.</target>
+      </trans-unit>
+      <trans-unit id="MXANEYI" resname="Your personal note must be at most {{ limit }} characters long.">
+        <source>Your personal note must be at most {{ limit }} characters long.</source>
+        <target>Your personal note must be at most {{ limit }} characters long.</target>
+      </trans-unit>
+      <trans-unit id="UI3jqNp" resname="isBlacklisted must be one of: true, false, 1, 0">
+        <source>isBlacklisted must be one of: true, false, 1, 0</source>
+        <target>isBlacklisted must be one of: true, false, 1, 0</target>
+      </trans-unit>
+      <trans-unit id="WH9J2I7" resname="isConfirmed must be one of: true, false, 1, 0">
+        <source>isConfirmed must be one of: true, false, 1, 0</source>
+        <target>isConfirmed must be one of: true, false, 1, 0</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

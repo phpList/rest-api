@@ -9,6 +9,7 @@ use PhpList\RestBundle\Common\Validator\RequestValidator;
 use PhpList\RestBundle\Tests\Helpers\DummyRequestDto;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Translation\Translator;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
@@ -31,7 +32,8 @@ class RequestValidatorTest extends TestCase
         $this->requestValidator = new RequestValidator(
             $this->serializer,
             $this->validator,
-            new CamelCaseToSnakeCaseNameConverter()
+            new CamelCaseToSnakeCaseNameConverter(),
+            new Translator('en')
         );
     }
 
