@@ -70,4 +70,14 @@ class ViewOpensStatisticsNormalizer implements NormalizerInterface
     {
         return is_array($data) && isset($data['items']) && isset($context['view_opens_statistics']);
     }
+
+    /**
+     * Support depends on the serialization context, so the result must not be cached by the serializer.
+     *
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
+     */
+    public function getSupportedTypes(?string $format): array
+    {
+        return ['*' => false];
+    }
 }
