@@ -25,7 +25,7 @@ class AdminNotificationNormalizer implements NormalizerInterface
      * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      * @throws InvalidArgumentException
      */
-    public function normalize($object, string $format = null, array $context = []): array
+    public function normalize(mixed $object, ?string $format = null, array $context = []): array
     {
         if (!$object instanceof AdminNotification) {
             throw new InvalidArgumentException('Expected an AdminNotification object.');
@@ -43,7 +43,7 @@ class AdminNotificationNormalizer implements NormalizerInterface
     /**
      * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
-    public function supportsNormalization($data, string $format = null): bool
+    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
         return $data instanceof AdminNotification;
     }
