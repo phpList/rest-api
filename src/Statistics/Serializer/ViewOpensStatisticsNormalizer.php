@@ -25,7 +25,7 @@ class ViewOpensStatisticsNormalizer implements NormalizerInterface
     /**
      * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
-    public function normalize(mixed $object, string $format = null, array $context = []): array
+    public function normalize(mixed $object, ?string $format = null, array $context = []): array
     {
         if (!is_array($object) || !isset($object['campaigns'])) {
             return [];
@@ -66,7 +66,7 @@ class ViewOpensStatisticsNormalizer implements NormalizerInterface
     /**
      * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
-    public function supportsNormalization(mixed $data, string $format = null, array $context = []): bool
+    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
         return is_array($data) && isset($data['items']) && isset($context['view_opens_statistics']);
     }

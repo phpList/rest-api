@@ -11,7 +11,7 @@ use Symfony\Component\Validator\ConstraintValidator;
 class MaxForwardCountValidator extends ConstraintValidator
 {
     public function __construct(
-        #[Autowire('%phplist.forward_email_count%')] private readonly int $maxForward
+        #[Autowire('%messaging.forward.email_count%')] private readonly int $maxForward
     ) {
     }
 

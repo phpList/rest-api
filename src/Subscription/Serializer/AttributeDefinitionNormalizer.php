@@ -40,7 +40,7 @@ class AttributeDefinitionNormalizer implements NormalizerInterface
     /**
      * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
-    public function normalize($object, string $format = null, array $context = []): array
+    public function normalize(mixed $object, ?string $format = null, array $context = []): array
     {
         if (!$object instanceof SubscriberAttributeDefinition) {
             return [];
@@ -71,7 +71,7 @@ class AttributeDefinitionNormalizer implements NormalizerInterface
     /**
      * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
-    public function supportsNormalization($data, string $format = null): bool
+    public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
         return $data instanceof SubscriberAttributeDefinition;
     }

@@ -58,11 +58,9 @@ class ForwardMessageRequest implements RequestInterface
     #[Assert\Type('array')]
     #[Assert\Count(min: 1)]
     #[MaxForwardCount]
-    #[Assert\All([
-        'constraints' => [
-            new Assert\Email([]),
-            new Assert\Length(max: 255),
-        ],
+    #[Assert\All(constraints: [
+        new Assert\Email([]),
+        new Assert\Length(max: 255),
     ])]
     public array $recipients = [];
 

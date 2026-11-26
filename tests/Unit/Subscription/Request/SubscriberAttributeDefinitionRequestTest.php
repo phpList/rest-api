@@ -78,7 +78,7 @@ class SubscriberAttributeDefinitionRequestTest extends TestCase
         $request->name = 'Mixed options';
         $request->options = ['foo'];
 
-        $validator = Validation::createValidatorBuilder()->enableAnnotationMapping()->getValidator();
+        $validator = Validation::createValidatorBuilder()->enableAttributeMapping()->getValidator();
         $violations = $validator->validate($request);
 
         $this->assertGreaterThan(0, $violations->count());
@@ -91,7 +91,7 @@ class SubscriberAttributeDefinitionRequestTest extends TestCase
         $request->name = 'Invalid type';
         $request->type = 'not-a-valid-type';
 
-        $validator = Validation::createValidatorBuilder()->enableAnnotationMapping()->getValidator();
+        $validator = Validation::createValidatorBuilder()->enableAttributeMapping()->getValidator();
         $violations = $validator->validate($request);
 
         $this->assertGreaterThan(0, $violations->count());

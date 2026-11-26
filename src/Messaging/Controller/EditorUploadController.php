@@ -32,7 +32,7 @@ class EditorUploadController extends BaseController
         private readonly UploadDirectoryValidator $uploadDirectoryValidator,
         private readonly EditorUploadNormalizer $editorUploadNormalizer,
         private readonly FileListingNormalizer $fileListingNormalizer,
-        #[Autowire('%phplist.upload_images_dir%')]
+        #[Autowire('%uploads.images_dir%')]
         private readonly string $uploadImagesDir,
     ) {
         parent::__construct($authentication, $validator);

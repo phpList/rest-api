@@ -73,11 +73,7 @@ class SubscriberAttributeDefinitionRequest implements RequestInterface
 
     // Optional multi-value list for types like select/radio
     #[Assert\Type('array')]
-    #[Assert\All([
-        'constraints' => [
-            new Assert\Type(['type' => DynamicListAttrDto::class]),
-        ],
-    ])]
+    #[Assert\All(constraints: [new Assert\Type(type: DynamicListAttrDto::class)])]
     public ?array $options = null;
 
     public function getDto(): AttributeDefinitionDto
