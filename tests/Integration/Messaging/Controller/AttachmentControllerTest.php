@@ -16,7 +16,7 @@ class AttachmentControllerTest extends AbstractTestController
     protected function setUp(): void
     {
         parent::setUp();
-        $this->repoPath = (string) self::getContainer()->getParameter('phplist.attachment_repository_path');
+        $this->repoPath = (string) self::getContainer()->getParameter('messaging.attachment.repository_path');
         if (!is_dir($this->repoPath)) {
             mkdir($this->repoPath, 0777, true);
         }

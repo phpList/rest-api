@@ -11,7 +11,7 @@ use Symfony\Component\Validator\ConstraintValidator;
 class MaxPersonalNoteSizeValidator extends ConstraintValidator
 {
     public function __construct(
-        #[Autowire('%phplist.forward_personal_note_size%')] private readonly ?int $maxSize
+        #[Autowire('%messaging.forward.personal_note_size%')] private readonly ?int $maxSize
     ) {
     }
 
